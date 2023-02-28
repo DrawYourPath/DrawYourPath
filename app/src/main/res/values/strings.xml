@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">bootcamp</string>
+    <string name="your_name">Your Name</string>
+    <string name="enter_button">enter</string>
+</resources>
