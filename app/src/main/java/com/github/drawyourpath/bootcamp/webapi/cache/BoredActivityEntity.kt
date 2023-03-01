@@ -14,4 +14,16 @@ data class BoredActivityEntity(
     val type: String?,
     @ColumnInfo(name = "participants")
     val participants: Int?,
-)
+){
+    override fun toString(): String {
+        return buildString {
+            append(activity)
+            append('\n')
+            append("Type : ")
+            append(type)
+            append('\n')
+            append(participants)
+            append(" participants")
+        }
+    }
+}

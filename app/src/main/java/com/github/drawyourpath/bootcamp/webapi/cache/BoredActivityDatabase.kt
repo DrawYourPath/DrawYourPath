@@ -8,6 +8,6 @@ abstract class BoredActivityDatabase : RoomDatabase() {
     abstract fun BoredActivityDao(): BoredActivityDao
 
     companion object {
-        val NAME: String = "BoredActivity.sqlite"
+        const val NAME: String = "BoredActivity.sqlite"
     }
 }
