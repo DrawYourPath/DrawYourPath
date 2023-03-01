@@ -2,4 +2,6 @@
     <string name="app_name">bootcamp</string>
     <string name="your_name">Your Name</string>
     <string name="enter_button">enter</string>
+    <string name="get_bored_activity_button">Get Bored Activity</string>
+    <string name="clear_cache_bored_activity">Clear Cache</string>
 </resources>

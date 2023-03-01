@@ -14,10 +14,16 @@ class MainActivity : AppCompatActivity() {
 
         val button: Button = findViewById(R.id.mainGoButton)
         val textInput: EditText = findViewById(R.id.mainName)
+        val buttonBored: Button = findViewById(R.id.mainBoredButton)
 
         button.setOnClickListener {
             val intent = Intent(this, GreetingActivity::class.java)
             intent.putExtra("userName", textInput.text.toString())
+            startActivity(intent)
+        }
+
+        buttonBored.setOnClickListener {
+            val intent = Intent(this, BoredDisplayActivity::class.java)
             startActivity(intent)
         }
     }
