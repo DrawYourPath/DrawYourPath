@@ -3,6 +3,7 @@ package com.github.drawyourpath.bootcamp
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -20,10 +21,10 @@ class FragmentActivity : AppCompatActivity() {
     private lateinit var topAppBar: MaterialToolbar
 
     //The drawer menu which contains items to select
-    lateinit var drawerLayout: DrawerLayout
+    private lateinit var drawerLayout: DrawerLayout
 
     //The view in which the elements are displayed
-    lateinit var navigationView: NavigationView
+    private lateinit var navigationView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,26 +65,23 @@ class FragmentActivity : AppCompatActivity() {
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 //Display main fragment
-                R.id.activity_main_drawer_main -> supportFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    replace<MainFragment>(R.id.fragmentContainerView)
-                }
+                R.id.activity_main_drawer_main -> replaceFragment<MainFragment>()
 
                 //Display profile fragment
-                R.id.activity_main_drawer_profile -> supportFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    replace<ProfileFragment>(R.id.fragmentContainerView)
-                }
+                R.id.activity_main_drawer_profile -> replaceFragment<ProfileFragment>()
 
                 //Display settings fragment
-                R.id.activity_main_drawer_settings -> supportFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    replace<SettingsFragment>(R.id.fragmentContainerView)
-                }
+                R.id.activity_main_drawer_settings -> replaceFragment<SettingsFragment>()
             }
             drawerLayout.close()
             true
         }
     }
 
+    private inline fun <reified F : Fragment> replaceFragment() {
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace<F>(R.id.fragmentContainerView)
+        }
+    }
 }
