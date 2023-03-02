@@ -10,14 +10,20 @@
         android:layout_width="414dp"
         android:layout_height="475dp"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="18dp"
-        tools:layout_editor_absoluteY="336dp">
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="199dp">
 
         <Button
             android:id="@+id/bc_google_signin"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Sign In With Google" />
+			
+        <Button
+            android:id="@+id/bc_google_signout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign Out" />
 
         <TextView
             android:id="@+id/sign_in_status"

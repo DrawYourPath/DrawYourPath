@@ -31,6 +31,12 @@ class MockAuthProvider : AuthProvider {
     private var isSigned: Boolean = false;
 
     override fun signIn() {
+        if (isSigned)
+        {
+            userCallback?.let { it(null, Exception("Signed in while signed in.")) }
+            return;
+        }
+
         isSigned = true;
         userCallback?.let { it(fakeValidUser, null) }
     }

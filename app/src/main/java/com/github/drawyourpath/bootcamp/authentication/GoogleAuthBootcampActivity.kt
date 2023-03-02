@@ -20,6 +20,7 @@ class GoogleAuthBootcampActivity() : AppCompatActivity() {
         setContentView(R.layout.activity_bootcamp_google_auth)
 
         val signInButton = findViewById<Button>(R.id.bc_google_signin)
+        val signOutButton = findViewById<Button>(R.id.bc_google_signout);
 
         val useMockAuthProvider = intent.getBooleanExtra(GA_USE_MOCK_AUTH_PROVIDER_KEY, false)
         if (useMockAuthProvider) {
@@ -27,6 +28,7 @@ class GoogleAuthBootcampActivity() : AppCompatActivity() {
         }
 
         signInButton.setOnClickListener { authProvider.signIn() }
+        signOutButton.setOnClickListener { authProvider.signOut() }
 
         authProvider.setUserCallback { user, error -> onSignInResult(user, error) }
     }
@@ -45,7 +47,7 @@ class GoogleAuthBootcampActivity() : AppCompatActivity() {
             setSignInText("Not signed.")
         }
         else {
-            setSignInText("Signed in as " + user.getDisplayName())
+            setSignInText("Signed in as " + authProvider.getCurrentUser()!!.getDisplayName())
         }
     }
 
