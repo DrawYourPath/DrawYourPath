@@ -34,6 +34,13 @@ class FragmentActivityTest {
 
         //Third fragment is settings
         onView(withId(R.id.settingsTextView)).check(matches(isDisplayed()))
+
+        //Go to main again
+        onView(withContentDescription("Navigate up")).perform(click()) //Press the hamburger button
+        onView(withId(R.id.activity_main_drawer_main)).perform(click())
+
+        //Final fragment is main
+        onView(withId(R.id.mainTextView)).check(matches(isDisplayed()))
     }
 
     @Test
