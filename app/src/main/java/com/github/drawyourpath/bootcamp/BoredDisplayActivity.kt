@@ -11,7 +11,9 @@ class BoredDisplayActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bored_display)
 
-        val model = BoredActivityModel(this.application)
+        val url = intent.getStringExtra("testUrl")?: BoredActivityModel.BASE_URL
+
+        val model = BoredActivityModel(this.application, url)
 
         val clearCacheButton: Button = findViewById(R.id.boredActivityClearButton)
         clearCacheButton.setOnClickListener {

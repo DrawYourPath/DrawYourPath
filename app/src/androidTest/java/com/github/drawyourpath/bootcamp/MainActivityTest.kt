@@ -1,5 +1,6 @@
 package com.github.drawyourpath.bootcamp
 
+import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
@@ -24,9 +25,18 @@ class MainActivityTest {
     fun enterGreetingsWithCorrectName() {
         Intents.init()
         onView(withId(R.id.mainName)).perform(typeText("Bob"))
+        closeSoftKeyboard()
         onView(withId(R.id.mainGoButton)).perform(click())
         intended(IntentMatchers.hasExtra("userName", "Bob"))
         intended(IntentMatchers.hasComponent(GreetingActivity::class.java.name))
+        Intents.release()
+    }
+
+    @Test
+    fun enterBoredDisplayCorrectly() {
+        Intents.init()
+        onView(withId(R.id.mainBoredButton)).perform(click())
+        intended(IntentMatchers.hasComponent(BoredDisplayActivity::class.java.name))
         Intents.release()
     }
 }

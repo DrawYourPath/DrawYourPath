@@ -12,10 +12,14 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class BoredActivityModel(application: Application) {
+class BoredActivityModel(application: Application, url: String = BASE_URL) {
+
+    companion object {
+        const val BASE_URL = "https://www.boredapi.com/api/"
+    }
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://www.boredapi.com/api/")
+        .baseUrl(url)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
