@@ -1,8 +1,7 @@
 package com.github.drawyourpath.bootcamp
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -23,7 +22,7 @@ class MainActivityTest {
     @Test
     fun enterGreetingsWithCorrectName() {
         Intents.init()
-        onView(withId(R.id.mainName)).perform(typeText("Bob"))
+        onView(withId(R.id.mainName)).perform(typeText("Bob")).perform(closeSoftKeyboard())
         onView(withId(R.id.mainGoButton)).perform(click())
         intended(IntentMatchers.hasExtra("userName", "Bob"))
         intended(IntentMatchers.hasComponent(GreetingActivity::class.java.name))
