@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Height of the NavigationView Header -->
+    <dimen name="drawer_header_height">176dp</dimen>
+</resources>
