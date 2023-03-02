@@ -1,4 +1,6 @@
-package com.github.drawyourpath.bootcamp.authentication
+package com.github.drawyourpath.bootcamp.authentication.provider
+
+import com.github.drawyourpath.bootcamp.authentication.AuthUser
 
 typealias AuthUserCallback = (user: AuthUser?, error: Exception?) -> Unit;
 

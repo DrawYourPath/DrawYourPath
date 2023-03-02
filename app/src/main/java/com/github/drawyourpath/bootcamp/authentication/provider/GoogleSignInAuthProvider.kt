@@ -1,4 +1,4 @@
-package com.github.drawyourpath.bootcamp.authentication
+package com.github.drawyourpath.bootcamp.authentication.provider
 
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI

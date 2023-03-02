@@ -1,5 +1,6 @@
-package com.github.drawyourpath.bootcamp.authentication
+package com.github.drawyourpath.bootcamp.authentication.provider
 
+import com.github.drawyourpath.bootcamp.authentication.AuthUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
