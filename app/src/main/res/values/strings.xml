@@ -2,4 +2,8 @@
     <string name="app_name">bootcamp</string>
     <string name="your_name">Your Name</string>
     <string name="enter_button">enter</string>
+    <string name="get_button_firebase">GET</string>
+    <string name="your_e_mail_firebase">Your E-Mail</string>
+    <string name="your_phone_number_firebase">Your Phone Number</string>
+    <string name="set_button_firebase">SET</string>
 </resources>

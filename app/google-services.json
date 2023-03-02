@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "593734550817",
+    "firebase_url": "https://sdp-firebase-drawyourpath-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "sdp-firebase-drawyourpath",
+    "storage_bucket": "sdp-firebase-drawyourpath.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593734550817:android:ca95d017a353a32ab12a60",
+        "android_client_info": {
+          "package_name": "com.github.drawyourpath.bootcamp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "593734550817-iokl24tm7oflshmtm341q0uanb0v9mnl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9Km6Qn0Dc7RHB1jV2XpVY7xy5K7FiNIE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "593734550817-iokl24tm7oflshmtm341q0uanb0v9mnl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
