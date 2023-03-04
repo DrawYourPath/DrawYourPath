@@ -2,9 +2,9 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'jacoco'
-    // Add the Google services Gradle plugin
     id 'com.google.gms.google-services'
 }
+
 
 android {
     namespace 'com.github.drawyourpath.bootcamp'
@@ -54,6 +54,7 @@ dependencies {
 
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.2')
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
 
     // When using the BoM, you don't specify versions in Firebase library dependencies
 
