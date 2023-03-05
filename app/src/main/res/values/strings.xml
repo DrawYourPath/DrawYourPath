@@ -6,4 +6,6 @@
     <string name="your_e_mail_firebase">Your E-Mail</string>
     <string name="your_phone_number_firebase">Your Phone Number</string>
     <string name="set_button_firebase">SET</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
