@@ -3,6 +3,7 @@ package com.github.drawyourpath.bootcamp.login;
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.github.drawyourpath.bootcamp.R
@@ -26,17 +27,17 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login) {
     }
 
     private fun showLoginUI() {
-        switchFragment(R.id.fragment_container_view)
+        switchFragment<LoginActions>()
     }
 
     private fun showRegisterUI() {
-        switchFragment(R.id.fragment_container_view)
+        switchFragment<RegisterActions>()
     }
 
-    private fun switchFragment(fragmentId: Int) {
+    private inline fun <reified T : Fragment> switchFragment() {
         supportFragmentManager.commit {
             //setCustomAnimations(R.anim.slide_in, R.anim.slide_out)
-            replace<RegisterActions>(fragmentId)
+            replace<T>(R.id.fragment_container_view)
         }
     }
 }
