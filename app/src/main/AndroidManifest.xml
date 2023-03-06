@@ -15,6 +15,9 @@
             android:name=".GreetingActivity"
             android:exported="false" />
         <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".FirebaseBootcampActivity"
             android:exported="false" />
         <activity
