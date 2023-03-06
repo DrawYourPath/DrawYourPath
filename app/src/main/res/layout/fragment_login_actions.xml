@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/editTextTextEmailAddress"
+            android:id="@+id/ET_Email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 			android:hint="Email"
@@ -19,7 +19,7 @@
             android:inputType="textEmailAddress" />
 
         <EditText
-            android:id="@+id/editTextTextPassword"
+            android:id="@+id/ET_Password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -27,7 +27,7 @@
             android:inputType="textPassword" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/BT_LoginEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login with Email" />
@@ -39,17 +39,17 @@
             android:layout_height="wrap_content"
             android:text="OR"
             android:textAlignment="center"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/BT_LoginGoogle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/fui_ic_googleg_color_24dp"
             android:text="Login With Google" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/BT_Register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="I don't have an account" />
