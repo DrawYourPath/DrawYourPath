@@ -17,7 +17,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login) {
         if (savedInstanceState == null) {
             showRegisterUI()
         }
-
         viewModel.setViewListener { view ->
             when (view) {
                 ELoginView.Register -> showRegisterUI()
