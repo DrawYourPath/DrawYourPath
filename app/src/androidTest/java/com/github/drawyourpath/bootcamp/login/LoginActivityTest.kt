@@ -1,7 +1,6 @@
 package com.github.drawyourpath.bootcamp.login
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -9,16 +8,13 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Test
-import org.junit.runner.RunWith
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.drawyourpath.bootcamp.R
 import com.github.drawyourpath.bootcamp.authentication.GoogleAuthBootcampActivity
-import com.github.drawyourpath.bootcamp.authentication.provider.AuthUserCallback
-import com.github.drawyourpath.bootcamp.authentication.provider.FirebaseAuthProvider
-import com.github.drawyourpath.bootcamp.authentication.provider.GoogleSignInAuthProvider
 import org.junit.Assert.*
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LoginActivityTest {
