@@ -4,7 +4,7 @@ import com.github.drawyourpath.bootcamp.authentication.AuthUser
 
 class MockAuthProvider : AuthProvider {
 
-    private var userCallback: AuthUserCallback? = null;
+    private var userCallback: AuthUserCallback? = null
 
     private val fakeValidUser: AuthUser = object : AuthUser {
         override fun getEmail(): String {
@@ -12,11 +12,11 @@ class MockAuthProvider : AuthProvider {
         }
 
         override fun isAnonymous(): Boolean {
-            return false;
+            return false
         }
 
         override fun getUid(): String {
-            return "007";
+            return "007"
         }
 
         override fun getPhoneNumber(): String {
@@ -24,38 +24,37 @@ class MockAuthProvider : AuthProvider {
         }
 
         override fun getDisplayName(): String {
-            return "John Doe";
+            return "John Doe"
         }
     }
 
-    private var isSigned: Boolean = false;
+    private var isSigned: Boolean = false
 
     override fun signIn() {
-        if (isSigned)
-        {
+        if (isSigned) {
             userCallback?.let { it(null, Exception("Signed in while signed in.")) }
-            return;
+            return
         }
 
-        isSigned = true;
+        isSigned = true
         userCallback?.let { it(fakeValidUser, null) }
     }
 
     override fun signOut() {
-        isSigned = false;
+        isSigned = false
     }
 
     override fun getCurrentUser(): AuthUser? {
-        return if (isSigned) fakeValidUser else null;
+        return if (isSigned) fakeValidUser else null
     }
 
     override fun setUserCallback(callback: AuthUserCallback?) {
-        userCallback = callback;
+        userCallback = callback
         userCallback?.let { it(null, null) }
     }
 
     override fun clearUserCallback() {
-        setUserCallback(null);
+        setUserCallback(null)
     }
 
 }
