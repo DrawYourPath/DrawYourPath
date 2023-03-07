@@ -1,4 +1,4 @@
-package com.github.drawyourpath.bootcamp.fragments
+package com.github.drawyourpath.bootcamp.mainpage.fragments
 
 import androidx.fragment.app.Fragment
 import com.github.drawyourpath.bootcamp.R

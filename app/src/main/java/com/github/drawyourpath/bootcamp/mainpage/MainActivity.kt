@@ -1,4 +1,4 @@
-package com.github.drawyourpath.bootcamp
+package com.github.drawyourpath.bootcamp.mainpage
 
 import android.os.Bundle
 import android.widget.ImageButton
@@ -8,7 +8,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import com.github.drawyourpath.bootcamp.fragments.*
+import com.github.drawyourpath.bootcamp.R
+import com.github.drawyourpath.bootcamp.mainpage.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
