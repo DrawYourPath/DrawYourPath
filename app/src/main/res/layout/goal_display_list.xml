@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <RelativeLayout
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/goal_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rotation="180"
+            android:layout_centerInParent="true"
+            app:indicatorColor="@color/green"
+            app:indicatorSize="100dp"
+            app:trackColor="@color/grey"
+            app:trackCornerRadius="8dp"
+            app:trackThickness="8dp" />
+
+        <TextView
+            android:id="@+id/goal_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            />
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/goal_display_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:gravity="end"
+        android:layout_gravity="center"
+        />
+
+
+</LinearLayout>

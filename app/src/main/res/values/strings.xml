@@ -6,4 +6,7 @@
     <string name="your_e_mail_firebase">Your E-Mail</string>
     <string name="your_phone_number_firebase">Your Phone Number</string>
     <string name="set_button_firebase">SET</string>
+    <string name="goals">Goals</string>
+    <string name="tournaments">Tournaments</string>
+    <string name="trophies">Trophies</string>
 </resources>
