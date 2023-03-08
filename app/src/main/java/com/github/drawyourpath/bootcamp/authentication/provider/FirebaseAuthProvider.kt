@@ -7,7 +7,7 @@ import com.google.firebase.auth.FirebaseUser
 abstract class FirebaseAuthProvider : AuthProvider {
     protected fun makeFirebaseUserAdapter(user: FirebaseUser?): AuthUser? {
         if (user == null) {
-            return null;
+            return null
         }
 
         return object : AuthUser {
@@ -34,28 +34,27 @@ abstract class FirebaseAuthProvider : AuthProvider {
     }
 
     override fun getCurrentUser(): AuthUser? {
-        val user = FirebaseAuth.getInstance().currentUser ?: return null;
-        return makeFirebaseUserAdapter(user);
+        val user = FirebaseAuth.getInstance().currentUser ?: return null
+        return makeFirebaseUserAdapter(user)
     }
 
     override fun clearUserCallback() {
-        setUserCallback(null);
+        setUserCallback(null)
     }
 
     override fun setUserCallback(callback: AuthUserCallback?) {
         if (callback == null) {
-            if (firebaseUserCallback != null)
-            {
-                FirebaseAuth.getInstance().removeAuthStateListener(authListener);
+            if (firebaseUserCallback != null) {
+                FirebaseAuth.getInstance().removeAuthStateListener(authListener)
             }
-            firebaseUserCallback = null;
-            return;
+            firebaseUserCallback = null
+            return
         }
 
-        clearUserCallback();
+        clearUserCallback()
 
-        firebaseUserCallback = callback;
-        FirebaseAuth.getInstance().addAuthStateListener(authListener);
+        firebaseUserCallback = callback
+        FirebaseAuth.getInstance().addAuthStateListener(authListener)
     }
 
     protected var firebaseUserCallback: AuthUserCallback? = null

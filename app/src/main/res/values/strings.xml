@@ -1,9 +1,20 @@
 <resources>
-    <string name="app_name">bootcamp</string>
+    <string name="app_name">DrawYourPath</string>
     <string name="your_name">Your Name</string>
     <string name="enter_button">enter</string>
     <string name="get_button_firebase">GET</string>
     <string name="your_e_mail_firebase">Your E-Mail</string>
     <string name="your_phone_number_firebase">Your Phone Number</string>
     <string name="set_button_firebase">SET</string>
+    <string name="profile_menu_item">Profile</string>
+    <string name="draw_menu_item">Draw</string>
+    <string name="settings_menu_item">Settings</string>
+    <string name="history_menu_item">History</string>
+    <string name="community_menu_item">Community</string>
+    <string name="friends_menu_item">Friends</string>
+    <string name="username">Username</string>
+    <string name="email_example">example@smth.com</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="stats">Stats</string>
+    <string name="stats_and_stuff">Stats and stuff</string>
 </resources>
