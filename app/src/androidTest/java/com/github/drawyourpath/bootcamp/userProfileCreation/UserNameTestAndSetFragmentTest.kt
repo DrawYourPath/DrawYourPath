@@ -30,7 +30,6 @@ class UserNameTestAndSetFragmentTest {
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        closeSoftKeyboard()
         onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
         onView(withId(R.id.input_userName_text_UserProfileCreation)).perform(ViewActions.typeText("albert"))
         closeSoftKeyboard()
@@ -53,9 +52,7 @@ class UserNameTestAndSetFragmentTest {
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        closeSoftKeyboard()
         onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
-        closeSoftKeyboard()
         onView(withId(R.id.testUserName_button_userProfileCreation)).perform(ViewActions.click())
 
         //test if the text printed is correct
@@ -74,7 +71,6 @@ class UserNameTestAndSetFragmentTest {
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        closeSoftKeyboard()
         onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
         onView(withId(R.id.input_userName_text_UserProfileCreation)).perform(ViewActions.typeText("hugo"))
         closeSoftKeyboard()
@@ -95,7 +91,6 @@ class UserNameTestAndSetFragmentTest {
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        closeSoftKeyboard()
         onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
         onView(withId(R.id.input_userName_text_UserProfileCreation)).perform(ViewActions.typeText("albert"))
         closeSoftKeyboard()
@@ -116,7 +111,6 @@ class UserNameTestAndSetFragmentTest {
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        closeSoftKeyboard()
         onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
         onView(withId(R.id.setUserName_button_userProfileCreation)).perform(ViewActions.click())
 
