@@ -1,6 +1,5 @@
 package com.github.drawyourpath.bootcamp.database
 
-import android.widget.EditText
 import android.widget.TextView
 
 abstract class Database {

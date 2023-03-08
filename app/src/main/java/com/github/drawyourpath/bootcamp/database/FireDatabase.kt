@@ -1,12 +1,10 @@
 package com.github.drawyourpath.bootcamp.database
 
 import android.graphics.Color
-import android.widget.EditText
 import android.widget.TextView
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.util.Objects
 import java.util.concurrent.CompletableFuture
 
 class FireDatabase : Database() {
@@ -16,7 +14,7 @@ class FireDatabase : Database() {
         val future = CompletableFuture<Boolean>()
 
         if (userName == "") {
-            outputText.text = buildString { append("The user name can't be empty !") }
+            outputText.text = buildString { append("The username can't be empty !") }
             outputText.setTextColor(Color.RED)
             return false
         }
@@ -28,12 +26,12 @@ class FireDatabase : Database() {
             future.completeExceptionally(it)
         }
         val unAvailableOutput: String = buildString {
-            append("*The userID ")
+            append("*The username ")
             append(userName)
             append(" is NOT available !")
         }
         val availableOutput: String = buildString {
-            append("*The userID ")
+            append("*The username ")
             append(userName)
             append(" is available !")
         }
@@ -49,14 +47,14 @@ class FireDatabase : Database() {
         }
 
         if (outputText.text.toString() == availableOutput) {
-            return true;
+            return true
         }
-        return false;
+        return false
     }
 
     override fun setUserName(userName: String, outputText: TextView) {
         if (isUserNameAvailable(userName, outputText)) {
-            val userAdd= HashMap<String, String>()
+            val userAdd = HashMap<String, String>()
             userAdd.put(userName, "empty")
             database.child("users").updateChildren(userAdd as Map<String, Any>)
         }

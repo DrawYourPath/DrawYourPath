@@ -13,11 +13,6 @@ import com.github.drawyourpath.bootcamp.database.Database
 import com.github.drawyourpath.bootcamp.database.FireDatabase
 import com.github.drawyourpath.bootcamp.database.MockDataBase
 
-/**
- * A simple [Fragment] subclass.
- * Use the [UserNameTestAndSetFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class UserNameTestAndSetFragment : Fragment() {
 
     private var isTest: Boolean =false

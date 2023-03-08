@@ -1,12 +1,8 @@
 package com.github.drawyourpath.bootcamp.userProfileCreation
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
 import com.github.drawyourpath.bootcamp.R
 import com.github.drawyourpath.bootcamp.database.Database
 import com.github.drawyourpath.bootcamp.database.FireDatabase
@@ -25,18 +21,20 @@ class UserProfileCreationActivity : AppCompatActivity() {
         val isTest: Boolean = intent.extras?.getBoolean("isRunningTestForDataBase") ?: false
         if (isTest) {
             dataBase = MockDataBase()
-        }else {
+        } else {
             dataBase = FireDatabase()
         }
 
-        val beginButton: Button = findViewById(R.id.start_profile_creation_button_userProfileCreation)
+        val beginButton: Button =
+            findViewById(R.id.start_profile_creation_button_userProfileCreation)
         beginButton.setOnClickListener {
             val fragUserNameFragTransaction = supportFragmentManager.beginTransaction()
             val dataToUserNameFrag: Bundle = Bundle()
+            //inform the UserNameTestAndSet fragment if we are in a test scenario
             dataToUserNameFrag.putBoolean("isRunningTestForDataBase", isTest)
             val userNameFrag = UserNameTestAndSetFragment()
             userNameFrag.arguments = dataToUserNameFrag
-            fragUserNameFragTransaction.replace(R.id.userName_frame, UserNameTestAndSetFragment()).commit()
+            fragUserNameFragTransaction.replace(R.id.userName_frame, userNameFrag).commit()
         }
 
     }
