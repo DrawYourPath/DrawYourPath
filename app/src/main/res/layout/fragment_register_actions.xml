@@ -14,7 +14,7 @@
             android:id="@+id/ET_Email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-			android:hint="Email"
+            android:hint="Email"
             android:ems="10"
             android:inputType="textEmailAddress" />
 
@@ -22,10 +22,10 @@
             android:id="@+id/ET_Password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-			android:hint="Password"
+            android:hint="Password"
             android:ems="10"
             android:inputType="textPassword" />
-		
+        
         <Button
             android:id="@+id/BT_RegisterEmail"
             android:layout_width="match_parent"

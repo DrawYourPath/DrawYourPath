@@ -16,17 +16,11 @@ import com.github.drawyourpath.bootcamp.R
 class RegisterActions : Fragment(R.layout.fragment_register_actions) {
     private val viewModel: LoginViewModel by activityViewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = super.onCreateView(inflater, container, savedInstanceState);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState);
 
-        val registerButton = view?.findViewById<Button>(R.id.BT_Login);
+        val registerButton = view.findViewById<Button>(R.id.BT_Login);
 
         registerButton?.setOnClickListener { viewModel.showLoginUI() }
-
-        return view
     }
 }
