@@ -67,15 +67,14 @@
             android:textSize="20dp"
             android:id="@+id/testUserName_text_userProfileCreation"
             android:layout_marginLeft="60dp"/>
-
-        <Button
-            android:id="@+id/setUserName_button_userProfileCreation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="200dp"
-            android:text="Validate"
-            android:textSize="40sp"/>
         </LinearLayout>
+    <Button
+        android:id="@+id/setUserName_button_userProfileCreation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="80dp"
+        android:text="Validate"
+        android:textSize="40sp"/>
 
 </FrameLayout>
