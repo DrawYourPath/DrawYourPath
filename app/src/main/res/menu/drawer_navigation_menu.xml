@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/profile_menu_item"
+            android:title="@string/profile_menu_item" />
+    </group>
+
+    <item android:title="@string/stats_and_stuff">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/stats_menu_item"
+                    android:title="@string/stats" />
+            </group>
+        </menu>
+    </item>
+
+</menu>

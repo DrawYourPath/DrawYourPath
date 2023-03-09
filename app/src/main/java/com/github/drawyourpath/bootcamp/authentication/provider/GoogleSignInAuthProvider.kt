@@ -12,14 +12,17 @@ class GoogleSignInAuthProvider(activity: AppCompatActivity) : FirebaseAuthProvid
     ) {
         val result = it
         firebaseUserCallback?.let {
-            it(makeFirebaseUserAdapter(FirebaseAuth.getInstance().currentUser),
-                result.idpResponse?.error)
+            it(
+                makeFirebaseUserAdapter(FirebaseAuth.getInstance().currentUser),
+                result.idpResponse?.error
+            )
         }
     }
 
     override fun signIn() {
         val providers = arrayListOf(
-            AuthUI.IdpConfig.GoogleBuilder().build())
+            AuthUI.IdpConfig.GoogleBuilder().build()
+        )
 
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
