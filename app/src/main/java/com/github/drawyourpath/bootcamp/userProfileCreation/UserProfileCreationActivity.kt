@@ -34,9 +34,8 @@ class UserProfileCreationActivity : AppCompatActivity() {
             dataToUserNameFrag.putBoolean("isRunningTestForDataBase", isTest)
             val userNameFrag = UserNameTestAndSetFragment()
             userNameFrag.arguments = dataToUserNameFrag
-            fragUserNameFragTransaction.replace(R.id.userName_frame, userNameFrag).commit()
+            fragUserNameFragTransaction.replace(R.id.userProfileStartFrame, userNameFrag).commit()
         }
-
     }
 }
 

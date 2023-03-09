@@ -12,6 +12,7 @@ import com.github.drawyourpath.bootcamp.R
 import com.github.drawyourpath.bootcamp.database.Database
 import com.github.drawyourpath.bootcamp.database.FireDatabase
 import com.github.drawyourpath.bootcamp.database.MockDataBase
+import com.github.drawyourpath.bootcamp.userProfileCreation.personalInfoForm.PersonalInfoFragment
 
 class UserNameTestAndSetFragment : Fragment() {
 
@@ -58,11 +59,18 @@ class UserNameTestAndSetFragment : Fragment() {
         val setUserNameButton: Button = view.findViewById(R.id.setUserName_button_userProfileCreation)
         setUserNameButton.setOnClickListener{
             database.setUserName(inputUserName.text.toString(), showTestResult)
-
+            val previousActivity = activity
+            if(previousActivity!=null){
+                val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
+                val dataTopPersoInfoFrag: Bundle = Bundle()
+                //data to transmit to the PersonalInfoFragment(username + isTest)
+                dataTopPersoInfoFrag.putBoolean("isRunningTestForDataBase", isTest)
+                dataTopPersoInfoFrag.putString("userName", inputUserName.text.toString())
+                val persoInfoFrag = PersonalInfoFragment()
+                persoInfoFrag.arguments = dataTopPersoInfoFrag
+                fragManagement.replace(R.id.userName_frame, persoInfoFrag).commit()
+            }
         }
-
         return view
     }
-
-
 }
