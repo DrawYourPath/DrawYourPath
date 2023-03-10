@@ -173,35 +173,38 @@ class FirebaseAuth : Auth {
             .build()
     }
 
+    private fun onGoogleSignInResult(activity: Activity, data: Intent?) {
+        try {
+            val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
+            if (account != null && account.idToken != null) {
+                signInWithGoogleAuthToken(activity, account.idToken!!)
+            }
+        }
+        catch (e: java.lang.Exception) {
+            consumeCurrCallback(null, e)
+        }
+    }
+
+    private fun onOneTapSignInResult(activity: Activity, data: Intent?) {
+        try {
+            val credential = oneTapClient.getSignInCredentialFromIntent(data)
+            val idToken = credential.googleIdToken
+            when {
+                idToken != null -> {
+                    // Got an ID token from Google. Use it to authenticate
+                    // with your backend.
+                    signInWithGoogleAuthToken(activity, idToken)
+                }
+            }
+        } catch (e: ApiException) {
+            consumeCurrCallback(null, e)
+        }
+    }
+
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            REQ_GSI -> {
-                try {
-                    val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
-                    if (account != null && account.idToken != null) {
-                        signInWithGoogleAuthToken(activity, account.idToken!!)
-                    }
-                }
-                catch (e: java.lang.Exception) {
-                    consumeCurrCallback(null, e)
-                }
-            }
-
-            REQ_ONE_TAP -> {
-                try {
-                    val credential = oneTapClient.getSignInCredentialFromIntent(data)
-                    val idToken = credential.googleIdToken
-                    when {
-                        idToken != null -> {
-                            // Got an ID token from Google. Use it to authenticate
-                            // with your backend.
-                            signInWithGoogleAuthToken(activity, idToken)
-                        }
-                    }
-                } catch (e: ApiException) {
-                    consumeCurrCallback(null, e)
-                }
-            }
+            REQ_GSI     -> onGoogleSignInResult(activity, data)
+            REQ_ONE_TAP -> onOneTapSignInResult(activity, data)
         }
     }
 

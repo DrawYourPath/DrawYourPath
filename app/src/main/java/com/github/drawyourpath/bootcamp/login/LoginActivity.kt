@@ -12,6 +12,7 @@ import com.github.drawyourpath.bootcamp.R
 import com.github.drawyourpath.bootcamp.authentication.Auth
 import com.github.drawyourpath.bootcamp.authentication.FirebaseAuth
 import com.github.drawyourpath.bootcamp.authentication.MockAuth
+import com.github.drawyourpath.bootcamp.authentication.User
 import com.github.drawyourpath.bootcamp.mainpage.MainActivity
 
 const val USE_MOCK_AUTH_KEY = "useMockAuth"
@@ -101,21 +102,25 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         Toast.makeText(applicationContext, error.localizedMessage, Toast.LENGTH_LONG).show()
     }
 
-    override fun registerWithGoogle() {
-        auth.registerWithGoogle(this) { _, error ->
-            when (error) {
-                null -> openAccountRegistration()
-                else -> showError(error)
-            }
+    private fun onRegistrationResult(user: User?, error: Exception?) {
+        when (error) {
+            null -> openAccountRegistration()
+            else -> showError(error)
         }
     }
 
-    override fun loginWithGoogle() {
-        auth.loginWithGoogle(this) { _, error ->
-            when (error) {
-                null -> openMainMenu()
-                else -> showError(error)
-            }
+    private fun onLoginResult(user: User?, error: Exception?) {
+        when (error) {
+            null -> openMainMenu()
+            else -> showError(error)
         }
+    }
+
+    override fun registerWithGoogle() {
+        auth.registerWithGoogle(this) { user, error -> onRegistrationResult(user, error) }
+    }
+
+    override fun loginWithGoogle() {
+        auth.loginWithGoogle(this) { user, error -> onLoginResult(user, error) }
     }
 }
