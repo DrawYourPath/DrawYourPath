@@ -29,9 +29,6 @@
         <activity
             android:name=".FirebaseBootcampActivity"
             android:exported="false" />
-        <activity
-            android:name=".authentication.GoogleAuthBootcampActivity"
-            android:exported="false" />
 
         <activity
             android:name=".login.LoginActivity"

@@ -20,9 +20,9 @@ import com.google.firebase.auth.GoogleAuthProvider
 private const val REQ_ONE_TAP = 9993
 private const val REQ_GSI = 9994
 
-private const val LOG_KEY = "DYP_FB_Auth"
-
 class FirebaseAuth : Auth {
+    private val auth = FirebaseAuth.getInstance()
+
     companion object {
         private fun convertUser(user: FirebaseUser?): User? {
             if (user == null) {
@@ -108,7 +108,7 @@ class FirebaseAuth : Auth {
     }
 
     override fun registerWithEmail(email: String, password: String, callback: AuthCallback) {
-        FirebaseAuth.getInstance()
+        auth
             .createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener {res ->
                 callback(convertUser(res.user!!), null)
@@ -126,7 +126,7 @@ class FirebaseAuth : Auth {
         TODO("onauthstate")
     }
 
-    override fun removeListener(callback: AuthCallback) {
+    override fun clearListener() {
         TODO("Not yet implemented")
     }
 
@@ -148,6 +148,10 @@ class FirebaseAuth : Auth {
             .addOnFailureListener(activity) { e ->
                 Log.d("GSI", e.localizedMessage!!)
             }
+    }
+
+    override fun signOut() {
+        auth.signOut()
     }
 
     private lateinit var oneTapClient: SignInClient
@@ -175,11 +179,11 @@ class FirebaseAuth : Auth {
                 try {
                     val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
                     if (account != null && account.idToken != null) {
-                        signInWithGoogleAuthToken(activity, account.idToken!!, currCallback!!)
+                        signInWithGoogleAuthToken(activity, account.idToken!!)
                     }
                 }
                 catch (e: java.lang.Exception) {
-                    Log.d(LOG_KEY, "Failed to sign in: " + e.localizedMessage)
+                    consumeCurrCallback(null, e)
                 }
             }
 
@@ -191,21 +195,18 @@ class FirebaseAuth : Auth {
                         idToken != null -> {
                             // Got an ID token from Google. Use it to authenticate
                             // with your backend.
-                            signInWithGoogleAuthToken(activity, idToken, currCallback!!)
+                            signInWithGoogleAuthToken(activity, idToken)
                         }
                     }
                 } catch (e: ApiException) {
-                    if (currCallback != null) {
-                        currCallback!!(null, e)
-                    }
+                    consumeCurrCallback(null, e)
                 }
             }
         }
     }
 
-    private fun signInWithGoogleAuthToken(activity: Activity, token: String, callback: AuthCallback) {
+    private fun signInWithGoogleAuthToken(activity: Activity, token: String) {
         val firebaseCredential = GoogleAuthProvider.getCredential(token, null)
-        val auth = FirebaseAuth.getInstance()
         auth.signInWithCredential(firebaseCredential)
             .addOnCompleteListener(activity) { task ->
                 if (task.isSuccessful) {

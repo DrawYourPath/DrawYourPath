@@ -11,16 +11,25 @@ import androidx.fragment.app.replace
 import com.github.drawyourpath.bootcamp.R
 import com.github.drawyourpath.bootcamp.authentication.Auth
 import com.github.drawyourpath.bootcamp.authentication.FirebaseAuth
+import com.github.drawyourpath.bootcamp.authentication.MockAuth
 import com.github.drawyourpath.bootcamp.mainpage.MainActivity
+
+const val USE_MOCK_AUTH_KEY = "useMockAuth"
 
 class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivityListener,
     LoginActivityListener {
     private val viewModel: LoginViewModel by viewModels()
 
-    private val auth: Auth = FirebaseAuth()
+    private lateinit var auth: Auth;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val useMockAuthProvider = intent.getBooleanExtra(USE_MOCK_AUTH_KEY, false)
+        auth = when (useMockAuthProvider) {
+            true  -> MockAuth()
+            false -> FirebaseAuth()
+        }
 
         auth.onActivityCreate(this, savedInstanceState)
 
@@ -40,10 +49,11 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         super.onStart()
 
         // If a user is available now, it was restored from keychain.
-        if (FirebaseAuth.getUser() != null) {
+        if (auth.getUser() != null) {
             openMainMenu()
         }
 
+        // Otherwise, we try a one-tap sign-in.
         else {
             auth.launchOneTapGoogleSignIn(this) {
                 _, error ->
