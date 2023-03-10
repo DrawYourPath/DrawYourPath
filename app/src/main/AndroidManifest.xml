@@ -14,26 +14,22 @@
 
         <activity
             android:name=".mainpage.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
+            android:exported="true" />
         <activity
             android:name=".GreetingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FirebaseBootcampActivity"
             android:exported="false" />
         <activity
             android:name=".authentication.GoogleAuthBootcampActivity"
             android:exported="false" />
 
         <activity
-            android:name=".FirebaseBootcampActivity"
+            android:name=".login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
