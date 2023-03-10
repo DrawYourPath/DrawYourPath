@@ -8,7 +8,7 @@ import android.widget.Button
 import com.github.drawyourpath.bootcamp.R
 
 interface LoginActivityListener {
-    fun loginWithGoogle();
+    fun loginWithGoogle()
 }
 
 class LoginActions : Fragment(R.layout.fragment_login_actions) {
@@ -22,12 +22,14 @@ class LoginActions : Fragment(R.layout.fragment_login_actions) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val registerButton = view.findViewById<Button>(R.id.BT_Register);
+        assert(activity is LoginActivityListener)
+
+        val registerButton = view.findViewById<Button>(R.id.BT_Register)
         registerButton?.setOnClickListener { viewModel.showRegisterUI() }
 
         val loginWithGoogleButton = view.findViewById<Button>(R.id.BT_LoginGoogle)
         loginWithGoogleButton.setOnClickListener {
-            getLoginActivity().loginWithGoogle();
+            getLoginActivity().loginWithGoogle()
         }
     }
 }

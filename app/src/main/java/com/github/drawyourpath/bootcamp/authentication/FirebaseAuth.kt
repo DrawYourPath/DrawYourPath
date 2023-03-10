@@ -6,6 +6,7 @@ import android.content.IntentSender
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import com.github.drawyourpath.bootcamp.R
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -18,8 +19,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 
 private const val REQ_ONE_TAP = 9993
 private const val REQ_GSI = 9994
-
-private const val GSI_SERVER_CLIENT_ID = "593734550817-74svh08a2ram22m54eqvln88kecg3nr0.apps.googleusercontent.com"
 
 private const val LOG_KEY = "DYP_FB_Auth"
 
@@ -90,8 +89,7 @@ class FirebaseAuth : Auth {
         }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            //.requestIdToken(activity.getString(R.string.server_client_id))
-            .requestIdToken(GSI_SERVER_CLIENT_ID)
+            .requestIdToken(activity.getString(R.string.server_client_id))
             .requestEmail()
             .build()
         val client = GoogleSignIn.getClient(activity, gso)
@@ -164,8 +162,7 @@ class FirebaseAuth : Auth {
             .setGoogleIdTokenRequestOptions(
                 BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                     .setSupported(true)
-                    //.setServerClientId(activity.getString(R.string.server_client_id))
-                    .setServerClientId(GSI_SERVER_CLIENT_ID)
+                    .setServerClientId(activity.getString(R.string.server_client_id))
                     .setFilterByAuthorizedAccounts(true)
                     .build())
             .setAutoSelectEnabled(true)

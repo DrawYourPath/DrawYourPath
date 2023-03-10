@@ -1,4 +1,4 @@
-package com.github.drawyourpath.bootcamp.login;
+package com.github.drawyourpath.bootcamp.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,7 +22,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        auth.onActivityCreate(this, savedInstanceState);
+        auth.onActivityCreate(this, savedInstanceState)
 
         if (savedInstanceState == null) {
             showRegisterUI()
@@ -32,6 +32,24 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
             when (view) {
                 ELoginView.Register -> showRegisterUI()
                 ELoginView.Login -> showLoginUI()
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        // If a user is available now, it was restored from keychain.
+        if (FirebaseAuth.getUser() != null) {
+            openMainMenu()
+        }
+
+        else {
+            auth.launchOneTapGoogleSignIn(this) {
+                _, error ->
+                when (error) {
+                    null -> openMainMenu()
+                }
             }
         }
     }
@@ -70,7 +88,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     }
 
     private fun showError(error: java.lang.Exception) {
-        Toast.makeText(applicationContext, error.localizedMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(applicationContext, error.localizedMessage, Toast.LENGTH_LONG).show()
     }
 
     override fun registerWithGoogle() {
