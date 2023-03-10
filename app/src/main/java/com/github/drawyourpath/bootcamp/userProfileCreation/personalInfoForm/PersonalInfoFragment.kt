@@ -121,7 +121,7 @@ class PersonalInfoFragment : Fragment() {
                 allDataCorrect = false
                 errorFirstnameText.text = emptyFirstname
                 errorFirstnameText.setTextColor(Color.RED)
-            }else if (firstname.matches(Regex("([A-Z][a-zA-Z]*)"))) {
+            }else if (firstname.matches(Regex("([A-Z]"))) {
                 errorDateText.text = ""
                 allDataCorrect=true
             }else{
