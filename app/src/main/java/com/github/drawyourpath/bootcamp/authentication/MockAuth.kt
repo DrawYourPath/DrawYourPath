@@ -7,7 +7,11 @@ import android.os.Bundle
 import java.util.*
 import kotlin.concurrent.schedule
 
-class MockAuth : Auth {
+class MockAuth(
+    private val failing: Boolean = false,
+    userInKeyChain: Boolean = false,
+    private val withOneTapSignIn: Boolean = false,
+) : Auth {
     companion object {
         val MOCK_USER = object : User {
             override fun getDisplayName(): String {
@@ -36,12 +40,15 @@ class MockAuth : Auth {
         }
     }
 
-    private var isLogged = false;
+    private var isLogged = userInKeyChain;
 
     private fun mockLogin(callback: AuthCallback) {
         //Timer().schedule(1500){
-            isLogged = true;
-            callback(MOCK_USER, null);
+            isLogged = !failing;
+            when (failing) {
+                true  -> callback(null, Exception("Mock failing"))
+                false -> callback(MOCK_USER, null);
+            }
         //}
     }
 
@@ -80,7 +87,12 @@ class MockAuth : Auth {
 
     override fun launchOneTapGoogleSignIn(activity: Activity, callback: AuthCallback) {
         //mockLogin(callback);
-        callback(null, Exception("Mock Error"))
+        if (withOneTapSignIn) {
+            mockLogin(callback)
+        }
+        else {
+            callback(null, Exception("Mock Error"))
+        }
     }
 
     override fun signOut() {

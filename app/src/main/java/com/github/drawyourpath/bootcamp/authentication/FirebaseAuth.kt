@@ -122,12 +122,26 @@ class FirebaseAuth : Auth {
         loginWithGoogle(activity, callback)
     }
 
+    private var authStateListener: FirebaseAuth.AuthStateListener? = null;
+
     override fun onAuthStateChanged(callback: AuthCallback) {
-        TODO("onauthstate")
+        if (authStateListener != null)
+        {
+            clearListener()
+        }
+
+        authStateListener = FirebaseAuth.AuthStateListener {
+            callback(getUser(), null)
+        }
+
+        auth.addAuthStateListener(authStateListener!!)
     }
 
     override fun clearListener() {
-        TODO("Not yet implemented")
+        if (authStateListener != null) {
+            auth.removeAuthStateListener(authStateListener!!)
+            authStateListener = null;
+        }
     }
 
     override fun launchOneTapGoogleSignIn(activity: Activity, callback: AuthCallback) {

@@ -15,7 +15,10 @@ import com.github.drawyourpath.bootcamp.authentication.MockAuth
 import com.github.drawyourpath.bootcamp.authentication.User
 import com.github.drawyourpath.bootcamp.mainpage.MainActivity
 
-const val USE_MOCK_AUTH_KEY = "useMockAuth"
+const val USE_MOCK_AUTH_KEY             = "useMockAuth"
+const val MOCK_AUTH_FAIL                = "useMockAuthFailing"
+const val MOCK_AUTH_USER_IN_KEYCHAIN    = "useMockAuthKeychain"
+const val MOCK_ALLOW_ONETAP             = "useMockOneTap"
 
 class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivityListener,
     LoginActivityListener {
@@ -28,7 +31,11 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
 
         val useMockAuthProvider = intent.getBooleanExtra(USE_MOCK_AUTH_KEY, false)
         auth = when (useMockAuthProvider) {
-            true  -> MockAuth()
+            true  -> MockAuth(
+                failing          = intent.getBooleanExtra(MOCK_AUTH_FAIL, false),
+                userInKeyChain   = intent.getBooleanExtra(MOCK_AUTH_USER_IN_KEYCHAIN, false),
+                withOneTapSignIn = intent.getBooleanExtra(MOCK_ALLOW_ONETAP, false),
+            )
             false -> FirebaseAuth()
         }
 
@@ -43,6 +50,10 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
                 ELoginView.Register -> showRegisterUI()
                 ELoginView.Login -> showLoginUI()
             }
+        }
+
+        auth.onAuthStateChanged { _, _ ->
+
         }
     }
 
@@ -63,6 +74,12 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        auth.clearListener()
+
+        super.onDestroy()
     }
 
     /**
