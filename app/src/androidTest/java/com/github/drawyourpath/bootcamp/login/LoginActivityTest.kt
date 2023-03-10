@@ -102,6 +102,21 @@ class LoginActivityTest {
     }
 
     @Test
+    fun failedOneTapSignInDoesntLaunchMainActivity() {
+        val scenario = launchLoginActivity(
+            failingMock = true,
+            userInKeychain = false,
+            withOneTap = true
+        )
+
+        onView(withId(R.id.BT_RegisterGoogle)).check(matches(isDisplayed()))
+
+        Intents.release()
+
+        scenario.close()
+    }
+
+    @Test
     fun loginWithGoogleRedirectsToMainMenu() {
         val scenario = launchLoginActivity()
 
