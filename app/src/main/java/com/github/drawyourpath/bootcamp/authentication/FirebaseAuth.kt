@@ -213,7 +213,6 @@ class FirebaseAuth : Auth {
         auth.signInWithCredential(firebaseCredential)
             .addOnCompleteListener(activity) { task ->
                 if (task.isSuccessful) {
-                    val user = auth.currentUser
                     consumeCurrCallback(convertUser(auth.currentUser), null)
                 } else {
                     consumeCurrCallback(null, task.exception)

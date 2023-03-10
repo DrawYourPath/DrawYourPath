@@ -29,6 +29,8 @@ class LoginActivityTest {
     }
 
     private fun launchLoginActivity(): ActivityScenario<LoginActivity> {
+        Intents.init()
+
         val intent = Intent(getApplicationContext(), LoginActivity::class.java);
         intent.putExtra(USE_MOCK_AUTH_KEY, true);
 
@@ -59,6 +61,8 @@ class LoginActivityTest {
         // Switches back to the register fragment
         onView(withId(R.id.BT_Register)).perform(ViewActions.click())
 
+        Intents.release()
+
         scenario.close();
     }
 
@@ -70,6 +74,8 @@ class LoginActivityTest {
         onView(withId(R.id.BT_LoginGoogle)).perform(ViewActions.click())
 
         intended(hasComponent(MainActivity::class.java.name))
+
+        Intents.release()
 
         scenario.close()
     }
@@ -83,6 +89,8 @@ class LoginActivityTest {
 
         // TODO: waiting for branch 23-user-profile-creation to be merged
         //intended(hasComponent(XXXXXXX::class.java.name))
+
+        Intents.release()
 
         scenario.close()
     }
