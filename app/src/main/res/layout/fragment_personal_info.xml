@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:layout_gravity="top|center"
         android:id="@+id/userName_frame"
-        tools:context=".userProfileCreation.personalInfoForm.PersonalInfoFragment">
+        tools:context=".userProfileCreation.PersonalInfoFragment">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center_vertical"
-            tools:context=".userProfileCreation.personalInfoForm.PersonalInfoFragment">
+            tools:context=".userProfileCreation.PersonalInfoFragment">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

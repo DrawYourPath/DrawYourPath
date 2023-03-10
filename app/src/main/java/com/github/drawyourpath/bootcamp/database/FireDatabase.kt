@@ -5,8 +5,17 @@ import android.widget.TextView
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.withTimeout
+import java.time.Duration
+import java.time.temporal.Temporal
+import java.time.temporal.TemporalUnit
+import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
+import kotlin.collections.HashMap
 
+private val TIMEOUT_SERVER_REQUEST: Long = 10
 class FireDatabase : Database() {
     val database: DatabaseReference = Firebase.database.reference
 
@@ -35,8 +44,10 @@ class FireDatabase : Database() {
             append(userName)
             append(" is available !")
         }
+        val serverUnreachable: String = "The server is unreachable, please try again later !"
 
-        future.thenAccept {
+        //since the orTimeout require an API level 33(we are in min API level 28), we can't use it
+        val durationFuture = future.thenAccept {
             if (it) {
                 outputText.text = availableOutput
                 outputText.setTextColor(Color.GREEN)
@@ -45,19 +56,36 @@ class FireDatabase : Database() {
                 outputText.setTextColor(Color.RED)
             }
         }
-
+        if(outputText.text.toString() == availableOutput){
+            return true
+        }
+        /*
+        outputText.text = serverUnreachable
+        outputText.setTextColor(Color.RED)
+        */
         if (outputText.text.toString() == availableOutput) {
             return true
         }
         return false
     }
 
-    override fun setUserName(userName: String, outputText: TextView) {
+    override fun setUserName(userName: String, outputText: TextView): Boolean {
         if (isUserNameAvailable(userName, outputText)) {
             val userAdd = HashMap<String, String>()
             userAdd.put(userName, "empty")
             database.child("users").updateChildren(userAdd as Map<String, Any>)
+            return true
         }
+        return false
+    }
+
+    override fun setPersonalInfo(username: String, firstname: String, surname: String, dateOfBirth: Date) {
+        val userAdd = HashMap<String, String>()
+        userAdd.put("firstname", firstname)
+        userAdd.put("surname", surname)
+        val dateOfBirthStr: String = dateOfBirth.day.toString() + " / " + dateOfBirth.month + " / " + dateOfBirth.year
+        userAdd.put("dateOfBirth", dateOfBirthStr)
+        database.child("users").child(username).updateChildren(userAdd as Map<String, Any>)
     }
 }
 
