@@ -114,17 +114,24 @@ class PersonalInfoFragment : Fragment() {
         val inputFirstnameText: EditText = view.findViewById(R.id.input_firstname_text_UserProfileCreation)
         val inputSurnameText: EditText = view.findViewById(R.id.input_surname_text_UserProfileCreation)
         validatePersonalInfoButton.setOnClickListener {
-            var allDataCorrect: Boolean = false
-            val firstname = inputFirstnameText.text.toString()
-            errorFirstnameText.text=emptyFirstname
-            errorFirstnameText.setTextColor(Color.RED)
-            if(firstname=="a"){
+            var allDataCorrect: Boolean = true
 
+            val firstname = inputFirstnameText.text.toString()
+            if (firstname == "") {
+                allDataCorrect = false
+                errorFirstnameText.text = emptyFirstname
+                errorFirstnameText.setTextColor(Color.RED)
+            }else if (firstname.matches(Regex("([A-Z][a-zA-Z]*)"))) {
+                errorDateText.text = ""
+                allDataCorrect=true
+            }else{
+                allDataCorrect = false
+                errorFirstnameText.text = incorrectFirstname
+                errorFirstnameText.setTextColor(Color.RED)
             }
 
+
         }
-
-
         return view
     }
 
