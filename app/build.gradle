@@ -8,11 +8,11 @@ plugins {
 
 
 android {
-    namespace 'com.github.drawyourpath.bootcamp'
+    namespace 'com.epfl.drawyourpath'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.github.drawyourpath.bootcamp"
+        applicationId "com.epfl.drawyourpath"
         minSdk 28
         targetSdk 33
         versionCode 1

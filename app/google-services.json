@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:593734550817:android:ca95d017a353a32ab12a60",
         "android_client_info": {
-          "package_name": "com.github.drawyourpath.bootcamp"
+          "package_name": "com.epfl.drawyourpath"
         }
       },
       "oauth_client": [
