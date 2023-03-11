@@ -21,9 +21,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
         <activity
-            android:name=".bootcamp.GreetingActivity"
-            android:exported="false" />
-        <activity
             android:name=".bootcamp.FirebaseBootcampActivity"
             android:exported="false" />
         <activity
