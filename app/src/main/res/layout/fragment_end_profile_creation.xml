@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".userProfileCreation.EndUserProfileCreationFragment"
-    android:id="@+id/userEndProfileCreationFragment"
+    tools:context=".userProfileCreation.EndProfileCreationFragment"
+    android:id="@+id/endProfileCreationFragment"
     android:background="@drawable/image_mountain_background"
     >
 
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="top|center"
-        tools:context=".userProfileCreation.EndUserProfileCreationFragment">
+        tools:context=".userProfileCreation.EndProfileCreationFragment">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="center|bottom"
-        tools:context=".userProfileCreation.EndUserProfileCreationFragment">
+        tools:context=".userProfileCreation.EndProfileCreationFragment">
         <Button
             android:id="@+id/goToMainActivity"
             android:layout_width="wrap_content"

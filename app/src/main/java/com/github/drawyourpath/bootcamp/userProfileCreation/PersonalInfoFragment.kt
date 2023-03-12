@@ -30,7 +30,11 @@ class PersonalInfoFragment : Fragment() {
     private var dateOfBirth: LocalDate = getTodayDate()
     private var firstname: String = ""
     private var surname: String = ""
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_personal_info, container, false)
 
@@ -60,17 +64,24 @@ class PersonalInfoFragment : Fragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
                 //create a new instance of date picker
                 //use the current date as the default date in the picker
-                return DatePickerDialog(requireContext(), this, getTodayDate().year, getTodayDate().monthValue, getTodayDate().dayOfMonth)
+                return DatePickerDialog(
+                    requireContext(),
+                    this,
+                    getTodayDate().year,
+                    getTodayDate().monthValue,
+                    getTodayDate().dayOfMonth
+                )
             }
+
             override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
                 showDateText.text = buildString {
                     append(day)
-                    append(" / ")
-                    append(month+1)
-                    append(" / ")
+                    append("/")
+                    append(month + 1)
+                    append("/")
                     append(year)
                 }
-                dateOfBirth = LocalDate.of(year, month+1, day)
+                dateOfBirth = LocalDate.of(year, month + 1, day)
             }
         }
 
@@ -110,18 +121,19 @@ class PersonalInfoFragment : Fragment() {
             val test3 = checkDateOfBirth(dateOfBirth, errorDateText)
 
             //if the data are correct, set them to the database and show the next fragment when click on the validate button
-            val validateButton: Button = view.findViewById(R.id.setPersonalInfo_button_userProfileCreation)
             if (test1 && test2 && test3) {
                 database.setPersonalInfo(userName, firstname, surname, dateOfBirth)
                 val previousActivity = activity
-                if(previousActivity!=null){
+                if (previousActivity != null) {
                     val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
-                    val  dataToUserGoalsInitFrag: Bundle = Bundle()
+                    val dataToUserGoalsInitFrag: Bundle = Bundle()
                     //data to transmit to the UserGoalsInitFragment(username + isTest)
                     dataToUserGoalsInitFrag.putBoolean("isRunningTestForDataBase", isTest)
                     dataToUserGoalsInitFrag.putString("userName", userName)
                     val userGoalsInitFrag = UserGoalsInitFragment()
                     userGoalsInitFrag.arguments = dataToUserGoalsInitFrag
+                    //desactivate the button
+                    validatePersonalInfoButton.isEnabled = false
                     fragManagement.replace(R.id.personalInfoFragment, userGoalsInitFrag).commit()
                 }
             }
@@ -139,7 +151,8 @@ class PersonalInfoFragment : Fragment() {
 private fun checkName(name: String, outputErrorText: TextView): Boolean {
     //error messages that can be displayed in case of wrong input on click on validate
     val emptyName: String = "* This field can't be empty !"
-    val incorrectName: String = "* This field is in an incorrect format ! It must be composed of letters or character '-'"
+    val incorrectName: String =
+        "* This field is in an incorrect format ! It must be composed of letters or character '-'"
     //check if the name is empty
     if (name == "") {
         outputErrorText.text = emptyName
@@ -167,7 +180,7 @@ private fun checkName(name: String, outputErrorText: TextView): Boolean {
  * @param outputErrorText text on the UI used to print the existence of error to the user
  * @return true if the date of birth respect the age conditions, otherwise false
  */
-private fun checkDateOfBirth(dateOfBirth: LocalDate, outputErrorText: TextView): Boolean{
+private fun checkDateOfBirth(dateOfBirth: LocalDate, outputErrorText: TextView): Boolean {
     //error messages that can be displayed in case of wrong input on click on validate
     val emptyDate: String = "* You forgot to indicate your birth date"
     val incorrectDate: String = "* Your birthdate is impossible at this date"
@@ -181,8 +194,10 @@ private fun checkDateOfBirth(dateOfBirth: LocalDate, outputErrorText: TextView):
 
     //check if the date of birth respect the age conditions
     val todayDate = getTodayDate()
-    val minTodayAge: LocalDate = LocalDate.of(todayDate.year - MIN_AGE, todayDate.monthValue, todayDate.dayOfMonth)
-    val maxTodayAge: LocalDate = LocalDate.of(todayDate.year - MAX_AGE, todayDate.monthValue, todayDate.dayOfMonth)
+    val minTodayAge: LocalDate =
+        LocalDate.of(todayDate.year - MIN_AGE, todayDate.monthValue, todayDate.dayOfMonth)
+    val maxTodayAge: LocalDate =
+        LocalDate.of(todayDate.year - MAX_AGE, todayDate.monthValue, todayDate.dayOfMonth)
     if (dateOfBirth < maxTodayAge || dateOfBirth > minTodayAge) {
         outputErrorText.text = incorrectDate
         outputErrorText.setTextColor(Color.RED)

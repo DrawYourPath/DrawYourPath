@@ -2,13 +2,13 @@ package com.github.drawyourpath.bootcamp.userProfileCreation
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.github.drawyourpath.bootcamp.R
 import com.github.drawyourpath.bootcamp.database.Database
 import com.github.drawyourpath.bootcamp.database.FireDatabase
@@ -17,12 +17,17 @@ import com.github.drawyourpath.bootcamp.database.MockDataBase
 class UserGoalsInitFragment : Fragment() {
     private var isTest: Boolean = false
     private var username: String = ""
+
     //all this goals are per days
     private var timeGoal: Int = 0
     private var distanceGoal: Int = 0
     private var nunberOfPathGoal: Int = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_user_goals_init, container, false)
 
@@ -43,14 +48,19 @@ class UserGoalsInitFragment : Fragment() {
             FireDatabase()
         }
         //all the goals inputs
-        val inputTimeGoal: EditText = view.findViewById(R.id.input_timeGoal_text_UserProfileCreation)
-        val inputDistanceGoal: EditText = view.findViewById(R.id.input_distanceGoal_text_UserProfileCreation)
-        val inputNbOfPathsGoal: EditText = view.findViewById(R.id.input_nbOfPathsGoal_text_UserProfileCreation)
+        val inputTimeGoal: EditText =
+            view.findViewById(R.id.input_timeGoal_text_UserProfileCreation)
+        val inputDistanceGoal: EditText =
+            view.findViewById(R.id.input_distanceGoal_text_UserProfileCreation)
+        val inputNbOfPathsGoal: EditText =
+            view.findViewById(R.id.input_nbOfPathsGoal_text_UserProfileCreation)
 
         //all the texts where the potentials errors will be print
         val errorTextTime: TextView = view.findViewById(R.id.timeGoalError_text_userProfileCreation)
-        val errorTextDistance: TextView = view.findViewById(R.id.distanceGoalError_text_userProfileCreation)
-        val errorTextNbOfPaths: TextView = view.findViewById(R.id.nbOfPathsGoalError_text_userProfileCreation)
+        val errorTextDistance: TextView =
+            view.findViewById(R.id.distanceGoalError_text_userProfileCreation)
+        val errorTextNbOfPaths: TextView =
+            view.findViewById(R.id.nbOfPathsGoalError_text_userProfileCreation)
 
         //if all the data goals are correct that than set this data to the database associate to the username and show the next fragment,
         //when click on the validate button
@@ -60,19 +70,19 @@ class UserGoalsInitFragment : Fragment() {
 
             val timeStr = inputTimeGoal.text.toString()
             val test1 = isNumberCorrect(timeStr, errorTextTime)
-            if(test1){
+            if (test1) {
                 timeGoal = Integer.parseInt(timeStr)
             }
 
             val distanceStr = inputDistanceGoal.text.toString()
             val test2 = isNumberCorrect(distanceStr, errorTextDistance)
-            if(test2){
+            if (test2) {
                 distanceGoal = Integer.parseInt(distanceStr)
             }
 
             val nbOfPathsStr = inputNbOfPathsGoal.text.toString()
             val test3 = isNumberCorrect(nbOfPathsStr, errorTextNbOfPaths)
-            if(test3){
+            if (test3) {
                 nunberOfPathGoal = Integer.parseInt(nbOfPathsStr)
             }
 
@@ -82,18 +92,13 @@ class UserGoalsInitFragment : Fragment() {
                 val previousActivity = activity
                 if (previousActivity != null) {
                     val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
-                    val previousActivity = activity
-                    if (previousActivity != null) {
-                        val fragManagement =
-                            previousActivity.supportFragmentManager.beginTransaction()
-                        val dataToEndProfileCreationFrag: Bundle = Bundle()
-                        //data to transmit to the UserGoalsInitFragment(username)
-                        dataToEndProfileCreationFrag.putString("userName", username)
-                        val endProfileCreationFrag = EndUserProfileCreationFragment()
-                        endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
-                        fragManagement.replace(R.id.userGoalInitFragment, endProfileCreationFrag)
-                            .commit()
-                    }
+                    val dataToEndProfileCreationFrag: Bundle = Bundle()
+                    //data to transmit to the UserGoalsInitFragment(username)
+                    dataToEndProfileCreationFrag.putString("userName", username)
+                    val endProfileCreationFrag = EndProfileCreationFragment()
+                    endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
+                    fragManagement.replace(R.id.userGoalInitFragment, endProfileCreationFrag)
+                        .commit()
                 }
             }
         }
@@ -110,8 +115,8 @@ class UserGoalsInitFragment : Fragment() {
  */
 private fun isNumberCorrect(inputNumber: String, outputErrorText: TextView): Boolean {
     //check if the input is empty
-    if(inputNumber == ""){
-        outputErrorText.text = "This field can't be empty !"
+    if (inputNumber == "") {
+        outputErrorText.text = "* This field can't be empty !"
         outputErrorText.setTextColor(Color.RED)
         return false
     }
@@ -119,7 +124,7 @@ private fun isNumberCorrect(inputNumber: String, outputErrorText: TextView): Boo
     val inputArrayChars = inputNumber.toCharArray()
     for (i in 0..(inputNumber.length - 1)) {
         if (!(inputArrayChars[i].isDigit())) {
-            outputErrorText.text = "This field can be only composed of integer number."
+            outputErrorText.text = "* This field can be only composed of integer number."
             outputErrorText.setTextColor(Color.RED)
             return false
         }
