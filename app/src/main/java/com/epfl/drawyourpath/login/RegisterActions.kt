@@ -35,5 +35,10 @@ class RegisterActions : LoginActivityFragment(R.layout.fragment_register_actions
                 emailInput.text.toString(),
                 passwordInput.text.toString())
         }
+
+        val registerAnonymousButton = view.findViewById<Button>(R.id.BT_RegisterAnonymous)
+        registerAnonymousButton.setOnClickListener {
+            getLoginActivity<RegisterActivityListener>().registerAnonymously()
+        }
     }
 }

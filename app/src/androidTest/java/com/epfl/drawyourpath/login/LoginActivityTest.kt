@@ -83,7 +83,15 @@ class LoginActivityTest {
 
     @Test
     fun validUserInKeychainLaunchesMainMenuAutomatically() {
-        val scenario = launchLoginActivity(failingMock = false, userInKeychain = true)
+        var scenario = launchLoginActivity(failingMock = false, userInKeychain = true)
+
+        intended(hasComponent(MainActivity::class.java.name))
+
+        Intents.release()
+
+        scenario.close()
+
+        scenario = launchLoginActivity(failingMock = true, userInKeychain = true)
 
         intended(hasComponent(MainActivity::class.java.name))
 
@@ -232,6 +240,31 @@ class LoginActivityTest {
 
         Intents.release()
 
+        scenario.close()
+    }
+
+    @Test
+    fun registerAnonymouslyRedirectsToAccountRegistration() {
+        val scenario = launchLoginActivity()
+
+        onView(withId(R.id.BT_RegisterAnonymous)).perform(ViewActions.click())
+
+        // TODO: waiting for branch 23-user-profile-creation to be merged
+        //intended(hasComponent(XXXXXXX::class.java.name))
+
+        Intents.release()
+
+        scenario.close()
+    }
+
+    @Test
+    fun failedRegisterAnonymouslyDoesntRedirectToAccountRegistration() {
+        val scenario = launchLoginActivity()
+
+        onView(withId(R.id.BT_RegisterAnonymous)).perform(ViewActions.click())
+        onView(withId(R.id.BT_RegisterAnonymous)).check(matches(isDisplayed()))
+
+        Intents.release()
         scenario.close()
     }
 

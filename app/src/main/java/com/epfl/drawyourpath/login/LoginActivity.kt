@@ -148,7 +148,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     }
 
     override fun registerAnonymously() {
-        TODO("Not yet implemented")
+        auth.loginAnonymously { user, error -> onRegistrationResult(user, error) }
     }
 
     override fun loginWithGoogle() {

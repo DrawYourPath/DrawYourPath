@@ -110,7 +110,13 @@ class FirebaseAuth : Auth {
     }
 
     override fun loginAnonymously(callback: AuthCallback) {
-        TODO("Not yet implemented")
+        auth.signInAnonymously()
+            .addOnSuccessListener {
+                callback(convertUser(it.user!!), null)
+            }
+            .addOnFailureListener {
+                callback(null, it)
+            }
     }
 
     override fun registerWithEmail(email: String, password: String, callback: AuthCallback) {
