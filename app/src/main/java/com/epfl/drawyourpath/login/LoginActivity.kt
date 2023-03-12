@@ -2,7 +2,7 @@ package com.epfl.drawyourpath.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.LayoutRes
@@ -20,8 +20,10 @@ import com.epfl.drawyourpath.mainpage.MainActivity
 
 const val USE_MOCK_AUTH_KEY             = "useMockAuth"
 const val MOCK_AUTH_FAIL                = "useMockAuthFailing"
-const val MOCK_AUTH_USER_IN_KEYCHAIN    = "useMockAuthKeychain"
-const val MOCK_ALLOW_ONETAP             = "useMockOneTap"
+const val RESTORE_USER_IN_KEYCHAIN      = "restoreUserInKeychain"
+const val ENABLE_ONETAP_SIGNIN          = "enableOneTapSignIn"
+
+const val LOG_LOGIN_KEY = "DYP_Login"
 
 abstract class LoginActivityFragment(@LayoutRes layout: Int) : Fragment(layout) {
     protected val viewModel: LoginViewModel by activityViewModels()
@@ -36,24 +38,27 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
 
     private lateinit var auth: Auth
 
+    private var useOneTapSignIn: Boolean = false;
+    private var restoreUserFromKeychain: Boolean = false;
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        useOneTapSignIn         = intent.getBooleanExtra(ENABLE_ONETAP_SIGNIN,     useOneTapSignIn);
+        restoreUserFromKeychain = intent.getBooleanExtra(RESTORE_USER_IN_KEYCHAIN, restoreUserFromKeychain)
 
         val useMockAuthProvider = intent.getBooleanExtra(USE_MOCK_AUTH_KEY, false)
         auth = when (useMockAuthProvider) {
             true  -> MockAuth(
                 failing          = intent.getBooleanExtra(MOCK_AUTH_FAIL, false),
-                userInKeyChain   = intent.getBooleanExtra(MOCK_AUTH_USER_IN_KEYCHAIN, false),
-                withOneTapSignIn = intent.getBooleanExtra(MOCK_ALLOW_ONETAP, false),
+                userInKeyChain   = restoreUserFromKeychain,
+                withOneTapSignIn = useOneTapSignIn
             )
             false -> FirebaseAuth()
         }
 
         auth.onActivityCreate(this, savedInstanceState)
-
-        //if (savedInstanceState == null) {
-            showRegisterUI()
-        //}
 
         viewModel.setViewListener { view ->
             when (view) {
@@ -65,18 +70,22 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         auth.onAuthStateChanged { _, _ ->
 
         }
+
+        showRegisterUI()
     }
 
     override fun onStart() {
         super.onStart()
 
         // If a user is available now, it was restored from keychain.
-        if (auth.getUser() != null) {
+        if (restoreUserFromKeychain && auth.getUser() != null) {
+            Log.i(LOG_LOGIN_KEY, "User restored from keychain.")
             openMainMenu()
         }
 
         // Otherwise, we try a one-tap sign-in.
-        else {
+        else if (useOneTapSignIn) {
+            Log.i(LOG_LOGIN_KEY, "Attempting One-Tap Sign-In.")
             auth.launchOneTapGoogleSignIn(this) {
                 _, error ->
                 when (error) {

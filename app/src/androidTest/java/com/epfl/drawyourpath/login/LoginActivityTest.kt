@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -14,6 +15,8 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import org.junit.Assert.*
@@ -47,8 +50,8 @@ class LoginActivityTest {
         val intent = Intent(getApplicationContext(), LoginActivity::class.java);
         intent.putExtra(USE_MOCK_AUTH_KEY, useMock);
         intent.putExtra(MOCK_AUTH_FAIL, failingMock);
-        intent.putExtra(MOCK_AUTH_USER_IN_KEYCHAIN, userInKeychain)
-        intent.putExtra(MOCK_ALLOW_ONETAP, withOneTap)
+        intent.putExtra(RESTORE_USER_IN_KEYCHAIN, userInKeychain)
+        intent.putExtra(ENABLE_ONETAP_SIGNIN, withOneTap)
 
         return launch(intent)
     }
@@ -270,15 +273,69 @@ class LoginActivityTest {
 
     @Test
     fun loginActivityWithFirebaseAuthCanBeLaunched() {
-        val scenario = launchLoginActivity(
-            failingMock = false,
-            userInKeychain = false,
-            withOneTap = false,
-            useMock = false
-        )
+        val scenario = launchLoginActivity(useMock = false)
 
         Intents.release()
+        scenario.close()
+    }
 
+    @Test
+    fun loginWithInvalidEmailAndPasswordFailsWithFirebaseAuth() {
+        val scenario = launchLoginActivity(useMock = false, withOneTap = false, userInKeychain = false)
+
+        // Empty email
+        onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
+
+        // Invalid email
+        onView(withId(R.id.ET_Email)).perform(ViewActions.typeText("inv"))
+        Espresso.closeSoftKeyboard()
+        onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
+
+        // Empty password
+        onView(withId(R.id.ET_Email)).perform(ViewActions.typeText("alid@domain.org"))
+        Espresso.closeSoftKeyboard()
+        onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
+
+        // Invalid password
+        onView(withId(R.id.ET_Password)).perform(ViewActions.typeText("a"))
+        Espresso.closeSoftKeyboard()
+        onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
+
+        val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        uiDevice.waitForWindowUpdate(null, 3000)
+        var currentPackageName = uiDevice.currentPackageName
+        if (currentPackageName != "com.epfl.drawyourpath") {
+            uiDevice.pressBack()
+        }
+
+        // Switches to the login view.
+        onView(withId(R.id.BT_Login)).perform(ViewActions.click())
+
+        // Empty email
+        onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
+
+        // Invalid email
+        onView(withId(R.id.ET_Email)).perform(ViewActions.typeText("inv"))
+        Espresso.closeSoftKeyboard()
+        onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
+
+        // Empty password
+        onView(withId(R.id.ET_Email)).perform(ViewActions.typeText("alid@domain.org"))
+        Espresso.closeSoftKeyboard()
+        onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
+
+        // Invalid password
+        onView(withId(R.id.ET_Password)).perform(ViewActions.typeText("a"))
+        Espresso.closeSoftKeyboard()
+        onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
+
+        uiDevice.waitForWindowUpdate(null, 3000)
+        currentPackageName = uiDevice.currentPackageName
+        if (currentPackageName != "com.epfl.drawyourpath") {
+            uiDevice.pressBack()
+        }
+
+        Intents.release()
         scenario.close()
     }
 }

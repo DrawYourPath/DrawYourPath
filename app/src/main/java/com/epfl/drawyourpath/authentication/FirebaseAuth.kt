@@ -100,13 +100,18 @@ class FirebaseAuth : Auth {
     }
 
     override fun loginWithEmail(email: String, password: String, callback: AuthCallback) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                callback(convertUser(it.user), null)
-            }
-            .addOnFailureListener {
-                callback(null, it)
-            }
+        try {
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    callback(convertUser(it.user), null)
+                }
+                .addOnFailureListener {
+                    callback(null, it)
+                }
+        }
+        catch (e: Exception) {
+            callback(null, e)
+        }
     }
 
     override fun loginAnonymously(callback: AuthCallback) {
@@ -120,14 +125,29 @@ class FirebaseAuth : Auth {
     }
 
     override fun registerWithEmail(email: String, password: String, callback: AuthCallback) {
-        auth
-            .createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                callback(convertUser(it.user!!), null)
-            }
-            .addOnFailureListener {
-                callback(null, it)
-            }
+        if (email.isBlank()) {
+            callback(null, Exception("The email can't be empty."))
+            return
+        }
+
+        if (password.isBlank()) {
+            callback(null, Exception("The password can't be emptyeee."))
+            return
+        }
+
+        try {
+            auth
+                .createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    callback(convertUser(it.user!!), null)
+                }
+                .addOnFailureListener {
+                    callback(null, it)
+                }
+        }
+        catch (e: Exception) {
+            callback(null, e)
+        }
     }
 
     override fun registerWithGoogle(activity: Activity, callback: AuthCallback) {

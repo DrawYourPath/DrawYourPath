@@ -1,8 +1,6 @@
 package com.epfl.drawyourpath.login
 
 import android.view.View
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.Fragment
 import android.widget.Button
 import android.os.Bundle
 import android.widget.EditText
