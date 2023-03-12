@@ -129,7 +129,7 @@ class LoginActivityTest {
     }
 
     @Test
-    fun failedLoginDoesntRedirectToMainMenu() {
+    fun failedLoginWithGoogleDoesntRedirectToMainMenu() {
         val scenario = launchLoginActivity(true)
 
         onView(withId(R.id.BT_Login)).perform(ViewActions.click())
@@ -165,6 +165,62 @@ class LoginActivityTest {
         onView(withId(R.id.BT_RegisterGoogle)).perform(ViewActions.click())
 
         onView(withId(R.id.BT_RegisterGoogle)).check(matches(isDisplayed()))
+
+        Intents.release()
+
+        scenario.close()
+    }
+
+    @Test
+    fun registerWithEmailRedirectsToAccountRegistration() {
+        val scenario = launchLoginActivity()
+
+        onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
+
+        // TODO: waiting for branch 23-user-profile-creation to be merged
+        //intended(hasComponent(XXXXXXX::class.java.name))
+
+        Intents.release()
+
+        scenario.close()
+    }
+
+
+    @Test
+    fun failedRegisterWithEmailDoesntRedirectToAccountRegistration() {
+        val scenario = launchLoginActivity()
+
+        onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
+
+        onView(withId(R.id.BT_RegisterEmail)).check(matches(isDisplayed()))
+
+        Intents.release()
+
+        scenario.close()
+    }
+
+    @Test
+    fun loginWithEmailRedirectsToMainMenu() {
+        val scenario = launchLoginActivity()
+
+        onView(withId(R.id.BT_Login)).perform(ViewActions.click())
+        onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
+
+        intended(hasComponent(MainActivity::class.java.name))
+
+        Intents.release()
+
+        scenario.close()
+    }
+
+    @Test
+    fun failedLoginWithEmailDoesntRedirectToMainMenu() {
+        val scenario = launchLoginActivity(true)
+
+        onView(withId(R.id.BT_Login)).perform(ViewActions.click())
+        onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
+
+        onView(withId(R.id.BT_LoginEmail)).check(matches(isDisplayed()))
 
         Intents.release()
 
