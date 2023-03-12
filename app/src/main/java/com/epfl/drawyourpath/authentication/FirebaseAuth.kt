@@ -100,29 +100,61 @@ class FirebaseAuth : Auth {
     }
 
     override fun loginWithEmail(email: String, password: String, callback: AuthCallback) {
-        TODO("Not yet implemented")
+        try {
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    callback(convertUser(it.user), null)
+                }
+                .addOnFailureListener {
+                    callback(null, it)
+                }
+        }
+        catch (e: Exception) {
+            callback(null, e)
+        }
     }
 
     override fun loginAnonymously(callback: AuthCallback) {
-        TODO("Not yet implemented")
+        auth.signInAnonymously()
+            .addOnSuccessListener {
+                callback(convertUser(it.user!!), null)
+            }
+            .addOnFailureListener {
+                callback(null, it)
+            }
     }
 
     override fun registerWithEmail(email: String, password: String, callback: AuthCallback) {
-        auth
-            .createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener {res ->
-                callback(convertUser(res.user!!), null)
-            }
-            .addOnFailureListener { exc ->
-                callback(null, exc)
-            }
+        if (email.isBlank()) {
+            callback(null, Exception("The email can't be empty."))
+            return
+        }
+
+        if (password.isBlank()) {
+            callback(null, Exception("The password can't be emptyeee."))
+            return
+        }
+
+        try {
+            auth
+                .createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    callback(convertUser(it.user!!), null)
+                }
+                .addOnFailureListener {
+                    callback(null, it)
+                }
+        }
+        catch (e: Exception) {
+            callback(null, e)
+        }
     }
 
     override fun registerWithGoogle(activity: Activity, callback: AuthCallback) {
         loginWithGoogle(activity, callback)
     }
 
-    private var authStateListener: FirebaseAuth.AuthStateListener? = null;
+    private var authStateListener: FirebaseAuth.AuthStateListener? = null
 
     override fun onAuthStateChanged(callback: AuthCallback) {
         if (authStateListener != null)
@@ -140,7 +172,7 @@ class FirebaseAuth : Auth {
     override fun clearListener() {
         if (authStateListener != null) {
             auth.removeAuthStateListener(authStateListener!!)
-            authStateListener = null;
+            authStateListener = null
         }
     }
 
@@ -156,11 +188,11 @@ class FirebaseAuth : Auth {
                         result.pendingIntent.intentSender, REQ_ONE_TAP,
                         null, 0, 0, 0, null)
                 } catch (e: IntentSender.SendIntentException) {
-                    Log.e("GSI", "Couldn't start One Tap UI: ${e.localizedMessage}")
+                    consumeCurrCallback(null, e)
                 }
             }
             .addOnFailureListener(activity) { e ->
-                Log.d("GSI", e.localizedMessage!!)
+                consumeCurrCallback(null, e)
             }
     }
 
