@@ -31,13 +31,13 @@ class LoginActivityTest {
     private fun launchLoginActivity(
         failingMock: Boolean = false,
         userInKeychain: Boolean = false,
-        withOneTap: Boolean = false
-    ):
-            ActivityScenario<LoginActivity> {
+        withOneTap: Boolean = false,
+        useMock: Boolean = true
+    ): ActivityScenario<LoginActivity> {
         Intents.init()
 
         val intent = Intent(getApplicationContext(), LoginActivity::class.java);
-        intent.putExtra(USE_MOCK_AUTH_KEY, true);
+        intent.putExtra(USE_MOCK_AUTH_KEY, useMock);
         intent.putExtra(MOCK_AUTH_FAIL, failingMock);
         intent.putExtra(MOCK_AUTH_USER_IN_KEYCHAIN, userInKeychain)
         intent.putExtra(MOCK_ALLOW_ONETAP, withOneTap)
@@ -227,4 +227,17 @@ class LoginActivityTest {
         scenario.close()
     }
 
+    @Test
+    fun loginActivityWithFirebaseAuthCanBeLaunched() {
+        val scenario = launchLoginActivity(
+            failingMock = false,
+            userInKeychain = false,
+            withOneTap = false,
+            useMock = false
+        )
+
+        Intents.release()
+
+        scenario.close()
+    }
 }

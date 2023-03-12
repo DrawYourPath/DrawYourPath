@@ -41,9 +41,9 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
 
         auth.onActivityCreate(this, savedInstanceState)
 
-        if (savedInstanceState == null) {
+        //if (savedInstanceState == null) {
             showRegisterUI()
-        }
+        //}
 
         viewModel.setViewListener { view ->
             when (view) {

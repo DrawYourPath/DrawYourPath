@@ -76,7 +76,7 @@ class MockAuth(
     }
 
     override fun onAuthStateChanged(callback: AuthCallback) {
-
+        callback(getUser(), null);
     }
 
     override fun clearListener() {
@@ -97,7 +97,9 @@ class MockAuth(
         isLogged = false
     }
 
-    override fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?) {}
+    override fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?) {
+
+    }
 
     override fun onActivityResult(
         activity: Activity,

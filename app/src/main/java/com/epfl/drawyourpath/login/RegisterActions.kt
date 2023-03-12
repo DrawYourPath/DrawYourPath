@@ -15,12 +15,13 @@ interface RegisterActivityListener {
 }
 
 class RegisterActions : Fragment(R.layout.fragment_register_actions) {
-    private val viewModel: LoginViewModel by activityViewModels()
 
     private fun getRegisterActivity(): RegisterActivityListener
     {
         return activity as RegisterActivityListener
     }
+
+    private val viewModel: LoginViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState);
