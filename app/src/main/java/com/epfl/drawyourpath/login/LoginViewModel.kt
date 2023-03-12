@@ -36,25 +36,4 @@ class LoginViewModel : ViewModel() {
     fun setViewListener(inListener: ChangeLoginViewCallback) {
         listener = inListener;
     }
-
-    fun loginWithEmail(email: String, password: String) {
-        // TODO:
-    }
-
-    fun loginWithGoogle() {
-        // TODO:
-    }
-
-    fun registerWithEmail() {
-        // TODO:
-    }
-
-    fun registerWithGoogle() {
-        // TODO:
-    }
-
-    fun registerAnonymously() {
-        // TODO:
-    }
-
 }

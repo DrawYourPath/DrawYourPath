@@ -17,9 +17,6 @@ class LoginActions : LoginActivityFragment(R.layout.fragment_login_actions) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val emailInput    = view.findViewById<EditText>(R.id.ET_Email)
-        val passwordInput = view.findViewById<EditText>(R.id.ET_Password)
-
         val registerButton = view.findViewById<Button>(R.id.BT_Register)
         registerButton?.setOnClickListener { viewModel.showRegisterUI() }
 
@@ -31,8 +28,8 @@ class LoginActions : LoginActivityFragment(R.layout.fragment_login_actions) {
         val loginWithEmailButton = view.findViewById<Button>(R.id.BT_LoginEmail)
         loginWithEmailButton.setOnClickListener {
             getLoginActivity<LoginActivityListener>().loginWithEmailAndPassword(
-                emailInput.text.toString(),
-                passwordInput.text.toString()
+                view.findViewById<EditText>(R.id.ET_Email).text.toString(),
+                view.findViewById<EditText>(R.id.ET_Password).text.toString()
             )
         }
     }
