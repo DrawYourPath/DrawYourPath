@@ -65,6 +65,9 @@ class MainActivity : AppCompatActivity() {
 
                 //Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
+
+                //Display challenge fragment
+                R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>()
             }
             drawerLayout.close()
             true

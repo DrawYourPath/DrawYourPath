@@ -1,26 +1,32 @@
-package com.github.drawyourpath.bootcamp.challengeActivity
+package com.github.drawyourpath.bootcamp.challenge
 
+import android.content.res.AssetManager
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.github.drawyourpath.bootcamp.R
 
 
-class TournamentViewAdapter(private val tournaments: List<Tournament>) : RecyclerView.Adapter<TournamentViewAdapter.ViewHolder>() {
+class TrophyViewAdapter(private val trophies: List<Trophy>) : RecyclerView.Adapter<TrophyViewAdapter.ViewHolder>() {
 
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder)
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val text1: TextView
-        val text2: TextView
+        val text: TextView
+        val image: ImageView
+        val assets: AssetManager
 
         init {
             // Define click listener for the ViewHolder's View
-            text1 = view.findViewById(android.R.id.text1)
-            text2 = view.findViewById(android.R.id.text2)
+            text = view.findViewById(R.id.trophy_display_text)
+            image = view.findViewById(R.id.trophy_image)
+            assets = view.context.assets
         }
     }
 
@@ -28,8 +34,7 @@ class TournamentViewAdapter(private val tournaments: List<Tournament>) : Recycle
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(android.R.layout.simple_list_item_2, viewGroup, false)
-
+            .inflate(R.layout.display_list_trophy, viewGroup, false)
         return ViewHolder(view)
     }
 
@@ -38,11 +43,18 @@ class TournamentViewAdapter(private val tournaments: List<Tournament>) : Recycle
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.text1.text = "${tournaments[position].name}"
-        viewHolder.text2.text = "${tournaments[position].description}"
+        viewHolder.text.text = "${trophies[position].name}"
+        try {
+            val imageStream = viewHolder.assets.open(trophies[position].imagePath)
+            viewHolder.image.setImageDrawable(Drawable.createFromStream(imageStream, null))
+            imageStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = tournaments.count()
+    override fun getItemCount() = trophies.count()
 
 }
