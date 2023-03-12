@@ -7,6 +7,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.withTimeout
 import java.time.Duration
+import java.time.LocalDate
 import java.time.temporal.Temporal
 import java.time.temporal.TemporalUnit
 import java.util.*
@@ -79,12 +80,20 @@ class FireDatabase : Database() {
         return false
     }
 
-    override fun setPersonalInfo(username: String, firstname: String, surname: String, dateOfBirth: Date) {
+    override fun setPersonalInfo(username: String, firstname: String, surname: String, dateOfBirth: LocalDate) {
         val userAdd = HashMap<String, String>()
         userAdd.put("firstname", firstname)
         userAdd.put("surname", surname)
-        val dateOfBirthStr: String = dateOfBirth.day.toString() + " / " + dateOfBirth.month + " / " + dateOfBirth.year
+        val dateOfBirthStr: String = dateOfBirth.dayOfMonth.toString() + " / " + dateOfBirth.monthValue + " / " + dateOfBirth.year
         userAdd.put("dateOfBirth", dateOfBirthStr)
+        database.child("users").child(username).updateChildren(userAdd as Map<String, Any>)
+    }
+
+    override fun setUserGoals(username: String, distanceGoal: Int, timeGoal: Int, nbOfPathsGoal: Int) {
+        val userAdd = HashMap<String, String>()
+        userAdd.put("distanceGoal", distanceGoal.toString())
+        userAdd.put("activityTimeGoal", timeGoal.toString())
+        userAdd.put("numberOfPathsGoal", nbOfPathsGoal.toString())
         database.child("users").child(username).updateChildren(userAdd as Map<String, Any>)
     }
 }

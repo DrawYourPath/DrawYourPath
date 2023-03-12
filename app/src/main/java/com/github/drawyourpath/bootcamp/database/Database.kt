@@ -1,6 +1,7 @@
 package com.github.drawyourpath.bootcamp.database
 
 import android.widget.TextView
+import java.time.LocalDate
 import java.util.*
 
 abstract class Database {
@@ -29,5 +30,14 @@ abstract class Database {
      * @param surname surname of the user
      * @param dateOfBirth date of birth of the user
      */
-    abstract  fun setPersonalInfo(username: String, firstname: String, surname: String, dateOfBirth: Date)
+    abstract  fun setPersonalInfo(username: String, firstname: String, surname: String, dateOfBirth: LocalDate)
+
+    /**
+     * This function will set the goals in a day of a user to the database(distance per day, minute of exercises per day, number of path to draw per day).
+     * @param username username associated to the users(where the data will be affected)
+     * @param distanceGoal distance goal in kilometer
+     * @param timeGoal activity time goal in minutes
+     * @param nbOfPaths number of paths goal
+     */
+    abstract fun setUserGoals(username: String, distanceGoal: Int, timeGoal: Int, nbOfPathsGoal: Int)
 }

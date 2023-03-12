@@ -62,12 +62,12 @@ class UserNameTestAndSetFragment : Fragment() {
             val previousActivity = activity
             if(previousActivity!=null && isSetUserName){
                 val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
-                val dataTopPersoInfoFrag: Bundle = Bundle()
+                val dataToPersoInfoFrag: Bundle = Bundle()
                 //data to transmit to the PersonalInfoFragment(username + isTest)
-                dataTopPersoInfoFrag.putBoolean("isRunningTestForDataBase", isTest)
-                dataTopPersoInfoFrag.putString("userName", inputUserName.text.toString())
+                dataToPersoInfoFrag.putBoolean("isRunningTestForDataBase", isTest)
+                dataToPersoInfoFrag.putString("userName", inputUserName.text.toString())
                 val persoInfoFrag = PersonalInfoFragment()
-                persoInfoFrag.arguments = dataTopPersoInfoFrag
+                persoInfoFrag.arguments = dataToPersoInfoFrag
                 fragManagement.replace(R.id.userName_frame, persoInfoFrag).commit()
             }
         }

@@ -20,4 +20,14 @@
     <string name="your_date_of_birth">Your date of birth :</string>
     <string name="empty_date_view">dd/mm/yyyy</string>
     <string name="select_a_date">Select a date</string>
+    <string name="to_challenge_you_every_days">To challenge you every days...</string>
+    <string name="how_many_kilometer_do_you_want_to_run_through_each_day">How many kilometer do you want to run through each day ?</string>
+    <string name="enter_your_distance_goal">Enter your distance</string>
+    <string name="enter_your_time">Enter your time</string>
+    <string name="how_many_path_do_you_want_to_draw_each_day">How many path do you want to draw each day ?</string>
+    <string name="enter_your_number_of_path">Enter your number of path</string>
+    <string name="validate">Validate</string>
+    <string name="one_of_the_goal_of_the_drawyourpath_app_is_to_challenge_your_self_every_day_please_enter_some_goals_that_you_will_try_to_follow_as_much_as_possible_each_days">One of the goal of the DrawYourPath app is to challenge your self every day. Please enter some goals that you will try to follow as much as possible each days :</string>
+    <string name="congratulation_your_profile_have_been_successfully_created">Congratulation your profile have been successfully created !</string>
+    <string name="begin_now">BEGIN NOW</string>
 </resources>
