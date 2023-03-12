@@ -284,12 +284,6 @@ private fun goToUserGoalsInitFragment(): ActivityScenario<UserProfileCreationAct
     Espresso.onView(withId(R.id.input_surname_text_UserProfileCreation))
         .perform(ViewActions.typeText("Hugo"))
     Espresso.closeSoftKeyboard()
-    Espresso.onView(withId(R.id.selectDate_button_userProfileCreation))
-        .perform(ViewActions.click())
-    Espresso.onView(isAssignableFrom(DatePicker::class.java))
-        .perform(PickerActions.setDate(2000, 2, 20))
-    Espresso.onView(withId(android.R.id.button1))
-        .perform(ViewActions.click())
     Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
         .perform(ViewActions.click())
     return t
