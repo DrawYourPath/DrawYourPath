@@ -23,6 +23,14 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class LoginActivityTest {
 
+    @Test
+    fun loginViewModelWithNoCallbackFailsSilently() {
+        val viewModel = LoginViewModel();
+
+        viewModel.showLoginUI();
+        viewModel.showRegisterUI();
+    }
+
     private fun buttonHasText(id: Int, text: String) {
         // @see: https://github.com/android/android-test/issues/1642
         // onView(withId(id)).check(matches(ViewMatchers.withText(text)))
