@@ -1,12 +1,10 @@
 package com.epfl.drawyourpath.login
 
-import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import androidx.fragment.app.Fragment
 
 interface RegisterActivityListener {
     fun registerWithGoogle();
@@ -14,21 +12,9 @@ interface RegisterActivityListener {
     fun registerWithEmailAndPassword(email: String, password: String)
 }
 
-class RegisterActions : Fragment(R.layout.fragment_register_actions) {
-
-    private fun getRegisterActivity(): RegisterActivityListener
-    {
-        return activity as RegisterActivityListener
-    }
-
-    private val viewModel: LoginViewModel by activityViewModels()
-
+class RegisterActions : LoginActivityFragment(R.layout.fragment_register_actions) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Assumes the activity implements the RegisterActivity interface to forward
-        // events.
-        assert(activity is RegisterActivityListener);
 
         val emailInput    = view.findViewById<EditText>(R.id.ET_Email)
         val passwordInput = view.findViewById<EditText>(R.id.ET_Password)
@@ -40,12 +26,12 @@ class RegisterActions : Fragment(R.layout.fragment_register_actions) {
 
         val registerWithGoogleButton = view.findViewById<Button>(R.id.BT_RegisterGoogle)
         registerWithGoogleButton.setOnClickListener {
-            getRegisterActivity().registerWithGoogle()
+            getLoginActivity<RegisterActivityListener>().registerWithGoogle()
         }
 
         val registerWithEmailButton = view.findViewById<Button>(R.id.BT_RegisterEmail)
         registerWithEmailButton.setOnClickListener {
-            getRegisterActivity().registerWithEmailAndPassword(
+            getLoginActivity<RegisterActivityListener>().registerWithEmailAndPassword(
                 emailInput.text.toString(),
                 passwordInput.text.toString())
         }

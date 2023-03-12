@@ -1,11 +1,14 @@
-package com.epfl.drawyourpath.login;
+package com.epfl.drawyourpath.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
@@ -20,11 +23,18 @@ const val MOCK_AUTH_FAIL                = "useMockAuthFailing"
 const val MOCK_AUTH_USER_IN_KEYCHAIN    = "useMockAuthKeychain"
 const val MOCK_ALLOW_ONETAP             = "useMockOneTap"
 
+abstract class LoginActivityFragment(@LayoutRes layout: Int) : Fragment(layout) {
+    protected val viewModel: LoginViewModel by activityViewModels()
+    protected inline fun <reified T> getLoginActivity(): T {
+        return activity as T
+    }
+}
+
 class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivityListener,
     LoginActivityListener {
     private val viewModel: LoginViewModel by viewModels()
 
-    private lateinit var auth: Auth;
+    private lateinit var auth: Auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +109,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         switchFragment<RegisterActions>()
     }
 
-    private inline fun <reified T : Fragment> switchFragment() {
+    private inline fun <reified T : LoginActivityFragment> switchFragment() {
         supportFragmentManager.commit {
             //setCustomAnimations(R.anim.slide_in, R.anim.slide_out)
             replace<T>(R.id.fragment_container_view)

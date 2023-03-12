@@ -13,18 +13,9 @@ interface LoginActivityListener {
     fun loginWithEmailAndPassword(email: String, password: String)
 }
 
-class LoginActions : Fragment(R.layout.fragment_login_actions) {
-    private val viewModel: LoginViewModel by activityViewModels()
-
-    private fun getLoginActivity(): LoginActivityListener
-    {
-        return activity as LoginActivityListener
-    }
-
+class LoginActions : LoginActivityFragment(R.layout.fragment_login_actions) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        assert(activity is LoginActivityListener)
 
         val emailInput    = view.findViewById<EditText>(R.id.ET_Email)
         val passwordInput = view.findViewById<EditText>(R.id.ET_Password)
@@ -34,12 +25,12 @@ class LoginActions : Fragment(R.layout.fragment_login_actions) {
 
         val loginWithGoogleButton = view.findViewById<Button>(R.id.BT_LoginGoogle)
         loginWithGoogleButton.setOnClickListener {
-            getLoginActivity().loginWithGoogle()
+            getLoginActivity<LoginActivityListener>().loginWithGoogle()
         }
 
         val loginWithEmailButton = view.findViewById<Button>(R.id.BT_LoginEmail)
         loginWithEmailButton.setOnClickListener {
-            getLoginActivity().loginWithEmailAndPassword(
+            getLoginActivity<LoginActivityListener>().loginWithEmailAndPassword(
                 emailInput.text.toString(),
                 passwordInput.text.toString()
             )
