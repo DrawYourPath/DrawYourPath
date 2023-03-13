@@ -4,20 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_gravity="center_vertical"
     tools:context=".userProfileCreation.UserProfileCreationActivity">
 
     <FrameLayout
         android:id="@+id/userProfileStartFrame"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/image_mountain_background">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/image_mountain_background">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/welcome_title_userProfileCreation"
@@ -25,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
                 android:layout_marginBottom="10dp"
-                android:gravity="center"
+                android:gravity="top|center"
                 android:text="@string/welcome_title_userProfileCreation"
                 android:textAlignment="center"
                 android:textColor="@color/black"
@@ -35,29 +33,28 @@
 
             <TextView
                 android:id="@+id/welcome_message_userProfileCreation"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="4dp"
                 android:layout_margin="20dp"
+                android:layout_gravity="center"
                 android:text="@string/welcome_message_userProfileCreation"
                 android:textIsSelectable="false"
                 android:textSize="25sp"
+                android:justificationMode="inter_word"
                 android:textColor="@color/design_default_color_surface"
-                android:textAlignment="center"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center|bottom"
-            android:layout_marginBottom="110dp">
+                android:background="@color/cardview_shadow_start_color"/>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
 
             <Button
                 android:id="@+id/start_profile_creation_button_userProfileCreation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
+                android:layout_marginBottom="20dp"
                 android:text="@string/start_profile_creation_userProfileCreation"
                 android:textSize="15sp" />
         </LinearLayout>

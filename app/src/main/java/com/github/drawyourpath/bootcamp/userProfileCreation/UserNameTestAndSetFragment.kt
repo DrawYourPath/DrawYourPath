@@ -68,8 +68,6 @@ class UserNameTestAndSetFragment : Fragment() {
                 dataToPersoInfoFrag.putString("userName", inputUserName.text.toString())
                 val persoInfoFrag = PersonalInfoFragment()
                 persoInfoFrag.arguments = dataToPersoInfoFrag
-                //desactivate the button
-                setUserNameButton.isEnabled = false
                 fragManagement.replace(R.id.userName_frame, persoInfoFrag).commit()
             }
         }

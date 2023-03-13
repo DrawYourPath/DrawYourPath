@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".userProfileCreation.UserGoalsInitFragment"
     android:id="@+id/userGoalInitFragment"
     android:background="@drawable/image_mountain_background"
@@ -10,17 +10,16 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_gravity="top|center"
+        android:layout_gravity="center"
         tools:context=".userProfileCreation.UserGoalsInitFragment">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
+            android:layout_gravity="center_horizontal"
             android:padding="4dp"
-            android:layout_margin="10dp"
             android:text="@string/to_challenge_you_every_days"
             android:textIsSelectable="false"
             android:textSize="28sp"
@@ -30,83 +29,73 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
+            android:layout_gravity="center_horizontal"
             android:textSize="15sp"
             android:textStyle="bold"
             android:padding="5dp"
             android:text="@string/one_of_the_goal_of_the_drawyourpath_app_is_to_challenge_your_self_every_day_please_enter_some_goals_that_you_will_try_to_follow_as_much_as_possible_each_days"
+            android:textAlignment="center"
+            android:justificationMode="inter_word"
+            android:background="@color/cardview_shadow_start_color"
             android:textColor="@color/design_default_color_surface"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:layout_marginLeft="5dp"
+            android:textSize="15sp"
             android:text="@string/how_many_kilometer_do_you_want_to_run_through_each_day"
             android:textColor="@color/design_default_color_surface"/>
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:layout_marginBottom="10dp"
-            android:textSize="30sp"
+            android:layout_gravity="center_horizontal"
+            android:textSize="20sp"
             android:id="@+id/input_distanceGoal_text_UserProfileCreation"
             android:hint="@string/enter_your_distance_goal"
-            android:background="@color/design_default_color_surface"
-            />
+            android:background="@color/design_default_color_surface" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left|top"
-            android:textSize="20dp"
-            android:id="@+id/distanceGoalError_text_userProfileCreation"
-            android:text=""
-            android:layout_marginLeft="60dp"/>
+            android:layout_gravity="center_horizontal"
+            android:textSize="10dp"
+            android:id="@+id/distanceGoalError_text_userProfileCreation" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:textSize="20sp"
-            android:text="How many time do you want to practice exercise each day ( in minutes) ?"
+            android:layout_gravity="left"
+            android:layout_marginLeft="5dp"
+            android:textSize="15sp"
+            android:text="@string/how_many_time_do_you_want_to_practice_exercise_each_day_in_minutes"
             android:textColor="@color/design_default_color_surface"/>
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:layout_marginBottom="10dp"
-            android:textSize="30sp"
+            android:layout_gravity="center_horizontal"
+            android:textSize="20sp"
             android:id="@+id/input_timeGoal_text_UserProfileCreation"
             android:hint="@string/enter_your_time"
-            android:background="@color/design_default_color_surface"
-            />
+            android:background="@color/design_default_color_surface" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left|center"
-            android:textSize="20dp"
-            android:id="@+id/timeGoalError_text_userProfileCreation"
-            android:text=""
-            android:layout_marginLeft="60dp"/>
+            android:layout_gravity="center_horizontal"
+            android:textSize="10dp"
+            android:id="@+id/timeGoalError_text_userProfileCreation" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:layout_marginLeft="5dp"
+            android:textSize="15sp"
             android:text="@string/how_many_path_do_you_want_to_draw_each_day"
             android:textColor="@color/design_default_color_surface"/>
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
+            android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
-            android:textSize="30sp"
+            android:textSize="20sp"
             android:id="@+id/input_nbOfPathsGoal_text_UserProfileCreation"
             android:hint="@string/enter_your_number_of_path"
             android:background="@color/design_default_color_surface"
@@ -114,26 +103,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left|center"
-            android:textSize="20dp"
-            android:id="@+id/nbOfPathsGoalError_text_userProfileCreation"
-            android:text=""
-            android:layout_marginLeft="60dp"/>
-    </LinearLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center|bottom"
-        tools:context=".userProfileCreation.UserGoalsInitFragment">
+            android:layout_gravity="center_horizontal"
+            android:textSize="10dp"
+            android:id="@+id/nbOfPathsGoalError_text_userProfileCreation" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
         <Button
             android:id="@+id/setUserGoals_button_userProfileCreation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|top"
-            android:layout_marginBottom="80dp"
+            android:layout_gravity="center_horizontal"
             android:text="@string/validate"
             android:textSize="40sp"/>
     </LinearLayout>

@@ -145,8 +145,6 @@ class PersonalInfoFragment : Fragment() {
                     dataToUserGoalsInitFrag.putString("userName", userName)
                     val userGoalsInitFrag = UserGoalsInitFragment()
                     userGoalsInitFrag.arguments = dataToUserGoalsInitFrag
-                    //desactivate the button
-                    validatePersonalInfoButton.isEnabled = false
                     fragManagement.replace(R.id.personalInfoFragment, userGoalsInitFrag).commit()
                 }
             }

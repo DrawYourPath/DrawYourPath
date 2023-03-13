@@ -30,10 +30,8 @@ class UserProfileCreationActivity : AppCompatActivity() {
         beginButton.setOnClickListener {
             val fragUserNameFragTransaction = supportFragmentManager.beginTransaction()
             val dataToUserNameFrag: Bundle = Bundle()
-            //inform the UserNameTestAndSet fragment if we are in a test scenario
             dataToUserNameFrag.putBoolean("isRunningTestForDataBase", isTest)
-            //desactivate the button
-            beginButton.isEnabled = false
+            //inform the UserNameTestAndSet fragment if we are in a test scenario
             val userNameFrag = UserNameTestAndSetFragment()
             userNameFrag.arguments = dataToUserNameFrag
             fragUserNameFragTransaction.replace(R.id.userProfileStartFrame, userNameFrag).commit()

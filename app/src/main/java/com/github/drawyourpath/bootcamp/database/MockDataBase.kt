@@ -14,7 +14,6 @@ class MockDataBase : Database() {
 
     override fun isUserNameAvailable(userName: String, outputText: TextView): Boolean {
         //add an element in the user database to test the UI
-        System.out.println("je suis en ligne")
         usersDataBase.add("albert")
         val unAvailableOutput: String = buildString {
             append("*The username ")
