@@ -10,13 +10,13 @@ import org.junit.Test
 class PathTest {
 
     @Test
-    fun `test creating empty path`() {
+    fun testCreatingEmptyPath() {
         val path = Path()
         assertEquals(0, path.size())
     }
 
     @Test
-    fun `test creating path from list of points`() {
+    fun testCreatingPathFromListOfPoints() {
         val point1 = LatLng(1.0, 2.0)
         val point2 = LatLng(3.0, 4.0)
         val points = listOf(point1, point2)
@@ -28,20 +28,20 @@ class PathTest {
     }
 
     @Test
-    fun `addPoint adds a point to the path`() {
+    fun addPointAddsAPointToThePath() {
         val path = Path()
         path.addPoint(LatLng(1.0, 2.0))
         assertEquals(1, path.size())
     }
 
     @Test
-    fun `getPoints returns an empty list for a new empty path`() {
+    fun getPointsReturnsAnEmptyListForANewEmptyPath() {
         val path = Path()
         assertTrue(path.getPoints().isEmpty())
     }
 
     @Test
-    fun `getPoints returns a list of all added points`() {
+    fun getPointsReturnsAListOfAllAddedPoints() {
         val path = Path()
         val point1 = LatLng(1.0, 2.0)
         val point2 = LatLng(3.0, 4.0)
@@ -51,7 +51,7 @@ class PathTest {
     }
 
     @Test
-    fun `clear removes all points from the path`() {
+    fun clearRemovesAllPointsFromThePath() {
         val path = Path()
         path.addPoint(LatLng(1.0, 2.0))
         path.clear()
@@ -59,7 +59,7 @@ class PathTest {
     }
 
     @Test
-    fun `size returns the number of points in a non empty path`() {
+    fun sizeReturnsTheNumberOfPointsInANonEmptyPath() {
         val path = Path()
         path.addPoint(LatLng(1.0, 2.0))
         path.addPoint(LatLng(3.0, 4.0))
@@ -68,7 +68,7 @@ class PathTest {
 
 
     @Test
-    fun `getDistance returns the distance between added points`() {
+    fun getDistanceReturnsTheDistanceBetweenAddedPoints() {
         val path = Path()
         path.addPoint(LatLng(0.0, 0.0))
         path.addPoint(LatLng(0.0, 1.0))
@@ -78,7 +78,7 @@ class PathTest {
 
 
     @Test
-    fun `getPolyline returns a PolylineOptions object`() {
+    fun getPolylineReturnsAPolylineOptionsObject() {
         val path = Path()
         val point1 = LatLng(1.0, 2.0)
         val point2 = LatLng(3.0, 4.0)
