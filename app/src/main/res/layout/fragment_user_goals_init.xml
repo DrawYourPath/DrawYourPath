@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     tools:context=".userProfileCreation.UserGoalsInitFragment"
     android:id="@+id/userGoalInitFragment"
     android:background="@drawable/image_mountain_background"
@@ -10,7 +10,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="top|center"
@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center_horizontal"
+            android:layout_gravity="top|center"
             android:padding="4dp"
             android:layout_margin="10dp"
             android:text="@string/to_challenge_you_every_days"
@@ -30,17 +30,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
             android:textSize="15sp"
             android:textStyle="bold"
+            android:padding="5dp"
             android:text="@string/one_of_the_goal_of_the_drawyourpath_app_is_to_challenge_your_self_every_day_please_enter_some_goals_that_you_will_try_to_follow_as_much_as_possible_each_days"
             android:textColor="@color/design_default_color_surface"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
             android:textSize="20sp"
@@ -49,7 +50,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="10dp"
             android:textSize="30sp"
             android:id="@+id/input_distanceGoal_text_UserProfileCreation"
@@ -59,7 +60,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
+            android:layout_gravity="left|top"
             android:textSize="20dp"
             android:id="@+id/distanceGoalError_text_userProfileCreation"
             android:text=""
@@ -67,7 +68,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
             android:textSize="20sp"
@@ -76,7 +77,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="10dp"
             android:textSize="30sp"
             android:id="@+id/input_timeGoal_text_UserProfileCreation"
@@ -86,7 +87,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
+            android:layout_gravity="left|center"
             android:textSize="20dp"
             android:id="@+id/timeGoalError_text_userProfileCreation"
             android:text=""
@@ -103,7 +104,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="10dp"
             android:textSize="30sp"
             android:id="@+id/input_nbOfPathsGoal_text_UserProfileCreation"
@@ -113,7 +114,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
+            android:layout_gravity="left|center"
             android:textSize="20dp"
             android:id="@+id/nbOfPathsGoalError_text_userProfileCreation"
             android:text=""
@@ -122,7 +123,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="center|bottom"
@@ -131,7 +132,7 @@
             android:id="@+id/setUserGoals_button_userProfileCreation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|bottom"
+            android:layout_gravity="center|top"
             android:layout_marginBottom="80dp"
             android:text="@string/validate"
             android:textSize="40sp"/>
