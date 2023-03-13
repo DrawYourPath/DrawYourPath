@@ -155,7 +155,7 @@ class PersonalInfoFragmentTest {
     }
 
     //REMOVE THIS COMMAND TO TEST THE DATE LOCALLY BECAUSE CI DON'T HAVE A DATE PICKER
-    /*
+
     /**
      * Test if the correct date is show to the user after a date has been selected by the user
      * int date picker.
@@ -255,7 +255,7 @@ class PersonalInfoFragmentTest {
 
         t.close()
     }
-    */
+
 
     /**
      * Test that we pass to the next correct fragment after we click on the validate button if the data
@@ -271,6 +271,12 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.input_surname_text_UserProfileCreation))
             .perform(ViewActions.typeText("Hugo"))
         Espresso.closeSoftKeyboard()
+        Espresso.onView(withId(R.id.selectDate_button_userProfileCreation))
+            .perform(ViewActions.click())
+        Espresso.onView(isAssignableFrom(DatePicker::class.java))
+            .perform(PickerActions.setDate(2000, 2, 20))
+        Espresso.onView(withId(android.R.id.button1))
+            .perform(ViewActions.click())
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
