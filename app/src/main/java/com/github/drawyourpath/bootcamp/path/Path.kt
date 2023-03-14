@@ -67,16 +67,16 @@ class Path {
         val lat2 = point2.latitude
         val lon1 = point1.longitude
         val lon2 = point2.longitude
-        val R = 6371e3 // metres
-        val φ1 = lat1 * Math.PI / 180 // φ, λ in radians
-        val φ2 = lat2 * Math.PI / 180
-        val Δφ = (lat2 - lat1) * Math.PI / 180
-        val Δλ = (lon2 - lon1) * Math.PI / 180
-        val a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
+        val r = 6371e3 // metres
+        val a1 = lat1 * Math.PI / 180 // angle in radians
+        val a2 = lat2 * Math.PI / 180
+        val Da = (lat2 - lat1) * Math.PI / 180
+        val Dl = (lon2 - lon1) * Math.PI / 180
+        val a = Math.sin(Da / 2) * Math.sin(Da / 2) +
+                Math.cos(a1) * Math.cos(a2) *
+                Math.sin(Dl / 2) * Math.sin(Dl / 2)
         val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-        return R * c
+        return r * c
 
     }
 
