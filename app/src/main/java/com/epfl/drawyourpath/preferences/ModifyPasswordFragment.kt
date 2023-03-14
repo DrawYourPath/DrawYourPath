@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.settings
+package com.epfl.drawyourpath.preferences
 
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R

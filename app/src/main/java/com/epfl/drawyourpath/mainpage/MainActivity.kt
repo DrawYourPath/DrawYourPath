@@ -11,7 +11,7 @@ import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.bootcamp.mainpage.fragments.FriendsFragment
 import com.epfl.drawyourpath.mainpage.fragments.*
-import com.epfl.drawyourpath.settings.SettingsFragment
+import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.history_menu_item -> replaceFragment<HistoryFragment>()
 
                 // Display settings fragment
-                R.id.settings_menu_item -> replaceFragment<SettingsFragment>()
+                R.id.preferences_menu_item -> replaceFragment<PreferencesFragment>()
             }
             true
         }
