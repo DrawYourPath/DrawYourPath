@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.widget.TextView
 import java.time.LocalDate
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -12,40 +13,21 @@ class MockDataBase : Database() {
     var usernameToPersonalInfoDataBase: HashMap<String, PersonalInfo> = HashMap()
     var usernameToUserGoalsDataBase: HashMap<String, UserGoals> = HashMap()
 
-    override fun isUserNameAvailable(userName: String, outputText: TextView): Boolean {
+    override fun isUserNameAvailable(userName: String): CompletableFuture<Boolean> {
         //add an element in the user database to test the UI
         usersDataBase.add("albert")
-        val unAvailableOutput: String = buildString {
-            append("*The username ")
-            append(userName)
-            append(" is NOT available !")
+
+        val future = CompletableFuture<Boolean>()
+        if(usersDataBase.contains(userName)){
+            future.complete(false)
+        }else{
+            future.complete(true)
         }
-        val availableOutput: String = buildString {
-            append("*The username ")
-            append(userName)
-            append(" is available !")
-        }
-        if (userName == "") {
-            outputText.text = buildString { append("The username can't be empty !") }
-            outputText.setTextColor(Color.RED)
-            return false
-        } else if (usersDataBase.contains(userName)) {
-            outputText.text = unAvailableOutput
-            outputText.setTextColor(Color.RED)
-            return false
-        } else {
-            outputText.text = availableOutput
-            outputText.setTextColor(Color.GREEN)
-            return true
-        }
+        return future
     }
 
-    override fun setUserName(userName: String, outputText: TextView): Boolean {
-        if (isUserNameAvailable(userName, outputText)) {
-            usersDataBase.add(userName)
-            return true
-        }
-        return false
+    override fun setUserName(userName: String) {
+        usersDataBase.add(userName)
     }
 
     override fun setPersonalInfo(username: String, firstname: String, surname: String, dateOfBirth: LocalDate) {

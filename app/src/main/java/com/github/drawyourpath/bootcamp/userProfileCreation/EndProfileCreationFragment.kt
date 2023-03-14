@@ -9,17 +9,10 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.github.drawyourpath.bootcamp.R
 
-class EndProfileCreationFragment : Fragment() {
+class EndProfileCreationFragment : Fragment(R.layout.fragment_end_profile_creation) {
     private var username = ""
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_end_profile_creation, container, false)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag != null) {
@@ -39,7 +32,5 @@ class EndProfileCreationFragment : Fragment() {
             //TODO
             //adc some lines code to go to main app activity
         }
-
-        return view
     }
 }

@@ -3,25 +3,22 @@ package com.github.drawyourpath.bootcamp.database
 import android.widget.TextView
 import java.time.LocalDate
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 abstract class Database {
     /**
-     * This function will return true if the userName is available for the user
+     * This function will return a future with a boolean to know if the username is available in the database
      * (i.e the userName proposed is not already associated to another user profile)
      * @param userName userName that the user want to use for his user profile
-     * @param outputText text view used to indicate if the user name is available to the user
-     * @return true if the userName was not already taken by another user
+     * @return the future that indicate if the username is available
      */
-    abstract fun isUserNameAvailable(userName: String, outputText: TextView): Boolean
+    abstract fun isUserNameAvailable(userName: String): CompletableFuture<Boolean>
 
     /**
      * This function will add the user Name to the database to create a new user profile
      * @param userName userName that the user want to set in the database
-     * @param outputText text view used to indicate if the user name is available to the user,
-     * in case of unavailability of the username
-     * @return true if the username was set to the dataBase, otherwise false
      */
-    abstract fun setUserName(userName: String, outputText: TextView) : Boolean
+    abstract fun setUserName(userName: String)
 
     /**
      * This function will set the personal info of a user to the database (firstname, surname, date of birth).

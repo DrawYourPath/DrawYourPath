@@ -2,6 +2,8 @@ package com.github.drawyourpath.bootcamp.database
 
 import android.graphics.Color
 import android.widget.TextView
+import androidx.annotation.NonNull
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -20,14 +22,8 @@ private val TIMEOUT_SERVER_REQUEST: Long = 10
 class FireDatabase : Database() {
     val database: DatabaseReference = Firebase.database.reference
 
-    override fun isUserNameAvailable(userName: String, outputText: TextView): Boolean {
+    override fun isUserNameAvailable(userName: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
-
-        if (userName == "") {
-            outputText.text = buildString { append("The username can't be empty !") }
-            outputText.setTextColor(Color.RED)
-            return false
-        }
 
         database.child("users").child(userName).get().addOnSuccessListener {
             if (it.value == null) future.complete(true)
@@ -35,49 +31,13 @@ class FireDatabase : Database() {
         }.addOnFailureListener {
             future.completeExceptionally(it)
         }
-        val unAvailableOutput: String = buildString {
-            append("*The username ")
-            append(userName)
-            append(" is NOT available !")
-        }
-        val availableOutput: String = buildString {
-            append("*The username ")
-            append(userName)
-            append(" is available !")
-        }
-        val serverUnreachable: String = "The server is unreachable, please try again later !"
-
-        //since the orTimeout require an API level 33(we are in min API level 28), we can't use it
-        val durationFuture = future.thenAccept {
-            if (it) {
-                outputText.text = availableOutput
-                outputText.setTextColor(Color.GREEN)
-            } else {
-                outputText.text = unAvailableOutput
-                outputText.setTextColor(Color.RED)
-            }
-        }
-        if(outputText.text.toString() == availableOutput){
-            return true
-        }
-        /*
-        outputText.text = serverUnreachable
-        outputText.setTextColor(Color.RED)
-        */
-        if (outputText.text.toString() == availableOutput) {
-            return true
-        }
-        return false
+        return future
     }
-
-    override fun setUserName(userName: String, outputText: TextView): Boolean {
-        if (isUserNameAvailable(userName, outputText)) {
-            val userAdd = HashMap<String, String>()
-            userAdd.put(userName, "empty")
-            database.child("users").updateChildren(userAdd as Map<String, Any>)
-            return true
-        }
-        return false
+    override fun setUserName(userName: String) {
+        val userAdd = HashMap<String, String>()
+        userAdd.put(userName, "empty")
+        database.child("users").updateChildren(userAdd as Map<String, Any>)
+            .addOnFailureListener{throw Exception("Impossible to add the username on the database")}
     }
 
     override fun setPersonalInfo(username: String, firstname: String, surname: String, dateOfBirth: LocalDate) {
@@ -86,7 +46,7 @@ class FireDatabase : Database() {
         userAdd.put("surname", surname)
         val dateOfBirthStr: String = dateOfBirth.dayOfMonth.toString() + " / " + dateOfBirth.monthValue + " / " + dateOfBirth.year
         userAdd.put("dateOfBirth", dateOfBirthStr)
-        database.child("users").child(username).updateChildren(userAdd as Map<String, Any>)
+        updateUserData(userAdd, username)
     }
 
     override fun setUserGoals(username: String, distanceGoal: Int, timeGoal: Int, nbOfPathsGoal: Int) {
@@ -94,7 +54,22 @@ class FireDatabase : Database() {
         userAdd.put("distanceGoal", distanceGoal.toString())
         userAdd.put("activityTimeGoal", timeGoal.toString())
         userAdd.put("numberOfPathsGoal", nbOfPathsGoal.toString())
-        database.child("users").child(username).updateChildren(userAdd as Map<String, Any>)
+        updateUserData(userAdd, username)
+    }
+
+    /**
+     * Helper functions to add some data to a user profile withe his username to the database
+     * @param data date to add to the database
+     * @param username corresponding to the user profile
+     */
+    private fun updateUserData(data: Map<String, Any>, username: String){
+        database.child("users").child(username).updateChildren(data)
+            .addOnFailureListener{throw Exception(buildString {
+        append("Impossible to add the data on the user: ")
+        append(username)
+        append(" on the database")
+    })}
     }
 }
+
 

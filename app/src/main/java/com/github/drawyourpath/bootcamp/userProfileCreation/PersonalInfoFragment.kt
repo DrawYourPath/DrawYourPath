@@ -24,20 +24,13 @@ import java.util.*
 private val MIN_AGE: Int = 10
 private val MAX_AGE: Int = 100
 
-class PersonalInfoFragment : Fragment() {
+class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
     private var isTest: Boolean = false
     private var userName: String = ""
-    private var dateOfBirth: LocalDate = getTodayDate()
+    private var dateOfBirth: LocalDate = LocalDate.now()
     private var firstname: String = ""
     private var surname: String = ""
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_personal_info, container, false)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //retrieve the isRunTestValue and userName from the UserNameTestAndSetFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag == null) {
@@ -67,9 +60,9 @@ class PersonalInfoFragment : Fragment() {
                 return DatePickerDialog(
                     requireContext(),
                     this,
-                    getTodayDate().year,
-                    getTodayDate().monthValue,
-                    getTodayDate().dayOfMonth
+                    LocalDate.now().year,
+                    LocalDate.now().monthValue-1,
+                    LocalDate.now().dayOfMonth
                 )
             }
 
@@ -135,7 +128,6 @@ class PersonalInfoFragment : Fragment() {
                 }
             }
         }
-        return view
     }
 }
 
@@ -151,19 +143,16 @@ private fun checkName(name: String, outputErrorText: TextView): Boolean {
     val incorrectName: String =
         "* This field is in an incorrect format ! It must be composed of letters or character '-'"
     //check if the name is empty
-    if (name == "") {
+    if (name.isEmpty()) {
         outputErrorText.text = emptyName
         outputErrorText.setTextColor(Color.RED)
         return false
     }
     //check all the characters of the name
-    val tabChar: CharArray = name.toCharArray()
-    for (i in 0..(name.length - 1)) {
-        if (!(tabChar[i].isLetter() || tabChar[i] == '-')) {
-            outputErrorText.text = incorrectName
-            outputErrorText.setTextColor(Color.RED)
-            return false
-        }
+    if (name.find { !it.isLetter() && it != '-' } != null) {
+        outputErrorText.text = incorrectName
+        outputErrorText.setTextColor(Color.RED)
+        return false
     }
     //if no error, print anything
     outputErrorText.text = ""
@@ -183,14 +172,14 @@ private fun checkDateOfBirth(dateOfBirth: LocalDate, outputErrorText: TextView):
     val incorrectDate: String = "* Your birthdate is impossible at this date"
 
     //The user forgot to enter a date
-    if (dateOfBirth == getTodayDate()) {
+    if (dateOfBirth == LocalDate.now()) {
         outputErrorText.text = emptyDate
         outputErrorText.setTextColor(Color.RED)
         return false
     }
 
     //check if the date of birth respect the age conditions
-    val todayDate = getTodayDate()
+    val todayDate = LocalDate.now()
     val minTodayAge: LocalDate =
         LocalDate.of(todayDate.year - MIN_AGE, todayDate.monthValue, todayDate.dayOfMonth)
     val maxTodayAge: LocalDate =
@@ -205,14 +194,3 @@ private fun checkDateOfBirth(dateOfBirth: LocalDate, outputErrorText: TextView):
     return true
 }
 
-/**
- * Helper function to get the actual date of the day
- * @return the date of tha today
- */
-private fun getTodayDate(): LocalDate {
-    val c = Calendar.getInstance()
-    val todayD = c.get(Calendar.DAY_OF_MONTH)
-    val todayM = c.get(Calendar.MONTH)
-    val todayY = c.get(Calendar.YEAR)
-    return LocalDate.of(todayY, todayM, todayD)
-}

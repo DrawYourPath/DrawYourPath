@@ -14,7 +14,7 @@ import com.github.drawyourpath.bootcamp.database.Database
 import com.github.drawyourpath.bootcamp.database.FireDatabase
 import com.github.drawyourpath.bootcamp.database.MockDataBase
 
-class UserGoalsInitFragment : Fragment() {
+class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
     private var isTest: Boolean = false
     private var username: String = ""
 
@@ -23,14 +23,7 @@ class UserGoalsInitFragment : Fragment() {
     private var distanceGoal: Int = 0
     private var nunberOfPathGoal: Int = 0
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_user_goals_init, container, false)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag == null) {
@@ -102,7 +95,6 @@ class UserGoalsInitFragment : Fragment() {
                 }
             }
         }
-        return view
     }
 }
 
@@ -120,15 +112,12 @@ private fun isNumberCorrect(inputNumber: String, outputErrorText: TextView): Boo
         outputErrorText.setTextColor(Color.RED)
         return false
     }
-    //check if the input is an integer
-    val inputArrayChars = inputNumber.toCharArray()
-    for (i in 0..(inputNumber.length - 1)) {
-        if (!(inputArrayChars[i].isDigit())) {
-            outputErrorText.text = "* This field can be only composed of integer number."
-            outputErrorText.setTextColor(Color.RED)
-            return false
-        }
+    if (inputNumber.find { !(it.isDigit()) } != null) {
+        outputErrorText.text = "* This field can be only composed of integer number."
+        outputErrorText.setTextColor(Color.RED)
+        return false
     }
+
 
     //if no error, print anything
     outputErrorText.text = ""

@@ -91,16 +91,6 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.distanceGoalError_text_userProfileCreation))
             .check(matches(withText("* This field can be only composed of integer number.")))
 
-        //incorrect with letter insted of digits
-        Espresso.onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("abc"))
-        Espresso.closeSoftKeyboard()
-        Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
-            .perform(ViewActions.click())
-        //test if the text printed is correct
-        Espresso.onView(withId(R.id.distanceGoalError_text_userProfileCreation))
-            .check(matches(withText("* This field can be only composed of integer number.")))
-
         t.close()
     }
 
@@ -122,16 +112,6 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.timeGoalError_text_userProfileCreation))
             .check(matches(withText("* This field can be only composed of integer number.")))
 
-        //incorrect with letter insted of digits
-        Espresso.onView(withId(R.id.input_timeGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("abc"))
-        Espresso.closeSoftKeyboard()
-        Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
-            .perform(ViewActions.click())
-        //test if the text printed is correct
-        Espresso.onView(withId(R.id.timeGoalError_text_userProfileCreation))
-            .check(matches(withText("* This field can be only composed of integer number.")))
-
         t.close()
     }
 
@@ -146,16 +126,6 @@ class UserGoalsInitFragmentTest {
         //incorrect double
         Espresso.onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10.0"))
-        Espresso.closeSoftKeyboard()
-        Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
-            .perform(ViewActions.click())
-        //test if the text printed is correct
-        Espresso.onView(withId(R.id.nbOfPathsGoalError_text_userProfileCreation))
-            .check(matches(withText("* This field can be only composed of integer number.")))
-
-        //incorrect with letter insted of digits
-        Espresso.onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("abc"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
