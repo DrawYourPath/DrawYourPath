@@ -17,13 +17,7 @@ class MockDataBase : Database() {
         //add an element in the user database to test the UI
         usersDataBase.add("albert")
 
-        val future = CompletableFuture<Boolean>()
-        if(usersDataBase.contains(userName)){
-            future.complete(false)
-        }else{
-            future.complete(true)
-        }
-        return future
+        return CompletableFuture.completedFuture(!usersDataBase.contains(userName))
     }
 
     override fun setUserName(userName: String) {

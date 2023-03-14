@@ -44,9 +44,13 @@ class FireDatabase : Database() {
         val userAdd = HashMap<String, String>()
         userAdd.put("firstname", firstname)
         userAdd.put("surname", surname)
-        val dateOfBirthStr: String = dateOfBirth.dayOfMonth.toString() + " / " + dateOfBirth.monthValue + " / " + dateOfBirth.year
-        userAdd.put("dateOfBirth", dateOfBirthStr)
         updateUserData(userAdd, username)
+
+        //for the date
+        val unixDate: Long = dateOfBirth.toEpochDay()
+        val userDateMap = HashMap<String, Long>()
+        userDateMap.put("dateOfBirth", unixDate)
+        updateUserData(userDateMap, username)
     }
 
     override fun setUserGoals(username: String, distanceGoal: Int, timeGoal: Int, nbOfPathsGoal: Int) {

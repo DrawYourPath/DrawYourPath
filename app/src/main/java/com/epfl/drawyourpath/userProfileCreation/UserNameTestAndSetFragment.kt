@@ -11,6 +11,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
+import java.util.concurrent.TimeUnit
 
 class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and_set) {
 
@@ -94,14 +95,16 @@ private fun usernameAvaibility(database: Database, username: String, outputMessa
 
     //since the orTimeout require an API level 33(we are in min API level 28), we can't use it
     val durationFuture = future.thenAccept {
-        if (it) {
-            outputMessage.text = availableOutput
-            outputMessage.setTextColor(Color.GREEN)
-        } else {
-            outputMessage.text = unAvailableOutput
-            outputMessage.setTextColor(Color.RED)
+        outputMessage.text = buildString {
+            append("*The username ")
+            append(username)
+            append(" is ")
+            append(if (!it) "NOT " else "")
+            append("available !")
         }
+        outputMessage.setTextColor(if (!it) Color.GREEN else Color.RED)
     }
+
     if(outputMessage.text.toString() == availableOutput){
         return true
     }
