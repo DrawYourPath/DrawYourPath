@@ -18,4 +18,9 @@
     <string name="stats">Stats</string>
     <string name="stats_and_stuff">Stats and stuff</string>
     <string name="server_client_id">593734550817-74svh08a2ram22m54eqvln88kecg3nr0.apps.googleusercontent.com</string>
+    <string name="current_password">Current password:</string>
+    <string name="new_password">New password:</string>
+    <string name="confirm_new_password">Confirm new password:</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
 </resources>

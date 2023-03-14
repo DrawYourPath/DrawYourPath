@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "bootcamp"
+rootProject.name = "drawyourpath"
 include ':app'
 
 ext.isCiServer = System.getenv().containsKey("CIRRUS_CI")

@@ -1,10 +1,10 @@
 package com.epfl.drawyourpath.login
 
 import android.os.Bundle
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 
 interface LoginActivityListener {
