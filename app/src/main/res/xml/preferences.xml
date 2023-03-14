@@ -25,7 +25,7 @@
             app:useSimpleSummaryProvider="true" />
 
         <Preference
-            app:fragment="com.epfl.drawyourpath.settings.ModifyPasswordFragment"
+            app:fragment="com.epfl.drawyourpath.preferences.ModifyPasswordFragment"
             app:key="modify_password"
             app:title="Modify password" />
 
