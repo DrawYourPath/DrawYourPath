@@ -24,6 +24,7 @@ class Run (
         calculateDistance()
         calculateDuration()
         calculateAverageSpeed()
+        calculateTimeForOneKilometer()
     }
 
 
@@ -36,6 +37,13 @@ class Run (
     private var averageSpeed: Double = 0.0
     //the calorie burn of the run
     private var calories: Int = 0
+    //time it took to run 1km (in seconds)
+    private var timeForOneKilometer: Long = 0L
+
+
+    private fun calculateTimeForOneKilometer() {
+        timeForOneKilometer = (averageSpeed * 1000).toLong()
+    }
 
 
 
@@ -104,7 +112,13 @@ class Run (
         return calories
     }
 
+    /**
+     * Returns the time it took to run 1km (in seconds)
+     */
+    fun getTimeForOneKilometer(): Long{
+        return timeForOneKilometer
 
+    }
 
 
 }

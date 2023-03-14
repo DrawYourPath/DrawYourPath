@@ -67,17 +67,16 @@ class RunTest {
     }
 
     @Test
-    fun calculateCalorieBurn() {
+    fun calculateTimeForOneKilometer() {
         // create a run with known path and duration
-        val point = LatLng(1.0, 1.0)
-        val points = listOf(point)
+        val point1 = LatLng(0.0, 0.0)
+        val point2 = LatLng(1.0, 1.0)
+        val points = listOf(point1, point2)
         val path = Path(points)
-        val startTime = System.currentTimeMillis()
-        val endTime = startTime + 3000
+        val startTime = 0L
+        val endTime = 3000L
         val run = Run(path, startTime, endTime)
-        // calculate calorie burn
-        run.calculateCalorieBurn()
-        // check that calorie burn is non-negative
-        assertTrue(run.getCalories() == 0)
+
+        assertEquals((path.getDistance()/3000)*1000, run.getTimeForOneKilometer().toDouble(), 1.0)
     }
 }
