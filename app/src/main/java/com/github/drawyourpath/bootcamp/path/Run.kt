@@ -10,7 +10,7 @@ import com.firebase.ui.auth.data.model.User
  * Various methods are included to calculate and retrieve this information.
  */
 class Run (
-    val user: User,
+    //val user: User,             //TODO add later
     private val path: Path,       //represents the path taken by the user
     private val startTime: Long,  //the timestamps of the run
     private val endTime: Long
@@ -23,6 +23,7 @@ class Run (
         }
         calculateDistance()
         calculateDuration()
+        calculateAverageSpeed()
     }
 
 
@@ -39,8 +40,7 @@ class Run (
 
 
     private fun calculateAverageSpeed() {
-        val durationInSeconds = (endTime - startTime) / 1000.0
-        averageSpeed = distance / durationInSeconds
+        averageSpeed = distance / duration
 
     }
 
