@@ -50,10 +50,11 @@ class MainActivityTest {
         onView(withId(R.id.fragment_history)).check(matches(isDisplayed()))
 
         // Go to settings
-        onView(withId(R.id.settings_menu_item)).perform(click())
+        onView(withId(R.id.preferences_menu_item)).perform(click())
 
         // Check fragment is settings
-        onView(withId(R.id.fragment_settings)).check(matches(isDisplayed()))
+        // see https://stackoverflow.com/questions/45172505/testing-android-preferencefragment-with-espresso
+        onView(withId(androidx.preference.R.id.recycler_view)).check(matches(isDisplayed()))
     }
 
     @Test
