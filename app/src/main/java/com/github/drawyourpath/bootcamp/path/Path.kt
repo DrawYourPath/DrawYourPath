@@ -8,38 +8,60 @@ import com.google.android.gms.maps.model.PolylineOptions
 // Define a Path class that represents a runner's path.
 class Path {
 
-    // Constructor that creates an empty path.
+    /**
+     * Constructor that creates an empty path.
+     */
     constructor()
 
-    // Constructor that creates a path from a list of points.
+    /**
+     * Constructor that creates a path from a list of points.
+     */
     constructor(points: List<LatLng>) {
         this.points.addAll(points)
     }
 
-    //private mutable list to store the path as a collection of points.
+
+    /**
+     * private mutable list to store the path as a collection of points.
+     */
     private val points = mutableListOf<LatLng>()
 
-    // Add a point to the path's list of points(at the end of the list).
+
+    /**
+     * Add a point to the path's list of points(at the end of the list).
+     */
     fun addPoint(point: LatLng) {
         points.add(point)
     }
 
-    // Return an immutable list of the path's points.
+
+    /**
+     * Return an immutable list of the path's points.
+     */
     fun getPoints(): List<LatLng> {
         return points.toList()
     }
 
-    // Clear the path's list of points.
+
+    /**
+     * Clear the path's list of points.
+     */
     fun clear() {
         points.clear()
     }
 
-    // Return the number of points in the path.
+
+    /**
+     * Return the number of points in the path.
+     */
     fun size(): Int {
         return points.size
     }
 
-    //helper function to calculate distance between two points(in meters)
+
+    /**
+     * helper function to calculate distance between two points(in meters)
+     */
     private fun distance(point1: LatLng, point2: LatLng): Double {
         val lat1 = point1.latitude
         val lat2 = point2.latitude
@@ -58,7 +80,10 @@ class Path {
 
     }
 
-    //function that returns the distance of the path in meters.
+
+    /**
+     * function that returns the distance of the path in meters.
+     */
     fun getDistance(): Double {
         var distance = 0.0
         for (i in 0 until points.size - 1) {
@@ -67,7 +92,10 @@ class Path {
         return distance
     }
 
-    // Return a Polyline object representing the path.
+
+    /**
+     * Return a Polyline object representing the path.
+     */
     fun getPolyline(): PolylineOptions {
 
         // Create a new PolylineOptions object to define the appearance of the polyline.

@@ -49,6 +49,9 @@ class Run (
     }
 
 
+    /**
+     * Calculates the calorie burn of the run based on the characteristics of the user.(not yes implemented)
+     */
     fun calculateCalorieBurn() {
         calories = 0
         //TODO implement later based on the characteristics of the user
@@ -58,26 +61,45 @@ class Run (
         this.distance = path.getDistance()
     }
 
+    /**
+     * Returns the distance of the run (in meters)
+     */
     fun getDistance(): Double {
         return distance
     }
 
+
+    /**
+     * Returns the duration of the run (in seconds)
+     */
     fun getDuration(): Long {
         return duration
     }
 
+    /**
+     * Returns the start and end time of the run (in seconds)
+     */
     fun getStartTime(): Long {
         return startTime
     }
 
+    /**
+     * Returns the end time of the run (in seconds)
+     */
     fun getEndTime(): Long {
         return endTime
     }
 
+    /**
+     * Returns the average speed of the run (in meters per second)
+     */
     fun getAverageSpeed(): Double {
         return averageSpeed
     }
 
+    /**
+     * Returns the calorie burn of the run
+     */
     fun getCalories(): Int {
         return calories
     }
