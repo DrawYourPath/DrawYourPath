@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".userProfileCreation.UserNameTestAndSetFragment"
+    tools:context="com.epfl.drawyourpath.userProfileCreation.UserNameTestAndSetFragment"
     android:id="@+id/userName_frame"
     android:background="@drawable/image_mountain_background"
     >

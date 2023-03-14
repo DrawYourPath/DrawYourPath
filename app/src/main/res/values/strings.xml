@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">bootcamp</string>
+    <string name="app_name">DrawYourPath</string>
     <string name="your_name">Your Name</string>
     <string name="enter_button">enter</string>
     <string name="get_button_firebase">GET</string>
@@ -32,4 +32,16 @@
     <string name="begin_now">BEGIN NOW</string>
     <string name="explication_text_username_init">You can click on the CHECK AVAILABILITY button to check if your proposition is available. After you click on the VALIDATE button your user name is fixed.</string>
     <string name="how_many_time_do_you_want_to_practice_exercise_each_day_in_minutes">How many minutes do you plan to practice exercise each day ?</string>
+    <string name="profile_menu_item">Profile</string>
+    <string name="draw_menu_item">Draw</string>
+    <string name="settings_menu_item">Settings</string>
+    <string name="history_menu_item">History</string>
+    <string name="community_menu_item">Community</string>
+    <string name="friends_menu_item">Friends</string>
+    <string name="username">Username</string>
+    <string name="email_example">example@smth.com</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="stats">Stats</string>
+    <string name="stats_and_stuff">Stats and stuff</string>
+    <string name="server_client_id">593734550817-74svh08a2ram22m54eqvln88kecg3nr0.apps.googleusercontent.com</string>
 </resources>

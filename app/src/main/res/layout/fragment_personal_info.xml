@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".userProfileCreation.PersonalInfoFragment"
+    tools:context="com.epfl.drawyourpath.userProfileCreation.PersonalInfoFragment"
     android:id="@+id/personalInfoFragment"
     android:background="@drawable/image_mountain_background"
     >
@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_gravity="center"
-        tools:context=".userProfileCreation.PersonalInfoFragment">
+        tools:context="com.epfl.drawyourpath.userProfileCreation.PersonalInfoFragment">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
-            tools:context=".userProfileCreation.PersonalInfoFragment">
+            tools:context="com.epfl.drawyourpath.userProfileCreation.PersonalInfoFragment">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
