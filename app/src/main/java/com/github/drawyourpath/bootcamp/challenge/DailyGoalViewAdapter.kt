@@ -49,7 +49,7 @@ class DailyGoalViewAdapter(private val finalDailyGoal: DailyGoal) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.text.text = finalDailyGoal.getGoalToString(position)
+        viewHolder.text.text = finalDailyGoal.getGoalUnit(position)
         viewHolder.editText.setText(finalDailyGoal.getGoalToDouble(position).toInt().toString())
 
         viewHolder.editText.addTextChangedListener(object : TextWatcher {

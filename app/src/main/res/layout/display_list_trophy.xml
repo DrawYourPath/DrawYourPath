@@ -11,10 +11,16 @@
         android:layout_marginRight="6dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="trophy" />
+        android:contentDescription="@string/trophy" />
 
     <TextView
         android:id="@+id/trophy_display_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/trophy_date_display_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

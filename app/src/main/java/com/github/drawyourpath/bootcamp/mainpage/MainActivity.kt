@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.github.drawyourpath.bootcamp.R
+import com.github.drawyourpath.bootcamp.challenge.TemporaryUser
 import com.github.drawyourpath.bootcamp.mainpage.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
 
                 //Display challenge fragment
-                R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>()
+                R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>(TemporaryUser.SAMPLE_DATA)
             }
             drawerLayout.close()
             true
@@ -102,6 +103,15 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             replace<F>(R.id.fragmentContainerView)
+        }
+    }
+
+    private inline fun <reified F : Fragment> replaceFragment(user: TemporaryUser) {
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            val bundle = Bundle()
+            bundle.putSerializable("user", user)
+            replace<F>(R.id.fragmentContainerView, args = bundle)
         }
     }
 }

@@ -7,10 +7,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.drawyourpath.bootcamp.R
-import com.github.drawyourpath.bootcamp.challenge.DailyGoalViewAdapter
-import com.github.drawyourpath.bootcamp.challenge.TemporaryInfo
-import com.github.drawyourpath.bootcamp.challenge.TournamentViewAdapter
-import com.github.drawyourpath.bootcamp.challenge.TrophyViewAdapter
+import com.github.drawyourpath.bootcamp.challenge.*
+import java.util.*
 
 class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
 
@@ -21,16 +19,23 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         val tournamentsView = view.findViewById<RecyclerView>(R.id.tournaments_view)
         val trophiesView = view.findViewById<RecyclerView>(R.id.trophies_view)
 
-        val temp = TemporaryInfo.SAMPLE_DATA
+        var tempUser = TemporaryUser(LinkedList(mutableListOf(DailyGoal(5.0, 15.0, 1))), listOf())
+        tempUser.addTrophy(Trophy.MARATHON)
+        tempUser.addTrophy(Trophy.THEFIRSTPATH)
+        tempUser.addTrophy(Trophy.TENKM)
+
+        if (arguments?.getSerializable("user") != null) {
+            tempUser = arguments?.getSerializable("user") as TemporaryUser
+        }
 
         goalView.layoutManager = LinearLayoutManager(context)
-        goalView.adapter = DailyGoalViewAdapter(temp.dailyGoal)
+        goalView.adapter = DailyGoalViewAdapter(tempUser.getTodayDailyGoal())
 
         tournamentsView.layoutManager = LinearLayoutManager(context)
-        tournamentsView.adapter = TournamentViewAdapter(temp.tournaments)
+        tournamentsView.adapter = TournamentViewAdapter(tempUser.tournaments)
 
         trophiesView.layoutManager = GridLayoutManager(context, 3)
-        trophiesView.adapter = TrophyViewAdapter(temp.trophies)
+        trophiesView.adapter = TrophyViewAdapter(tempUser.getTrophies())
     }
 
 }

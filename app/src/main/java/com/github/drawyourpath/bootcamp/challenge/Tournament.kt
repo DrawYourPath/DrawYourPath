@@ -10,7 +10,7 @@ data class Tournament(
     val startDate: LocalDateTime,
     val endDate: LocalDateTime
     //val result: List<User>?
-){
+) : java.io.Serializable {
 
     fun getStartOrEndDate(): String {
         val now = LocalDateTime.now(Clock.systemDefaultZone())
