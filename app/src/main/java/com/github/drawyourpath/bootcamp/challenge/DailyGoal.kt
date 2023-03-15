@@ -2,6 +2,9 @@ package com.github.drawyourpath.bootcamp.challenge
 
 import java.time.LocalDate
 
+/**
+ * class representing the Daily Goal that the user set
+ */
 data class DailyGoal(
     var distanceInKilometerGoal: Double,
     var timeInMinutesGoal: Double,

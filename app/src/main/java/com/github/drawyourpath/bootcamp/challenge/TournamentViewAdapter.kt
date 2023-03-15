@@ -8,11 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.drawyourpath.bootcamp.R
 
 
-class TournamentViewAdapter(private val tournaments: List<Tournament>) : RecyclerView.Adapter<TournamentViewAdapter.ViewHolder>() {
+/**
+ * used in a recycler view to display the [Tournament]
+ */
+class TournamentViewAdapter(private val tournaments: List<Tournament>) :
+    RecyclerView.Adapter<TournamentViewAdapter.ViewHolder>() {
 
     /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
+     * Custom view holder using a custom layout for tournaments
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView
@@ -38,15 +41,12 @@ class TournamentViewAdapter(private val tournaments: List<Tournament>) : Recycle
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
         viewHolder.name.text = "${tournaments[position].name}"
         viewHolder.description.text = "${tournaments[position].description}"
         viewHolder.date.text = "${tournaments[position].getStartOrEndDate()}"
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = tournaments.count()
 
 }

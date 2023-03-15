@@ -10,6 +10,12 @@ import com.github.drawyourpath.bootcamp.R
 import com.github.drawyourpath.bootcamp.challenge.*
 import java.util.*
 
+/**
+ * Fragment used to display different challenge about the user :
+ * [DailyGoal] the DailyGoal the user set and aims daily
+ * [Tournament] tournament the user takes/took part in
+ * [Trophy] the trophies earned by the user
+ */
 class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -25,6 +31,7 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         tempUser.addTrophy(Trophy.TENKM)
 
         if (arguments?.getSerializable("user") != null) {
+            //getSerializable(key: String?) deprecated but alternative requires API level 33
             tempUser = arguments?.getSerializable("user") as TemporaryUser
         }
 

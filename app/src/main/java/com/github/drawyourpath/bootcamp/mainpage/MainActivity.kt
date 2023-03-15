@@ -106,6 +106,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * use this to replace fragment and give a user
+     * Needs to be changed from [TemporaryUser] to a real user class
+     */
     private inline fun <reified F : Fragment> replaceFragment(user: TemporaryUser) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)

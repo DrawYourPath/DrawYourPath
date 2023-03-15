@@ -4,6 +4,9 @@ import java.time.Clock
 import java.time.Duration
 import java.time.LocalDateTime
 
+/**
+ * class representing tournaments that the user can take part in
+ */
 data class Tournament(
     val name: String,
     val description: String,
@@ -12,6 +15,11 @@ data class Tournament(
     //val result: List<User>?
 ) : java.io.Serializable {
 
+    /**
+     * return a string representing either when it starts, when it ends or when it has ended
+     *
+     * @return the resulting string
+     */
     fun getStartOrEndDate(): String {
         val now = LocalDateTime.now(Clock.systemDefaultZone())
         if (now < startDate) {
@@ -23,6 +31,9 @@ data class Tournament(
         return "Ended the ${getDateToString(endDate)}"
     }
 
+    /**
+     * helper function to get the date
+     */
     private fun getDateToString(date: LocalDateTime): String {
         val res = StringBuilder()
         res.append(date.dayOfMonth)
@@ -33,6 +44,9 @@ data class Tournament(
         return res.toString()
     }
 
+    /**
+     * helper function to get the duration between to dates
+     */
     private fun getDurationToString(duration: Duration): String {
         val res = StringBuilder()
         if (duration.toDays() >= 1L) {
@@ -49,7 +63,6 @@ data class Tournament(
         }
         return res.toString()
     }
-
 
 
 }

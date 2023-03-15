@@ -12,11 +12,14 @@ import com.github.drawyourpath.bootcamp.R
 import java.time.LocalDate
 
 
-class TrophyViewAdapter(private val trophies: List<Pair<Trophy, LocalDate>>) : RecyclerView.Adapter<TrophyViewAdapter.ViewHolder>() {
+/**
+ * used in a recycler view to display the [Trophy]
+ */
+class TrophyViewAdapter(private val trophies: List<Pair<Trophy, LocalDate>>) :
+    RecyclerView.Adapter<TrophyViewAdapter.ViewHolder>() {
 
     /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
+     * Custom view holder using a custom layout for trophies
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val text: TextView
@@ -25,7 +28,6 @@ class TrophyViewAdapter(private val trophies: List<Pair<Trophy, LocalDate>>) : R
         val assets: AssetManager
 
         init {
-            // Define click listener for the ViewHolder's View
             text = view.findViewById(R.id.trophy_display_text)
             dateText = view.findViewById(R.id.trophy_date_display_text)
             image = view.findViewById(R.id.trophy_image)
@@ -44,8 +46,6 @@ class TrophyViewAdapter(private val trophies: List<Pair<Trophy, LocalDate>>) : R
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
         viewHolder.text.text = trophies[position].first.trophyName
         viewHolder.dateText.text = "Acquired ${trophies[position].second.toString()}"
         try {
@@ -58,7 +58,7 @@ class TrophyViewAdapter(private val trophies: List<Pair<Trophy, LocalDate>>) : R
 
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = trophies.count()
 
 }

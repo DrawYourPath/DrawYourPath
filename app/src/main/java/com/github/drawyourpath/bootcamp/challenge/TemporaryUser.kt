@@ -59,17 +59,45 @@ data class TemporaryUser(
 
 
     companion object {
-        val DEFAULT_DAILY_GOAL = DailyGoal(10.0, 30.0, 1,)
+        /**
+         * The default daily goal that will be used if no daily goals are set
+         */
+        val DEFAULT_DAILY_GOAL = DailyGoal(10.0, 30.0, 1)
+
+        /**
+         * sample data used to test
+         */
         val SAMPLE_DATA = TemporaryUser(
             LinkedList(mutableListOf(DailyGoal(10.0, 30.0, 1, 6.34, 12.0, 1))),
             listOf(
-                Tournament("test", "test", LocalDateTime.now().plusDays(3L), LocalDateTime.now().plusDays(4L)),
-                Tournament("2nd test", "test",  LocalDateTime.now().minusDays(1L),  LocalDateTime.now().plusDays(1L)),
-                Tournament("test3", "test3",  LocalDateTime.now().minusDays(3L),  LocalDateTime.now().minusDays(2L)),
-                Tournament("4th test", "test",  LocalDateTime.now(),  LocalDateTime.now().plusDays(3L))
+                Tournament(
+                    "test",
+                    "test",
+                    LocalDateTime.now().plusDays(3L),
+                    LocalDateTime.now().plusDays(4L)
+                ),
+                Tournament(
+                    "2nd test",
+                    "test",
+                    LocalDateTime.now().minusDays(1L),
+                    LocalDateTime.now().plusDays(1L)
+                ),
+                Tournament(
+                    "test3",
+                    "test3",
+                    LocalDateTime.now().minusDays(3L),
+                    LocalDateTime.now().minusDays(2L)
+                ),
+                Tournament(
+                    "4th test",
+                    "test",
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusDays(3L)
+                )
             ),
             createTrophies()
         )
+
         private fun createTrophies(): EnumMap<Trophy, LocalDate> {
             val trophies: EnumMap<Trophy, LocalDate> = EnumMap(Trophy::class.java)
             trophies[Trophy.MARATHON] = LocalDate.now().minusDays(5L)
