@@ -84,8 +84,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     override fun onStart() {
         super.onStart()
 
-        auth.signOut()
-
         // If a user is available now, it was restored from keychain.
         if (restoreUserFromKeychain && auth.getUser() != null) {
             Log.i(LOG_LOGIN_KEY, "User restored from keychain.")
