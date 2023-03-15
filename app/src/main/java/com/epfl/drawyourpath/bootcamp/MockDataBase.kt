@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.bootcamp
 
 import android.widget.EditText
-import com.epfl.drawyourpath.database.Database
 
 class MockDataBase : Database() {
     private var dataMap: HashMap<String, String> = HashMap()
