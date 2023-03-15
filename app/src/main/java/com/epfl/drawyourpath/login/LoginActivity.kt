@@ -32,10 +32,15 @@ abstract class LoginActivityFragment(@LayoutRes layout: Int) : Fragment(layout) 
     }
 }
 
+/**
+ * Class used to display an authentication UI to the user and perform the auth
+ * operations through the Auth object.
+ */
 class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivityListener,
     LoginActivityListener {
     private val viewModel: LoginViewModel by viewModels()
 
+    // The auth object used to authenticate the user.
     private lateinit var auth: Auth
 
     private var useOneTapSignIn: Boolean = false;
@@ -67,6 +72,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
             }
         }
 
+        // When the user changed. i.e. signed out or signed in.
         auth.onAuthStateChanged { _, _ ->
 
         }

@@ -24,6 +24,9 @@ class FirebaseAuth : Auth {
     private val auth = FirebaseAuth.getInstance()
 
     companion object {
+        /**
+         * Adapter for a FirebaseUser class to a User class.
+         */
         private fun convertUser(user: FirebaseUser?): User? {
             if (user == null) {
                 return null
@@ -55,11 +58,16 @@ class FirebaseAuth : Auth {
             }
         }
 
+        /**
+         * Gets the currently logged in user if any or null otherwise.
+         * @return the currently logged in user if any or null otherwise.
+         */
         fun getUser(): User? {
             return convertUser(FirebaseAuth.getInstance().currentUser)
         }
     }
 
+    // Callback fired when an intent with sign-in result is received.
     private var currCallback: AuthCallback? = null
 
     private fun setCurrCallback(callback: AuthCallback): Boolean
@@ -84,16 +92,19 @@ class FirebaseAuth : Auth {
     }
 
     override fun loginWithGoogle(activity: Activity, callback: AuthCallback) {
+        // If an intent is still pending, we fails the sign in attemp.
         if (!setCurrCallback(callback)) {
             return
         }
 
+        // Creates the intent to launch the Google Sign-In flow.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(activity.getString(R.string.server_client_id))
             .requestEmail()
             .build()
         val client = GoogleSignIn.getClient(activity, gso)
 
+        // Launches the intent.
         client.signInIntent.also {
             activity.startActivityForResult(it, REQ_GSI)
         }
@@ -177,6 +188,7 @@ class FirebaseAuth : Auth {
     }
 
     override fun launchOneTapGoogleSignIn(activity: Activity, callback: AuthCallback) {
+        // If an intent is still pending, we fails the sign in attemp.
         if (!setCurrCallback(callback)) {
             return
         }
@@ -204,6 +216,7 @@ class FirebaseAuth : Auth {
     private lateinit var signInRequest: BeginSignInRequest
 
     override fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?) {
+        // Configures the One-Tap Sign-In objects for later use.
         oneTapClient = Identity.getSignInClient(activity)
         signInRequest = BeginSignInRequest.builder()
             .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
@@ -248,12 +261,18 @@ class FirebaseAuth : Auth {
     }
 
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+        // Handles responses from launched intents.
+        // Note that intents from other requests might be received and should be discarded.
         when (requestCode) {
             REQ_GSI     -> onGoogleSignInResult(activity, data)
             REQ_ONE_TAP -> onOneTapSignInResult(activity, data)
         }
     }
 
+    /**
+     * Signs in against the Firebase backend with an Auth Token received from
+     * Google.
+     */
     private fun signInWithGoogleAuthToken(activity: Activity, token: String) {
         val firebaseCredential = GoogleAuthProvider.getCredential(token, null)
         auth.signInWithCredential(firebaseCredential)
