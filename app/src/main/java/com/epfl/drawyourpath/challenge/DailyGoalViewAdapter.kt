@@ -48,39 +48,109 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        viewHolder.text.text = dailyGoal.getGoalUnit(position)
-        viewHolder.editText.setText(dailyGoal.getGoalToDouble(position).toInt().toString())
+        viewHolder.text.text = getGoalUnit(position)
+        viewHolder.editText.setText(getGoalToDouble(dailyGoal, position).toInt().toString())
 
         viewHolder.editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s != null) {
-                    dailyGoal.updateGoal(s.toString(), viewHolder.adapterPosition)
-                    val currentProgress =
-                        dailyGoal.getProgressToDouble(viewHolder.adapterPosition)
-                    val goal = dailyGoal.getGoalToDouble(viewHolder.adapterPosition)
-
-                    viewHolder.progressText.text = "$currentProgress/$goal"
-                    viewHolder.progressBar.max = goal.toInt()
-                    viewHolder.progressBar.progress = min(currentProgress.toInt(), goal.toInt())
+                    updateGoal(dailyGoal, s.toString(), viewHolder.adapterPosition)
+                    displayGoal(viewHolder, viewHolder.adapterPosition)
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {}
-
         })
 
-        val currentProgress = dailyGoal.getProgressToDouble(position)
-        val goal = dailyGoal.getGoalToDouble(position)
-
-        viewHolder.progressText.text = "$currentProgress/$goal"
-        viewHolder.progressBar.max = goal.toInt()
-        viewHolder.progressBar.progress = min(currentProgress.toInt(), goal.toInt())
+        displayGoal(viewHolder, position)
 
     }
 
     // Return the size of the dataset (invoked by the layout manager)
-    override fun getItemCount() = dailyGoal.count()
+    override fun getItemCount() = 3
+
+    /**
+     * display the goal to the view
+     *
+     * @param viewHolder the view of where the items are
+     * @param position the position inside the RecyclerView
+     */
+    private fun displayGoal(viewHolder: ViewHolder, position: Int) {
+        val currentProgress = getProgressToDouble(dailyGoal, position)
+        val goal = getGoalToDouble(dailyGoal, position)
+
+        viewHolder.progressText.text = "$currentProgress/$goal"
+        viewHolder.progressBar.max = goal.toInt()
+        viewHolder.progressBar.progress = min(currentProgress.toInt(), goal.toInt())
+    }
+
+    /**
+     * get the unit associated with the goal
+     * @param pos the position of the goal from 0 to [getItemCount] - 1
+     *
+     * @return the associated unit
+     */
+    private fun getGoalUnit(pos: Int): String {
+        return when (pos) {
+            0 -> "kilometers"
+            1 -> "minutes"
+            2 -> "paths"
+            else -> "Error: pos should be : -1 < pos < $itemCount"
+        }
+    }
+
+    /**
+     * update the goal associated to pos with a new value
+     *
+     * @param value the value
+     * @param pos the position of the goal from 0 to [getItemCount] - 1
+     */
+    private fun updateGoal(goal: DailyGoal, value: String, pos: Int) {
+        val doubleValue = value.toDoubleOrNull()
+
+        if (doubleValue == null || doubleValue <= 0) {
+            return
+        }
+        when (pos) {
+            0 -> goal.distanceInKilometerGoal = doubleValue
+            1 -> goal.timeInMinutesGoal = doubleValue
+            2 -> goal.nbOfPathsGoal = doubleValue.toInt()
+            else -> return
+        }
+    }
+
+    /**
+     * get the value of the associated to the goal
+     *
+     * @param pos the position of the goal from 0 to [getItemCount] - 1
+     *
+     * @return the value of the goal
+     */
+    private fun getGoalToDouble(goal: DailyGoal, pos: Int): Double {
+        return when (pos) {
+            0 -> goal.distanceInKilometerGoal
+            1 -> goal.timeInMinutesGoal
+            2 -> goal.nbOfPathsGoal.toDouble()
+            else -> 0.0
+        }
+    }
+
+    /**
+     * get the value of the associated to the progress towards the goal
+     *
+     * @param pos the position of the goal from 0 to [getItemCount] - 1
+     *
+     * @return the value of the progress
+     */
+    private fun getProgressToDouble(goal: DailyGoal, pos: Int): Double {
+        return when (pos) {
+            0 -> goal.distanceInKilometerProgress
+            1 -> goal.timeInMinutesProgress
+            2 -> goal.nbOfPathsProgress.toDouble()
+            else -> 0.0
+        }
+    }
 
 }

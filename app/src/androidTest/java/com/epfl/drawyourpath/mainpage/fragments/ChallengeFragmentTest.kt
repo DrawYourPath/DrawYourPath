@@ -121,8 +121,8 @@ class ChallengeFragmentTest {
         //check that distance is correct
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(0))
-            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(0)}"))))
-            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(0).toInt().toString()))))
+            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.distanceInKilometerGoal}"))))
+            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.distanceInKilometerGoal.toInt().toString()))))
             .check(matches(hasDescendant(withText("kilometers"))))
 
         scenario.close()
@@ -145,8 +145,8 @@ class ChallengeFragmentTest {
         //check that time is correct
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(1))
-            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(1)}"))))
-            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(1).toInt().toString()))))
+            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.timeInMinutesGoal}"))))
+            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.timeInMinutesGoal.toInt().toString()))))
             .check(matches(hasDescendant(withText("minutes"))))
 
         scenario.close()
@@ -169,8 +169,8 @@ class ChallengeFragmentTest {
         //check that nb of paths is correct
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
-            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(2)}"))))
-            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(2).toInt().toString()))))
+            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.nbOfPathsGoal.toDouble()}"))))
+            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.nbOfPathsGoal.toString()))))
             .check(matches(hasDescendant(withText("paths"))))
 
         scenario.close()
@@ -501,7 +501,7 @@ class ChallengeFragmentTest {
         override fun getDescription() = "replace text on a child view with specified id."
 
         override fun perform(uiController: UiController, view: View) =
-            replaceText(value).perform(uiController, view.findViewById<View>(viewId))
+            replaceText(value).perform(uiController, view.findViewById(viewId))
     }
 
 }
