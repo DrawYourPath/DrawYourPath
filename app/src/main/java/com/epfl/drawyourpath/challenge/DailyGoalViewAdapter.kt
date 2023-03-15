@@ -102,7 +102,7 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
     }
 
     /**
-     * update the goal associated to pos with a new value
+     * update the DailyGoal associated to pos with a new value
      *
      * @param value the value
      * @param pos the position of the goal from 0 to [getItemCount] - 1
@@ -122,7 +122,7 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
     }
 
     /**
-     * get the value of the associated to the goal
+     * get the value of the DailyGoal associated to pos
      *
      * @param pos the position of the goal from 0 to [getItemCount] - 1
      *
@@ -138,7 +138,7 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
     }
 
     /**
-     * get the value of the associated to the progress towards the goal
+     * get the value of the current progress of the DailyGoal associated to pos
      *
      * @param pos the position of the goal from 0 to [getItemCount] - 1
      *
