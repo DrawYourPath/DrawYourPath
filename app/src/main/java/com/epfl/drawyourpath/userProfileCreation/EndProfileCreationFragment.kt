@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.userProfileCreation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.MainActivity
 
 class EndProfileCreationFragment : Fragment(R.layout.fragment_end_profile_creation) {
     private var username = ""
@@ -29,8 +31,7 @@ class EndProfileCreationFragment : Fragment(R.layout.fragment_end_profile_creati
         //go to the app main activity when click on the BEGIN NOW button
         val beginButton: Button = view.findViewById(R.id.goToMainActivity)
         beginButton.setOnClickListener {
-            //TODO
-            //adc some lines code to go to main app activity
+            this.startActivity(Intent(activity, MainActivity::class.java))
         }
     }
 }

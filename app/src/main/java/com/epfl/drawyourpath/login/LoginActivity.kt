@@ -17,6 +17,7 @@ import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.mainpage.MainActivity
+import com.epfl.drawyourpath.userProfileCreation.UserProfileCreationActivity
 
 const val USE_MOCK_AUTH_KEY             = "useMockAuth"
 const val MOCK_AUTH_FAIL                = "useMockAuthFailing"
@@ -83,6 +84,8 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     override fun onStart() {
         super.onStart()
 
+        auth.signOut()
+
         // If a user is available now, it was restored from keychain.
         if (restoreUserFromKeychain && auth.getUser() != null) {
             Log.i(LOG_LOGIN_KEY, "User restored from keychain.")
@@ -132,7 +135,9 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     }
 
     private fun openAccountRegistration() {
-        // TODO: Launch account registration activity.
+
+        val registrationScreen = Intent(this, UserProfileCreationActivity::class.java)
+        this.startActivity(registrationScreen)
     }
 
     private fun openMainMenu() {
