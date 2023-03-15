@@ -8,10 +8,10 @@ import java.time.LocalDate
 data class DailyGoal(
     var distanceInKilometerGoal: Double,
     var timeInMinutesGoal: Double,
-    var nbOfShapesGoal: Int,
+    var nbOfPathsGoal: Int,
     var distanceInKilometerProgress: Double = 0.0,
     var timeInMinutesProgress: Double = 0.0,
-    var nbOfShapesProgress: Int = 0,
+    var nbOfPathsProgress: Int = 0,
     val date: LocalDate = LocalDate.now()
 ) : java.io.Serializable {
 
@@ -21,7 +21,7 @@ data class DailyGoal(
      * @return a new DailyGoal
      */
     fun createNewGoalFromThis(): DailyGoal {
-        return DailyGoal(this.distanceInKilometerGoal, this.timeInMinutesGoal, this.nbOfShapesGoal)
+        return DailyGoal(this.distanceInKilometerGoal, this.timeInMinutesGoal, this.nbOfPathsGoal)
     }
 
     /**
@@ -35,7 +35,7 @@ data class DailyGoal(
         return when (pos) {
             0 -> "kilometers"
             1 -> "minutes"
-            2 -> "shapes"
+            2 -> "paths"
             else -> "Error: pos should be : -1 < pos < ${count()}"
         }
     }
@@ -56,7 +56,7 @@ data class DailyGoal(
         when (pos) {
             0 -> distanceInKilometerGoal = doubleValue
             1 -> timeInMinutesGoal = doubleValue
-            2 -> nbOfShapesGoal = doubleValue.toInt()
+            2 -> nbOfPathsGoal = doubleValue.toInt()
             else -> return
         }
     }
@@ -73,7 +73,7 @@ data class DailyGoal(
         return when (pos) {
             0 -> distanceInKilometerGoal
             1 -> timeInMinutesGoal
-            2 -> nbOfShapesGoal.toDouble()
+            2 -> nbOfPathsGoal.toDouble()
             else -> 0.0
         }
     }
@@ -90,7 +90,7 @@ data class DailyGoal(
         return when (pos) {
             0 -> distanceInKilometerProgress
             1 -> timeInMinutesProgress
-            2 -> nbOfShapesProgress.toDouble()
+            2 -> nbOfPathsProgress.toDouble()
             else -> 0.0
         }
     }

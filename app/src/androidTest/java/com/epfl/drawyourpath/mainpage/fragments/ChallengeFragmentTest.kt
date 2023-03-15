@@ -32,8 +32,11 @@ class ChallengeFragmentTest {
         TemporaryUser(LinkedList(mutableListOf(DailyGoal(5.0, 15.0, 1, 1.56, 12.0, 1))))
 
 
+    /**
+     * test if the distance goal is correctly displayed
+     */
     @Test
-    fun displayCorrectGoal() {
+    fun displayCorrectDistanceGoal() {
         val bundle = Bundle()
         bundle.putSerializable("user", userOnlyGoal)
 
@@ -49,24 +52,63 @@ class ChallengeFragmentTest {
             .check(matches(hasDescendant(withText("1.56/5.0"))))
             .check(matches(hasDescendant(withText("5"))))
             .check(matches(hasDescendant(withText("kilometers"))))
+
+        scenario.close()
+    }
+
+    /**
+     * test if the time goal is correctly displayed
+     */
+    @Test
+    fun displayCorrectTimeGoal() {
+        val bundle = Bundle()
+        bundle.putSerializable("user", userOnlyGoal)
+
+        val scenario = FragmentScenario.launchInContainer(
+            ChallengeFragment::class.java,
+            bundle,
+            R.style.Theme_Bootcamp
+        )
+
         //check that time is correct
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(1))
             .check(matches(hasDescendant(withText("12.0/15.0"))))
             .check(matches(hasDescendant(withText("15"))))
             .check(matches(hasDescendant(withText("minutes"))))
-        //check that nb of shapes is correct
-        onView(withId(R.id.goals_view))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
-            .check(matches(hasDescendant(withText("1.0/1.0"))))
-            .check(matches(hasDescendant(withText("1"))))
-            .check(matches(hasDescendant(withText("shapes"))))
 
         scenario.close()
     }
 
+    /**
+     * test if the nb of paths is correctly displayed
+     */
     @Test
-    fun displayCorrectDefaultGoal() {
+    fun displayCorrectNbPathsGoal() {
+        val bundle = Bundle()
+        bundle.putSerializable("user", userOnlyGoal)
+
+        val scenario = FragmentScenario.launchInContainer(
+            ChallengeFragment::class.java,
+            bundle,
+            R.style.Theme_Bootcamp
+        )
+
+        //check that nb of paths is correct
+        onView(withId(R.id.goals_view))
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
+            .check(matches(hasDescendant(withText("1.0/1.0"))))
+            .check(matches(hasDescendant(withText("1"))))
+            .check(matches(hasDescendant(withText("paths"))))
+
+        scenario.close()
+    }
+
+    /**
+     * test if the default distance goal is correctly displayed when having no previous goal
+     */
+    @Test
+    fun displayCorrectDefaultDistanceGoal() {
         val bundle = Bundle()
         bundle.putSerializable("user", TemporaryUser())
 
@@ -79,87 +121,66 @@ class ChallengeFragmentTest {
         //check that distance is correct
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(0))
-            .check(
-                matches(
-                    hasDescendant(
-                        withText(
-                            "0.0/${
-                                TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(
-                                    0
-                                )
-                            }"
-                        )
-                    )
-                )
-            )
-            .check(
-                matches(
-                    hasDescendant(
-                        withText(
-                            TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(0).toInt().toString()
-                        )
-                    )
-                )
-            )
+            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(0)}"))))
+            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(0).toInt().toString()))))
             .check(matches(hasDescendant(withText("kilometers"))))
-        //check that time is correct
-        onView(withId(R.id.goals_view))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(1))
-            .check(
-                matches(
-                    hasDescendant(
-                        withText(
-                            "0.0/${
-                                TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(
-                                    1
-                                )
-                            }"
-                        )
-                    )
-                )
-            )
-            .check(
-                matches(
-                    hasDescendant(
-                        withText(
-                            TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(1).toInt().toString()
-                        )
-                    )
-                )
-            )
-            .check(matches(hasDescendant(withText("minutes"))))
-        //check that nb of shapes is correct
-        onView(withId(R.id.goals_view))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
-            .check(
-                matches(
-                    hasDescendant(
-                        withText(
-                            "0.0/${
-                                TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(
-                                    2
-                                )
-                            }"
-                        )
-                    )
-                )
-            )
-            .check(
-                matches(
-                    hasDescendant(
-                        withText(
-                            TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(2).toInt().toString()
-                        )
-                    )
-                )
-            )
-            .check(matches(hasDescendant(withText("shapes"))))
 
         scenario.close()
     }
 
+    /**
+     * test if the default time goal is correctly displayed when having no previous goal
+     */
     @Test
-    fun modifyEachGoalCorrectly() {
+    fun displayCorrectDefaultTimeGoal() {
+        val bundle = Bundle()
+        bundle.putSerializable("user", TemporaryUser())
+
+        val scenario = FragmentScenario.launchInContainer(
+            ChallengeFragment::class.java,
+            bundle,
+            R.style.Theme_Bootcamp
+        )
+
+        //check that time is correct
+        onView(withId(R.id.goals_view))
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(1))
+            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(1)}"))))
+            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(1).toInt().toString()))))
+            .check(matches(hasDescendant(withText("minutes"))))
+
+        scenario.close()
+    }
+
+    /**
+     * test if the default nb of paths goal is correctly displayed when having no previous goal
+     */
+    @Test
+    fun displayCorrectDefaultPathsGoal() {
+        val bundle = Bundle()
+        bundle.putSerializable("user", TemporaryUser())
+
+        val scenario = FragmentScenario.launchInContainer(
+            ChallengeFragment::class.java,
+            bundle,
+            R.style.Theme_Bootcamp
+        )
+
+        //check that nb of paths is correct
+        onView(withId(R.id.goals_view))
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
+            .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(2)}"))))
+            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.getGoalToDouble(2).toInt().toString()))))
+            .check(matches(hasDescendant(withText("paths"))))
+
+        scenario.close()
+    }
+
+    /**
+     * test if modifying the distance goal display the correct modified goal
+     */
+    @Test
+    fun modifyDistanceGoalCorrectly() {
         val bundle = Bundle()
         bundle.putSerializable("user", userOnlyGoal)
 
@@ -173,11 +194,12 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    0,
-                    replaceTextOnViewChild("20", R.id.goal_display_edit_text)
+                    0, replaceTextOnViewChild("20", R.id.goal_display_edit_text)
                 )
             )
+
         closeSoftKeyboard()
+
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(0))
@@ -185,15 +207,33 @@ class ChallengeFragmentTest {
             .check(matches(hasDescendant(withText("20"))))
             .check(matches(hasDescendant(withText("kilometers"))))
 
-        //change value of distance
+        scenario.close()
+    }
+
+    /**
+     * test if modifying the time goal display the correct modified goal
+     */
+    @Test
+    fun modifyTimeGoalCorrectly() {
+        val bundle = Bundle()
+        bundle.putSerializable("user", userOnlyGoal)
+
+        val scenario = FragmentScenario.launchInContainer(
+            ChallengeFragment::class.java,
+            bundle,
+            R.style.Theme_Bootcamp
+        )
+
+        //change value of time
         onView(withId(R.id.goals_view))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    1,
-                    replaceTextOnViewChild("60", R.id.goal_display_edit_text)
+                    1, replaceTextOnViewChild("60", R.id.goal_display_edit_text)
                 )
             )
+
         closeSoftKeyboard()
+
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(1))
@@ -201,34 +241,57 @@ class ChallengeFragmentTest {
             .check(matches(hasDescendant(withText("60"))))
             .check(matches(hasDescendant(withText("minutes"))))
 
-        //change value of shape
+        scenario.close()
+    }
+
+    /**
+     * test if modifying the nb of paths goal display the correct modified goal
+     */
+    @Test
+    fun modifyPathGoalCorrectly() {
+        val bundle = Bundle()
+        bundle.putSerializable("user", userOnlyGoal)
+
+        val scenario = FragmentScenario.launchInContainer(
+            ChallengeFragment::class.java,
+            bundle,
+            R.style.Theme_Bootcamp
+        )
+
+        //change value of path
         onView(withId(R.id.goals_view))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    2,
-                    replaceTextOnViewChild("2", R.id.goal_display_edit_text)
+                    2, replaceTextOnViewChild("2", R.id.goal_display_edit_text)
                 )
             )
+
         closeSoftKeyboard()
+
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
             .check(matches(hasDescendant(withText("1.0/2.0"))))
             .check(matches(hasDescendant(withText("2"))))
-            .check(matches(hasDescendant(withText("shapes"))))
+            .check(matches(hasDescendant(withText("paths"))))
 
         scenario.close()
     }
 
-    @Test
-    fun createNewDailyGoalForTodayUsingYesterdayDailyGoal() {
-        val userOnlyGoalYesterday = TemporaryUser(
-            LinkedList(
-                mutableListOf(
-                    DailyGoal(5.0, 15.0, 10, 1.56, 12.0, 9, LocalDate.now().minusDays(1L))
-                )
+    private val userOnlyGoalYesterday = TemporaryUser(
+        LinkedList(
+            mutableListOf(
+                DailyGoal(5.0, 15.0, 10, 1.56, 12.0, 9, LocalDate.now().minusDays(1L))
             )
         )
+    )
+
+    /**
+     * test if the new distance goal for today is the same as yesterday but with a zero progress
+     */
+    @Test
+    fun createNewDailyDistanceGoalForTodayUsingYesterdayDailyDistanceGoal() {
+
         val bundle = Bundle()
         bundle.putSerializable("user", userOnlyGoalYesterday)
 
@@ -244,22 +307,64 @@ class ChallengeFragmentTest {
             .check(matches(hasDescendant(withText("0.0/5.0"))))
             .check(matches(hasDescendant(withText("5"))))
             .check(matches(hasDescendant(withText("kilometers"))))
+
+        scenario.close()
+    }
+
+    /**
+     * test if the new time goal for today is the same as yesterday but with a zero progress
+     */
+    @Test
+    fun createNewDailyTimeGoalForTodayUsingYesterdayDailyTimeGoal() {
+
+        val bundle = Bundle()
+        bundle.putSerializable("user", userOnlyGoalYesterday)
+
+        val scenario = FragmentScenario.launchInContainer(
+            ChallengeFragment::class.java,
+            bundle,
+            R.style.Theme_Bootcamp
+        )
+
         //check that time is correct
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(1))
             .check(matches(hasDescendant(withText("0.0/15.0"))))
             .check(matches(hasDescendant(withText("15"))))
             .check(matches(hasDescendant(withText("minutes"))))
-        //check that nb of shapes is correct
-        onView(withId(R.id.goals_view))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
-            .check(matches(hasDescendant(withText("0.0/10.0"))))
-            .check(matches(hasDescendant(withText("10"))))
-            .check(matches(hasDescendant(withText("shapes"))))
+        //check that nb of paths is correct
 
         scenario.close()
     }
 
+    /**
+     * test if the new nb of paths goal for today is the same as yesterday but with a zero progress
+     */
+    @Test
+    fun createNewDailyPathsGoalForTodayUsingYesterdayDailyPathsGoal() {
+
+        val bundle = Bundle()
+        bundle.putSerializable("user", userOnlyGoalYesterday)
+
+        val scenario = FragmentScenario.launchInContainer(
+            ChallengeFragment::class.java,
+            bundle,
+            R.style.Theme_Bootcamp
+        )
+
+        //check that nb of paths is correct
+        onView(withId(R.id.goals_view))
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(2))
+            .check(matches(hasDescendant(withText("0.0/10.0"))))
+            .check(matches(hasDescendant(withText("10"))))
+            .check(matches(hasDescendant(withText("paths"))))
+
+        scenario.close()
+    }
+
+    /**
+     * test if the tournaments are correctly displayed
+     */
     @Test
     fun displayCorrectTournaments() {
         val endDate3 = LocalDateTime.now().minusDays(2L)
@@ -331,6 +436,9 @@ class ChallengeFragmentTest {
 
     }
 
+    /**
+     * test if the trophies are correctly displayed
+     */
     @Test
     fun displayCorrectTrophies() {
         val trophies: EnumMap<Trophy, LocalDate> = EnumMap(Trophy::class.java)
@@ -381,6 +489,12 @@ class ChallengeFragmentTest {
 
     }
 
+    /**
+     * helper function to perform a replaceText inside a RecyclerView
+     *
+     * @param value the String to replace inside the editText
+     * @param viewId the id of the editText inside the RecyclerView
+     */
     private fun replaceTextOnViewChild(value: String?, viewId: Int) = object : ViewAction {
         override fun getConstraints() = null
 
