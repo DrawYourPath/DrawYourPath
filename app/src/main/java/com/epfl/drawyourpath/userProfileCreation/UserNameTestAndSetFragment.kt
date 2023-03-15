@@ -11,6 +11,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and_set) {
@@ -51,16 +52,18 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
             val usernameStr = inputUserName.text.toString()
             val testUsername = usernameAvaibility(database, usernameStr, showTestResult)
             val previousActivity = activity
-            if (previousActivity != null && testUsername) {
-                database.setUserName(usernameStr)
-                val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
-                val dataToPersoInfoFrag: Bundle = Bundle()
-                //data to transmit to the PersonalInfoFragment(username + isTest)
-                dataToPersoInfoFrag.putBoolean("isRunningTestForDataBase", isTest)
-                dataToPersoInfoFrag.putString("userName", inputUserName.text.toString())
-                val persoInfoFrag = PersonalInfoFragment()
-                persoInfoFrag.arguments = dataToPersoInfoFrag
-                fragManagement.replace(R.id.userName_frame, persoInfoFrag).commit()
+            testUsername.thenAccept{
+                if (previousActivity != null && it) {
+                    database.setUserName(usernameStr)
+                    val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
+                    val dataToPersoInfoFrag: Bundle = Bundle()
+                    //data to transmit to the PersonalInfoFragment(username + isTest)
+                    dataToPersoInfoFrag.putBoolean("isRunningTestForDataBase", isTest)
+                    dataToPersoInfoFrag.putString("userName", inputUserName.text.toString())
+                    val persoInfoFrag = PersonalInfoFragment()
+                    persoInfoFrag.arguments = dataToPersoInfoFrag
+                    fragManagement.replace(R.id.userName_frame, persoInfoFrag).commit()
+                }
             }
         }
     }
@@ -74,27 +77,16 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
  * @param outputMessage editText used to show an error message to the user on the UI if the username is not available
  * @return true if the username is available, and false otherwise
  */
-private fun usernameAvaibility(database: Database, username: String, outputMessage: TextView): Boolean{
+private fun usernameAvaibility(database: Database, username: String, outputMessage: TextView): CompletableFuture<Boolean>{
     if (username == "") {
         outputMessage.text = buildString { append("The username can't be empty !") }
         outputMessage.setTextColor(Color.RED)
-        return false
-    }
-
-    val unAvailableOutput: String = buildString {
-        append("*The username ")
-        append(username)
-        append(" is NOT available !")
-    }
-    val availableOutput: String = buildString {
-        append("*The username ")
-        append(username)
-        append(" is available !")
+        return CompletableFuture.completedFuture(false)
     }
     val future = database.isUserNameAvailable(username)
 
     //since the orTimeout require an API level 33(we are in min API level 28), we can't use it
-    val durationFuture = future.thenAccept {
+    val durationFuture = future.thenApply {
         outputMessage.text = buildString {
             append("*The username ")
             append(username)
@@ -102,11 +94,8 @@ private fun usernameAvaibility(database: Database, username: String, outputMessa
             append(if (!it) "NOT " else "")
             append("available !")
         }
-        outputMessage.setTextColor(if (!it) Color.GREEN else Color.RED)
+        outputMessage.setTextColor(if (it) Color.GREEN else Color.RED)
+        it
     }
-
-    if(outputMessage.text.toString() == availableOutput){
-        return true
-    }
-    return false
+    return durationFuture
 }
