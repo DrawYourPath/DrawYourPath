@@ -263,7 +263,7 @@ class LoginActivityTest {
 
     @Test
     fun failedRegisterAnonymouslyDoesntRedirectToAccountRegistration() {
-        val scenario = launchLoginActivity()
+        val scenario = launchLoginActivity(failingMock = true, useMock = true)
 
         onView(withId(R.id.BT_RegisterAnonymous)).perform(ViewActions.click())
         onView(withId(R.id.BT_RegisterAnonymous)).check(matches(isDisplayed()))
