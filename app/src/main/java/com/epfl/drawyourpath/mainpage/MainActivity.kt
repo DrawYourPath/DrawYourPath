@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.bootcamp.mainpage.fragments.*
+import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -66,6 +66,9 @@ class MainActivity : AppCompatActivity() {
 
                 //Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
+
+                //Display challenge fragment
+                R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>(TemporaryUser.SAMPLE_DATA)
             }
             drawerLayout.close()
             true
@@ -100,6 +103,19 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             replace<F>(R.id.fragmentContainerView)
+        }
+    }
+
+    /**
+     * use this to replace fragment and give a user
+     * Needs to be changed from [TemporaryUser] to a real user class
+     */
+    private inline fun <reified F : Fragment> replaceFragment(user: TemporaryUser) {
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            val bundle = Bundle()
+            bundle.putSerializable("user", user)
+            replace<F>(R.id.fragmentContainerView, args = bundle)
         }
     }
 }

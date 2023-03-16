@@ -15,6 +15,9 @@
                 <item
                     android:id="@+id/stats_menu_item"
                     android:title="@string/stats" />
+                <item
+                    android:id="@+id/challenge_menu_item"
+                    android:title="@string/challenge" />
             </group>
         </menu>
     </item>

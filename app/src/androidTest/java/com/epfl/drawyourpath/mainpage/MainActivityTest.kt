@@ -71,6 +71,13 @@ class MainActivityTest {
 
         // Check fragment is stats
         onView(withId(R.id.fragment_stats)).check(matches(isDisplayed()))
+
+        // Go to challenge
+        onView(withId(R.id.profile_button)).perform(click())
+        onView(withId(R.id.challenge_menu_item)).perform(click())
+
+        // Check fragment is challenge
+        onView(withId(R.id.fragment_challenge)).check(matches(isDisplayed()))
     }
 
 

@@ -63,6 +63,9 @@ dependencies {
     //to have access to the PickerActions method
     androidTestImplementation( "androidx.test.espresso:espresso-contrib:3.5.1")
 
+    // dependency to test recyclerView
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
+
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.2')
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
