@@ -1,35 +1,34 @@
 package com.epfl.drawyourpath.login
 
-import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import android.os.Bundle
+import android.widget.EditText
 import com.epfl.drawyourpath.R
 
 interface LoginActivityListener {
     fun loginWithGoogle()
+    fun loginWithEmailAndPassword(email: String, password: String)
 }
 
-class LoginActions : Fragment(R.layout.fragment_login_actions) {
-    private val viewModel: LoginViewModel by activityViewModels()
-
-    private fun getLoginActivity(): LoginActivityListener
-    {
-        return activity as LoginActivityListener
-    }
-
+class LoginActions : LoginActivityFragment(R.layout.fragment_login_actions) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        assert(activity is LoginActivityListener)
 
         val registerButton = view.findViewById<Button>(R.id.BT_Register)
         registerButton?.setOnClickListener { viewModel.showRegisterUI() }
 
         val loginWithGoogleButton = view.findViewById<Button>(R.id.BT_LoginGoogle)
         loginWithGoogleButton.setOnClickListener {
-            getLoginActivity().loginWithGoogle()
+            getLoginActivity<LoginActivityListener>().loginWithGoogle()
+        }
+
+        val loginWithEmailButton = view.findViewById<Button>(R.id.BT_LoginEmail)
+        loginWithEmailButton.setOnClickListener {
+            getLoginActivity<LoginActivityListener>().loginWithEmailAndPassword(
+                view.findViewById<EditText>(R.id.ET_Email).text.toString(),
+                view.findViewById<EditText>(R.id.ET_Password).text.toString()
+            )
         }
     }
 }

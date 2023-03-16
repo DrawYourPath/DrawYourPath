@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.epfl.drawyourpath.userProfileCreation.EndProfileCreationFragment"
+    android:id="@+id/endProfileCreationFragment"
+    android:background="@drawable/image_mountain_background"
+    >
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        tools:context="com.epfl.drawyourpath.userProfileCreation.EndProfileCreationFragment">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="4dp"
+            android:text="@string/congratulation_your_profile_have_been_successfully_created"
+            android:textIsSelectable="false"
+            android:textSize="20sp"
+            android:textColor="@color/design_default_color_surface"
+            android:justificationMode="inter_word"
+            android:textAlignment="center"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/endProfileCreation_text_userProfileCreation"
+            android:textSize="15sp"
+            android:textColor="@color/design_default_color_surface"
+            android:background="@color/cardview_shadow_start_color"/>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/goToMainActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/begin_now"
+            android:textSize="40sp"/>
+    </LinearLayout>
+
+</FrameLayout>
