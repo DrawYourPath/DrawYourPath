@@ -1,4 +1,4 @@
-package com.github.drawyourpath.bootcamp.path
+package com.github.drawyourpath.path
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.github.drawyourpath.bootcamp.R
+import com.epfl.drawyourpath.R
+import com.github.drawyourpath.bootcamp.path.Run
 
 /**
  * This class is the adapter for the RecyclerView that displays the list of runs.

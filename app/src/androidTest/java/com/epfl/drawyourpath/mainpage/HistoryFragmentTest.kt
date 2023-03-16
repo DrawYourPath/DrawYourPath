@@ -12,11 +12,11 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.UiThreadTestRule
-import com.github.drawyourpath.bootcamp.R
-import com.github.drawyourpath.bootcamp.mainpage.fragments.HistoryFragment
+import com.epfl.drawyourpath.mainpage.fragments.HistoryFragment
+import com.epfl.drawyourpath.R
 import com.github.drawyourpath.bootcamp.path.Path
 import com.github.drawyourpath.bootcamp.path.Run
-import com.github.drawyourpath.bootcamp.path.RunsAdapter
+import com.github.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Rule
