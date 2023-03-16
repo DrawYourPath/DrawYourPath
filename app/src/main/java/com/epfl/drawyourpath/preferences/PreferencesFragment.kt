@@ -6,6 +6,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.FirebaseAuth
+import com.epfl.drawyourpath.login.ENABLE_ONETAP_SIGNIN
 import com.epfl.drawyourpath.login.LoginActivity
 
 class PreferencesFragment : PreferenceFragmentCompat() {
@@ -20,11 +21,16 @@ class PreferencesFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("disconnect")?.setOnPreferenceClickListener {
             val auth = FirebaseAuth()
             auth.signOut()
-            this.startActivity(Intent(this.context, LoginActivity::class.java))
+
+            val intent = Intent(this.context, LoginActivity::class.java)
+            // Disables OneTap
+            intent.putExtra(ENABLE_ONETAP_SIGNIN, false)
+
+            this.startActivity(intent)
             true
         }
     }
-    //TODO: handle preference
+    //TODO: handle other preferences
 }
 
 
