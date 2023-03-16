@@ -1,6 +1,8 @@
 package com.github.drawyourpath.bootcamp.path
 
 import com.firebase.ui.auth.data.model.User
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -25,6 +27,7 @@ class Run (
         calculateDuration()
         calculateAverageSpeed()
         calculateTimeForOneKilometer()
+        calculateCalorieBurn()
     }
 
 
@@ -61,7 +64,7 @@ class Run (
      * Calculates the calorie burn of the run based on the characteristics of the user.(not yes implemented)
      */
     fun calculateCalorieBurn() {
-        calories = 0
+        calories = distance.toInt()
         //TODO implement later based on the characteristics of the user
     }
 
@@ -89,6 +92,15 @@ class Run (
      */
     fun getStartTime(): Long {
         return startTime
+    }
+
+    /**
+     * Returns the date of the run as a string
+     */
+    fun getDate(): String {
+        val date = Date(endTime)
+        val formatter = SimpleDateFormat("MMM d, yyyy HH:mm", Locale.getDefault())
+        return formatter.format(date)
     }
 
     /**
