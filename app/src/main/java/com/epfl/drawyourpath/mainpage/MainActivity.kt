@@ -12,6 +12,12 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.preferences.PreferencesFragment
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -88,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.friends_menu_item -> replaceFragment<FriendsFragment>()
 
                 // Display drawing fragment
-                R.id.draw_menu_item -> replaceFragment<DrawFragment>()
+                R.id.draw_menu_item -> drawFragment()
 
                 // Display history fragment
                 R.id.history_menu_item -> replaceFragment<HistoryFragment>()
@@ -119,4 +125,13 @@ class MainActivity : AppCompatActivity() {
             replace<F>(R.id.fragmentContainerView, args = bundle)
         }
     }
+
+    private inline fun drawFragment() {
+        val mapFragment = SupportMapFragment.newInstance()
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.fragmentContainerView, mapFragment)
+            .commit()
+    }
+
 }
