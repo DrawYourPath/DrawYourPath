@@ -12,7 +12,6 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 
 class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and_set) {
 
@@ -52,7 +51,7 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
             val usernameStr = inputUserName.text.toString()
             val testUsername = usernameAvaibility(database, usernameStr, showTestResult)
             val previousActivity = activity
-            testUsername.thenAccept{
+            testUsername.thenAccept {
                 if (previousActivity != null && it) {
                     database.setUserName(usernameStr)
                     val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
@@ -77,7 +76,11 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
  * @param outputMessage editText used to show an error message to the user on the UI if the username is not available
  * @return true if the username is available, and false otherwise
  */
-private fun usernameAvaibility(database: Database, username: String, outputMessage: TextView): CompletableFuture<Boolean>{
+private fun usernameAvaibility(
+    database: Database,
+    username: String,
+    outputMessage: TextView
+): CompletableFuture<Boolean> {
     if (username == "") {
         outputMessage.text = buildString { append("The username can't be empty !") }
         outputMessage.setTextColor(Color.RED)

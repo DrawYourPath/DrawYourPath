@@ -151,7 +151,7 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
         }
     }
 
-    private enum class GoalPos() {
+    private enum class GoalPos {
         DISTANCE, TIME, PATH;
     }
 

@@ -50,7 +50,7 @@
             android:id="@+id/fragment_container_view"
             android:name="com.epfl.drawyourpath.login.RegisterActions"
             android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
             tools:layout="@layout/fragment_register_actions" />
 
 

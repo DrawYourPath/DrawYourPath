@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
+
 import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.preferences.PreferencesFragment
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity() {
                 //Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
 
+
                 //Display challenge fragment
                 R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>(TemporaryUser.SAMPLE_DATA)
             }
@@ -94,6 +96,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.history_menu_item -> replaceFragment<HistoryFragment>()
 
                 // Display settings fragment
+
                 R.id.preferences_menu_item -> replaceFragment<PreferencesFragment>()
             }
             true
@@ -106,6 +109,7 @@ class MainActivity : AppCompatActivity() {
             replace<F>(R.id.fragmentContainerView)
         }
     }
+
 
     /**
      * use this to replace fragment and give a user

@@ -73,7 +73,7 @@ interface Auth {
     /**
      * Utility methods to setup authentication data.
      * It only needs to be forwarded if authentication methods are called.
-      */
+     */
     fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?)
 
     /**

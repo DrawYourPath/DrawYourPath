@@ -35,19 +35,20 @@
                 android:id="@+id/welcome_message_userProfileCreation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:layout_margin="20dp"
                 android:layout_gravity="center"
-                android:text="@string/welcome_message_userProfileCreation"
-                android:textIsSelectable="false"
-                android:textSize="25sp"
+                android:layout_margin="20dp"
+                android:background="@color/cardview_shadow_start_color"
                 android:justificationMode="inter_word"
+                android:padding="4dp"
+                android:text="@string/welcome_message_userProfileCreation"
                 android:textColor="@color/design_default_color_surface"
-                android:background="@color/cardview_shadow_start_color"/>
+                android:textIsSelectable="false"
+                android:textSize="25sp" />
+
             <Space
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/start_profile_creation_button_userProfileCreation"

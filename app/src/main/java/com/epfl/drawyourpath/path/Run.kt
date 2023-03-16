@@ -1,6 +1,7 @@
 package com.github.drawyourpath.bootcamp.path
 
-import com.firebase.ui.auth.data.model.User
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -9,12 +10,12 @@ import com.firebase.ui.auth.data.model.User
  * user, averageSpeed, and calorie burn.
  * Various methods are included to calculate and retrieve this information.
  */
-class Run (
+class Run(
     //val user: User,             //TODO add later
     private val path: Path,       //represents the path taken by the user
     private val startTime: Long,  //the timestamps of the run
     private val endTime: Long
-        ){
+) {
 
 
     init {
@@ -25,18 +26,22 @@ class Run (
         calculateDuration()
         calculateAverageSpeed()
         calculateTimeForOneKilometer()
+        calculateCalorieBurn()
     }
-
 
 
     //the distance of the run (in meters)
     private var distance: Double = 0.0
+
     //the duration of the run (in seconds)
     private var duration: Long = 0L
+
     //the average speed of the run (in meters per second)
     private var averageSpeed: Double = 0.0
+
     //the calorie burn of the run
     private var calories: Int = 0
+
     //time it took to run 1km (in seconds)
     private var timeForOneKilometer: Long = 0L
 
@@ -44,7 +49,6 @@ class Run (
     private fun calculateTimeForOneKilometer() {
         timeForOneKilometer = (averageSpeed * 1000).toLong()
     }
-
 
 
     private fun calculateAverageSpeed() {
@@ -61,7 +65,7 @@ class Run (
      * Calculates the calorie burn of the run based on the characteristics of the user.(not yes implemented)
      */
     fun calculateCalorieBurn() {
-        calories = 0
+        calories = distance.toInt()
         //TODO implement later based on the characteristics of the user
     }
 
@@ -92,6 +96,15 @@ class Run (
     }
 
     /**
+     * Returns the date of the run as a string
+     */
+    fun getDate(): String {
+        val date = Date(endTime)
+        val formatter = SimpleDateFormat("MMM d, yyyy HH:mm", Locale.getDefault())
+        return formatter.format(date)
+    }
+
+    /**
      * Returns the end time of the run (in seconds)
      */
     fun getEndTime(): Long {
@@ -115,7 +128,7 @@ class Run (
     /**
      * Returns the time it took to run 1km (in seconds)
      */
-    fun getTimeForOneKilometer(): Long{
+    fun getTimeForOneKilometer(): Long {
         return timeForOneKilometer
 
     }

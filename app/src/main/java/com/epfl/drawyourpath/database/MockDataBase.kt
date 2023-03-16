@@ -1,12 +1,7 @@
 package com.epfl.drawyourpath.database
 
-import android.graphics.Color
-import android.widget.TextView
 import java.time.LocalDate
-import java.util.*
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class MockDataBase : Database() {
     var usersDataBase: ArrayList<String> = ArrayList<String>()
@@ -24,13 +19,23 @@ class MockDataBase : Database() {
         usersDataBase.add(userName)
     }
 
-    override fun setPersonalInfo(username: String, firstname: String, surname: String, dateOfBirth: LocalDate) {
+    override fun setPersonalInfo(
+        username: String,
+        firstname: String,
+        surname: String,
+        dateOfBirth: LocalDate
+    ) {
         val userPersonalInfo: PersonalInfo = PersonalInfo(firstname, surname, dateOfBirth)
         usernameToPersonalInfoDataBase.put(username, userPersonalInfo)
     }
 
-    override fun setUserGoals(username: String, distanceGoal: Int, timeGoal: Int, nbOfPathsGoal: Int) {
-        val userGoals: UserGoals = UserGoals(username,distanceGoal,timeGoal, nbOfPathsGoal)
+    override fun setUserGoals(
+        username: String,
+        distanceGoal: Int,
+        timeGoal: Int,
+        nbOfPathsGoal: Int
+    ) {
+        val userGoals: UserGoals = UserGoals(username, distanceGoal, timeGoal, nbOfPathsGoal)
         usernameToUserGoalsDataBase.put(username, userGoals)
     }
 }

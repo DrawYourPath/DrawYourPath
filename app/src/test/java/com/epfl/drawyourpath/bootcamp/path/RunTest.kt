@@ -1,11 +1,7 @@
 package com.github.drawyourpath.bootcamp.path
 
-import android.graphics.Point
-import android.net.Uri
-import com.firebase.ui.auth.data.model.User
 import com.google.android.gms.maps.model.LatLng
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
 import org.junit.Test
 
 class RunTest {
@@ -63,7 +59,7 @@ class RunTest {
         val run = Run(path, startTime, endTime)
 
 
-        assertEquals(path.getDistance()/3000, run.getAverageSpeed(), 0.1)
+        assertEquals(path.getDistance() / 3000, run.getAverageSpeed(), 0.1)
     }
 
     @Test
@@ -77,6 +73,10 @@ class RunTest {
         val endTime = 3000L
         val run = Run(path, startTime, endTime)
 
-        assertEquals((path.getDistance()/3000)*1000, run.getTimeForOneKilometer().toDouble(), 1.0)
+        assertEquals(
+            (path.getDistance() / 3000) * 1000,
+            run.getTimeForOneKilometer().toDouble(),
+            1.0
+        )
     }
 }
