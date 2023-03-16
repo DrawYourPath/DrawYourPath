@@ -1,4 +1,3 @@
-
 package com.epfl.drawyourpath.mainpage.fragments
 
 import androidx.fragment.app.Fragment

@@ -58,7 +58,7 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
                     requireContext(),
                     this,
                     LocalDate.now().year,
-                    LocalDate.now().monthValue-1,
+                    LocalDate.now().monthValue - 1,
                     LocalDate.now().dayOfMonth
                 )
             }

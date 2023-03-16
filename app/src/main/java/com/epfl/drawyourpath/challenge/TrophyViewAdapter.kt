@@ -47,7 +47,7 @@ class TrophyViewAdapter(private val trophies: List<Pair<Trophy, LocalDate>>) :
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         viewHolder.text.text = trophies[position].first.trophyName
-        viewHolder.dateText.text = "Acquired ${trophies[position].second.toString()}"
+        viewHolder.dateText.text = "Acquired ${trophies[position].second}"
         try {
             val imageStream = viewHolder.assets.open(trophies[position].first.imagePath)
             viewHolder.image.setImageDrawable(Drawable.createFromStream(imageStream, null))

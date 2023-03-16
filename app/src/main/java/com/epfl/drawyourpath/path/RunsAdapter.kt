@@ -27,10 +27,12 @@ class RunsAdapter(private val runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         // Set the data to the view items in the layout
         //holder.mapImageView.setImageResource(run.mapImage)
         holder.dateTextView.text = run.getDate()
-        holder.distanceTextView.text = "Distance: ${String.format("%.2f", run.getDistance() / 1000)} Km"
+        holder.distanceTextView.text =
+            "Distance: ${String.format("%.2f", run.getDistance() / 1000)} Km"
         holder.timeTakenTextView.text = "Time taken: ${run.getDuration()} minutes"
         holder.calorieTextView.text = "Calories burned: ${run.getCalories()} kcal"
-        holder.averageSpeedTextView.text = "Speed: ${String.format("%.2f",run.getAverageSpeed())} m/s"
+        holder.averageSpeedTextView.text =
+            "Speed: ${String.format("%.2f", run.getAverageSpeed())} m/s"
     }
 
     override fun getItemCount(): Int {

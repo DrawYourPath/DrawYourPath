@@ -19,8 +19,10 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
 
     private lateinit var runsAdapter: RunsAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
         val runsRecyclerView = view.findViewById<RecyclerView>(R.id.runsRecyclerView)
         runsRecyclerView.layoutManager = LinearLayoutManager(requireContext())

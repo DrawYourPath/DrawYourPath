@@ -1,6 +1,5 @@
 package com.github.drawyourpath.bootcamp.path
 
-import com.firebase.ui.auth.data.model.User
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -11,12 +10,12 @@ import java.util.*
  * user, averageSpeed, and calorie burn.
  * Various methods are included to calculate and retrieve this information.
  */
-class Run (
+class Run(
     //val user: User,             //TODO add later
     private val path: Path,       //represents the path taken by the user
     private val startTime: Long,  //the timestamps of the run
     private val endTime: Long
-        ){
+) {
 
 
     init {
@@ -31,15 +30,18 @@ class Run (
     }
 
 
-
     //the distance of the run (in meters)
     private var distance: Double = 0.0
+
     //the duration of the run (in seconds)
     private var duration: Long = 0L
+
     //the average speed of the run (in meters per second)
     private var averageSpeed: Double = 0.0
+
     //the calorie burn of the run
     private var calories: Int = 0
+
     //time it took to run 1km (in seconds)
     private var timeForOneKilometer: Long = 0L
 
@@ -47,7 +49,6 @@ class Run (
     private fun calculateTimeForOneKilometer() {
         timeForOneKilometer = (averageSpeed * 1000).toLong()
     }
-
 
 
     private fun calculateAverageSpeed() {
@@ -127,7 +128,7 @@ class Run (
     /**
      * Returns the time it took to run 1km (in seconds)
      */
-    fun getTimeForOneKilometer(): Long{
+    fun getTimeForOneKilometer(): Long {
         return timeForOneKilometer
 
     }

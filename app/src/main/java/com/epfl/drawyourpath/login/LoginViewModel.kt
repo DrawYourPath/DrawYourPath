@@ -7,17 +7,17 @@ enum class ELoginView {
     Register,
 }
 
-typealias ChangeLoginViewCallback = (newView: ELoginView) -> Unit;
+typealias ChangeLoginViewCallback = (newView: ELoginView) -> Unit
 
 class LoginViewModel : ViewModel() {
-    private var listener: ChangeLoginViewCallback? = null;
+    private var listener: ChangeLoginViewCallback? = null
 
     /**
      * Fires the view listener for the login UI.
      */
     fun showLoginUI() {
         listener?.let {
-            it(ELoginView.Login);
+            it(ELoginView.Login)
         }
     }
 
@@ -26,7 +26,7 @@ class LoginViewModel : ViewModel() {
      */
     fun showRegisterUI() {
         listener?.let {
-            it(ELoginView.Register);
+            it(ELoginView.Register)
         }
     }
 
@@ -34,6 +34,6 @@ class LoginViewModel : ViewModel() {
      * Sets a new listener for view changes requests.
      */
     fun setViewListener(inListener: ChangeLoginViewCallback) {
-        listener = inListener;
+        listener = inListener
     }
 }

@@ -5,27 +5,20 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
-import androidx.test.rule.ActivityTestRule
-import androidx.test.rule.UiThreadTestRule
-import com.epfl.drawyourpath.mainpage.fragments.HistoryFragment
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.fragments.HistoryFragment
 import com.github.drawyourpath.bootcamp.path.Path
 import com.github.drawyourpath.bootcamp.path.Run
 import com.github.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 
 class HistoryFragmentTest {
-
-
 
 
     private lateinit var scenario: FragmentScenario<HistoryFragment>
@@ -58,7 +51,8 @@ class HistoryFragmentTest {
         runs.add(run2)
 
         scenario.onFragment { fragment ->
-            val recyclerView = fragment.requireView().findViewById<RecyclerView>(R.id.runsRecyclerView)
+            val recyclerView =
+                fragment.requireView().findViewById<RecyclerView>(R.id.runsRecyclerView)
 
             // set up adapter and layoutManager for recyclerView
             recyclerView.adapter = RunsAdapter(runs)
@@ -74,11 +68,32 @@ class HistoryFragmentTest {
             Espresso.onView(ViewMatchers.withId(R.id.runsRecyclerView))
                 .perform(RecyclerViewActions.scrollToPosition<RunsAdapter.ViewHolder>(index))
 
-            Espresso.onView(ViewMatchers.withText(run.getDate())).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(ViewMatchers.withText("Distance: ${String.format("%.2f", run.getDistance() / 1000)} Km")).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(ViewMatchers.withText("Time taken: ${run.getDuration()} minutes")).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(ViewMatchers.withText("Calories burned: ${run.getCalories()} kcal")).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(ViewMatchers.withText("Speed: ${String.format("%.2f",run.getAverageSpeed())} m/s")).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            Espresso.onView(ViewMatchers.withText(run.getDate()))
+                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            Espresso.onView(
+                ViewMatchers.withText(
+                    "Distance: ${
+                        String.format(
+                            "%.2f",
+                            run.getDistance() / 1000
+                        )
+                    } Km"
+                )
+            ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            Espresso.onView(ViewMatchers.withText("Time taken: ${run.getDuration()} minutes"))
+                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            Espresso.onView(ViewMatchers.withText("Calories burned: ${run.getCalories()} kcal"))
+                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            Espresso.onView(
+                ViewMatchers.withText(
+                    "Speed: ${
+                        String.format(
+                            "%.2f",
+                            run.getAverageSpeed()
+                        )
+                    } m/s"
+                )
+            ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         }
     }
 

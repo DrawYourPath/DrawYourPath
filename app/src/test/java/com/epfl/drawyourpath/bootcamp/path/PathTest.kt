@@ -4,7 +4,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 
 class PathTest {

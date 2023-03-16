@@ -33,10 +33,10 @@ class LoginActivityTest {
 
     @Test
     fun loginViewModelWithNoCallbackFailsSilently() {
-        val viewModel = LoginViewModel();
+        val viewModel = LoginViewModel()
 
-        viewModel.showLoginUI();
-        viewModel.showRegisterUI();
+        viewModel.showLoginUI()
+        viewModel.showRegisterUI()
     }
 
 
@@ -54,15 +54,16 @@ class LoginActivityTest {
     ): ActivityScenario<LoginActivity> {
         Intents.init()
 
-        val intent = Intent(getApplicationContext(), LoginActivity::class.java);
-        intent.putExtra(USE_MOCK_AUTH_KEY, useMock);
-        intent.putExtra(MOCK_AUTH_FAIL, failingMock);
+        val intent = Intent(getApplicationContext(), LoginActivity::class.java)
+        intent.putExtra(USE_MOCK_AUTH_KEY, useMock)
+        intent.putExtra(MOCK_AUTH_FAIL, failingMock)
         intent.putExtra(RESTORE_USER_IN_KEYCHAIN, userInKeychain)
         intent.putExtra(ENABLE_ONETAP_SIGNIN, withOneTap)
 
 
         return launch(intent)
     }
+
     @Test
     fun generalLayoutMatchesExpectedContent() {
         val scenario = launchLoginActivity()
@@ -72,9 +73,9 @@ class LoginActivityTest {
         onView(withId(R.id.TXT_Description)).check(matches(ViewMatchers.withSubstring("Choose a way to login")))
 
         // Checks the buttons' content on the register fragment.
-        buttonHasText(R.id.BT_RegisterEmail, "Register with email");
+        buttonHasText(R.id.BT_RegisterEmail, "Register with email")
         buttonHasText(R.id.BT_RegisterGoogle, "Register with Google")
-        buttonHasText(R.id.BT_RegisterAnonymous, "Continue without an account");
+        buttonHasText(R.id.BT_RegisterAnonymous, "Continue without an account")
         buttonHasText(R.id.BT_Login, "I already have an account")
 
         // Switches to the login fragment
@@ -89,7 +90,7 @@ class LoginActivityTest {
 
         Intents.release()
 
-        scenario.close();
+        scenario.close()
     }
 
     @Test
@@ -295,7 +296,8 @@ class LoginActivityTest {
 
     @Test
     fun loginWithInvalidEmailAndPasswordFailsWithFirebaseAuth() {
-        val scenario = launchLoginActivity(useMock = false, withOneTap = false, userInKeychain = false)
+        val scenario =
+            launchLoginActivity(useMock = false, withOneTap = false, userInKeychain = false)
 
         // Empty email
         onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())

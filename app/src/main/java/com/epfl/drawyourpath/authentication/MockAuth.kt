@@ -44,11 +44,11 @@ class MockAuth(
 
     private fun mockLogin(callback: AuthCallback) {
         //Timer().schedule(1500){
-            isLogged = !failing
-            when (failing) {
-                true  -> callback(null, Exception("Mock failing"))
-                false -> callback(MOCK_USER, null)
-            }
+        isLogged = !failing
+        when (failing) {
+            true -> callback(null, Exception("Mock failing"))
+            false -> callback(MOCK_USER, null)
+        }
         //}
     }
 
@@ -79,7 +79,7 @@ class MockAuth(
     }
 
     override fun onAuthStateChanged(callback: AuthCallback) {
-        callback(getUser(), null);
+        callback(getUser(), null)
     }
 
     override fun clearListener() {
@@ -90,8 +90,7 @@ class MockAuth(
         //mockLogin(callback)
         if (withOneTapSignIn) {
             mockLogin(callback)
-        }
-        else {
+        } else {
             callback(null, Exception("Mock Error"))
         }
     }
@@ -109,5 +108,6 @@ class MockAuth(
         requestCode: Int,
         resultCode: Int,
         data: Intent?
-    ) {}
+    ) {
+    }
 }
