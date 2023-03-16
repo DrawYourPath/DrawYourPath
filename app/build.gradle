@@ -48,6 +48,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx:20.1.0'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'androidx.fragment:fragment-ktx:1.5.5'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     debugImplementation 'androidx.test:monitor:1.6.1'
     debugImplementation 'androidx.fragment:fragment-testing:1.5.5'

@@ -34,7 +34,6 @@
     <string name="how_many_time_do_you_want_to_practice_exercise_each_day_in_minutes">How many minutes do you plan to practice exercise each day ?</string>
     <string name="profile_menu_item">Profile</string>
     <string name="draw_menu_item">Draw</string>
-    <string name="settings_menu_item">Settings</string>
     <string name="history_menu_item">History</string>
     <string name="community_menu_item">Community</string>
     <string name="friends_menu_item">Friends</string>
@@ -50,4 +49,10 @@
     <string name="enter_a_number">Enter a number</string>
     <string name="trophy">trophy</string>
     <string name="server_client_id">593734550817-74svh08a2ram22m54eqvln88kecg3nr0.apps.googleusercontent.com</string>
+    <string name="current_password">Current password:</string>
+    <string name="new_password">New password:</string>
+    <string name="confirm_new_password">Confirm new password:</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
+    <string name="preferences_menu_item">Preferences</string>
 </resources>
