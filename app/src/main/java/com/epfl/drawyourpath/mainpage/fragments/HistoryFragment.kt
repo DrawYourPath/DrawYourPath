@@ -60,4 +60,5 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
 
         return runs
     }
+
 }

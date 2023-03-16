@@ -5,7 +5,8 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.Database
+
+
 
 
 class FirebaseBootcampActivity : AppCompatActivity() {

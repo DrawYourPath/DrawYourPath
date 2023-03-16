@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/goal_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:rotation="180"
+            app:indicatorColor="@color/green"
+            app:indicatorSize="100dp"
+            app:trackColor="@color/grey"
+            app:trackCornerRadius="8dp"
+            app:trackThickness="8dp" />
+
+        <TextView
+            android:id="@+id/goal_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent" />
+
+    </RelativeLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <EditText
+        android:id="@+id/goal_display_edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_a_number"
+        android:background="@color/fui_transparent"
+        android:maxLines="1"
+        android:lines="1"
+        android:singleLine="true"
+        android:inputType="number"
+        android:textSize="20sp"
+        android:textAlignment="textEnd"
+        android:layout_gravity="center_vertical|end"
+        android:importantForAutofill="no" />
+
+    <TextView
+        android:id="@+id/goal_display_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="20dp"
+        android:textSize="20sp"
+        />
+
+
+</LinearLayout>

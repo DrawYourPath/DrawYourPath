@@ -50,10 +50,13 @@ class MainActivityTest {
         onView(withId(R.id.fragment_history)).check(matches(isDisplayed()))
 
         // Go to settings
-        onView(withId(R.id.settings_menu_item)).perform(click())
+
+        onView(withId(R.id.preferences_menu_item)).perform(click())
 
         // Check fragment is settings
-        onView(withId(R.id.fragment_settings)).check(matches(isDisplayed()))
+        // see https://stackoverflow.com/questions/45172505/testing-android-preferencefragment-with-espresso
+        onView(withId(androidx.preference.R.id.recycler_view)).check(matches(isDisplayed()))
+
     }
 
     @Test
@@ -71,6 +74,15 @@ class MainActivityTest {
 
         // Check fragment is stats
         onView(withId(R.id.fragment_stats)).check(matches(isDisplayed()))
+
+
+        // Go to challenge
+        onView(withId(R.id.profile_button)).perform(click())
+        onView(withId(R.id.challenge_menu_item)).perform(click())
+
+        // Check fragment is challenge
+        onView(withId(R.id.fragment_challenge)).check(matches(isDisplayed()))
+
     }
 
 

@@ -6,9 +6,34 @@
     <string name="your_e_mail_firebase">Your E-Mail</string>
     <string name="your_phone_number_firebase">Your Phone Number</string>
     <string name="set_button_firebase">SET</string>
+    <string name="welcome_title_userProfileCreation">Welcome !</string>
+    <string name="welcome_message_userProfileCreation">We are happy to welcome you to the DrawYourPath Community. Before you can start to draw your first path, you will need to create your profile.</string>
+    <string name="start_profile_creation_userProfileCreation">Create your profile now</string>
+    <string name="user_name">User Name</string>
+    <string name="please_enter_a_user_name">Please enter a User Name :</string>
+    <string name="test_availability">Test Availability</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="to_get_to_know_you_better">To get to know you better...</string>
+    <string name="enter_your_firstname">Enter your firstname</string>
+    <string name="enter_your_surname">Enter your surname</string>
+    <string name="your_date_of_birth">Your date of birth :</string>
+    <string name="empty_date_view">dd/mm/yyyy</string>
+    <string name="select_a_date">Select a date</string>
+    <string name="to_challenge_you_every_days">To challenge you...</string>
+    <string name="how_many_kilometer_do_you_want_to_run_through_each_day">How many kilometers do you plan to run each day ?</string>
+    <string name="enter_your_distance_goal">Distance (in km)</string>
+    <string name="enter_your_time">Time(in minute)</string>
+    <string name="how_many_path_do_you_want_to_draw_each_day">How many paths do you plan to draw each day ?</string>
+    <string name="enter_your_number_of_path">Number of path</string>
+    <string name="validate">Validate</string>
+    <string name="explication_text_goals_init">One of the goal of the DrawYourPath app is to challenge yourself every day. Please enter some daily goals :</string>
+    <string name="congratulation_your_profile_have_been_successfully_created">Congratulation your profile have been successfully created !</string>
+    <string name="begin_now">BEGIN NOW</string>
+    <string name="explication_text_username_init">You can click on the CHECK AVAILABILITY button to check if your proposition is available. After you click on the VALIDATE button your user name is fixed.</string>
+    <string name="how_many_time_do_you_want_to_practice_exercise_each_day_in_minutes">How many minutes do you plan to practice exercise each day ?</string>
     <string name="profile_menu_item">Profile</string>
     <string name="draw_menu_item">Draw</string>
-    <string name="settings_menu_item">Settings</string>
     <string name="history_menu_item">History</string>
     <string name="community_menu_item">Community</string>
     <string name="friends_menu_item">Friends</string>
@@ -17,5 +42,18 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="stats">Stats</string>
     <string name="stats_and_stuff">Stats and stuff</string>
+
+    <string name="goals">Goals</string>
+    <string name="tournaments">Tournaments</string>
+    <string name="trophies">Trophies</string>
+    <string name="challenge">Challenge</string>
+    <string name="enter_a_number">Enter a number</string>
+    <string name="trophy">trophy</string>
     <string name="server_client_id">593734550817-74svh08a2ram22m54eqvln88kecg3nr0.apps.googleusercontent.com</string>
+    <string name="current_password">Current password:</string>
+    <string name="new_password">New password:</string>
+    <string name="confirm_new_password">Confirm new password:</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
+    <string name="preferences_menu_item">Preferences</string>
 </resources>

@@ -24,6 +24,10 @@ class FirebaseAuth : Auth {
     private val auth = FirebaseAuth.getInstance()
 
     companion object {
+
+        /**
+         * Adapter for a FirebaseUser class to a User class.
+         */
         private fun convertUser(user: FirebaseUser?): User? {
             if (user == null) {
                 return null
@@ -55,11 +59,18 @@ class FirebaseAuth : Auth {
             }
         }
 
+
+        /**
+         * Gets the currently logged in user if any or null otherwise.
+         * @return the currently logged in user if any or null otherwise.
+         */
         fun getUser(): User? {
             return convertUser(FirebaseAuth.getInstance().currentUser)
         }
     }
 
+
+    // Callback fired when an intent with sign-in result is received.
     private var currCallback: AuthCallback? = null
 
     private fun setCurrCallback(callback: AuthCallback): Boolean
@@ -84,45 +95,84 @@ class FirebaseAuth : Auth {
     }
 
     override fun loginWithGoogle(activity: Activity, callback: AuthCallback) {
+
+        // If an intent is still pending, we fails the sign in attemp.
         if (!setCurrCallback(callback)) {
             return
         }
 
+
+        // Creates the intent to launch the Google Sign-In flow.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(activity.getString(R.string.server_client_id))
             .requestEmail()
             .build()
         val client = GoogleSignIn.getClient(activity, gso)
 
+        // Launches the intent.
         client.signInIntent.also {
             activity.startActivityForResult(it, REQ_GSI)
         }
     }
 
     override fun loginWithEmail(email: String, password: String, callback: AuthCallback) {
-        TODO("Not yet implemented")
+
+        try {
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    callback(convertUser(it.user), null)
+                }
+                .addOnFailureListener {
+                    callback(null, it)
+                }
+        }
+        catch (e: Exception) {
+            callback(null, e)
+        }
     }
 
     override fun loginAnonymously(callback: AuthCallback) {
-        TODO("Not yet implemented")
+        auth.signInAnonymously()
+            .addOnSuccessListener {
+                callback(convertUser(it.user!!), null)
+            }
+            .addOnFailureListener {
+                callback(null, it)
+            }
     }
 
     override fun registerWithEmail(email: String, password: String, callback: AuthCallback) {
-        auth
-            .createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener {res ->
-                callback(convertUser(res.user!!), null)
-            }
-            .addOnFailureListener { exc ->
-                callback(null, exc)
-            }
+        if (email.isBlank()) {
+            callback(null, Exception("The email can't be empty."))
+            return
+        }
+
+        if (password.isBlank()) {
+            callback(null, Exception("The password can't be emptyeee."))
+            return
+        }
+
+        try {
+            auth
+                .createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    callback(convertUser(it.user!!), null)
+                }
+                .addOnFailureListener {
+                    callback(null, it)
+                }
+        }
+        catch (e: Exception) {
+            callback(null, e)
+        }
     }
 
     override fun registerWithGoogle(activity: Activity, callback: AuthCallback) {
         loginWithGoogle(activity, callback)
     }
 
-    private var authStateListener: FirebaseAuth.AuthStateListener? = null;
+
+    private var authStateListener: FirebaseAuth.AuthStateListener? = null
 
     override fun onAuthStateChanged(callback: AuthCallback) {
         if (authStateListener != null)
@@ -140,11 +190,14 @@ class FirebaseAuth : Auth {
     override fun clearListener() {
         if (authStateListener != null) {
             auth.removeAuthStateListener(authStateListener!!)
-            authStateListener = null;
+
+            authStateListener = null
         }
     }
 
     override fun launchOneTapGoogleSignIn(activity: Activity, callback: AuthCallback) {
+
+        // If an intent is still pending, we fails the sign in attemp.
         if (!setCurrCallback(callback)) {
             return
         }
@@ -156,11 +209,11 @@ class FirebaseAuth : Auth {
                         result.pendingIntent.intentSender, REQ_ONE_TAP,
                         null, 0, 0, 0, null)
                 } catch (e: IntentSender.SendIntentException) {
-                    Log.e("GSI", "Couldn't start One Tap UI: ${e.localizedMessage}")
+                    consumeCurrCallback(null, e)
                 }
             }
             .addOnFailureListener(activity) { e ->
-                Log.d("GSI", e.localizedMessage!!)
+                consumeCurrCallback(null, e)
             }
     }
 
@@ -172,6 +225,7 @@ class FirebaseAuth : Auth {
     private lateinit var signInRequest: BeginSignInRequest
 
     override fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?) {
+        // Configures the One-Tap Sign-In objects for later use.
         oneTapClient = Identity.getSignInClient(activity)
         signInRequest = BeginSignInRequest.builder()
             .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
@@ -216,12 +270,20 @@ class FirebaseAuth : Auth {
     }
 
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+
+        // Handles responses from launched intents.
+        // Note that intents from other requests might be received and should be discarded.
         when (requestCode) {
             REQ_GSI     -> onGoogleSignInResult(activity, data)
             REQ_ONE_TAP -> onOneTapSignInResult(activity, data)
         }
     }
 
+
+    /**
+     * Signs in against the Firebase backend with an Auth Token received from
+     * Google.
+     */
     private fun signInWithGoogleAuthToken(activity: Activity, token: String) {
         val firebaseCredential = GoogleAuthProvider.getCredential(token, null)
         auth.signInWithCredential(firebaseCredential)

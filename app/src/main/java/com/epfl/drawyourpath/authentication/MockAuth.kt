@@ -33,50 +33,53 @@ class MockAuth(
             }
 
             override fun isAnonymous(): Boolean {
-                return false;
+
+                return false
             }
         }
     }
 
-    private var isLogged = userInKeyChain;
+
+    private var isLogged = userInKeyChain
 
     private fun mockLogin(callback: AuthCallback) {
         //Timer().schedule(1500){
-            isLogged = !failing;
+            isLogged = !failing
             when (failing) {
                 true  -> callback(null, Exception("Mock failing"))
-                false -> callback(MOCK_USER, null);
+                false -> callback(MOCK_USER, null)
             }
         //}
     }
 
     override fun getUser(): User? {
         if (isLogged) return MOCK_USER
-        return null;
+
+        return null
     }
 
     override fun loginWithGoogle(activity: Activity, callback: AuthCallback) {
-        mockLogin(callback);
+        mockLogin(callback)
     }
 
     override fun loginWithEmail(email: String, password: String, callback: AuthCallback) {
-        mockLogin(callback);
+        mockLogin(callback)
     }
 
     override fun loginAnonymously(callback: AuthCallback) {
-        mockLogin(callback);
+        mockLogin(callback)
     }
 
     override fun registerWithEmail(email: String, password: String, callback: AuthCallback) {
-        mockLogin(callback);
+        mockLogin(callback)
     }
 
     override fun registerWithGoogle(activity: Activity, callback: AuthCallback) {
-        mockLogin(callback);
+        mockLogin(callback)
     }
 
     override fun onAuthStateChanged(callback: AuthCallback) {
-
+        callback(getUser(), null);
     }
 
     override fun clearListener() {
@@ -84,7 +87,7 @@ class MockAuth(
     }
 
     override fun launchOneTapGoogleSignIn(activity: Activity, callback: AuthCallback) {
-        //mockLogin(callback);
+        //mockLogin(callback)
         if (withOneTapSignIn) {
             mockLogin(callback)
         }
@@ -94,10 +97,12 @@ class MockAuth(
     }
 
     override fun signOut() {
-        isLogged = false;
+        isLogged = false
     }
 
-    override fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?) {}
+    override fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?) {
+
+    }
 
     override fun onActivityResult(
         activity: Activity,

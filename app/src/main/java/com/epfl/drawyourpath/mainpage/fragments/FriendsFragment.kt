@@ -1,4 +1,5 @@
-package com.epfl.drawyourpath.bootcamp.mainpage.fragments
+
+package com.epfl.drawyourpath.mainpage.fragments
 
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R

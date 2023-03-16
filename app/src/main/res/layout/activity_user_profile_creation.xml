@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.epfl.drawyourpath.userProfileCreation.UserProfileCreationActivity">
+
+    <FrameLayout
+        android:id="@+id/userProfileStartFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/image_mountain_background">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/welcome_title_userProfileCreation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="top|center"
+                android:text="@string/welcome_title_userProfileCreation"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textIsSelectable="false"
+                android:textSize="50sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/welcome_message_userProfileCreation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:layout_margin="20dp"
+                android:layout_gravity="center"
+                android:text="@string/welcome_message_userProfileCreation"
+                android:textIsSelectable="false"
+                android:textSize="25sp"
+                android:justificationMode="inter_word"
+                android:textColor="@color/design_default_color_surface"
+                android:background="@color/cardview_shadow_start_color"/>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/start_profile_creation_button_userProfileCreation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="20dp"
+                android:text="@string/start_profile_creation_userProfileCreation"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>
