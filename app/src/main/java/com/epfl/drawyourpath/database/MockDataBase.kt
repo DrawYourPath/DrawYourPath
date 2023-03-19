@@ -4,15 +4,20 @@ import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
 class MockDataBase : Database() {
-    var userDataBaseWithIds: ArrayList<String> = ArrayList()
     var usersDataBase: ArrayList<String> = ArrayList<String>()
     var usernameToPersonalInfoDataBase: HashMap<String, PersonalInfo> = HashMap()
     var usernameToUserGoalsDataBase: HashMap<String, UserGoals> = HashMap()
+
+    //clean database
+    var userNameToUserId: HashMap<String, String> = HashMap()
+    var userProfileWithUserNameLinckWithId: HashMap<String, String> = HashMap() //1=userId 2=username
+
+
     override fun isUserStoreOnDatabase(userId: String): CompletableFuture<Boolean> {
         //add an element to the list of the user with userId for the tests
-        userDataBaseWithIds.add("id1234")
+        userProfileWithUserNameLinckWithId.put("id1234", "albert")
 
-        return CompletableFuture.completedFuture(userDataBaseWithIds.contains(userId))
+        return CompletableFuture.completedFuture(userProfileWithUserNameLinckWithId.contains(userId))
     }
 
     override fun isUserNameAvailable(userName: String): CompletableFuture<Boolean> {
@@ -20,6 +25,25 @@ class MockDataBase : Database() {
         usersDataBase.add("albert")
 
         return CompletableFuture.completedFuture(!usersDataBase.contains(userName))
+    }
+
+    override fun updateUsername(username: String, userId: String): CompletableFuture<Boolean> {
+        //for the tests
+        userNameToUserId.put("albert", "id1234")
+        userNameToUserId.put("hugo", "id55514")
+        userProfileWithUserNameLinckWithId.put("id1234", "albert")
+
+        val available = !userNameToUserId.contains(username)
+        if(available){
+            //remove the past username has taken
+            val pastUsername = userProfileWithUserNameLinckWithId.get(userId)
+            userNameToUserId.remove(pastUsername)
+            //add the new username linck to the userId
+            userNameToUserId.put(username, userId)
+            //edit the userProfile
+            userProfileWithUserNameLinckWithId.put(userId, username)
+        }
+        return CompletableFuture.completedFuture(available)
     }
 
     override fun setUserName(userName: String) {

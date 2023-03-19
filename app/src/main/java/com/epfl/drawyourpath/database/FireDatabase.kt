@@ -34,6 +34,10 @@ class FireDatabase : Database() {
         return future
     }
 
+    override fun updateUsername(username: String, userId: String): CompletableFuture<Boolean> {
+        TODO("This will be implmented during next task when I will clean the database organisation")
+    }
+
     override fun setUserName(userName: String) {
         val userAdd = HashMap<String, String>()
         userAdd.put(userName, "empty")

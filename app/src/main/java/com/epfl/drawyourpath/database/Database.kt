@@ -22,6 +22,14 @@ abstract class Database {
     abstract fun isUserNameAvailable(userName: String): CompletableFuture<Boolean>
 
     /**
+     * This function will update the username of the user if the username proposed is available(not taken by another user)
+     * @param username prposed by the user(will be set to the userprofile if it's available)
+     * @param userId userId of the user
+     * @return the future that indicate if the username have been updated
+     */
+    abstract fun updateUsername(username: String,userId: String): CompletableFuture<Boolean>
+
+    /**
      * This function will add the user Name to the database to create a new user profile
      * @param userName userName that the user want to set in the database
      */
