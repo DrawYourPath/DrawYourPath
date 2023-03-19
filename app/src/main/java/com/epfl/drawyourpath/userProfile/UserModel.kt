@@ -28,6 +28,8 @@ class UserModel {
 
     //database where the user is store online
     private var database: Database
+    //friend list
+    private var friendsList: HashMap<String, String> //(username, userId)
 
     /**
      * THis constructor will create a new user based on the user model of the app
@@ -104,6 +106,7 @@ class UserModel {
         }
         this.nbOfPathsGoal=nbOfPathsGoal
 
+        this.friendsList = HashMap()
         //TODO: in the next task, the firstname, surname, dateOfBirth and the goals will be set to the database here
     }
 
@@ -245,6 +248,34 @@ class UserModel {
         }
         return age
     }
+
+    /**
+     * This function will remove the user with username to the friend list
+     * @param username of the user that we want to remove
+     */
+    fun removeFriend(username: String) {
+        if(!friendsList.contains(username)) {
+            throw java.lang.Error("This user is not in the friend list !")
+        }
+        friendsList.remove(username)
+    }
+
+    /**
+     * This function will add the user with username to the friend list. To be added the user must be present in the database.
+     * @param username of the user that we want to add to the friend list
+     */
+    fun addFriend(username: String) {
+        //TODO:this function will be implemented during a next task when the database will be cleaned
+    }
+
+    /**
+     * This function will return the friend list of a user
+     * @return the friend list of the user
+     */
+    fun getFriendList():Map<String, String> {
+        return this.friendsList
+    }
+
 }
 
 /**

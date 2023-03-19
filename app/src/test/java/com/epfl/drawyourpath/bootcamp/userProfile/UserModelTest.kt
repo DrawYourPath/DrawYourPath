@@ -316,4 +316,53 @@ class UserModelTest {
         val user2: UserModel = UserModel(userId,username,email,firstname,surname, LocalDate.of(2000,5,20),distanceGoal,timeGoal,nbOfPaths,database)
         assertEquals(user2.getAge(), 22)
     }
+
+    /**
+     * This function check that the correct empty firenlist is return with getFriendList function
+     */
+    @Test
+    fun emptyFriendListIsGet(){
+        val user: UserModel = UserModel(userId,username,email,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val friendList = user.getFriendList()
+        assertEquals(friendList.isEmpty(), true)
+    }
+
+    /**
+     * Test if remove a user with username not present in the friend list throw an error
+     */
+    @Test
+    fun removeFriendNotOnFriendList(){
+        val user: UserModel = UserModel(userId,username,email,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val exception = assertThrows(java.lang.Error::class.java) {
+            user.removeFriend("nathan")
+        }
+        assertEquals("This user is not in the friend list !", exception.message)
+    }
+
+    /**
+     * Test if remove a user with username will remove this user of the friend list
+     */
+    @Test
+    fun removeFriendOnFriendList(){
+        val user: UserModel = UserModel(userId,username,email,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        //TODO: This function will be implemented during a next task
+    }
+
+    /**
+     * Test if add a user with username will add this user to the friend list
+     */
+    @Test
+    fun addFriendOnFriendList(){
+        val user: UserModel = UserModel(userId,username,email,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        //TODO: This function will be implemented during a next task
+    }
+
+    /**
+     * Test if add a user with username not present on the database throw an error
+     */
+    @Test
+    fun addFriendOnFriendListNotPresentOnDataBase(){
+        val user: UserModel = UserModel(userId,username,email,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        //TODO: This function will be implemented during a next task
+    }
 }
