@@ -10,6 +10,17 @@ private val TIMEOUT_SERVER_REQUEST: Long = 10
 
 class FireDatabase : Database() {
     val database: DatabaseReference = Firebase.database.reference
+    override fun isUserStoreOnDatabase(userId: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+
+        database.child("users").child(userId).get().addOnSuccessListener {
+            if (it.value == null) future.complete(true)
+            else future.complete(false)
+        }.addOnFailureListener {
+            future.completeExceptionally(it)
+        }
+        return future
+    }
 
     override fun isUserNameAvailable(userName: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()

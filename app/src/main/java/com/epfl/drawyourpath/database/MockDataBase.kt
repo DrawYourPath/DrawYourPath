@@ -4,9 +4,16 @@ import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
 class MockDataBase : Database() {
+    var userDataBaseWithIds: ArrayList<String> = ArrayList()
     var usersDataBase: ArrayList<String> = ArrayList<String>()
     var usernameToPersonalInfoDataBase: HashMap<String, PersonalInfo> = HashMap()
     var usernameToUserGoalsDataBase: HashMap<String, UserGoals> = HashMap()
+    override fun isUserStoreOnDatabase(userId: String): CompletableFuture<Boolean> {
+        //add an element to the list of the user with userId for the tests
+        userDataBaseWithIds.add("id1234")
+
+        return CompletableFuture.completedFuture(userDataBaseWithIds.contains(userId))
+    }
 
     override fun isUserNameAvailable(userName: String): CompletableFuture<Boolean> {
         //add an element in the user database to test the UI

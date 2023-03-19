@@ -7,6 +7,13 @@ import java.util.concurrent.CompletableFuture
 
 abstract class Database {
     /**
+     * This function is used to know if a certain user is already store in the database
+     * @param userId that correspond to the user
+     * @return a future that indicate if the user is store on the database
+     */
+    abstract fun isUserStoreOnDatabase(userId: String): CompletableFuture<Boolean>
+
+    /**
      * This function will return a future with a boolean to know if the username is available in the database
      * (i.e the userName proposed is not already associated to another user profile)
      * @param userName userName that the user want to use for his user profile
