@@ -4,6 +4,7 @@ import com.epfl.drawyourpath.authentication.Auth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import java.time.LocalDate
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 class UserModel {
@@ -12,7 +13,7 @@ class UserModel {
     //the userId of the user
     private val userId: String
     //the userName is chosen by the user and can be modify
-    private var username: String
+    private lateinit var username: String
     //the email is given at the beginning by the authentication part and can be modify
     private var emailAddress: String
     //the firstname can't be modify after initialization
@@ -46,7 +47,7 @@ class UserModel {
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
      * @throws error if the inputs are incorrect
      */
-    constructor(userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
+    constructor(userAuth: User, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
         this.database = database
         this.userAuth = userAuth
 
@@ -54,14 +55,12 @@ class UserModel {
         this.userId=userAuth.getUid()
         this.emailAddress=userAuth.getEmail()
 
-        //check the username
-        if(username.isEmpty()){
-            throw java.lang.Error("The username can't be empty !")
+        //obtain the userId
+        database.getUsernameFromUserId(userId).thenAccept{
+            if(it != null){
+                this.username = it
+            }
         }
-        if(!checkUsername(userId,username, database)){
-            throw java.lang.Error("The username not correspond to the given userId !")
-        }
-        this.username=username
 
         //check the format of the firstname
         if(!checkNameFormat(firstname)){
@@ -122,11 +121,13 @@ class UserModel {
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun setUsername(username: String){
-        database.updateUsername(username, userId).thenAccept{
+    fun setUsername(username: String): CompletableFuture<Boolean>{
+        return database.updateUsername(username, userId).thenApply{
             if(it){
                 this.username=username
+                true
             }
+            false
         }
     }
     /**
@@ -186,11 +187,12 @@ class UserModel {
      * Use this function to modify the daily distance goal of the user
      * @param distance new daily distance goal
      */
-    fun setDistanceGoal(distance: Double){
+    fun setDistanceGoal(distance: Double): CompletableFuture<Boolean>{
         if(distance <= 0.0){
             throw java.lang.Error("The distance goal can't be equal to 0 !")
         }
         this.distanceGoal=distance
+        return database.setDistanceGoal(userId, distance)
     }
 
     /**
@@ -205,11 +207,12 @@ class UserModel {
      * Use this function to modify the daily activity time goal of the user
      * @param time new daily activity time goal
      */
-    fun setActivityTimeGoal(time: Double){
+    fun setActivityTimeGoal(time: Double): CompletableFuture<Boolean>{
         if(time <= 0.0){
             throw java.lang.Error("The activity time goal can't be equal to 0 !")
         }
         this.activityTimeGoal=time
+        return database.setActivityTimeGoalGoal(userId, time)
     }
 
     /**
@@ -224,11 +227,12 @@ class UserModel {
      * Use this function to modify the daily number of paths goal of the user
      * @param nbOfPaths new daily number of paths goal
      */
-    fun setNumberOfPathsGoal(nbOfPaths: Int){
+    fun setNumberOfPathsGoal(nbOfPaths: Int): CompletableFuture<Boolean>{
         if(nbOfPaths <= 0){
             throw java.lang.Error("The number of paths goal can't be equal to 0 !")
         }
         this.nbOfPathsGoal=nbOfPaths
+        return database.setNbOfPathsGoalGoal(userId, nbOfPaths)
     }
 
     /**
@@ -252,6 +256,7 @@ class UserModel {
             throw java.lang.Error("This user is not in the friend list !")
         }
         friendsList.remove(username)
+        //TODO: Update the friend list in the database
     }
 
     /**
@@ -260,6 +265,7 @@ class UserModel {
      */
     fun addFriend(username: String) {
         //TODO:this function will be implemented during a next task when the database will be cleaned
+        //TODO: Update the friend list in the database
     }
 
     /**
@@ -272,24 +278,6 @@ class UserModel {
 
 }
 
-/**
- * Helper function to check the userId and affect it if it's correct
- * @param userId that correspond to the user
- * @param database where the userId should be present
- */
-private fun checkUserId(userId: String, database: Database):Boolean{
-    return database.isUserStoredInDatabase(userId).get(10, TimeUnit.SECONDS)
-}
-/**
- * Helper function to check the username and affect it if it's correct
- * @param userId that correspond to the user
- * @param username associated to the user profile
- * @param database where the userId should be present
- */
-private fun checkUsername(userId: String, username: String, database: Database): Boolean{
-    //TODO: Will be change in my next task when change the database organization
-    return !database.isUsernameAvailable(username).get(10, TimeUnit.SECONDS)
-}
 /**
  * Helper function to check that the firstname and the surname respect the name format condition of the app
  * @param name to be checked
@@ -308,24 +296,7 @@ private fun checkNameFormat(name: String): Boolean{
  * @return true is the email is in the correct format, and false otherwise
  */
 private fun checkEmail(email: String):Boolean {
-    // check for @ char
-    var atSymbol = email.indexOf("@")
-    if(atSymbol < 1) {
-        return false
-    }
-    //test if the email contain only one @
-    if(email.indexOf("@", atSymbol+1)!= -1){
-        return false
-    }
-
-    var dot = email.indexOf(".", atSymbol)
-
-    // check that the dot is not at the end
-    if (dot === email.length - 1) {
-        return false
-    }
-
-    return true
+    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 /**
  * Helper function to check the date of birth of the user
@@ -333,8 +304,7 @@ private fun checkEmail(email: String):Boolean {
  * @return return true if the user is aged between 10 and 100 years and false otherwise
  */
 private fun checkDateOfBirth(date: LocalDate): Boolean{
-    return date !== null &&
-            date < LocalDate.now().plusYears(-10) &&
+    return date < LocalDate.now().plusYears(-10) &&
             date > LocalDate.now().plusYears(-100)
 }
 

@@ -22,6 +22,10 @@ class FireDatabase : Database() {
         return future
     }
 
+    override fun getUsernameFromUserId(userId: String): CompletableFuture<String> {
+        TODO("Will be implemented in the rebase database task")
+    }
+
     override fun isUsernameAvailable(userName: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
@@ -76,15 +80,15 @@ class FireDatabase : Database() {
         updateUserData(userAdd, username)
     }
 
-    override fun setDistanceGoal(userId: String, distanceGoal: Double) {
+    override fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean> {
         TODO("Will be done in the next task: database rebase")
     }
 
-    override fun setActivityTimeGoalGoal(userId: String, activityTimeGoal: Double) {
+    override fun setActivityTimeGoalGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean> {
         TODO("Will be done in the next task: database rebase")
     }
 
-    override fun setNbOfPathsGoalGoal(userId: String, nbOfPathsGoal: Double) {
+    override fun setNbOfPathsGoalGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         TODO("Will be done in the next task: database rebase")
     }
 
@@ -94,7 +98,7 @@ class FireDatabase : Database() {
      * @param username corresponding to the user profile
      */
     private fun updateUserData(data: Map<String, Any>, username: String) {
-        //TODO:Fix this function in the nxt task such that the user profile is associated to the userId
+        //TODO:Fix this function in the next task such that the user profile is associated to the userId
         database.child("users").child(username).updateChildren(data)
             .addOnFailureListener {
                 throw Exception(buildString {

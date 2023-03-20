@@ -21,27 +21,36 @@ class MockDataBase : Database() {
 
     val userIdTest: String = "aUyFLWgYxmoELRUr3jWYie61jbKO"
     val usernameTest: String ="albert"
+    val distanceGoalTest: Double = 10.0
+    val timeGoalTest: Double = 60.0
+    val nbOfPathsGoalTest: Int = 5
+
+    init {
+        //add elements to the list of the user with userId for the tests
+        usersDataBase.add("albert")
+
+        //clean database
+        usernameToUserId.put(usernameTest, userIdTest)
+        usernameToUserId.put("hugo", "exId")
+        userIdToUsername.put(userIdTest, usernameTest)
+        userIdToDistanceGoal.put(userIdTest, distanceGoalTest)
+        userIdToActivityTimeGoal.put(userIdTest, timeGoalTest)
+        userIdToNbOfPathsGoal.put(userIdTest, nbOfPathsGoalTest)
+    }
 
     override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
-        //add an element to the list of the user with userId for the tests
-        userIdToUsername.put(userIdTest, usernameTest)
-
         return CompletableFuture.completedFuture(userIdToUsername.contains(userId))
     }
 
-    override fun isUsernameAvailable(userName: String): CompletableFuture<Boolean> {
-        //add an element in the user database to test the UI
-        usersDataBase.add("albert")
+    override fun getUsernameFromUserId(userId: String): CompletableFuture<String> {
+        return CompletableFuture.completedFuture(userIdToUsername.get(userId))
+    }
 
+    override fun isUsernameAvailable(userName: String): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(!usersDataBase.contains(userName))
     }
 
     override fun updateUsername(username: String, userId: String): CompletableFuture<Boolean> {
-        //for the tests
-        usernameToUserId.put(usernameTest, userIdTest)
-        usernameToUserId.put("hugo", "exId")
-        userIdToUsername.put(userIdTest, usernameTest)
-
         val available = !usernameToUserId.contains(username)
         if(available){
             //remove the past username has taken
@@ -79,16 +88,19 @@ class MockDataBase : Database() {
         usernameToUserGoalsDataBase.put(username, userGoals)
     }
 
-    override fun setDistanceGoal(userId: String, distanceGoal: Double) {
-        TODO("Not yet implemented")
+    override fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean> {
+        userIdToDistanceGoal.put(userId, distanceGoal)
+        return CompletableFuture.completedFuture(userIdToDistanceGoal.get(userId) == distanceGoal)
     }
 
-    override fun setActivityTimeGoalGoal(userId: String, activityTimeGoal: Double) {
-        TODO("Not yet implemented")
+    override fun setActivityTimeGoalGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean> {
+        userIdToActivityTimeGoal.put(userId, activityTimeGoal)
+        return CompletableFuture.completedFuture(userIdToActivityTimeGoal.get(userId) == activityTimeGoal)
     }
 
-    override fun setNbOfPathsGoalGoal(userId: String, nbOfPathsGoal: Double) {
-        TODO("Not yet implemented")
+    override fun setNbOfPathsGoalGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+        userIdToNbOfPathsGoal.put(userId, nbOfPathsGoal)
+        return CompletableFuture.completedFuture(userIdToNbOfPathsGoal.get(userId) == nbOfPathsGoal)
     }
 }
 

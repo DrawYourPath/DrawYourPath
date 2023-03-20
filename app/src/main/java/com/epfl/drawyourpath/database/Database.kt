@@ -14,6 +14,13 @@ abstract class Database {
     abstract fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean>
 
     /**
+     * This function function will return a future that give the username in function of the userId
+     * @param userId of the user
+     * @return a future that give the usename of the user
+     */
+    abstract fun getUsernameFromUserId(userId: String): CompletableFuture<String>
+
+    /**
      * This function will return a future with a boolean to know if the username is available in the database
      * (i.e the userName proposed is not already associated to another user profile)
      * @param userName userName that the user want to use for his user profile
@@ -67,20 +74,23 @@ abstract class Database {
      * This function will set the daily distance goal to the database(in kilometer)
      * @param userId that correspond to the user
      * @param distanceGoal new distance goal of the user
+     * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setDistanceGoal(userId: String, distanceGoal: Double)
+    abstract  fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean>
 
     /**
      * This function will set the daily activity time goal to the database(in minutes)
      * @param userId that correspond to the user
      * @param activityTimeGoal new activity time goal of the user
+     * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setActivityTimeGoalGoal(userId: String, activityTimeGoal: Double)
+    abstract  fun setActivityTimeGoalGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean>
 
     /**
      * This function will set the daily number of paths goal to the database(integer)
      * @param userId that correspond to the user
      * @param nbOfPathsGoal new number of paths goal of the user
+     * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setNbOfPathsGoalGoal(userId: String, nbOfPathsGoal: Double)
+    abstract  fun setNbOfPathsGoalGoal(userId: String, nbOfPathsGoal: Int):CompletableFuture<Boolean>
 }

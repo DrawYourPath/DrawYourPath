@@ -21,27 +21,6 @@ class UserModelTest {
     private val database = MockDataBase()
     private val auth = MockAuth.MOCK_USER
 
-    /**
-     * Create a UserModel with empty username throw an error
-     */
-    @Test
-    fun createUserWithEmptyUsername(){
-        val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, "",firstname,surname, dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
-        }
-        assertEquals("The username can't be empty !", exception.message)
-    }
-
-    /**
-     * Create a UserModel with invalid username (not associated to the correct userid in the database) throw an error
-     */
-    @Test
-    fun createUserWithInvalidUsername(){
-        val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, "incorrect",firstname,surname, dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
-        }
-        assertEquals("The username not correspond to the given userId !", exception.message)
-    }
 
     /**
      * Create a UserModel with invalid firstname throw an error
@@ -49,12 +28,12 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidFirstname(){
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,"558",surname, dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
+            val user = UserModel(auth, "558",surname, dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
         }
         assertEquals("Incorrect firstname", exception.message)
 
         val exception2 = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,"",surname, dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
+            val user = UserModel(auth, "",surname, dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
         }
         assertEquals("Incorrect firstname", exception2.message)
     }
@@ -65,12 +44,12 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidSurname(){
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,firstname,"4445", dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
+            val user = UserModel(auth, firstname,"4445", dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
         }
         assertEquals("Incorrect surname", exception.message)
 
         val exception2 = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,firstname,"", dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
+            val user = UserModel(auth, firstname,"", dateOfBirth, distanceGoal,timeGoal, nbOfPaths, database)
         }
         assertEquals("Incorrect surname", exception2.message)
     }
@@ -82,12 +61,12 @@ class UserModelTest {
     fun createUserWithInvalidDate(){
         //under 10 years
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,firstname,surname, LocalDate.now(), distanceGoal,timeGoal, nbOfPaths, database)
+            val user = UserModel(auth, firstname,surname, LocalDate.now(), distanceGoal,timeGoal, nbOfPaths, database)
         }
         assertEquals("Incorrect date of birth !", exception.message)
         //over 100 years
         val exception2 = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,firstname,surname, LocalDate.of(1900,2,2), distanceGoal,timeGoal, nbOfPaths, database)
+            val user = UserModel(auth, firstname,surname, LocalDate.of(1900,2,2), distanceGoal,timeGoal, nbOfPaths, database)
         }
         assertEquals("Incorrect date of birth !", exception2.message)
     }
@@ -98,7 +77,7 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidDistanceGoal(){
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,firstname,surname, dateOfBirth, 0.0,timeGoal, nbOfPaths, database)
+            val user = UserModel(auth, firstname,surname, dateOfBirth, 0.0,timeGoal, nbOfPaths, database)
         }
         assertEquals("The distance goal can't be equal to 0.", exception.message)
     }
@@ -109,7 +88,7 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidActivityTimeGoal(){
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,firstname,surname, dateOfBirth, distanceGoal,0.0, nbOfPaths, database)
+            val user = UserModel(auth, firstname,surname, dateOfBirth, distanceGoal,0.0, nbOfPaths, database)
         }
         assertEquals("The activity time goal can't be equal to 0.", exception.message)
     }
@@ -120,7 +99,7 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidNbOfPathsGoal(){
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(auth, username,firstname,surname, dateOfBirth, distanceGoal,timeGoal, 0, database)
+            val user = UserModel(auth, firstname,surname, dateOfBirth, distanceGoal,timeGoal, 0, database)
         }
         assertEquals("The number of paths goal can't be equal to 0.", exception.message)
     }
@@ -130,7 +109,7 @@ class UserModelTest {
      */
     @Test
     fun createCorrectUser(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         assertEquals(user.getUserId(), userId)
         assertEquals(user.getUsername(), username)
         assertEquals(user.getEmailAddress(), email)
@@ -147,7 +126,7 @@ class UserModelTest {
      */
     @Test
     fun setUserNameUnAvailableDoNothing(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         val databaseBeforeUsernameList = database.usernameToUserId
         val databaseBeforeUserProfiles = database.userIdToUsername
         user.setUsername("hugo")
@@ -162,7 +141,7 @@ class UserModelTest {
      */
     @Test
     fun setUserNameUnChangeDoNothing(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         val databaseBeforeUsernameList = database.usernameToUserId
         val databaseBeforeUserProfiles = database.userIdToUsername
         user.setUsername(username)
@@ -177,10 +156,10 @@ class UserModelTest {
      */
     @Test
     fun setUserNameAvailable(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         user.setUsername("nathan")
         assertEquals(user.getUsername(), "nathan")
-        //control the database
+        //control the database(compare with boolean to evict the null if condition)
         assertEquals(database.usernameToUserId.get("nathan"), userId)
         assertEquals(database.userIdToUsername.get(userId), "nathan")
     }
@@ -190,11 +169,12 @@ class UserModelTest {
      */
     @Test
     fun setInvalidDistanceGoal(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         val exception = assertThrows(java.lang.Error::class.java) {
             user.setDistanceGoal(0.0)
         }
-        assertEquals("The distance goal can't be equal to 0 !", exception.message)
+        //check the database(compare with boolean to evict the null if condition)
+        assertEquals(database.userIdToDistanceGoal.get(userId) == distanceGoal, true)
     }
 
     /**
@@ -202,21 +182,25 @@ class UserModelTest {
      */
     @Test
     fun setValidDistanceGoal(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
-        user.setDistanceGoal(12.0)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val ret = user.setDistanceGoal(12.0)
         assertEquals(user.getDistanceGoal(), 12.0, 0.0001)
+        //check the database(compare with boolean to evict the null if condition)
+        assertEquals(database.userIdToDistanceGoal.get(userId)==12.0, true)
     }
 
     /**
      * Test if set an incorrect activity time goal (equal to zero) throw an error
      */
     @Test
-    fun setInvalidActivotyTimeGoal(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+    fun setInvalidActivityTimeGoal(){
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         val exception = assertThrows(java.lang.Error::class.java) {
             user.setActivityTimeGoal(0.0)
         }
         assertEquals("The activity time goal can't be equal to 0 !", exception.message)
+        //check the database(compare with boolean to evict the null if condition)
+        assertEquals(database.userIdToActivityTimeGoal.get(userId) == timeGoal, true)
     }
 
     /**
@@ -224,9 +208,11 @@ class UserModelTest {
      */
     @Test
     fun setValidActivityTimeGoal(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         user.setActivityTimeGoal(12.0)
         assertEquals(user.getActivityTime(), 12.0, 0.0001)
+        //check the database(compare with boolean to evict the null if condition)
+        assertEquals(database.userIdToActivityTimeGoal.get(userId) == 12.0, true)
     }
 
     /**
@@ -234,11 +220,13 @@ class UserModelTest {
      */
     @Test
     fun setInvalidNbOfPathsGoal(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         val exception = assertThrows(java.lang.Error::class.java) {
             user.setNumberOfPathsGoal(0)
         }
         assertEquals("The number of paths goal can't be equal to 0 !", exception.message)
+        //check the database
+        assertEquals(database.userIdToNbOfPathsGoal.get(userId), nbOfPaths)
     }
 
     /**
@@ -246,9 +234,11 @@ class UserModelTest {
      */
     @Test
     fun setValidNbOfPathsGoal(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         user.setNumberOfPathsGoal(12)
         assertEquals(user.getNumberOfPathsGoal(), 12)
+        //check the database
+        assertEquals(database.userIdToNbOfPathsGoal.get(userId), 12)
     }
 
     /**
@@ -256,10 +246,10 @@ class UserModelTest {
      */
     @Test
     fun returnCorrectAge(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         assertEquals(user.getAge(), 23)
 
-        val user2: UserModel = UserModel(auth,username,firstname,surname, LocalDate.of(2000,5,20),distanceGoal,timeGoal,nbOfPaths,database)
+        val user2: UserModel = UserModel(auth,firstname,surname, LocalDate.of(2000,5,20),distanceGoal,timeGoal,nbOfPaths,database)
         assertEquals(user2.getAge(), 22)
     }
 
@@ -268,7 +258,7 @@ class UserModelTest {
      */
     @Test
     fun emptyFriendListIsGet(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         val friendList = user.getFriendList()
         assertEquals(friendList.isEmpty(), true)
     }
@@ -278,7 +268,7 @@ class UserModelTest {
      */
     @Test
     fun removeFriendNotOnFriendList(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         val exception = assertThrows(java.lang.Error::class.java) {
             user.removeFriend("nathan")
         }
@@ -290,7 +280,7 @@ class UserModelTest {
      */
     @Test
     fun removeFriendOnFriendList(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         //TODO: This function will be implemented during a next task
     }
 
@@ -299,7 +289,7 @@ class UserModelTest {
      */
     @Test
     fun addFriendOnFriendList(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         //TODO: This function will be implemented during a next task
     }
 
@@ -308,7 +298,7 @@ class UserModelTest {
      */
     @Test
     fun addFriendOnFriendListNotPresentOnDataBase(){
-        val user: UserModel = UserModel(auth,username,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
+        val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         //TODO: This function will be implemented during a next task
     }
 }
