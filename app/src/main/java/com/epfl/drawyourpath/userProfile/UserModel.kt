@@ -1,13 +1,15 @@
 package com.epfl.drawyourpath.userProfile
 
-import android.graphics.Color
-import android.text.TextUtils
+import com.epfl.drawyourpath.authentication.Auth
+import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 class UserModel {
-    //the userId is given by the authentication part and is unique to the user
+    //the user authenticate in the app
+    private val userAuth: User
+    //the userId of the user
     private val userId: String
     //the userName is chosen by the user and can be modify
     private var username: String
@@ -31,9 +33,10 @@ class UserModel {
     //friend list
     private var friendsList: HashMap<String, String> //(username, userId)
 
+
     /**
      * THis constructor will create a new user based on the user model of the app
-     * @param userId is given by the authentification part and is unique to the user (used to access the user profile on the database)
+     * @param userAuth user authenticate give by the login
      * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)
      * @param firstname must respect the name convention of the app (name or name-name)
      * @param surname must respect the name convention of the app (name or name-name)
@@ -41,19 +44,15 @@ class UserModel {
      * @param distanceGoal init at the user profile creation and can be modify after(daily goal)
      * @param activityTimeGoal init at the user profile creation and can be modify after(daily goal)
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
-     * @throws an error if the inputs are incorrect
+     * @throws error if the inputs are incorrect
      */
-    constructor(userId: String, username: String, emailAddress: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
+    constructor(userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
         this.database = database
+        this.userAuth = userAuth
 
-        //check the userId
-        if(userId.isEmpty()){
-            throw java.lang.Error("The userId can't be empty !")
-        }
-        if(!checkUserId(userId,database)){
-            throw java.lang.Error("The userId must be present on the database !")
-        }
-        this.userId=userId
+        //obtain the userId and the email give by the authentication
+        this.userId=userAuth.getUid()
+        this.emailAddress=userAuth.getEmail()
 
         //check the username
         if(username.isEmpty()){
@@ -64,22 +63,15 @@ class UserModel {
         }
         this.username=username
 
-        //check the format of the mail
-        if(!checkEMail(emailAddress)){
-            throw java.lang.Error("The mail address is not in the correct format !")
-        }else{
-            this.emailAddress = emailAddress
-        }
-
         //check the format of the firstname
-        if(!checkName(firstname)){
+        if(!checkNameFormat(firstname)){
             throw java.lang.Error("Incorrect firstname")
         }else{
             this.firstname = firstname
         }
 
         //check the format of the surname
-        if(!checkName(surname)){
+        if(!checkNameFormat(surname)){
             throw java.lang.Error("Incorrect surname")
         }else {
             this.surname = surname
@@ -145,16 +137,18 @@ class UserModel {
         return emailAddress
     }
 
+    /*
     /**
      * Use this function to modify the email address of the user
      * @param email new email address
      */
     fun setEmailAddress(email: String){
-        if(!checkEMail(email)){
+        if(!checkEmail(email)){
             throw java.lang.Error("Invalid email format !")
         }
         this.emailAddress=email
     }
+    */
 
     /**
      * Get the firstname of the user
@@ -193,7 +187,7 @@ class UserModel {
      * @param distance new daily distance goal
      */
     fun setDistanceGoal(distance: Double){
-        if(distance == 0.0){
+        if(distance <= 0.0){
             throw java.lang.Error("The distance goal can't be equal to 0 !")
         }
         this.distanceGoal=distance
@@ -212,7 +206,7 @@ class UserModel {
      * @param time new daily activity time goal
      */
     fun setActivityTimeGoal(time: Double){
-        if(time == 0.0){
+        if(time <= 0.0){
             throw java.lang.Error("The activity time goal can't be equal to 0 !")
         }
         this.activityTimeGoal=time
@@ -231,7 +225,7 @@ class UserModel {
      * @param nbOfPaths new daily number of paths goal
      */
     fun setNumberOfPathsGoal(nbOfPaths: Int){
-        if(nbOfPaths == 0){
+        if(nbOfPaths <= 0){
             throw java.lang.Error("The number of paths goal can't be equal to 0 !")
         }
         this.nbOfPathsGoal=nbOfPaths
@@ -284,7 +278,7 @@ class UserModel {
  * @param database where the userId should be present
  */
 private fun checkUserId(userId: String, database: Database):Boolean{
-    return database.isUserStoreOnDatabase(userId).get(10, TimeUnit.SECONDS)
+    return database.isUserStoredInDatabase(userId).get(10, TimeUnit.SECONDS)
 }
 /**
  * Helper function to check the username and affect it if it's correct
@@ -294,14 +288,14 @@ private fun checkUserId(userId: String, database: Database):Boolean{
  */
 private fun checkUsername(userId: String, username: String, database: Database): Boolean{
     //TODO: Will be change in my next task when change the database organization
-    return !database.isUserNameAvailable(username).get(10, TimeUnit.SECONDS)
+    return !database.isUsernameAvailable(username).get(10, TimeUnit.SECONDS)
 }
 /**
  * Helper function to check that the firstname and the surname respect the name format condition of the app
  * @param name to be checked
  * @return true if the name is in the correct format, and false otherwise
  */
-private fun checkName(name: String): Boolean{
+private fun checkNameFormat(name: String): Boolean{
     if(name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()){
         return false
     }
@@ -313,10 +307,14 @@ private fun checkName(name: String): Boolean{
  * @param email to be checked
  * @return true is the email is in the correct format, and false otherwise
  */
-private fun checkEMail(email: String):Boolean {
+private fun checkEmail(email: String):Boolean {
     // check for @ char
     var atSymbol = email.indexOf("@")
     if(atSymbol < 1) {
+        return false
+    }
+    //test if the email contain only one @
+    if(email.indexOf("@", atSymbol+1)!= -1){
         return false
     }
 
@@ -335,19 +333,9 @@ private fun checkEMail(email: String):Boolean {
  * @return return true if the user is aged between 10 and 100 years and false otherwise
  */
 private fun checkDateOfBirth(date: LocalDate): Boolean{
-    if(date == null){
-        return false
-    }
-    //check if the date of birth respect the age conditions
-    val todayDate = LocalDate.now()
-    val minTodayAge: LocalDate =
-        LocalDate.of(todayDate.year - 10, todayDate.monthValue, todayDate.dayOfMonth)
-    val maxTodayAge: LocalDate =
-        LocalDate.of(todayDate.year - 100, todayDate.monthValue, todayDate.dayOfMonth)
-    if (date < maxTodayAge || date > minTodayAge) {
-        return false
-    }
-    return true
+    return date !== null &&
+            date < LocalDate.now().plusYears(-10) &&
+            date > LocalDate.now().plusYears(-100)
 }
 
 
