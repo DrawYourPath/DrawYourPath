@@ -62,11 +62,11 @@ class UserModel {
         }
 
         //check the format of the firstname
-        checkFirstname(firstname)
+        checkFirstnameFormat(firstname)
         this.firstname = firstname
 
         //check the format of the surname
-        checkSurname(surname)
+        checkSurnameFormat(surname)
         this.surname = surname
 
         //check that the birth date respect the age condition of the app(10<=age<=100)
@@ -111,9 +111,8 @@ class UserModel {
         return database.updateUsername(username, userId).thenApply{
             if(it){
                 this.username=username
-                true
             }
-            false
+            it
         }
     }
     /**
@@ -267,39 +266,25 @@ class UserModel {
 }
 
 /**
- * Helper function to check that the firstname and the surname respect the name format condition of the app
- * @param name to be checked
- * @return true if the name is in the correct format, and false otherwise
- */
-private fun checkNameFormat(name: String): Boolean{
-    if(name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()){
-        return false
-    }
-    return true
-}
-
-/**
  * Helper function to check if the firstname format is correct and throw directly an error if it is incorrect
- * @param firstanme to be check
- * @return true if the format is correct and throw an error otherwise
+ * @param name to be check
+ * @throw an error if the format is not correct
  */
-private fun checkFirstname(firstname: String): Boolean{
-    if(!checkNameFormat(firstname)){
+private fun checkFirstnameFormat(name: String){
+    if(name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()){
         throw java.lang.Error("Incorrect firstname")
     }
-    return true
 }
 
 /**
- * Helper function to check if the surname format is correct and throw directly an error if it is incorrect
- * @param surname to be check
- * @return true if the format is correct and throw an error otherwise
+ * Helper function to check if the name surname format is correct and throw directly an error if it is incorrect
+ * @param name to be check
+ * @throw an error if the format is not correct
  */
-private fun checkSurname(surname: String): Boolean{
-    if(!checkNameFormat(surname)){
+private fun checkSurnameFormat(name: String){
+    if(name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()){
         throw java.lang.Error("Incorrect surname")
     }
-    return true
 }
 
 /**
@@ -313,49 +298,45 @@ private fun checkEmail(email: String):Boolean {
 /**
  * Helper function to check if the date of birth of the user respect the age condition of the app
  * @param date of the user birth
- * @return return true if the user is aged between 10 and 100 years and throw an error otherwise
+ * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
  */
-private fun checkDateOfBirth(date: LocalDate): Boolean{
+private fun checkDateOfBirth(date: LocalDate){
     if(!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))){
         throw java.lang.Error("Incorrect date of birth !")
     }
-    return true
 }
 
 /**
  * Helper function to check if the distance goal is greater or equal than zero
  * @param distanceGoal to be checked
- * @return true if the goal is correct and throw an error otherwise
+ * @throw an error if the goal is incorrect
  */
-private fun checkDistanceGoal(distanceGoal: Double): Boolean{
+private fun checkDistanceGoal(distanceGoal: Double){
     if(distanceGoal<=0.0){
         throw java.lang.Error("The distance goal can't be equal or less than 0.")
     }
-    return true
 }
 
 /**
  * Helper function to check if the activity time goal is greater or equal than zero
  * @param activityTimeGoal to be checked
- * @return true if the goal is correct and throw an error otherwise
+ * @throw an error if the goal is incorrect
  */
-private fun checkActivityTimeGoal(activityTimeGoal: Double): Boolean{
+private fun checkActivityTimeGoal(activityTimeGoal: Double){
     if(activityTimeGoal<=0.0){
         throw java.lang.Error("The activity time goal can't be equal or less than 0.")
     }
-    return true
 }
 
 /**
  * Helper function to check if the number of paths goal is greater or equal than zero
  * @param nbOfPathsGoal to be checked
- * @return true if the goal is correct and throw an error otherwise
+ * @throw an error if the goal is incorrect
  */
-private fun checkNbOfPathsGoal(nbOfPathsGoal: Int): Boolean{
+private fun checkNbOfPathsGoal(nbOfPathsGoal: Int){
     if(nbOfPathsGoal<=0){
         throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
     }
-    return true
 }
 
 
