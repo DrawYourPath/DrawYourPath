@@ -1,11 +1,10 @@
 package com.epfl.drawyourpath.userProfile
 
-import com.epfl.drawyourpath.authentication.Auth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 
 class UserModel {
     //the user authenticate in the app
@@ -63,38 +62,25 @@ class UserModel {
         }
 
         //check the format of the firstname
-        if(!checkNameFormat(firstname)){
-            throw java.lang.Error("Incorrect firstname")
-        }else{
-            this.firstname = firstname
-        }
+        checkFirstname(firstname)
+        this.firstname = firstname
 
         //check the format of the surname
-        if(!checkNameFormat(surname)){
-            throw java.lang.Error("Incorrect surname")
-        }else {
-            this.surname = surname
-        }
+        checkSurname(surname)
+        this.surname = surname
 
         //check that the birth date respect the age condition of the app(10<=age<=100)
-        if(!checkDateOfBirth(dateOfBirth)){
-            throw java.lang.Error("Incorrect date of birth !")
-        }else{
-            this.dateOfBirth=dateOfBirth
-        }
+        checkDateOfBirth(dateOfBirth)
+        this.dateOfBirth = dateOfBirth
 
-        //test the goals, the goals can't be equal to 0
-        if(distanceGoal==0.0){
-            throw java.lang.Error("The distance goal can't be equal to 0.")
-        }
+        //test the goals, the goals can't be equal or less than 0
+        checkDistanceGoal(distanceGoal)
         this.distanceGoal=distanceGoal
-        if(activityTimeGoal==0.0){
-            throw java.lang.Error("The activity time goal can't be equal to 0.")
-        }
+
+        checkActivityTimeGoal(activityTimeGoal)
         this.activityTimeGoal=activityTimeGoal
-        if(nbOfPathsGoal==0){
-            throw java.lang.Error("The number of paths goal can't be equal to 0.")
-        }
+
+        checkNbOfPathsGoal(nbOfPathsGoal)
         this.nbOfPathsGoal=nbOfPathsGoal
 
         this.friendsList = HashMap()
@@ -185,14 +171,16 @@ class UserModel {
 
     /**
      * Use this function to modify the daily distance goal of the user
-     * @param distance new daily distance goal
+     * @param distanceGoal new daily distance goal
      */
-    fun setDistanceGoal(distance: Double): CompletableFuture<Boolean>{
-        if(distance <= 0.0){
-            throw java.lang.Error("The distance goal can't be equal to 0 !")
+    fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean>{
+        checkDistanceGoal(distanceGoal)
+        return database.setDistanceGoal(userId, distanceGoal).thenApply {
+            if(it){
+                this.distanceGoal=distanceGoal
+            }
+            it
         }
-        this.distanceGoal=distance
-        return database.setDistanceGoal(userId, distance)
     }
 
     /**
@@ -207,12 +195,14 @@ class UserModel {
      * Use this function to modify the daily activity time goal of the user
      * @param time new daily activity time goal
      */
-    fun setActivityTimeGoal(time: Double): CompletableFuture<Boolean>{
-        if(time <= 0.0){
-            throw java.lang.Error("The activity time goal can't be equal to 0 !")
+    fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean>{
+        checkActivityTimeGoal(activityTimeGoal)
+        return database.setActivityTimeGoal(userId, activityTimeGoal).thenApply {
+            if(it){
+                this.activityTimeGoal=activityTimeGoal
+            }
+            it
         }
-        this.activityTimeGoal=time
-        return database.setActivityTimeGoalGoal(userId, time)
     }
 
     /**
@@ -227,12 +217,14 @@ class UserModel {
      * Use this function to modify the daily number of paths goal of the user
      * @param nbOfPaths new daily number of paths goal
      */
-    fun setNumberOfPathsGoal(nbOfPaths: Int): CompletableFuture<Boolean>{
-        if(nbOfPaths <= 0){
-            throw java.lang.Error("The number of paths goal can't be equal to 0 !")
+    fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean>{
+        checkNbOfPathsGoal(nbOfPathsGoal)
+        return database.setNbOfPathsGoal(userId, nbOfPathsGoal).thenApply {
+            if(it){
+                this.nbOfPathsGoal=nbOfPathsGoal
+            }
+            it
         }
-        this.nbOfPathsGoal=nbOfPaths
-        return database.setNbOfPathsGoalGoal(userId, nbOfPaths)
     }
 
     /**
@@ -240,11 +232,7 @@ class UserModel {
      * @return the age of the user
      */
     fun getAge(): Int{
-        var age = LocalDate.now().year-dateOfBirth.year
-        if(LocalDate.now().minusYears(age.toLong())<=dateOfBirth){
-            age -= 1
-        }
-        return age
+        return ChronoUnit.YEARS.between(dateOfBirth, LocalDate.now()).toInt()
     }
 
     /**
@@ -291,6 +279,30 @@ private fun checkNameFormat(name: String): Boolean{
 }
 
 /**
+ * Helper function to check if the firstname format is correct and throw directly an error if it is incorrect
+ * @param firstanme to be check
+ * @return true if the format is correct and throw an error otherwise
+ */
+private fun checkFirstname(firstname: String): Boolean{
+    if(!checkNameFormat(firstname)){
+        throw java.lang.Error("Incorrect firstname")
+    }
+    return true
+}
+
+/**
+ * Helper function to check if the surname format is correct and throw directly an error if it is incorrect
+ * @param surname to be check
+ * @return true if the format is correct and throw an error otherwise
+ */
+private fun checkSurname(surname: String): Boolean{
+    if(!checkNameFormat(surname)){
+        throw java.lang.Error("Incorrect surname")
+    }
+    return true
+}
+
+/**
  * Helper function to check if the email address is correct
  * @param email to be checked
  * @return true is the email is in the correct format, and false otherwise
@@ -299,13 +311,51 @@ private fun checkEmail(email: String):Boolean {
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 /**
- * Helper function to check the date of birth of the user
+ * Helper function to check if the date of birth of the user respect the age condition of the app
  * @param date of the user birth
- * @return return true if the user is aged between 10 and 100 years and false otherwise
+ * @return return true if the user is aged between 10 and 100 years and throw an error otherwise
  */
 private fun checkDateOfBirth(date: LocalDate): Boolean{
-    return date < LocalDate.now().plusYears(-10) &&
-            date > LocalDate.now().plusYears(-100)
+    if(!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))){
+        throw java.lang.Error("Incorrect date of birth !")
+    }
+    return true
+}
+
+/**
+ * Helper function to check if the distance goal is greater or equal than zero
+ * @param distanceGoal to be checked
+ * @return true if the goal is correct and throw an error otherwise
+ */
+private fun checkDistanceGoal(distanceGoal: Double): Boolean{
+    if(distanceGoal<=0.0){
+        throw java.lang.Error("The distance goal can't be equal or less than 0.")
+    }
+    return true
+}
+
+/**
+ * Helper function to check if the activity time goal is greater or equal than zero
+ * @param activityTimeGoal to be checked
+ * @return true if the goal is correct and throw an error otherwise
+ */
+private fun checkActivityTimeGoal(activityTimeGoal: Double): Boolean{
+    if(activityTimeGoal<=0.0){
+        throw java.lang.Error("The activity time goal can't be equal or less than 0.")
+    }
+    return true
+}
+
+/**
+ * Helper function to check if the number of paths goal is greater or equal than zero
+ * @param nbOfPathsGoal to be checked
+ * @return true if the goal is correct and throw an error otherwise
+ */
+private fun checkNbOfPathsGoal(nbOfPathsGoal: Int): Boolean{
+    if(nbOfPathsGoal<=0){
+        throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
+    }
+    return true
 }
 
 

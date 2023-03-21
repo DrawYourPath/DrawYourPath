@@ -79,7 +79,7 @@ class UserModelTest {
         val exception = assertThrows(java.lang.Error::class.java) {
             val user = UserModel(auth, firstname,surname, dateOfBirth, 0.0,timeGoal, nbOfPaths, database)
         }
-        assertEquals("The distance goal can't be equal to 0.", exception.message)
+        assertEquals("The distance goal can't be equal or less than 0.", exception.message)
     }
 
     /**
@@ -90,7 +90,7 @@ class UserModelTest {
         val exception = assertThrows(java.lang.Error::class.java) {
             val user = UserModel(auth, firstname,surname, dateOfBirth, distanceGoal,0.0, nbOfPaths, database)
         }
-        assertEquals("The activity time goal can't be equal to 0.", exception.message)
+        assertEquals("The activity time goal can't be equal or less than 0.", exception.message)
     }
 
     /**
@@ -101,7 +101,7 @@ class UserModelTest {
         val exception = assertThrows(java.lang.Error::class.java) {
             val user = UserModel(auth, firstname,surname, dateOfBirth, distanceGoal,timeGoal, 0, database)
         }
-        assertEquals("The number of paths goal can't be equal to 0.", exception.message)
+        assertEquals("The number of paths goal can't be equal or less than 0.", exception.message)
     }
 
     /**
@@ -173,6 +173,7 @@ class UserModelTest {
         val exception = assertThrows(java.lang.Error::class.java) {
             user.setDistanceGoal(0.0)
         }
+        assertEquals("The distance goal can't be equal or less than 0.", exception.message)
         //check the database(compare with boolean to evict the null if condition)
         assertEquals(database.userIdToDistanceGoal.get(userId) == distanceGoal, true)
     }
@@ -198,7 +199,7 @@ class UserModelTest {
         val exception = assertThrows(java.lang.Error::class.java) {
             user.setActivityTimeGoal(0.0)
         }
-        assertEquals("The activity time goal can't be equal to 0 !", exception.message)
+        assertEquals("The activity time goal can't be equal or less than 0.", exception.message)
         //check the database(compare with boolean to evict the null if condition)
         assertEquals(database.userIdToActivityTimeGoal.get(userId) == timeGoal, true)
     }
@@ -224,7 +225,7 @@ class UserModelTest {
         val exception = assertThrows(java.lang.Error::class.java) {
             user.setNumberOfPathsGoal(0)
         }
-        assertEquals("The number of paths goal can't be equal to 0 !", exception.message)
+        assertEquals("The number of paths goal can't be equal or less than 0.", exception.message)
         //check the database
         assertEquals(database.userIdToNbOfPathsGoal.get(userId), nbOfPaths)
     }

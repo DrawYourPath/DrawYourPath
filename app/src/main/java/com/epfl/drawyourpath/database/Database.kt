@@ -84,7 +84,7 @@ abstract class Database {
      * @param activityTimeGoal new activity time goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setActivityTimeGoalGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean>
+    abstract  fun setActivityTimeGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean>
 
     /**
      * This function will set the daily number of paths goal to the database(integer)
@@ -92,5 +92,5 @@ abstract class Database {
      * @param nbOfPathsGoal new number of paths goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setNbOfPathsGoalGoal(userId: String, nbOfPathsGoal: Int):CompletableFuture<Boolean>
+    abstract  fun setNbOfPathsGoal(userId: String, nbOfPathsGoal: Int):CompletableFuture<Boolean>
 }

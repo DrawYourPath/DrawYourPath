@@ -93,12 +93,12 @@ class MockDataBase : Database() {
         return CompletableFuture.completedFuture(userIdToDistanceGoal.get(userId) == distanceGoal)
     }
 
-    override fun setActivityTimeGoalGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean> {
+    override fun setActivityTimeGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean> {
         userIdToActivityTimeGoal.put(userId, activityTimeGoal)
         return CompletableFuture.completedFuture(userIdToActivityTimeGoal.get(userId) == activityTimeGoal)
     }
 
-    override fun setNbOfPathsGoalGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    override fun setNbOfPathsGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         userIdToNbOfPathsGoal.put(userId, nbOfPathsGoal)
         return CompletableFuture.completedFuture(userIdToNbOfPathsGoal.get(userId) == nbOfPathsGoal)
     }
