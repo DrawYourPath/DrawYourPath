@@ -16,7 +16,7 @@ class EndProfileCreationFragment : Fragment(R.layout.fragment_end_profile_creati
         //retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag != null) {
-            username = argsFromLastFrag.getString("userName").toString()
+            username = argsFromLastFrag.getString("username").toString()
         }
         val welcomeMessage: String =
             "We are happy to welcome you, " + username + " in the DrawYourPath app." +

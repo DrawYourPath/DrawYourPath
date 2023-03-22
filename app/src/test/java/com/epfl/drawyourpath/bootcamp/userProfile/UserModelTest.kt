@@ -1,6 +1,6 @@
 package com.epfl.drawyourpath.bootcamp.userProfile
 
-import com.epfl.drawyourpath.authentication.MockAuth
+import com .epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.UserModel
 import org.junit.Assert.assertEquals
@@ -129,7 +129,7 @@ class UserModelTest {
         val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
         val databaseBeforeUsernameList = database.usernameToUserId
         val databaseBeforeUserProfiles = database.userIdToUsername
-        user.setUsername("hugo")
+        user.setUsername("nathan")
         assertEquals(user.getUsername(), username)
         //control the database
         assertEquals(databaseBeforeUsernameList, database.usernameToUserId)
@@ -157,11 +157,11 @@ class UserModelTest {
     @Test
     fun setUserNameAvailable(){
         val user: UserModel = UserModel(auth,firstname,surname,dateOfBirth,distanceGoal,timeGoal,nbOfPaths,database)
-        user.setUsername("nathan")
-        assertEquals(user.getUsername(), "nathan")
+        user.setUsername("nathan2")
+        assertEquals(user.getUsername(), "nathan2")
         //control the database(compare with boolean to evict the null if condition)
-        assertEquals(database.usernameToUserId.get("nathan"), userId)
-        assertEquals(database.userIdToUsername.get(userId), "nathan")
+        assertEquals(database.usernameToUserId.get("nathan2"), userId)
+        assertEquals(database.userIdToUsername.get(userId), "nathan2")
     }
 
     /**
@@ -175,7 +175,8 @@ class UserModelTest {
         }
         assertEquals("The distance goal can't be equal or less than 0.", exception.message)
         //check the database(compare with boolean to evict the null if condition)
-        assertEquals(database.userIdToDistanceGoal.get(userId) == distanceGoal, true)
+        assertEquals(
+            (database.userIdToUserAccount.get(userId)?.getDistanceGoal() ?: 0) == distanceGoal, true)
     }
 
     /**
@@ -187,7 +188,7 @@ class UserModelTest {
         val ret = user.setDistanceGoal(12.0)
         assertEquals(user.getDistanceGoal(), 12.0, 0.0001)
         //check the database(compare with boolean to evict the null if condition)
-        assertEquals(database.userIdToDistanceGoal.get(userId)==12.0, true)
+        assertEquals((database.userIdToUserAccount.get(userId)?.getDistanceGoal() ?: 0) == 12.0, true)
     }
 
     /**
@@ -201,7 +202,7 @@ class UserModelTest {
         }
         assertEquals("The activity time goal can't be equal or less than 0.", exception.message)
         //check the database(compare with boolean to evict the null if condition)
-        assertEquals(database.userIdToActivityTimeGoal.get(userId) == timeGoal, true)
+        assertEquals((database.userIdToUserAccount.get(userId)?.getActivityTime() ?: 0) == timeGoal, true)
     }
 
     /**
@@ -213,7 +214,7 @@ class UserModelTest {
         user.setActivityTimeGoal(12.0)
         assertEquals(user.getActivityTime(), 12.0, 0.0001)
         //check the database(compare with boolean to evict the null if condition)
-        assertEquals(database.userIdToActivityTimeGoal.get(userId) == 12.0, true)
+        assertEquals((database.userIdToUserAccount.get(userId)?.getActivityTime() ?: 0) == 12.0, true)
     }
 
     /**
@@ -227,7 +228,7 @@ class UserModelTest {
         }
         assertEquals("The number of paths goal can't be equal or less than 0.", exception.message)
         //check the database
-        assertEquals(database.userIdToNbOfPathsGoal.get(userId), nbOfPaths)
+        assertEquals(database.userIdToUserAccount.get(userId)?.getNumberOfPathsGoal() ?: 0, nbOfPaths)
     }
 
     /**
@@ -239,7 +240,7 @@ class UserModelTest {
         user.setNumberOfPathsGoal(12)
         assertEquals(user.getNumberOfPathsGoal(), 12)
         //check the database
-        assertEquals(database.userIdToNbOfPathsGoal.get(userId), 12)
+        assertEquals(database.userIdToUserAccount.get(userId)?.getNumberOfPathsGoal() ?: 0, 12)
     }
 
     /**

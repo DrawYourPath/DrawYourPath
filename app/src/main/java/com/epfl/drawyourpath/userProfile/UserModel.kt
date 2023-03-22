@@ -84,7 +84,6 @@ class UserModel {
         this.nbOfPathsGoal=nbOfPathsGoal
 
         this.friendsList = HashMap()
-        //TODO: in the next task, the firstname, surname, dateOfBirth and the goals will be set to the database here
     }
 
     /**
@@ -108,7 +107,7 @@ class UserModel {
      * @param username that we want to set
      */
     fun setUsername(username: String): CompletableFuture<Boolean>{
-        return database.updateUsername(username, userId).thenApply{
+        return database.updateUsername(username).thenApply{
             if(it){
                 this.username=username
             }
@@ -174,7 +173,7 @@ class UserModel {
      */
     fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean>{
         checkDistanceGoal(distanceGoal)
-        return database.setDistanceGoal(userId, distanceGoal).thenApply {
+        return database.setDistanceGoal(distanceGoal).thenApply {
             if(it){
                 this.distanceGoal=distanceGoal
             }
@@ -196,7 +195,7 @@ class UserModel {
      */
     fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean>{
         checkActivityTimeGoal(activityTimeGoal)
-        return database.setActivityTimeGoal(userId, activityTimeGoal).thenApply {
+        return database.setActivityTimeGoal(activityTimeGoal).thenApply {
             if(it){
                 this.activityTimeGoal=activityTimeGoal
             }
@@ -218,7 +217,7 @@ class UserModel {
      */
     fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean>{
         checkNbOfPathsGoal(nbOfPathsGoal)
-        return database.setNbOfPathsGoal(userId, nbOfPathsGoal).thenApply {
+        return database.setNbOfPathsGoal(nbOfPathsGoal).thenApply {
             if(it){
                 this.nbOfPathsGoal=nbOfPathsGoal
             }

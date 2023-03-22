@@ -8,13 +8,20 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.authentication.FirebaseAuth
+import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.userProfile.UserModel
+import java.time.LocalDate
 
 class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
     private var isTest: Boolean = false
     private var username: String = ""
+    private var firstname: String = ""
+    private var surname: String = ""
+    private var dateOfBirth: Long = 0
 
     //all this goals are per days
     private var timeGoal: Int = 0
@@ -28,7 +35,10 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
             isTest = false
         } else {
             isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
-            username = argsFromLastFrag.getString("userName").toString()
+            username = argsFromLastFrag.getString("username").toString()
+            firstname = argsFromLastFrag.getString("firstname").toString()
+            surname = argsFromLastFrag.getString("surname").toString()
+            dateOfBirth = argsFromLastFrag.getLong("dateOfBirth")
         }
 
         //select the correct database in function of test scenario
@@ -38,6 +48,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
         } else {
             FireDatabase()
         }
+
         //all the goals inputs
         val inputTimeGoal: EditText =
             view.findViewById(R.id.input_timeGoal_text_UserProfileCreation)
@@ -78,18 +89,27 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
             }
 
             if (test1 && test2 && test3) {
-                database.setUserGoals(username, distanceGoal.toDouble(), timeGoal.toDouble(), nunberOfPathGoal)
-
-                val previousActivity = activity
-                if (previousActivity != null) {
-                    val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
-                    val dataToEndProfileCreationFrag: Bundle = Bundle()
-                    //data to transmit to the UserGoalsInitFragment(username)
-                    dataToEndProfileCreationFrag.putString("userName", username)
-                    val endProfileCreationFrag = EndProfileCreationFragment()
-                    endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
-                    fragManagement.replace(R.id.userGoalInitFragment, endProfileCreationFrag)
-                        .commit()
+                var userLog = FirebaseAuth.getUser()
+                if(isTest){
+                    userLog = MockAuth.MOCK_USER
+                }
+                if(userLog == null) {
+                    throw java.lang.Error("Any user is logged to the app.")
+                }
+                val user = UserModel(userLog, firstname, surname, LocalDate.ofEpochDay(dateOfBirth), distanceGoal.toDouble(),
+                    timeGoal.toDouble(), nunberOfPathGoal, database)
+                database.initUserProfile(user).thenAccept{
+                    val previousActivity = activity
+                    if (previousActivity != null) {
+                        val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
+                        val dataToEndProfileCreationFrag: Bundle = Bundle()
+                        //data to transmit to the UserGoalsInitFragment(username)
+                        dataToEndProfileCreationFrag.putString("username", username)
+                        val endProfileCreationFrag = EndProfileCreationFragment()
+                        endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
+                        fragManagement.replace(R.id.userGoalInitFragment, endProfileCreationFrag)
+                            .commit()
+                    }
                 }
             }
         }
