@@ -46,8 +46,8 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     // The auth object used to authenticate the user.
     private lateinit var auth: Auth
 
-    private var useOneTapSignIn: Boolean = false
-    private var restoreUserFromKeychain: Boolean = false
+    private var useOneTapSignIn: Boolean = true
+    private var restoreUserFromKeychain: Boolean = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
