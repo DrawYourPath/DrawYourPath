@@ -53,7 +53,7 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
             val previousActivity = activity
             testUsername.thenAccept {
                 if (previousActivity != null && it) {
-                    database.setUserName(usernameStr)
+                    database.setUsername(usernameStr)
                     val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
                     val dataToPersoInfoFrag: Bundle = Bundle()
                     //data to transmit to the PersonalInfoFragment(username + isTest)
@@ -86,7 +86,7 @@ private fun usernameAvaibility(
         outputMessage.setTextColor(Color.RED)
         return CompletableFuture.completedFuture(false)
     }
-    val future = database.isUserNameAvailable(username)
+    val future = database.isUsernameAvailable(username)
 
     //since the orTimeout require an API level 33(we are in min API level 28), we can't use it
     val durationFuture = future.thenApply {
