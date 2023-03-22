@@ -78,7 +78,12 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
             }
 
             if (test1 && test2 && test3) {
-                database.setUserGoals(username, distanceGoal.toDouble(), timeGoal.toDouble(), nunberOfPathGoal)
+                database.setUserGoals(
+                    username,
+                    distanceGoal.toDouble(),
+                    timeGoal.toDouble(),
+                    nunberOfPathGoal
+                )
 
                 val previousActivity = activity
                 if (previousActivity != null) {

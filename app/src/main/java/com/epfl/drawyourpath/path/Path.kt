@@ -1,4 +1,4 @@
-package com.github.drawyourpath.bootcamp.path
+package com.epfl.drawyourpath.path
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions

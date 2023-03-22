@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.database
 
-import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
@@ -16,11 +15,12 @@ class MockDataBase : Database() {
 
     var userIdToUsername: HashMap<String, String> = HashMap() //1=userId 2=username
     var userIdToDistanceGoal: HashMap<String, Double> = HashMap() //1:userid, 2:distance goal
-    var userIdToActivityTimeGoal: HashMap<String, Double> = HashMap() //1:userid, 2:activity time goal
+    var userIdToActivityTimeGoal: HashMap<String, Double> =
+        HashMap() //1:userid, 2:activity time goal
     var userIdToNbOfPathsGoal: HashMap<String, Int> = HashMap() //1:userid, 2:number of paths goal
 
     val userIdTest: String = "aUyFLWgYxmoELRUr3jWYie61jbKO"
-    val usernameTest: String ="albert"
+    val usernameTest: String = "albert"
     val distanceGoalTest: Double = 10.0
     val timeGoalTest: Double = 60.0
     val nbOfPathsGoalTest: Int = 5
@@ -52,7 +52,7 @@ class MockDataBase : Database() {
 
     override fun updateUsername(username: String, userId: String): CompletableFuture<Boolean> {
         val available = !usernameToUserId.contains(username)
-        if(available){
+        if (available) {
             //remove the past username has taken
             val pastUsername = userIdToUsername.get(userId)
             usernameToUserId.remove(pastUsername)
@@ -93,7 +93,10 @@ class MockDataBase : Database() {
         return CompletableFuture.completedFuture(userIdToDistanceGoal.get(userId) == distanceGoal)
     }
 
-    override fun setActivityTimeGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean> {
+    override fun setActivityTimeGoal(
+        userId: String,
+        activityTimeGoal: Double
+    ): CompletableFuture<Boolean> {
         userIdToActivityTimeGoal.put(userId, activityTimeGoal)
         return CompletableFuture.completedFuture(userIdToActivityTimeGoal.get(userId) == activityTimeGoal)
     }
