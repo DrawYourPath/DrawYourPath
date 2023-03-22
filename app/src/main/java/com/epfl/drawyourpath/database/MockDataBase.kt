@@ -23,25 +23,26 @@ class MockDataBase : Database() {
     val nbOfPathsGoalTest: Int = 5
     val firstnameTest = "Hugo"
     val surnameTest = "Hof"
+    val takenUsername = "nathan"
     val dateOfBirthTest = LocalDate.of(2000, 2, 20)
-    val userModelTest = UserModel(
-        userAuthTest,
-        firstnameTest,
-        surnameTest,
-        dateOfBirthTest,
-        distanceGoalTest,
-        activityTimeGoalTest,
-        nbOfPathsGoalTest,
-        this
-    )
+    val userModelTest: UserModel
 
     init {
         usernameToUserId.put(usernameTest, userIdTest)
-        usernameToUserId.put("nathan", "exId")
-
-        userIdToUserAccount.put(userIdTest, userModelTest)
+        usernameToUserId.put(takenUsername, "exId")
 
         userIdToUsername.put(userIdTest, usernameTest)
+        userModelTest = UserModel(
+            userAuthTest,
+            firstnameTest,
+            surnameTest,
+            dateOfBirthTest,
+            distanceGoalTest,
+            activityTimeGoalTest,
+            nbOfPathsGoalTest,
+            this
+        )
+        userIdToUserAccount.put(userIdTest, userModelTest)
     }
 
     override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
@@ -102,9 +103,6 @@ class MockDataBase : Database() {
         if(distanceGoal <= 0.0){
             throw java.lang.Error("The distance goal can't be less or equal than 0.")
         }
-        if(userIdToUserAccount.get(userIdTest) == null){
-            throw java.lang.Error("The user is not on the database!")
-        }
         val updatedUser = UserModel(userAuthTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoal,
             activityTimeGoalTest, nbOfPathsGoalTest, this)
         userIdToUserAccount.put(userIdTest, updatedUser)
@@ -115,9 +113,6 @@ class MockDataBase : Database() {
         if(activityTimeGoal <= 0.0){
             throw java.lang.Error("The activity time goal can't be less or equal than 0.")
         }
-        if(userIdToUserAccount.get(userIdTest) == null){
-            throw java.lang.Error("The user is not on the database!")
-        }
         val updatedUser = UserModel(userAuthTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoalTest,
             activityTimeGoal, nbOfPathsGoalTest, this)
         userIdToUserAccount.put(userIdTest, updatedUser)
@@ -127,9 +122,6 @@ class MockDataBase : Database() {
     override fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         if(nbOfPathsGoal <= 0.0){
             throw java.lang.Error("The number of paths goal can't be less or equal than 0.")
-        }
-        if(userIdToUserAccount.get(userIdTest) == null){
-            throw java.lang.Error("The user is not on the database!")
         }
         val updatedUser = UserModel(userAuthTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoalTest,
             activityTimeGoalTest, nbOfPathsGoal, this)
