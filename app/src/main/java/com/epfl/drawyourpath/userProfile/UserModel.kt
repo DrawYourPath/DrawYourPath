@@ -62,11 +62,11 @@ class UserModel {
         }
 
         //check the format of the firstname
-        checkFirstnameFormat(firstname)
+        checkNameFormat(firstname, "firstname")
         this.firstname = firstname
 
         //check the format of the surname
-        checkSurnameFormat(surname)
+        checkNameFormat(surname, "surname")
         this.surname = surname
 
         //check that the birth date respect the age condition of the app(10<=age<=100)
@@ -266,24 +266,14 @@ class UserModel {
 }
 
 /**
- * Helper function to check if the firstname format is correct and throw directly an error if it is incorrect
+ * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
  * @param name to be check
+ * @param variableName to be checked
  * @throw an error if the format is not correct
  */
-private fun checkFirstnameFormat(name: String){
+private fun checkNameFormat(name: String, variableName: String){
     if(name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()){
-        throw java.lang.Error("Incorrect firstname")
-    }
-}
-
-/**
- * Helper function to check if the name surname format is correct and throw directly an error if it is incorrect
- * @param name to be check
- * @throw an error if the format is not correct
- */
-private fun checkSurnameFormat(name: String){
-    if(name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()){
-        throw java.lang.Error("Incorrect surname")
+        throw java.lang.Error("Incorrect "+variableName)
     }
 }
 
