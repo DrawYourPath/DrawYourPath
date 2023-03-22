@@ -9,14 +9,16 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.epfl.drawyourpath.R
-import com.github.drawyourpath.bootcamp.path.Path
+import com.epfl.drawyourpath.path.Path
 import com.github.drawyourpath.bootcamp.path.Run
 import com.github.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
-
+@RunWith(JUnit4::class)
 class HistoryFragmentTest {
 
     private lateinit var scenario: FragmentScenario<HistoryFragment>

@@ -84,7 +84,10 @@ class FireDatabase : Database() {
         TODO("Will be done in the next task: database rebase")
     }
 
-    override fun setActivityTimeGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean> {
+    override fun setActivityTimeGoal(
+        userId: String,
+        activityTimeGoal: Double
+    ): CompletableFuture<Boolean> {
         TODO("Will be done in the next task: database rebase")
     }
 
