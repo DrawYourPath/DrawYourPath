@@ -57,14 +57,14 @@
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/IV_Tropy"
+                        android:id="@+id/IV_Trophy"
                         android:layout_width="100dp"
                         android:layout_height="22dp"
                         android:layout_weight="1"
                         tools:srcCompat="@drawable/award" />
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/TV_Trophy"
                         android:layout_width="332dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -91,7 +91,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/TV_Statistics"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="STATISTICS"
@@ -113,14 +113,13 @@
                             android:padding="20px">
 
                             <TextView
-                                android:id="@+id/textView4"
+                                android:id="@+id/TV_DaysStreak"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="450 Days"
                                 android:textAlignment="center" />
 
                             <TextView
-                                android:id="@+id/textView5"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="STREAK"
@@ -130,7 +129,6 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/content"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
@@ -138,14 +136,13 @@
                             android:padding="20px">
 
                             <TextView
-                                android:id="@+id/textView4"
+                                android:id="@+id/TV_TotalKilometers"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="380km"
                                 android:textAlignment="center" />
 
                             <TextView
-                                android:id="@+id/textView5"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="RAN"
@@ -155,7 +152,6 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/content"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
@@ -163,14 +159,13 @@
                             android:padding="20px">
 
                             <TextView
-                                android:id="@+id/textView4"
+                                android:id="@+id/TV_ShapesDrawn"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="12 shapes"
                                 android:textAlignment="center" />
 
                             <TextView
-                                android:id="@+id/textView5"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="DRAWN"
@@ -180,7 +175,6 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/content"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
@@ -188,14 +182,13 @@
                             android:padding="20px">
 
                             <TextView
-                                android:id="@+id/textView4"
+                                android:id="@+id/TV_AvgSpeed"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="12km/s"
                                 android:textAlignment="center" />
 
                             <TextView
-                                android:id="@+id/textView5"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="AVG SPEED"
@@ -204,8 +197,44 @@
                                 android:textSize="12sp" />
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="20px">
+
+                            <TextView
+                                android:id="@+id/TV_GoalsReached"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="47"
+                                android:textAlignment="center" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="REACHED"
+                                android:textAlignment="center"
+                                android:textColor="#673AB7"
+                                android:textSize="12sp" />
+                        </LinearLayout>
                     </LinearLayout>
                 </HorizontalScrollView>
+				
+
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="FRIENDS"
+                        android:textSize="16sp" />
+
+                <ListView
+                    android:id="@+id/LV_Friends"
+                    android:layout_width="match_parent"
+                    android:layout_height="427dp"></ListView>
+
             </LinearLayout>
         </ScrollView>
 
