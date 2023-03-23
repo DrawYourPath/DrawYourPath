@@ -15,8 +15,8 @@ import com.epfl.drawyourpath.challenge.Tournament
 /**
  * used in a recycler view to display the [TournamentPost]
  */
-class CommunityTournamentsViewAdapter(private val tournamentPosts: List<Pair<Tournament, TournamentPost>>) :
-    RecyclerView.Adapter<CommunityTournamentsViewAdapter.ViewHolder>() {
+class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<Tournament, TournamentPost>>) :
+    RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
 
     /**
      * Custom view holder using a custom layout for tournaments
@@ -62,13 +62,13 @@ class CommunityTournamentsViewAdapter(private val tournamentPosts: List<Pair<Tou
 
         viewHolder.upvote.setOnClickListener {
             post.upvote("user")
-            changebuttonColor(viewHolder, it, R.color.red, R.color.grey)
+            changeButtonColor(viewHolder, it, R.color.red, R.color.grey)
             viewHolder.voteCount.text = post.getVotes().toString()
         }
 
         viewHolder.downvote.setOnClickListener {
             post.downvote("user")
-            changebuttonColor(viewHolder, it, R.color.grey, R.color.blue)
+            changeButtonColor(viewHolder, it, R.color.grey, R.color.blue)
             viewHolder.voteCount.text = post.getVotes().toString()
         }
 
@@ -78,11 +78,11 @@ class CommunityTournamentsViewAdapter(private val tournamentPosts: List<Pair<Tou
     // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = tournamentPosts.count()
 
-    private fun changebuttonColor(holder: ViewHolder, view: View, upvoteColor: Int, downvoteColor: Int) {
+    private fun changeButtonColor(holder: ViewHolder, view: View, upvoteColor: Int, downvoteColor: Int) {
         var wrappedDrawable = DrawableCompat.wrap(holder.upvote.drawable)
-        DrawableCompat.setTint(wrappedDrawable, view.resources.getColor(upvoteColor))
+        DrawableCompat.setTint(wrappedDrawable, view.resources.getColor(upvoteColor, null))
         wrappedDrawable = DrawableCompat.wrap(holder.downvote.drawable)
-        DrawableCompat.setTint(wrappedDrawable, view.resources.getColor(downvoteColor))
+        DrawableCompat.setTint(wrappedDrawable, view.resources.getColor(downvoteColor, null))
     }
 
 }
