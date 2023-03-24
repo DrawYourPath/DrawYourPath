@@ -61,14 +61,23 @@ class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<
         viewHolder.voteCount.text = post.getVotes().toString()
 
         viewHolder.upvote.setOnClickListener {
-            post.upvote("user")
-            changeButtonColor(viewHolder, it, R.color.red, R.color.grey)
+            if (post.upvote("user")) {
+                changeButtonColor(viewHolder, it, R.color.red, R.color.grey)
+            } else {
+                post.removeVote("user")
+                changeButtonColor(viewHolder, it, R.color.grey, R.color.grey)
+            }
             viewHolder.voteCount.text = post.getVotes().toString()
         }
 
         viewHolder.downvote.setOnClickListener {
-            post.downvote("user")
-            changeButtonColor(viewHolder, it, R.color.grey, R.color.blue)
+            if (post.downvote("user")) {
+                changeButtonColor(viewHolder, it, R.color.grey, R.color.blue)
+            } else {
+                post.removeVote("user")
+                changeButtonColor(viewHolder, it, R.color.grey, R.color.grey)
+            }
+
             viewHolder.voteCount.text = post.getVotes().toString()
         }
 
