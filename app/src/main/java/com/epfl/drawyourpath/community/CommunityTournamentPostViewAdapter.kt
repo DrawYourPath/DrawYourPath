@@ -54,11 +54,14 @@ class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<
         val tournamentPost = tournamentPosts[viewHolder.adapterPosition]
         val post = tournamentPost.second
 
+        // if it displays posts from only one tournament the name is not displayed
         if (showTournamentName) {
             viewHolder.tournamentName.text = tournamentPost.first.name
         } else {
             viewHolder.tournamentName.visibility = View.GONE
         }
+
+        //TODO change image(run) path of the post
 
         viewHolder.userName.text = post.user
 
@@ -91,6 +94,14 @@ class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<
     // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = tournamentPosts.count()
 
+    /**
+     * change the color of the upvote and downvote button
+     *
+     * @param holder the viewHolder
+     * @param view the View
+     * @param upvoteColor the color of the upvote button
+     * @param downvoteColor the color of the downvote button
+     */
     private fun changeButtonColor(holder: ViewHolder, view: View, upvoteColor: Int, downvoteColor: Int) {
         var wrappedDrawable = DrawableCompat.wrap(holder.upvote.drawable)
         DrawableCompat.setTint(wrappedDrawable, view.resources.getColor(upvoteColor, null))
