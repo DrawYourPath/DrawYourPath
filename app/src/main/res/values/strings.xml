@@ -56,4 +56,8 @@
     <string name="cancel">Cancel</string>
     <string name="apply">Apply</string>
     <string name="preferences_menu_item">Preferences</string>
+    <string name="sort">sort</string>
+    <string name="menu">menu</string>
+    <string name="upvote">upvote</string>
+    <string name="downvote">downvote</string>
 </resources>

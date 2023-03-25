@@ -2,71 +2,81 @@ package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import androidx.core.graphics.drawable.DrawableCompat
+import android.widget.ImageButton
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.community.CommunityPostFragment
-import com.epfl.drawyourpath.community.CommunityTournamentFragment
+import com.epfl.drawyourpath.challenge.Tournament
+import com.epfl.drawyourpath.community.CommunityTournamentPostViewAdapter
+import com.epfl.drawyourpath.community.TournamentPost
+import com.github.drawyourpath.bootcamp.path.Path
+import com.github.drawyourpath.bootcamp.path.Run
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.navigation.NavigationView
+import java.time.LocalDateTime
 
 class CommunityFragment : Fragment(R.layout.fragment_community) {
-
-    private lateinit var home: Button
-    private lateinit var list: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        home = view.findViewById(R.id.community_home_button)
-        list = view.findViewById(R.id.community_list_button)
+        val menu = view.findViewById<ImageButton>(R.id.community_menu_button)
+        val drawer = view.findViewById<DrawerLayout>(R.id.fragment_community)
+        createNavigationMenu(view, drawer)
 
-        var currentView = CommunityView.HOME
-        updateButtonColor(view, currentView)
-        replaceFragment<CommunityPostFragment>()
+        val tournamentsView = view.findViewById<RecyclerView>(R.id.display_community_tournaments_view)
 
-        home.setOnClickListener {
-            if (currentView != CommunityView.HOME) {
-                currentView = CommunityView.HOME
-                updateButtonColor(view, currentView)
-                replaceFragment<CommunityPostFragment>()
-            }
-        }
+        tournamentsView.layoutManager = LinearLayoutManager(context)
+        tournamentsView.adapter = CommunityTournamentPostViewAdapter(sampleData())
 
-        list.setOnClickListener {
-            if (currentView != CommunityView.LIST) {
-                currentView = CommunityView.LIST
-                updateButtonColor(view, currentView)
-                replaceFragment<CommunityTournamentFragment>()
-            }
+        menu.setOnClickListener {
+            drawer.open()
         }
 
     }
 
-    private inline fun <reified F : Fragment> replaceFragment() {
-        parentFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<F>(R.id.fragment_community_container_view)
+    private fun createNavigationMenu(view: View, drawer: DrawerLayout) {
+        val menu = view.findViewById<NavigationView>(R.id.community_navigation_view).menu
+
+        val weekly = menu.addSubMenu("weekly tournament")
+        weekly.add("the weekly tournament")
+            .setOnMenuItemClickListener {
+                drawer.close()
+                true
+            }.isCheckable = true
+
+        val my = menu.addSubMenu("my tournament")
+        for (i in 0..10) {
+            my.add("test $i")
+        }
+        val discover = menu.addSubMenu("discover")
+        for (i in 0..20) {
+            discover.add("discover tournaments $i")
         }
     }
 
-    private enum class CommunityView {
-        HOME, LIST
-    }
+    private fun sampleData(): List<Pair<Tournament, TournamentPost>> {
 
-    private fun updateButtonColor(view: View, current: CommunityView) {
-        changeButtonColor(view, home, R.color.grey)
-        changeButtonColor(view, list, R.color.grey)
-        when (current) {
-            CommunityView.HOME -> changeButtonColor(view, home, R.color.purple_200)
-            CommunityView.LIST -> changeButtonColor(view, list, R.color.purple_200)
-        }
-    }
+        val point1 = LatLng(0.0, 0.0)
+        val point2 = LatLng(0.001, 0.001)
+        val points = listOf(point1, point2)
+        val path = Path(points)
+        val startTime = System.currentTimeMillis()
+        val endTime = startTime + 10
+        val run1 = Run(path, startTime, endTime)
 
-    private fun changeButtonColor(view: View, button: Button, color: Int) {
-        val wrappedDrawable = DrawableCompat.wrap(button.background)
-        DrawableCompat.setTint(wrappedDrawable, view.resources.getColor(color, null))
+        val tournament1 = Tournament("test", "test", LocalDateTime.now().plusDays(3L), LocalDateTime.now().plusDays(4L))
+
+
+        return mutableListOf(
+            Pair(tournament1, TournamentPost("user", run1, 512)),
+            Pair(tournament1, TournamentPost("Michelle", run1, 0)),
+            Pair(tournament1, TournamentPost("Hello", run1, -10)),
+            Pair(tournament1, TournamentPost("ME", run1, 36541)),
+            Pair(tournament1, TournamentPost("not me", run1, 1000)),
+        )
     }
 
 }

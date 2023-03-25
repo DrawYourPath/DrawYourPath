@@ -40,6 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:orientation="horizontal">
 
 
@@ -47,9 +48,11 @@
                 android:id="@+id/tournament_upvote_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:background="@color/fui_transparent"
-                android:src="@drawable/arrow_upward"
-                app:tint="@color/grey" />
+                android:src="@drawable/ic_arrow_upward"
+                app:tint="@color/grey"
+                android:contentDescription="@string/upvote" />
 
             <TextView
                 android:id="@+id/tournament_vote_count_text"
@@ -62,9 +65,11 @@
                 android:id="@+id/tournament_downvote_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:background="@color/fui_transparent"
-                android:src="@drawable/arrow_downward"
-                app:tint="@color/grey" />
+                android:src="@drawable/ic_arrow_downward"
+                app:tint="@color/grey"
+                android:contentDescription="@string/downvote" />
 
         </LinearLayout>
 
