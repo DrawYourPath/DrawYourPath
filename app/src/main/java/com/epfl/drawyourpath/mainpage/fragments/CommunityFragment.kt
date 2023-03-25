@@ -13,7 +13,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.Tournament
 import com.epfl.drawyourpath.community.CommunityTournamentPostViewAdapter
 import com.epfl.drawyourpath.community.TournamentPost
-import com.github.drawyourpath.bootcamp.path.Path
+import com.epfl.drawyourpath.path.Path
 import com.github.drawyourpath.bootcamp.path.Run
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.navigation.NavigationView
