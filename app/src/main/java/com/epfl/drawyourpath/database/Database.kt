@@ -34,7 +34,7 @@ abstract class Database {
      * @param userId userId of the user
      * @return the future that indicate if the username have been updated
      */
-    abstract fun updateUsername(username: String,userId: String): CompletableFuture<Boolean>
+    abstract fun updateUsername(username: String, userId: String): CompletableFuture<Boolean>
 
     /**
      * This function will add the user Name to the database to create a new user profile
@@ -76,7 +76,7 @@ abstract class Database {
      * @param distanceGoal new distance goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean>
+    abstract fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean>
 
     /**
      * This function will set the daily activity time goal to the database(in minutes)
@@ -84,7 +84,10 @@ abstract class Database {
      * @param activityTimeGoal new activity time goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setActivityTimeGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean>
+    abstract fun setActivityTimeGoal(
+        userId: String,
+        activityTimeGoal: Double
+    ): CompletableFuture<Boolean>
 
     /**
      * This function will set the daily number of paths goal to the database(integer)
@@ -92,5 +95,5 @@ abstract class Database {
      * @param nbOfPathsGoal new number of paths goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setNbOfPathsGoal(userId: String, nbOfPathsGoal: Int):CompletableFuture<Boolean>
+    abstract fun setNbOfPathsGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean>
 }
