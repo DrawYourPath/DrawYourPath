@@ -15,19 +15,19 @@ import com.epfl.drawyourpath.challenge.Tournament
 /**
  * used in a recycler view to display the [TournamentPost]
  */
-class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<Tournament, TournamentPost>>) :
+class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<Tournament, TournamentPost>>, private val showTournamentName: Boolean) :
     RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
 
     /**
      * Custom view holder using a custom layout for tournaments
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-       val tournamentName: TextView
-       val userName: TextView
-       val imagePath: ImageView
-       val upvote: ImageButton
-       val downvote: ImageButton
-       val voteCount: TextView
+        val tournamentName: TextView
+        val userName: TextView
+        val imagePath: ImageView
+        val upvote: ImageButton
+        val downvote: ImageButton
+        val voteCount: TextView
 
         init {
             // Define click listener for the ViewHolder's View
@@ -54,7 +54,11 @@ class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<
         val tournamentPost = tournamentPosts[viewHolder.adapterPosition]
         val post = tournamentPost.second
 
-        viewHolder.tournamentName.text = tournamentPost.first.name
+        if (showTournamentName) {
+            viewHolder.tournamentName.text = tournamentPost.first.name
+        } else {
+            viewHolder.tournamentName.visibility = View.GONE
+        }
 
         viewHolder.userName.text = post.user
 

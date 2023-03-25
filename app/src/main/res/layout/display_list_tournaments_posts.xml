@@ -18,14 +18,15 @@
             android:id="@+id/tournament_name_display_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="tournaments"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="5dp"
             android:textSize="22sp" />
 
         <TextView
             android:id="@+id/tournament_user_display_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="user"
+            android:layout_margin="5dp"
             android:textSize="20sp" />
 
         <ImageView
@@ -58,8 +59,7 @@
                 android:id="@+id/tournament_vote_count_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="1200" />
+                android:layout_gravity="center" />
 
             <ImageButton
                 android:id="@+id/tournament_downvote_button"
