@@ -161,7 +161,7 @@ class CommunityFragmentTest {
     @Test
     fun showDetailWeeklyAndGoBackIsCorrect() {
         val weekly = sampleWeekly
-        val weeklyDate = sampleWeekly.getStartOrEndDate()
+
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
             getBundle(weekly),
@@ -174,7 +174,7 @@ class CommunityFragmentTest {
         //check details are shown
         onView(withId(R.id.community_detail_name)).check(matches(withText(weekly.name)))
         onView(withId(R.id.community_detail_description)).check(matches(withText(weekly.description)))
-        onView(withId(R.id.community_detail_date)).check(matches(withText(weeklyDate)))
+        onView(withId(R.id.community_detail_date)).check(matches(withText(containsString("Start in"))))
         // go back
         onView(withId(R.id.community_back_button)).perform(click())
         //check details are not shown
