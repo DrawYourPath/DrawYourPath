@@ -35,10 +35,10 @@ class CommunityFragmentTest {
     fun upvoteOnceIsCorrect() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly()),
+            getBundle(sampleWeekly),
             R.style.Theme_Bootcamp
         )
-        val beginVotes = sampleWeekly().posts[0].getVotes()
+        val beginVotes = sampleWeekly.posts[0].getVotes()
 
         onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
         onView(withId(R.id.display_community_tournaments_view)).perform(
@@ -56,10 +56,10 @@ class CommunityFragmentTest {
     fun upvoteTwiceIsCorrect() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly()),
+            getBundle(sampleWeekly),
             R.style.Theme_Bootcamp
         )
-        val beginVotes = sampleWeekly().posts[0].getVotes()
+        val beginVotes = sampleWeekly.posts[0].getVotes()
 
         onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
         //first upvote
@@ -82,10 +82,10 @@ class CommunityFragmentTest {
     fun downvoteOnceIsCorrect() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly()),
+            getBundle(sampleWeekly),
             R.style.Theme_Bootcamp
         )
-        val beginVotes =sampleWeekly().posts[0].getVotes()
+        val beginVotes = sampleWeekly.posts[0].getVotes()
 
         onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
         onView(withId(R.id.display_community_tournaments_view)).perform(
@@ -103,10 +103,10 @@ class CommunityFragmentTest {
     fun downvoteTwiceIsCorrect() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly()),
+            getBundle(sampleWeekly),
             R.style.Theme_Bootcamp
         )
-        val beginVotes = sampleWeekly().posts[0].getVotes()
+        val beginVotes = sampleWeekly.posts[0].getVotes()
 
         onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
         //first downvote
@@ -130,10 +130,10 @@ class CommunityFragmentTest {
     fun multipleUpvoteDownvoteIsCorrect() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly()),
+            getBundle(sampleWeekly),
             R.style.Theme_Bootcamp
         )
-        val beginVotes = sampleWeekly().posts[0].getVotes()
+        val beginVotes = sampleWeekly.posts[0].getVotes()
 
         onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
         //upvote
@@ -160,7 +160,7 @@ class CommunityFragmentTest {
      */
     @Test
     fun showDetailWeeklyAndGoBackIsCorrect() {
-        val weekly = sampleWeekly()
+        val weekly = sampleWeekly
 
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
@@ -191,9 +191,9 @@ class CommunityFragmentTest {
      */
     @Test
     fun showDetailSomeTournamentShowOnlyPostsFromSomeTournament() {
-        val weekly = sampleWeekly()
-        val your = sampleYourTournaments()
-        val discover = sampleDiscoveryTournaments()
+        val weekly = sampleWeekly
+        val your = sampleYourTournaments
+        val discover = sampleDiscoveryTournaments
 
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
@@ -203,7 +203,7 @@ class CommunityFragmentTest {
 
         val postFromEarth = postsDiscoverEarth.map { p -> withText(p.user) }
         val postFromAllNotEarth = buildList {
-            this.addAll(sampleWeekly().posts)
+            this.addAll(sampleWeekly.posts)
             this.addAll(postsYour)
             this.addAll(postsDiscoverMoon)
         }.map { p -> withText(p.user) }
@@ -269,52 +269,47 @@ class CommunityFragmentTest {
     /**
      * sample tournaments
      */
-    private fun sampleWeekly(): Tournament {
-        return Tournament(
-            "Weekly tournament: Star Path",
-            "draw a star path",
+    private val sampleWeekly = Tournament(
+        "Weekly tournament: Star Path",
+        "draw a star path",
+        LocalDateTime.now().plusDays(3L),
+        LocalDateTime.now().plusDays(4L),
+        listOf(TournamentPost("xxDarkxx", sampleRun(), -13))
+    )
+
+
+    /**
+     * sample tournaments
+     */
+    private val sampleYourTournaments = mutableListOf(
+        Tournament(
+            "time square",
+            "draw a square",
             LocalDateTime.now().plusDays(3L),
             LocalDateTime.now().plusDays(4L),
-            listOf(TournamentPost("xxDarkxx", sampleRun(), -13))
+            postsYour
         )
-    }
+    )
 
     /**
      * sample tournaments
      */
-    private fun sampleYourTournaments(): List<Tournament> {
-        return mutableListOf(
-            Tournament(
-                "time square",
-                "draw a square",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                postsYour
-            )
+    private val sampleDiscoveryTournaments = mutableListOf(
+        Tournament(
+            "Discover the earth",
+            "draw the earth",
+            LocalDateTime.now().plusDays(3L),
+            LocalDateTime.now().plusDays(4L),
+            postsDiscoverEarth
+        ),
+        Tournament(
+            "to the moon",
+            "draw the moon",
+            LocalDateTime.now().plusDays(3L),
+            LocalDateTime.now().plusDays(4L),
+            postsDiscoverMoon
         )
-    }
-
-    /**
-     * sample tournaments
-     */
-    private fun sampleDiscoveryTournaments(): List<Tournament> {
-        return mutableListOf(
-            Tournament(
-                "Discover the earth",
-                "draw the earth",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                postsDiscoverEarth
-            ),
-            Tournament(
-                "to the moon",
-                "draw the moon",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                postsDiscoverMoon
-            )
-        )
-    }
+    )
 
     /**
      * sample run
