@@ -512,7 +512,7 @@ class ChallengeFragmentTest {
      * @param value the String to replace inside the editText
      * @param viewId the id of the editText inside the RecyclerView
      */
-    private fun replaceTextOnViewChild(value: String?, viewId: Int) = object : ViewAction {
+    private fun replaceTextOnViewChild(value: String, viewId: Int) = object : ViewAction {
         override fun getConstraints() = null
 
         override fun getDescription() = "replace text on a child view with specified id."
