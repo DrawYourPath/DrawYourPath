@@ -202,7 +202,7 @@ class CommunityFragmentTest {
         )
 
         val postFromEarth = postsDiscoverEarth.map { p -> withText(p.user) }
-        val postFromAllNotEarth = buildList<TournamentPost> {
+        val postFromAllNotEarth = buildList {
             this.addAll(sampleWeekly().posts)
             this.addAll(postsYour)
             this.addAll(postsDiscoverMoon)
