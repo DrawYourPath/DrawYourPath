@@ -76,7 +76,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
 
         val weekly = menu.addSubMenu("Weekly tournament")
         weekly.add(tournament.getWeeklyTournament().name)
-            .setContentDescription(tournament.getWeeklyTournament().name + " details")
+            .setContentDescription("${tournament.getWeeklyTournament().name} details")
             .setOnMenuItemClickListener {
                 menuItemListener(view, sampleWeekly())
             }
@@ -84,7 +84,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val your = menu.addSubMenu("Your tournament")
         for (i in tournament.getYourTournament("placeholder")) {
             your.add(i.name)
-                .setContentDescription(i.name + " details")
+                .setContentDescription("${i.name} details")
                 .setOnMenuItemClickListener {
                     menuItemListener(view, i)
                 }
@@ -92,7 +92,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val discover = menu.addSubMenu("Discover")
         for (i in tournament.getDiscoverTournament("placeholder")) {
             discover.add(i.name)
-                .setContentDescription(i.name + " details")
+                .setContentDescription("${i.name} details")
                 .setOnMenuItemClickListener {
                     menuItemListener(view, i)
                 }

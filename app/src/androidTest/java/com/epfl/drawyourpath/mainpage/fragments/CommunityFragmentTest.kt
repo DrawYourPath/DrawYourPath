@@ -170,7 +170,7 @@ class CommunityFragmentTest {
 
         //go to weekly detail
         onView(withId(R.id.community_menu_button)).perform(click())
-        onView(withContentDescription(weekly.name + " details")).perform(click())
+        onView(withContentDescription("${weekly.name} details")).perform(click())
         //check details are shown
         onView(withId(R.id.community_detail_name)).check(matches(withText(weekly.name)))
         onView(withId(R.id.community_detail_description)).check(matches(withText(weekly.description)))
@@ -211,7 +211,7 @@ class CommunityFragmentTest {
 
         //go to earth detail
         onView(withId(R.id.community_menu_button)).perform(click())
-        onView(withContentDescription(discover[0].name + " details")).perform(click())
+        onView(withContentDescription("${discover[0].name} details")).perform(click())
         //check details are shown
         onView(withId(R.id.community_detail_name)).check(matches(withText(discover[0].name)))
         onView(withId(R.id.community_detail_description)).check(matches(withText(discover[0].description)))
