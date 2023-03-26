@@ -12,11 +12,13 @@ import com.epfl.drawyourpath.mainpage.MainActivity
 class EndProfileCreationFragment : Fragment(R.layout.fragment_end_profile_creation) {
     private var username = ""
 
+    private val usernameFile = "username"
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag != null) {
-            username = argsFromLastFrag.getString("username").toString()
+            username = argsFromLastFrag.getString(usernameFile).toString()
         }
         val welcomeMessage: String =
             "We are happy to welcome you, " + username + " in the DrawYourPath app." +

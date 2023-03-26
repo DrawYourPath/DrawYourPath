@@ -37,7 +37,7 @@ class UserModel {
     /**
      * THis constructor will create a new user based on the user model of the app
      * @param userAuth user authenticate give by the login
-     * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)
+     * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
      * @param firstname must respect the name convention of the app (name or name-name)
      * @param surname must respect the name convention of the app (name or name-name)
      * @param dateOfBirth the user be aged between 10 and 100 years old
@@ -46,7 +46,7 @@ class UserModel {
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
      * @throws error if the inputs are incorrect
      */
-    constructor(userAuth: User, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
+    constructor(userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
         this.database = database
         this.userAuth = userAuth
 
@@ -54,12 +54,8 @@ class UserModel {
         this.userId=userAuth.getUid()
         this.emailAddress=userAuth.getEmail()
 
-        //obtain the userId
-        database.getUsernameFromUserId(userId).thenAccept{
-            if(it != null){
-                this.username = it
-            }
-        }
+        //obtain the username
+        this.username = username
 
         //check the format of the firstname
         checkNameFormat(firstname, "firstname")

@@ -23,6 +23,7 @@ class MockDataBaseTest {
     val dateOfBirthTest = LocalDate.of(2000, 2, 20)
     val userModelTest = UserModel(
         userAuthTest,
+        usernameTest,
         firstnameTest,
         surnameTest,
         dateOfBirthTest,
@@ -168,7 +169,7 @@ class MockDataBaseTest {
     @Test
     fun initUserProfileCorrectly(){
         val database = MockDataBase()
-        val isInit = database.initUserProfile(UserModel(userAuthTest, "hugo", "nathan", LocalDate.of(2000,1,1)
+        val isInit = database.initUserProfile(UserModel(userAuthTest,usernameTest, "hugo", "nathan", LocalDate.of(2000,1,1)
             ,12.0, 30.0, 2, database)).get()
         assertEquals(isInit,true)
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getUsername(), usernameTest)
@@ -224,10 +225,10 @@ class MockDataBaseTest {
     @Test
     fun setDistanceGoalInvalid(){
         val database = MockDataBase()
-        val exception = Assert.assertThrows(Error::class.java) {
+        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
             val isSet = database.setDistanceGoal(-1.00).get()
         }
-        assertEquals("The distance goal can't be less or equal than 0.", exception.message)
+        assertEquals("java.lang.Error: The distance goal can't be less or equal than 0.", exception.message)
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getDistanceGoal()?.toInt(), distanceGoalTest.toInt())
     }
 
@@ -248,10 +249,10 @@ class MockDataBaseTest {
     @Test
     fun setActivityTimeGoalInvalid(){
         val database = MockDataBase()
-        val exception = Assert.assertThrows(Error::class.java) {
+        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
             val isSet = database.setActivityTimeGoal(-1.00).get()
         }
-        assertEquals("The activity time goal can't be less or equal than 0.", exception.message)
+        assertEquals("java.lang.Error: The activity time goal can't be less or equal than 0.", exception.message)
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getActivityTime()?.toInt(), activityTimeGoalTest.toInt())
     }
 
@@ -272,10 +273,10 @@ class MockDataBaseTest {
     @Test
     fun setNbOfPathsGoalInvalid(){
         val database = MockDataBase()
-        val exception = Assert.assertThrows(Error::class.java) {
+        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
             val isSet = database.setNbOfPathsGoal(-1).get()
         }
-        assertEquals("The number of paths goal can't be less or equal than 0.", exception.message)
+        assertEquals("java.lang.Error: The number of paths goal can't be less or equal than 0.", exception.message)
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getNumberOfPathsGoal()?.toInt(), nbOfPathsGoalTest.toInt())
     }
 

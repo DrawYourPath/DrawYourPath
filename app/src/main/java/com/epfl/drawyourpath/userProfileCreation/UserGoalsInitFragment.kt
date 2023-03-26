@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.userProfileCreation
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -13,6 +14,8 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.login.LoginActivity
+import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 
@@ -29,20 +32,21 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
     private var nunberOfPathGoal: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        var database: Database = FireDatabase()
+
         //retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag == null) {
             isTest = false
         } else {
             isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
-            username = argsFromLastFrag.getString("username").toString()
-            firstname = argsFromLastFrag.getString("firstname").toString()
-            surname = argsFromLastFrag.getString("surname").toString()
-            dateOfBirth = argsFromLastFrag.getLong("dateOfBirth")
+            username = argsFromLastFrag.getString(database.usernameFile).toString()
+            firstname = argsFromLastFrag.getString(database.firstnameFile).toString()
+            surname = argsFromLastFrag.getString(database.surnameFile).toString()
+            dateOfBirth = argsFromLastFrag.getLong(database.dateOfBirthFile)
         }
 
         //select the correct database in function of test scenario
-        var database: Database? = null
         database = if (isTest) {
             MockDataBase()
         } else {
@@ -94,21 +98,34 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                     userLog = MockAuth.MOCK_USER
                 }
                 if(userLog == null) {
-                    throw java.lang.Error("Any user is logged to the app.")
-                }
-                val user = UserModel(userLog, firstname, surname, LocalDate.ofEpochDay(dateOfBirth), distanceGoal.toDouble(),
-                    timeGoal.toDouble(), nunberOfPathGoal, database)
-                database.initUserProfile(user).thenAccept{
-                    val previousActivity = activity
-                    if (previousActivity != null) {
-                        val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
-                        val dataToEndProfileCreationFrag: Bundle = Bundle()
-                        //data to transmit to the UserGoalsInitFragment(username)
-                        dataToEndProfileCreationFrag.putString("username", username)
-                        val endProfileCreationFrag = EndProfileCreationFragment()
-                        endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
-                        fragManagement.replace(R.id.userGoalInitFragment, endProfileCreationFrag)
-                            .commit()
+                    this.startActivity(Intent(activity, LoginActivity::class.java))
+                }else {
+                    val user = UserModel(
+                        userLog,
+                        username,
+                        firstname,
+                        surname,
+                        LocalDate.ofEpochDay(dateOfBirth),
+                        distanceGoal.toDouble(),
+                        timeGoal.toDouble(),
+                        nunberOfPathGoal,
+                        database
+                    )
+                    database.initUserProfile(user).thenAccept {
+                        if (activity != null) {
+                            val fragManagement =
+                                requireActivity().supportFragmentManager.beginTransaction()
+                            val dataToEndProfileCreationFrag: Bundle = Bundle()
+                            //data to transmit to the UserGoalsInitFragment(username)
+                            dataToEndProfileCreationFrag.putString(database.usernameFile, username)
+                            val endProfileCreationFrag = EndProfileCreationFragment()
+                            endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
+                            fragManagement.replace(
+                                R.id.userGoalInitFragment,
+                                endProfileCreationFrag
+                            )
+                                .commit()
+                        }
                     }
                 }
             }

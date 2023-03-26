@@ -7,6 +7,16 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 abstract class Database {
+    //name of the different attributes inside the user account
+    val usernameFile: String = "username"
+    val firstnameFile: String = "firstname"
+    val surnameFile: String = "surname"
+    val emailFile: String = "email"
+    val dateOfBirthFile: String = "dateOfBirth"
+    val distanceGoalFile: String = "distanceGoal"
+    val activityTimeGoalFile: String = "activityTimeGoal"
+    val nbOfPathsGoalFile: String = "nbOfPathsGoal"
+
     /**
      * This function is used to know if a certain user is already store in the database
      * @param userId that correspond to the user
