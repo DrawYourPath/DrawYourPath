@@ -54,6 +54,8 @@ dependencies {
     debugImplementation 'androidx.fragment:fragment-testing:1.5.5'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    //espresso version at 3.5.0-alpha04 because of a bug
+    //see https://github.com/android/android-test/issues/1642
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha04'
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.0-alpha04")
     androidTestImplementation 'androidx.test:runner:1.5.2'
