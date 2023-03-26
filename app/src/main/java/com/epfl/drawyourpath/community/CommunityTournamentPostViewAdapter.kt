@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.challenge.Tournament
 
 
 /**

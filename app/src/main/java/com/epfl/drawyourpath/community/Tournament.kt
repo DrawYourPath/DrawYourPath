@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.challenge
+package com.epfl.drawyourpath.community
 
 import com.epfl.drawyourpath.community.TournamentPost
 import java.time.Clock

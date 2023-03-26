@@ -16,7 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.challenge.TemporaryUser
-import com.epfl.drawyourpath.challenge.Tournament
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.challenge.Trophy
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -10,8 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.challenge.Tournament
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.community.CommunityTournamentPostViewAdapter
+import com.epfl.drawyourpath.community.TournamentModel
 import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
 import com.github.drawyourpath.bootcamp.path.Run
@@ -21,6 +22,7 @@ import java.time.LocalDateTime
 
 /**
  * fragment used to display and vote for the tournament posts [TournamentPost]
+ * TODO make it asynchronous when linked with the database
  */
 class CommunityFragment : Fragment(R.layout.fragment_community) {
 
@@ -28,6 +30,8 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     private lateinit var menuButton: ImageButton
     private lateinit var detailsLayout: LinearLayout
     private lateinit var tournamentsView: RecyclerView
+
+    private lateinit var tournament: TournamentModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,10 +41,15 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         detailsLayout = view.findViewById(R.id.community_detail_layout)
         tournamentsView = view.findViewById(R.id.display_community_tournaments_view)
 
+        tournament = TournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments())
+        if (arguments?.getSerializable("tournaments") != null) {
+            tournament = arguments?.getSerializable("tournaments") as TournamentModel
+        }
+
         createNavigationMenu(view)
 
         tournamentsView.layoutManager = LinearLayoutManager(context)
-        tournamentsView.adapter = CommunityTournamentPostViewAdapter(getAllPosts(allTournamentsSample()), true)
+        tournamentsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
 
         menuButton.setOnClickListener {
             drawer.open()
@@ -53,7 +62,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         backButton.setOnClickListener {
             menuButton.visibility = View.VISIBLE
             detailsLayout.visibility = View.GONE
-            tournamentsView.adapter = CommunityTournamentPostViewAdapter(getAllPosts(allTournamentsSample()), true)
+            tournamentsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
             tournamentsView.invalidate()
         }
 
@@ -66,21 +75,24 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val menu = view.findViewById<NavigationView>(R.id.community_navigation_view).menu
 
         val weekly = menu.addSubMenu("Weekly tournament")
-        weekly.add(sampleWeekly().name)
+        weekly.add(tournament.getWeeklyTournament().name)
+            .setContentDescription(tournament.getWeeklyTournament().name + " details")
             .setOnMenuItemClickListener {
                 menuItemListener(view, sampleWeekly())
             }
 
         val your = menu.addSubMenu("Your tournament")
-        for (i in sampleYourTournaments()) {
+        for (i in tournament.getYourTournament("placeholder")) {
             your.add(i.name)
+                .setContentDescription(i.name + " details")
                 .setOnMenuItemClickListener {
                     menuItemListener(view, i)
                 }
         }
         val discover = menu.addSubMenu("Discover")
-        for (i in sampleDiscoveryTournaments()) {
+        for (i in tournament.getDiscoverTournament("placeholder")) {
             discover.add(i.name)
+                .setContentDescription(i.name + " details")
                 .setOnMenuItemClickListener {
                     menuItemListener(view, i)
                 }
@@ -114,26 +126,29 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
 
 
     /**
-     * get all the posts from all the given tournaments
+     * get all the posts from all tournaments
      *
-     * @param tournaments the list of tournament
      * @return the list of all pairs of tournament and posts
      */
-    private fun getAllPosts(tournaments: List<Tournament>): List<Pair<Tournament, TournamentPost>> {
-        return tournaments.flatMap { tournament -> tournament.posts.map { p -> Pair(tournament, p) } }
+    private fun getAllPostsFromAll(): List<Pair<Tournament, TournamentPost>> {
+        return getAllTournaments().flatMap { tournament -> tournament.posts.map { p -> Pair(tournament, p) } }
     }
+
+    /**
+     * get all the tournaments from weekly tournament, your tournament and discover tournament
+     *
+     * @return the list of all tournaments
+     */
+    private fun getAllTournaments(): List<Tournament> {
+        val list = mutableListOf(tournament.getWeeklyTournament())
+        list.addAll(tournament.getYourTournament("placeholder"))
+        list.addAll(tournament.getDiscoverTournament("placeholder"))
+        return list
+    }
+
 
     //TODO replace by real tournaments
     //everything from here are samples
-    /**
-     * sample tournaments
-     */
-    private fun allTournamentsSample(): List<Tournament> {
-        val list = mutableListOf(sampleWeekly())
-        list.addAll(sampleYourTournaments())
-        list.addAll(sampleDiscoveryTournaments())
-        return list
-    }
 
     /**
      * sample tournaments
