@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.github.drawyourpath.bootcamp.path.Path
+import com.epfl.drawyourpath.path.Path
 import com.github.drawyourpath.bootcamp.path.Run
 import com.github.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng

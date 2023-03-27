@@ -52,6 +52,7 @@ abstract class Database {
      */
     abstract fun updateUsername(username: String): CompletableFuture<Boolean>
 
+
     /**
      * This function will add the username to the database as link to the userId of the user authenticate on the app
      * and create a user account on the database for the user authenticate with is userId and his username as parameter
