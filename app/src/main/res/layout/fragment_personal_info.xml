@@ -1,96 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/personalInfoFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.epfl.drawyourpath.userProfileCreation.PersonalInfoFragment"
-    android:id="@+id/personalInfoFragment"
     android:background="@drawable/image_mountain_background"
-    >
+    tools:context="com.epfl.drawyourpath.userProfileCreation.PersonalInfoFragment">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_gravity="center"
+        android:orientation="vertical"
         tools:context="com.epfl.drawyourpath.userProfileCreation.PersonalInfoFragment">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
             android:text="@string/to_get_to_know_you_better"
+            android:textAlignment="center"
+            android:textColor="@color/design_default_color_surface"
             android:textIsSelectable="false"
             android:textSize="28sp"
-            android:textColor="@color/design_default_color_surface"
-            android:textAlignment="center"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
+
         <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textSize="30sp"
             android:id="@+id/input_firstname_text_UserProfileCreation"
-            android:hint="@string/enter_your_firstname"
-            android:maxLines="1"
-            android:lines="1"
-            android:singleLine="true"
-            android:background="@color/design_default_color_surface"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:textSize="20dp"
-            android:id="@+id/firstnameError_text_userProfileCreation"
-            android:layout_marginLeft="40dp"/>
-
-        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:textSize="30sp"
-            android:id="@+id/input_surname_text_UserProfileCreation"
-            android:hint="@string/enter_your_surname"
-            android:maxLines="1"
+            android:background="@color/design_default_color_surface"
+            android:hint="@string/enter_your_firstname"
             android:lines="1"
+            android:maxLines="1"
             android:singleLine="true"
-            android:background="@color/design_default_color_surface" />
+            android:textSize="30sp" />
 
         <TextView
+            android:id="@+id/firstnameError_text_userProfileCreation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:textSize="20dp"
+            android:layout_marginLeft="40dp"
+            android:textSize="20dp" />
+
+        <EditText
+            android:id="@+id/input_surname_text_UserProfileCreation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/design_default_color_surface"
+            android:hint="@string/enter_your_surname"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textSize="30sp" />
+
+        <TextView
             android:id="@+id/surnameError_text_userProfileCreation"
-            android:layout_marginLeft="40dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="40dp"
+            android:textSize="20dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginLeft="10dp"
-            android:textSize="30sp"
             android:text="@string/your_date_of_birth"
-            android:textColor="@color/design_default_color_surface"/>
+            android:textColor="@color/design_default_color_surface"
+            android:textSize="30sp" />
 
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
             tools:context="com.epfl.drawyourpath.userProfileCreation.PersonalInfoFragment">
+
             <TextView
+                android:id="@+id/showDate_text_userProfileCreation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginRight="5dp"
-                android:textSize="30dp"
                 android:background="@color/design_default_color_surface"
                 android:text="@string/empty_date_view"
-                android:id="@+id/showDate_text_userProfileCreation" />
+                android:textSize="30dp" />
 
             <Button
                 android:id="@+id/selectDate_button_userProfileCreation"
@@ -100,18 +102,19 @@
                 android:text="@string/select_a_date" />
 
         </LinearLayout>
+
         <TextView
+            android:id="@+id/dateError_text_userProfileCreation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:textSize="20dp"
-            android:id="@+id/dateError_text_userProfileCreation"
-            android:layout_marginLeft="60dp"/>
+            android:layout_marginLeft="60dp"
+            android:textSize="20dp" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/setPersonalInfo_button_userProfileCreation"
@@ -119,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|bottom"
             android:text="@string/validate"
-            android:textSize="40sp"/>
+            android:textSize="40sp" />
     </LinearLayout>
 
 </FrameLayout>

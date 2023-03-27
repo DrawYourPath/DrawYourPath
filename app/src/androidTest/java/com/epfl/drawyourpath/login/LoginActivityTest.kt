@@ -4,7 +4,9 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+
 import androidx.test.espresso.Espresso
+
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -15,8 +17,10 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
+
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import org.junit.Assert.*
@@ -26,13 +30,15 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class LoginActivityTest {
 
+
     @Test
     fun loginViewModelWithNoCallbackFailsSilently() {
-        val viewModel = LoginViewModel();
+        val viewModel = LoginViewModel()
 
-        viewModel.showLoginUI();
-        viewModel.showRegisterUI();
+        viewModel.showLoginUI()
+        viewModel.showRegisterUI()
     }
+
 
     private fun buttonHasText(id: Int, text: String) {
         // @see: https://github.com/android/android-test/issues/1642
@@ -42,19 +48,22 @@ class LoginActivityTest {
     private fun launchLoginActivity(
         failingMock: Boolean = false,
         userInKeychain: Boolean = false,
+
         withOneTap: Boolean = false,
         useMock: Boolean = true
     ): ActivityScenario<LoginActivity> {
         Intents.init()
 
-        val intent = Intent(getApplicationContext(), LoginActivity::class.java);
-        intent.putExtra(USE_MOCK_AUTH_KEY, useMock);
-        intent.putExtra(MOCK_AUTH_FAIL, failingMock);
+        val intent = Intent(getApplicationContext(), LoginActivity::class.java)
+        intent.putExtra(USE_MOCK_AUTH_KEY, useMock)
+        intent.putExtra(MOCK_AUTH_FAIL, failingMock)
         intent.putExtra(RESTORE_USER_IN_KEYCHAIN, userInKeychain)
         intent.putExtra(ENABLE_ONETAP_SIGNIN, withOneTap)
 
+
         return launch(intent)
     }
+
     @Test
     fun generalLayoutMatchesExpectedContent() {
         val scenario = launchLoginActivity()
@@ -64,9 +73,9 @@ class LoginActivityTest {
         onView(withId(R.id.TXT_Description)).check(matches(ViewMatchers.withSubstring("Choose a way to login")))
 
         // Checks the buttons' content on the register fragment.
-        buttonHasText(R.id.BT_RegisterEmail, "Register with email");
+        buttonHasText(R.id.BT_RegisterEmail, "Register with email")
         buttonHasText(R.id.BT_RegisterGoogle, "Register with Google")
-        buttonHasText(R.id.BT_RegisterAnonymous, "Continue without an account");
+        buttonHasText(R.id.BT_RegisterAnonymous, "Continue without an account")
         buttonHasText(R.id.BT_Login, "I already have an account")
 
         // Switches to the login fragment
@@ -81,11 +90,12 @@ class LoginActivityTest {
 
         Intents.release()
 
-        scenario.close();
+        scenario.close()
     }
 
     @Test
     fun validUserInKeychainLaunchesMainMenuAutomatically() {
+
         var scenario = launchLoginActivity(failingMock = false, userInKeychain = true)
 
         intended(hasComponent(MainActivity::class.java.name))
@@ -95,6 +105,7 @@ class LoginActivityTest {
         scenario.close()
 
         scenario = launchLoginActivity(failingMock = true, userInKeychain = true)
+
 
         intended(hasComponent(MainActivity::class.java.name))
 
@@ -148,7 +159,9 @@ class LoginActivityTest {
     }
 
     @Test
+
     fun failedLoginWithGoogleDoesntRedirectToMainMenu() {
+
         val scenario = launchLoginActivity(true)
 
         onView(withId(R.id.BT_Login)).perform(ViewActions.click())
@@ -189,6 +202,7 @@ class LoginActivityTest {
 
         scenario.close()
     }
+
 
     @Test
     fun registerWithEmailRedirectsToAccountRegistration() {
@@ -282,7 +296,8 @@ class LoginActivityTest {
 
     @Test
     fun loginWithInvalidEmailAndPasswordFailsWithFirebaseAuth() {
-        val scenario = launchLoginActivity(useMock = false, withOneTap = false, userInKeychain = false)
+        val scenario =
+            launchLoginActivity(useMock = false, withOneTap = false, userInKeychain = false)
 
         // Empty email
         onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())

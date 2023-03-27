@@ -33,25 +33,28 @@ class MockAuth(
             }
 
             override fun isAnonymous(): Boolean {
+
                 return false
             }
         }
     }
 
+
     private var isLogged = userInKeyChain
 
     private fun mockLogin(callback: AuthCallback) {
         //Timer().schedule(1500){
-            isLogged = !failing
-            when (failing) {
-                true  -> callback(null, Exception("Mock failing"))
-                false -> callback(MOCK_USER, null)
-            }
+        isLogged = !failing
+        when (failing) {
+            true -> callback(null, Exception("Mock failing"))
+            false -> callback(MOCK_USER, null)
+        }
         //}
     }
 
     override fun getUser(): User? {
         if (isLogged) return MOCK_USER
+
         return null
     }
 
@@ -76,7 +79,7 @@ class MockAuth(
     }
 
     override fun onAuthStateChanged(callback: AuthCallback) {
-        callback(getUser(), null);
+        callback(getUser(), null)
     }
 
     override fun clearListener() {
@@ -87,8 +90,7 @@ class MockAuth(
         //mockLogin(callback)
         if (withOneTapSignIn) {
             mockLogin(callback)
-        }
-        else {
+        } else {
             callback(null, Exception("Mock Error"))
         }
     }
@@ -106,5 +108,6 @@ class MockAuth(
         requestCode: Int,
         resultCode: Int,
         data: Intent?
-    ) {}
+    ) {
+    }
 }

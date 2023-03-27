@@ -17,15 +17,19 @@ import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.mainpage.MainActivity
+
 import com.epfl.drawyourpath.userProfileCreation.UserProfileCreationActivity
 
-const val USE_MOCK_AUTH_KEY             = "useMockAuth"
-const val MOCK_AUTH_FAIL                = "useMockAuthFailing"
-const val RESTORE_USER_IN_KEYCHAIN      = "restoreUserInKeychain"
-const val ENABLE_ONETAP_SIGNIN          = "enableOneTapSignIn"
+const val USE_MOCK_AUTH_KEY = "useMockAuth"
+const val MOCK_AUTH_FAIL = "useMockAuthFailing"
+const val RESTORE_USER_IN_KEYCHAIN = "restoreUserInKeychain"
+const val ENABLE_ONETAP_SIGNIN = "enableOneTapSignIn"
 
 const val LOG_LOGIN_KEY = "DYP_Login"
 
+/**
+ * Base class for any fragment displayed in the login activity.
+ */
 abstract class LoginActivityFragment(@LayoutRes layout: Int) : Fragment(layout) {
     protected val viewModel: LoginViewModel by activityViewModels()
     protected inline fun <reified T> getLoginActivity(): T {
@@ -41,24 +45,36 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     LoginActivityListener {
     private val viewModel: LoginViewModel by viewModels()
 
+
     // The auth object used to authenticate the user.
     private lateinit var auth: Auth
 
-    private var useOneTapSignIn: Boolean = false;
-    private var restoreUserFromKeychain: Boolean = false;
+    // If we should use onetap sign-in when the login activity is launched
+    // Can be controlled with ENABLE_ONETAP_SIGNIN in the intent.
+    private var useOneTapSignIn: Boolean = true
+
+    // If we should restore user information from the keychain to automatically
+    // log the user in.
+    // Can be controlled with RESTORE_USER_IN_KEYCHAIN in the intent.
+    private var restoreUserFromKeychain: Boolean = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        useOneTapSignIn         = intent.getBooleanExtra(ENABLE_ONETAP_SIGNIN,     useOneTapSignIn);
-        restoreUserFromKeychain = intent.getBooleanExtra(RESTORE_USER_IN_KEYCHAIN, restoreUserFromKeychain)
+        // Overwrites the one tap sign-in behavior if set in the intent.
+        useOneTapSignIn = intent.getBooleanExtra(ENABLE_ONETAP_SIGNIN, useOneTapSignIn)
 
+        // Overwrites the user keychain restoration behavior if set in the intent.
+        restoreUserFromKeychain =
+            intent.getBooleanExtra(RESTORE_USER_IN_KEYCHAIN, restoreUserFromKeychain)
+
+        // Creates the auth object depending on the mock data in the intent.
         val useMockAuthProvider = intent.getBooleanExtra(USE_MOCK_AUTH_KEY, false)
         auth = when (useMockAuthProvider) {
-            true  -> MockAuth(
-                failing          = intent.getBooleanExtra(MOCK_AUTH_FAIL, false),
-                userInKeyChain   = restoreUserFromKeychain,
+            true -> MockAuth(
+                failing = intent.getBooleanExtra(MOCK_AUTH_FAIL, false),
+                userInKeyChain = restoreUserFromKeychain,
                 withOneTapSignIn = useOneTapSignIn
             )
             false -> FirebaseAuth()
@@ -72,6 +88,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
                 ELoginView.Login -> showLoginUI()
             }
         }
+
 
         // When the user changed. i.e. signed out or signed in.
         auth.onAuthStateChanged { _, _ ->
@@ -93,8 +110,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         // Otherwise, we try a one-tap sign-in.
         else if (useOneTapSignIn) {
             Log.i(LOG_LOGIN_KEY, "Attempting One-Tap Sign-In.")
-            auth.launchOneTapGoogleSignIn(this) {
-                _, error ->
+            auth.launchOneTapGoogleSignIn(this) { _, error ->
                 when (error) {
                     null -> openMainMenu()
                 }
@@ -125,6 +141,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         switchFragment<RegisterActions>()
     }
 
+
     private inline fun <reified T : LoginActivityFragment> switchFragment() {
         supportFragmentManager.commit {
             //setCustomAnimations(R.anim.slide_in, R.anim.slide_out)
@@ -133,7 +150,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     }
 
     private fun openAccountRegistration() {
-
         val registrationScreen = Intent(this, UserProfileCreationActivity::class.java)
         this.startActivity(registrationScreen)
     }

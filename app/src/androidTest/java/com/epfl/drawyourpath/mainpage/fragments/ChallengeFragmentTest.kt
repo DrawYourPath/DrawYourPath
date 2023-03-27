@@ -122,7 +122,16 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(0))
             .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.distanceInKilometerGoal}"))))
-            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.distanceInKilometerGoal.toInt().toString()))))
+            .check(
+                matches(
+                    hasDescendant(
+                        withText(
+                            TemporaryUser.DEFAULT_DAILY_GOAL.distanceInKilometerGoal.toInt()
+                                .toString()
+                        )
+                    )
+                )
+            )
             .check(matches(hasDescendant(withText("kilometers"))))
 
         scenario.close()
@@ -146,7 +155,15 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(1))
             .check(matches(hasDescendant(withText("0.0/${TemporaryUser.DEFAULT_DAILY_GOAL.timeInMinutesGoal}"))))
-            .check(matches(hasDescendant(withText(TemporaryUser.DEFAULT_DAILY_GOAL.timeInMinutesGoal.toInt().toString()))))
+            .check(
+                matches(
+                    hasDescendant(
+                        withText(
+                            TemporaryUser.DEFAULT_DAILY_GOAL.timeInMinutesGoal.toInt().toString()
+                        )
+                    )
+                )
+            )
             .check(matches(hasDescendant(withText("minutes"))))
 
         scenario.close()

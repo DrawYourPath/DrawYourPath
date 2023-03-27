@@ -1,9 +1,8 @@
-package com.github.drawyourpath.bootcamp.path
-import com.google.type.Color
+package com.epfl.drawyourpath.path
+
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.type.Color
 
 // Define a Path class that represents a runner's path.
 class Path {

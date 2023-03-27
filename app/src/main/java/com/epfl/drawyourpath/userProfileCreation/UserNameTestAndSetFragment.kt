@@ -7,18 +7,20 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 
 class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and_set) {
 
     private var isTest: Boolean = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        var database: Database = FireDatabase()
+
         //retrieve the value from the welcome activity to know if we are running testes
         val isRunTest: Bundle? = arguments
         if (isRunTest == null) {
@@ -28,11 +30,8 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
         }
 
         //select the correct database in function of test scenario
-        var database: Database? = null
         if (isTest) {
             database = MockDataBase()
-        } else {
-            database = FireDatabase()
         }
 
         val testUserNameButton: Button =
@@ -51,19 +50,32 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
             //try to set the userName to the database
             val usernameStr = inputUserName.text.toString()
             val testUsername = usernameAvaibility(database, usernameStr, showTestResult)
-            val previousActivity = activity
-            testUsername.thenAccept{
-                if (previousActivity != null && it) {
-                    database.setUserName(usernameStr)
-                    val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
-                    val dataToPersoInfoFrag: Bundle = Bundle()
-                    //data to transmit to the PersonalInfoFragment(username + isTest)
-                    dataToPersoInfoFrag.putBoolean("isRunningTestForDataBase", isTest)
-                    dataToPersoInfoFrag.putString("userName", inputUserName.text.toString())
-                    val persoInfoFrag = PersonalInfoFragment()
-                    persoInfoFrag.arguments = dataToPersoInfoFrag
-                    fragManagement.replace(R.id.userName_frame, persoInfoFrag).commit()
-                }
+            testUsername.thenAccept {
+                showPersonalInfoFragment(activity, database, usernameStr, isTest)
+            }
+        }
+    }
+}
+
+/**
+ * Helper function to show the PersonalInfo fragment
+ * @param previousActivity previous fragment activity
+ * @param database used for to store the data
+ * @param username that we have set into the database
+ * @param isTest to know if we are in a test scenario
+ */
+private fun showPersonalInfoFragment(previousActivity: FragmentActivity?, database: Database, username: String, isTest: Boolean){
+    if (previousActivity != null) {
+        database.setUsername(username).thenAccept{isSet ->
+            if(isSet){
+                val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
+                val dataToPersoInfoFrag: Bundle = Bundle()
+                //data to transmit to the PersonalInfoFragment(isTest + username)
+                dataToPersoInfoFrag.putBoolean("isRunningTestForDataBase", isTest)
+                dataToPersoInfoFrag.putString("username", username)
+                val persoInfoFrag = PersonalInfoFragment()
+                persoInfoFrag.arguments = dataToPersoInfoFrag
+                fragManagement.replace(R.id.userName_frame, persoInfoFrag).commit()
             }
         }
     }
@@ -77,13 +89,17 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
  * @param outputMessage editText used to show an error message to the user on the UI if the username is not available
  * @return true if the username is available, and false otherwise
  */
-private fun usernameAvaibility(database: Database, username: String, outputMessage: TextView): CompletableFuture<Boolean>{
+private fun usernameAvaibility(
+    database: Database,
+    username: String,
+    outputMessage: TextView
+): CompletableFuture<Boolean> {
     if (username == "") {
         outputMessage.text = buildString { append("The username can't be empty !") }
         outputMessage.setTextColor(Color.RED)
         return CompletableFuture.completedFuture(false)
     }
-    val future = database.isUserNameAvailable(username)
+    val future = database.isUsernameAvailable(username)
 
     //since the orTimeout require an API level 33(we are in min API level 28), we can't use it
     val durationFuture = future.thenApply {
