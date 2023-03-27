@@ -21,7 +21,7 @@ data class TournamentPost(
     }
 
     /**
-     * upvote the post if the user has not already upvoted
+     * upvote the post if the user has not already upvoted otherwise remove the vote
      *
      * @param userId the userId
      * @return a boolean indicating if the upvote was done
@@ -29,6 +29,7 @@ data class TournamentPost(
     fun upvote(userId: String): Boolean {
         val oldVote = userVotes.getOrDefault(userId, 0)
         if (oldVote == 1) {
+            removeVote(userId)
             return false
         }
         votes += 1 - oldVote
@@ -37,7 +38,7 @@ data class TournamentPost(
     }
 
     /**
-     * downvote the post if the user has not already downvoted
+     * downvote the post if the user has not already downvoted otherwise remove the vote
      *
      * @param userId the userId
      * @return a boolean indicating if the downvote was done
@@ -45,6 +46,7 @@ data class TournamentPost(
     fun downvote(userId: String): Boolean {
         val oldVote = userVotes.getOrDefault(userId, 0)
         if (oldVote == -1) {
+            removeVote(userId)
             return false
         }
         votes -= 1 + oldVote
@@ -56,16 +58,13 @@ data class TournamentPost(
      * remove the vote on the post if the user has already voted
      *
      * @param userId the userId
-     * @return a boolean indicating if the removal of the vote was done
      */
-    fun removeVote(userId: String): Boolean {
+    private fun removeVote(userId: String) {
         val oldVote = userVotes.getOrDefault(userId, 0)
-        if (oldVote == 0) {
-            return false
+        if (oldVote != 0) {
+            votes -= oldVote
+            userVotes.remove(userId)
         }
-        votes -= oldVote
-        userVotes.remove(userId)
-        return true
     }
 
 

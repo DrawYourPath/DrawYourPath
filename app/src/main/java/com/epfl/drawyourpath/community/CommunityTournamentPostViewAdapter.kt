@@ -14,7 +14,10 @@ import com.epfl.drawyourpath.R
 /**
  * used in a recycler view to display the [TournamentPost]
  */
-class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<Tournament, TournamentPost>>, private val showTournamentName: Boolean) :
+class CommunityTournamentPostViewAdapter(
+    private val tournamentPosts: List<Pair<Tournament, TournamentPost>>,
+    private val showTournamentName: Boolean
+) :
     RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
 
     /**
@@ -70,7 +73,6 @@ class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<
             if (post.upvote("user")) {
                 changeButtonColor(viewHolder, it, R.color.red, R.color.grey)
             } else {
-                post.removeVote("user")
                 changeButtonColor(viewHolder, it, R.color.grey, R.color.grey)
             }
             viewHolder.voteCount.text = post.getVotes().toString()
@@ -80,7 +82,6 @@ class CommunityTournamentPostViewAdapter(private val tournamentPosts: List<Pair<
             if (post.downvote("user")) {
                 changeButtonColor(viewHolder, it, R.color.grey, R.color.blue)
             } else {
-                post.removeVote("user")
                 changeButtonColor(viewHolder, it, R.color.grey, R.color.grey)
             }
 

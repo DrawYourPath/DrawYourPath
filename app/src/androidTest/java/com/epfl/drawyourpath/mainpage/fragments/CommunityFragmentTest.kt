@@ -32,7 +32,7 @@ class CommunityFragmentTest {
      * test that pressing the upvote button adds a vote
      */
     @Test
-    fun upvoteOnceIsCorrect() {
+    fun upvoteOnceAddsVote() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
             getBundle(sampleWeekly),
@@ -50,10 +50,10 @@ class CommunityFragmentTest {
     }
 
     /**
-     * test that pressing twice the upvote button removes the vote
+     * test that pressing twice the upvote button adds then removes the vote
      */
     @Test
-    fun upvoteTwiceIsCorrect() {
+    fun upvoteTwiceAddsThenRemovesVote() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
             getBundle(sampleWeekly),
@@ -79,7 +79,7 @@ class CommunityFragmentTest {
      * test that pressing the downvote button subtracts a vote
      */
     @Test
-    fun downvoteOnceIsCorrect() {
+    fun downvoteOnceSubtractsVote() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
             getBundle(sampleWeekly),
@@ -97,10 +97,10 @@ class CommunityFragmentTest {
     }
 
     /**
-     * test that pressing twice the downvote button removes the vote
+     * test that pressing twice the downvote button subtracts then removes the vote
      */
     @Test
-    fun downvoteTwiceIsCorrect() {
+    fun downvoteTwiceSubtractsThenRemovesVote() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
             getBundle(sampleWeekly),
@@ -127,7 +127,7 @@ class CommunityFragmentTest {
      * test that upvote then downvote make the final vote as oldVote-1 and vice versa
      */
     @Test
-    fun multipleUpvoteDownvoteIsCorrect() {
+    fun multipleUpvoteDownvoteAddsAndSubtractsCorrectly() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
             getBundle(sampleWeekly),
@@ -156,10 +156,10 @@ class CommunityFragmentTest {
     }
 
     /**
-     * check that the navigation to the details of the weekly tournament is correct
+     * check that the navigation to the details of the weekly tournament shows the details then go back
      */
     @Test
-    fun showDetailWeeklyAndGoBackIsCorrect() {
+    fun showDetailWeeklyShowsTheDetailsThenGoBack() {
         val weekly = sampleWeekly
 
         val scenario = FragmentScenario.launchInContainer(
@@ -248,6 +248,9 @@ class CommunityFragmentTest {
     }
 
 
+    /**
+     * sample posts
+     */
     private val postsYour = mutableListOf(
         TournamentPost("Michel", sampleRun(), 158),
         TournamentPost("MrPrefect", sampleRun(), 666),
@@ -255,12 +258,18 @@ class CommunityFragmentTest {
         TournamentPost("Invalid Username", sampleRun(), 0)
     )
 
+    /**
+     * sample posts
+     */
     private val postsDiscoverEarth = mutableListOf(
         TournamentPost("SpaceMan", sampleRun(), 35),
         TournamentPost("NASA", sampleRun(), 124),
         TournamentPost("Alien", sampleRun(), -3)
     )
 
+    /**
+     * sample posts
+     */
     private val postsDiscoverMoon = mutableListOf(
         TournamentPost("Diabolos", sampleRun(), 666),
         TournamentPost("Jaqueline", sampleRun(), 356)

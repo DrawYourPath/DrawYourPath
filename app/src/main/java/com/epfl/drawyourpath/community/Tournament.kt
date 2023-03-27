@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.community
 
-import com.epfl.drawyourpath.community.TournamentPost
 import java.time.Clock
 import java.time.Duration
 import java.time.LocalDateTime

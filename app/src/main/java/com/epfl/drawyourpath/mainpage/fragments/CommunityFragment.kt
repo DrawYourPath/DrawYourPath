@@ -1,17 +1,19 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
+import android.view.SubMenu
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.widget.NestedScrollView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.community.CommunityTournamentPostViewAdapter
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.community.TournamentModel
 import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
@@ -27,45 +29,97 @@ import java.time.LocalDateTime
 class CommunityFragment : Fragment(R.layout.fragment_community) {
 
     private lateinit var drawer: DrawerLayout
-    private lateinit var menuButton: ImageButton
+    private lateinit var headlineHome: LinearLayout
+    private lateinit var headlineDetailsLayout: LinearLayout
     private lateinit var detailsLayout: LinearLayout
-    private lateinit var tournamentsView: RecyclerView
+    private lateinit var tournamentPostsView: RecyclerView
+    private lateinit var scroll: NestedScrollView
 
     private lateinit var tournament: TournamentModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        drawer = view.findViewById(R.id.fragment_community)
-        menuButton = view.findViewById(R.id.community_menu_button)
-        detailsLayout = view.findViewById(R.id.community_detail_layout)
-        tournamentsView = view.findViewById(R.id.display_community_tournaments_view)
+        initVariable(view)
 
-        tournament = TournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments())
-        if (arguments?.getSerializable("tournaments") != null) {
-            tournament = arguments?.getSerializable("tournaments") as TournamentModel
-        }
+        getTournaments()
+
+        createTournamentPostsView()
+
+        createMenuButton(view)
 
         createNavigationMenu(view)
 
-        tournamentsView.layoutManager = LinearLayoutManager(context)
-        tournamentsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
+        createSortButton(view)
 
+        createBackButton(view)
+
+    }
+
+    /**
+     * initialize the different variable
+     */
+    private fun initVariable(view: View) {
+        drawer = view.findViewById(R.id.fragment_community)
+        headlineHome = view.findViewById(R.id.community_headline_home)
+        headlineDetailsLayout = view.findViewById(R.id.community_headline_detail_layout)
+        detailsLayout = view.findViewById(R.id.community_detail_layout)
+        tournamentPostsView = view.findViewById(R.id.display_community_tournaments_view)
+        scroll = view.findViewById(R.id.community_nested_scroll_view)
+
+        tournament = TournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments())
+    }
+
+    /**
+     * get the tournaments to display
+     * TODO change from sample to real tournaments
+     */
+    private fun getTournaments() {
+        if (arguments?.getSerializable("tournaments") != null) {
+            tournament = arguments?.getSerializable("tournaments") as TournamentModel
+        }
+    }
+
+    /**
+     * create the tournamentPost view that displays the posts
+     */
+    private fun createTournamentPostsView() {
+        tournamentPostsView.layoutManager = LinearLayoutManager(context)
+        tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
+    }
+
+
+    /**
+     * create the sort button which will sort the posts
+     * TODO create the sort button
+     */
+    private fun createSortButton(view: View) {
+        val sortButton = view.findViewById<ImageButton>(R.id.community_sort_button)
+    }
+
+    /**
+     * create the menu button which will open the navigation menu
+     */
+    private fun createMenuButton(view: View) {
+        val menuButton = view.findViewById<ImageButton>(R.id.community_menu_button)
         menuButton.setOnClickListener {
             drawer.open()
         }
+    }
 
-        //TODO add logic to the sort button
-        //val sortButton = view.findViewById<ImageButton>(R.id.community_sort_button)
-
+    /**
+     * create the back button to go back from the detail tournament view
+     */
+    private fun createBackButton(view: View) {
         val backButton = view.findViewById<ImageButton>(R.id.community_back_button)
         backButton.setOnClickListener {
-            menuButton.visibility = View.VISIBLE
+            headlineHome.visibility = View.VISIBLE
+            headlineDetailsLayout.visibility = View.GONE
             detailsLayout.visibility = View.GONE
-            tournamentsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
-            tournamentsView.invalidate()
+            tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
+            tournamentPostsView.invalidate()
+            scroll.scrollTo(0, 0)
         }
-
     }
 
     /**
@@ -75,28 +129,27 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val menu = view.findViewById<NavigationView>(R.id.community_navigation_view).menu
 
         val weekly = menu.addSubMenu("Weekly tournament")
-        weekly.add(tournament.getWeeklyTournament().name)
-            .setContentDescription("${tournament.getWeeklyTournament().name} details")
-            .setOnMenuItemClickListener {
-                menuItemListener(view, sampleWeekly())
-            }
+        createMenuItem(view, weekly, tournament.getWeeklyTournament())
 
         val your = menu.addSubMenu("Your tournament")
-        for (i in tournament.getYourTournament("placeholder")) {
-            your.add(i.name)
-                .setContentDescription("${i.name} details")
-                .setOnMenuItemClickListener {
-                    menuItemListener(view, i)
-                }
+        for (t in tournament.getYourTournament("placeholder")) {
+            createMenuItem(view, your, t)
         }
         val discover = menu.addSubMenu("Discover")
-        for (i in tournament.getDiscoverTournament("placeholder")) {
-            discover.add(i.name)
-                .setContentDescription("${i.name} details")
-                .setOnMenuItemClickListener {
-                    menuItemListener(view, i)
-                }
+        for (t in tournament.getDiscoverTournament("placeholder")) {
+            createMenuItem(view, discover, t)
         }
+    }
+
+    /**
+     * create the tournament item of a subMenu
+     */
+    private fun createMenuItem(view: View, menu: SubMenu, tournament: Tournament) {
+        menu.add(tournament.name)
+            .setContentDescription("${tournament.name} details")
+            .setOnMenuItemClickListener {
+                menuItemListener(view, tournament)
+            }
     }
 
     /**
@@ -106,9 +159,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         view.findViewById<TextView>(R.id.community_detail_name).text = tournament.name
         view.findViewById<TextView>(R.id.community_detail_description).text = tournament.description
         view.findViewById<TextView>(R.id.community_detail_date).text = tournament.getStartOrEndDate()
-        tournamentsView.adapter = CommunityTournamentPostViewAdapter(getPostsFrom(tournament), false)
-        tournamentsView.invalidate()
-        menuButton.visibility = View.GONE
+        tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getPostsFrom(tournament), false)
+        tournamentPostsView.invalidate()
+        scroll.scrollTo(0, 0)
+        headlineHome.visibility = View.GONE
+        headlineDetailsLayout.visibility = View.VISIBLE
         detailsLayout.visibility = View.VISIBLE
         drawer.close()
         return true
@@ -145,7 +200,6 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         list.addAll(tournament.getDiscoverTournament("placeholder"))
         return list
     }
-
 
     //TODO replace by real tournaments
     //everything from here are samples
