@@ -9,15 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
+
 import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.preferences.PreferencesFragment
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -74,6 +69,7 @@ class MainActivity : AppCompatActivity() {
                 //Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
 
+
                 //Display challenge fragment
                 R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>(TemporaryUser.SAMPLE_DATA)
             }
@@ -94,12 +90,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.friends_menu_item -> replaceFragment<FriendsFragment>()
 
                 // Display drawing fragment
-                R.id.draw_menu_item -> drawFragment()
+                R.id.draw_menu_item -> replaceFragment<DrawFragment>()
 
                 // Display history fragment
                 R.id.history_menu_item -> replaceFragment<HistoryFragment>()
 
                 // Display settings fragment
+
                 R.id.preferences_menu_item -> replaceFragment<PreferencesFragment>()
             }
             true
@@ -113,6 +110,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     /**
      * use this to replace fragment and give a user
      * Needs to be changed from [TemporaryUser] to a real user class
@@ -125,13 +123,4 @@ class MainActivity : AppCompatActivity() {
             replace<F>(R.id.fragmentContainerView, args = bundle)
         }
     }
-
-    private inline fun drawFragment() {
-        val mapFragment = SupportMapFragment.newInstance()
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.fragmentContainerView, mapFragment)
-            .commit()
-    }
-
 }
