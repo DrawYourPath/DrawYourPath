@@ -16,7 +16,6 @@ abstract class Database {
     val distanceGoalFile: String = "distanceGoal"
     val activityTimeGoalFile: String = "activityTimeGoal"
     val nbOfPathsGoalFile: String = "nbOfPathsGoal"
-
     /**
      * This function is used to know if a certain user is already store in the database
      * @param userId that correspond to the user

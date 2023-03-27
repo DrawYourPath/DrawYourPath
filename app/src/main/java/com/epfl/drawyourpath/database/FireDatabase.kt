@@ -152,7 +152,7 @@ class FireDatabase : Database() {
         val future = CompletableFuture<UserModel>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
-            future.thenApply { dataToUserModel(userData) }
+            future.thenApply { dataToUserModel(userData, userId) }
         }.addOnFailureListener{
             future.completeExceptionally(it)
         }
@@ -265,33 +265,31 @@ class FireDatabase : Database() {
     /**
      * Helper function to convert a data snapshot to a userModel
      * @param data data snapshot to convert
-     * @param auth used to create the user model
+     * @param userId of the user
      * @return ta future that contains the user Model
      */
-    private fun dataToUserModel(data: DataSnapshot?): CompletableFuture<UserModel>{
+    private fun dataToUserModel(data: DataSnapshot?, userId: String): CompletableFuture<UserModel>{
         val future = CompletableFuture<UserModel>()
 
         if(data == null) {
             future.completeExceptionally(java.lang.Error("There is no user account corresponding to this userId."))
         }else{
-            if(USER_AUTH==null){
-                future.completeExceptionally(java.lang.Error("There is no user logged on the app."))
+            val email = data.child(emailFile).value
+            val username = data.child(usernameFile).value
+            val firstname = data.child(firstnameFile).value
+            val surname = data.child(surnameFile).value
+            val dateOfBirth = data.child(dateOfBirthFile).value
+            val distanceGoal = data.child(distanceGoalFile).value
+            val activityTimeGoal = data.child(activityTimeGoalFile).value
+            val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
+            if(firstname==null||surname==null||dateOfBirth==null||distanceGoal==null||activityTimeGoal==null||nbOfPathsGoal==null){
+                future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
             }else{
-                val username = data.child(usernameFile).value
-                val firstname = data.child(firstnameFile).value
-                val surname = data.child(surnameFile).value
-                val dateOfBirth = data.child(dateOfBirthFile).value
-                val distanceGoal = data.child(distanceGoalFile).value
-                val activityTimeGoal = data.child(activityTimeGoalFile).value
-                val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
-                if(firstname==null||surname==null||dateOfBirth==null||distanceGoal==null||activityTimeGoal==null||nbOfPathsGoal==null){
-                    future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
-                }else{
-                    future.complete(
-                        UserModel(USER_AUTH,username as String, firstname as String, surname as String, LocalDate.ofEpochDay(dateOfBirth as Long),
-                            distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int, FireDatabase()))
-                }
+                future.complete(
+                    UserModel(userId, email as String, username as String, firstname as String, surname as String, LocalDate.ofEpochDay(dateOfBirth as Long),
+                        distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int, FireDatabase()))
             }
+
         }
         return future
     }
