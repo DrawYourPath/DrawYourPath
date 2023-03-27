@@ -27,6 +27,9 @@ const val ENABLE_ONETAP_SIGNIN = "enableOneTapSignIn"
 
 const val LOG_LOGIN_KEY = "DYP_Login"
 
+/**
+ * Base class for any fragment displayed in the login activity.
+ */
 abstract class LoginActivityFragment(@LayoutRes layout: Int) : Fragment(layout) {
     protected val viewModel: LoginViewModel by activityViewModels()
     protected inline fun <reified T> getLoginActivity(): T {
@@ -46,18 +49,27 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     // The auth object used to authenticate the user.
     private lateinit var auth: Auth
 
-    private var useOneTapSignIn: Boolean = false
-    private var restoreUserFromKeychain: Boolean = false
+    // If we should use onetap sign-in when the login activity is launched
+    // Can be controlled with ENABLE_ONETAP_SIGNIN in the intent.
+    private var useOneTapSignIn: Boolean = true
+
+    // If we should restore user information from the keychain to automatically
+    // log the user in.
+    // Can be controlled with RESTORE_USER_IN_KEYCHAIN in the intent.
+    private var restoreUserFromKeychain: Boolean = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
+        // Overwrites the one tap sign-in behavior if set in the intent.
         useOneTapSignIn = intent.getBooleanExtra(ENABLE_ONETAP_SIGNIN, useOneTapSignIn)
+
+        // Overwrites the user keychain restoration behavior if set in the intent.
         restoreUserFromKeychain =
             intent.getBooleanExtra(RESTORE_USER_IN_KEYCHAIN, restoreUserFromKeychain)
 
+        // Creates the auth object depending on the mock data in the intent.
         val useMockAuthProvider = intent.getBooleanExtra(USE_MOCK_AUTH_KEY, false)
         auth = when (useMockAuthProvider) {
             true -> MockAuth(
@@ -69,7 +81,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         }
 
         auth.onActivityCreate(this, savedInstanceState)
-
 
         viewModel.setViewListener { view ->
             when (view) {
@@ -91,14 +102,12 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         super.onStart()
 
         // If a user is available now, it was restored from keychain.
-
         if (restoreUserFromKeychain && auth.getUser() != null) {
             Log.i(LOG_LOGIN_KEY, "User restored from keychain.")
             openMainMenu()
         }
 
         // Otherwise, we try a one-tap sign-in.
-
         else if (useOneTapSignIn) {
             Log.i(LOG_LOGIN_KEY, "Attempting One-Tap Sign-In.")
             auth.launchOneTapGoogleSignIn(this) { _, error ->
@@ -141,8 +150,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     }
 
     private fun openAccountRegistration() {
-
-
         val registrationScreen = Intent(this, UserProfileCreationActivity::class.java)
         this.startActivity(registrationScreen)
     }
@@ -173,7 +180,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     override fun registerWithGoogle() {
         auth.registerWithGoogle(this) { user, error -> onRegistrationResult(user, error) }
     }
-
 
     override fun registerAnonymously() {
         auth.loginAnonymously { user, error -> onRegistrationResult(user, error) }

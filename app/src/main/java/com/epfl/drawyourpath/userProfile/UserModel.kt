@@ -7,14 +7,11 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 
 class UserModel {
-    //the user authenticate in the app
-    private val userAuth: User
-
     //the userId of the user
     private val userId: String
 
     //the userName is chosen by the user and can be modify
-    private lateinit var username: String
+    private var username: String
 
     //the email is given at the beginning by the authentication part and can be modify
     private var emailAddress: String
@@ -47,7 +44,7 @@ class UserModel {
     /**
      * THis constructor will create a new user based on the user model of the app
      * @param userAuth user authenticate give by the login
-     * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)
+     * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
      * @param firstname must respect the name convention of the app (name or name-name)
      * @param surname must respect the name convention of the app (name or name-name)
      * @param dateOfBirth the user be aged between 10 and 100 years old
@@ -56,29 +53,63 @@ class UserModel {
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
      * @throws error if the inputs are incorrect
      */
-    constructor(
-        userAuth: User,
-        firstname: String,
-        surname: String,
-        dateOfBirth: LocalDate,
-        distanceGoal: Double,
-        activityTimeGoal: Double,
-        nbOfPathsGoal: Int,
-        database: Database
-    ) {
+    constructor(userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
         this.database = database
-        this.userAuth = userAuth
 
         //obtain the userId and the email give by the authentication
         this.userId = userAuth.getUid()
         this.emailAddress = userAuth.getEmail()
 
-        //obtain the userId
-        database.getUsernameFromUserId(userId).thenAccept {
-            if (it != null) {
-                this.username = it
-            }
-        }
+        //obtain the username
+        this.username = username
+
+        //check the format of the firstname
+        checkNameFormat(firstname, "firstname")
+        this.firstname = firstname
+
+        //check the format of the surname
+        checkNameFormat(surname, "surname")
+        this.surname = surname
+
+        //check that the birth date respect the age condition of the app(10<=age<=100)
+        checkDateOfBirth(dateOfBirth)
+        this.dateOfBirth = dateOfBirth
+
+        //test the goals, the goals can't be equal or less than 0
+        checkDistanceGoal(distanceGoal)
+        this.distanceGoal=distanceGoal
+
+        checkActivityTimeGoal(activityTimeGoal)
+        this.activityTimeGoal=activityTimeGoal
+
+        checkNbOfPathsGoal(nbOfPathsGoal)
+        this.nbOfPathsGoal=nbOfPathsGoal
+
+        this.friendsList = HashMap()
+    }
+
+    /**
+     * THis constructor will create a new user based on the user model of the app
+     * @param userId of the user
+     * @param emailAddres of the user
+     * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
+     * @param firstname must respect the name convention of the app (name or name-name)
+     * @param surname must respect the name convention of the app (name or name-name)
+     * @param dateOfBirth the user be aged between 10 and 100 years old
+     * @param distanceGoal init at the user profile creation and can be modify after(daily goal)
+     * @param activityTimeGoal init at the user profile creation and can be modify after(daily goal)
+     * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
+     * @throws error if the inputs are incorrect
+     */
+    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
+        this.database = database
+
+        //obtain the userId and the email give by the authentication
+        this.userId=userId
+        this.emailAddress=emailAddress
+
+        //obtain the username
+        this.username = username
 
         //check the format of the firstname
         checkNameFormat(firstname, "firstname")
@@ -103,7 +134,6 @@ class UserModel {
         this.nbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = HashMap()
-        //TODO: in the next task, the firstname, surname, dateOfBirth and the goals will be set to the database here
     }
 
     /**
@@ -126,10 +156,10 @@ class UserModel {
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun setUsername(username: String): CompletableFuture<Boolean> {
-        return database.updateUsername(username, userId).thenApply {
-            if (it) {
-                this.username = username
+    fun setUsername(username: String): CompletableFuture<Boolean>{
+        return database.updateUsername(username).thenApply{
+            if(it){
+                this.username=username
             }
             it
         }
@@ -194,9 +224,9 @@ class UserModel {
      */
     fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
         checkDistanceGoal(distanceGoal)
-        return database.setDistanceGoal(userId, distanceGoal).thenApply {
-            if (it) {
-                this.distanceGoal = distanceGoal
+        return database.setDistanceGoal(distanceGoal).thenApply {
+            if(it){
+                this.distanceGoal=distanceGoal
             }
             it
         }
@@ -216,9 +246,9 @@ class UserModel {
      */
     fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
         checkActivityTimeGoal(activityTimeGoal)
-        return database.setActivityTimeGoal(userId, activityTimeGoal).thenApply {
-            if (it) {
-                this.activityTimeGoal = activityTimeGoal
+        return database.setActivityTimeGoal(activityTimeGoal).thenApply {
+            if(it){
+                this.activityTimeGoal=activityTimeGoal
             }
             it
         }
@@ -238,9 +268,9 @@ class UserModel {
      */
     fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         checkNbOfPathsGoal(nbOfPathsGoal)
-        return database.setNbOfPathsGoal(userId, nbOfPathsGoal).thenApply {
-            if (it) {
-                this.nbOfPathsGoal = nbOfPathsGoal
+        return database.setNbOfPathsGoal(nbOfPathsGoal).thenApply {
+            if(it){
+                this.nbOfPathsGoal=nbOfPathsGoal
             }
             it
         }
