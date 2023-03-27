@@ -65,11 +65,26 @@
 
                     <TextView
                         android:id="@+id/TV_Trophy"
-                        android:layout_width="332dp"
+                        android:layout_width="140dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="120"
                         android:textColor="#FFC107" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/IV_Achievements"
+                        android:layout_width="100dp"
+                        android:layout_height="22dp"
+                        android:layout_weight="1"
+                        tools:srcCompat="@drawable/achievements" />
+
+                    <TextView
+                        android:id="@+id/TV_Achievements"
+                        android:layout_width="203dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="19"
+                        android:textColor="#03a9f4" />
                 </LinearLayout>
 
                 <Space

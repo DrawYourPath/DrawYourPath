@@ -15,7 +15,10 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
 
         setImageIcon(R.id.IV_Trophy, R.drawable.award)
+        setImageIcon(R.id.IV_Achievements, R.drawable.achievements)
         setImageIcon(R.id.IV_ProfilePicture, R.drawable.profile_placholderpng)
+
+        view.findViewById<TextView>(R.id.TV_Trophy).setOnClickListener { onTrophyClicked() }
 
         // TODO: Pull data from user model.
         populateFriendList(listOf(
@@ -25,6 +28,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         setShapesDrawn(15)
         setAverageSpeed(7)
         setGoalsReached(33)
+        setTrophyCount(459)
+        setAchievementsCount(14)
+    }
+
+    private fun onTrophyClicked() {
+        // TODO: Redirect to trophy activity.
     }
 
     private fun populateFriendList(friends: List<String>) {
@@ -48,6 +57,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun setAverageSpeed(avgSpeed: Int) {
         setTextViewText(R.id.TV_AvgSpeed, String.format("%d KM/H", avgSpeed))
+    }
+
+    private fun setAchievementsCount(achievementsCount: Int) {
+        setTextViewText(R.id.TV_Achievements, achievementsCount.toString())
+    }
+
+    private fun setTrophyCount(trophyCount: Int) {
+        setTextViewText(R.id.IV_Trophy, trophyCount.toString())
     }
 
     private fun setGoalsReached(goalsReached: Int) {
