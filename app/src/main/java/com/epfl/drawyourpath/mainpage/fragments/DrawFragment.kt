@@ -15,17 +15,12 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
     // TODO: add Google Map UI here and the ViewModel for this screen/fragment.
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        /*
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val mapFragment = childFragmentManager
-            .findFragmentById(R.id.fragment_draw) as SupportMapFragment
+            .findFragmentById(R.id.fragment_draw_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        */
-        return super.onCreateView(inflater, container, savedInstanceState)
     }
     override fun onMapReady(p0: GoogleMap) {
         val coordinates = LatLng(0.0,0.0)
