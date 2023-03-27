@@ -26,7 +26,7 @@ class FireDatabase : Database() {
     override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
-        database.child(usersProfileFileName).child(userId).get().addOnSuccessListener {
+        accessUserAccountFile(userId).get().addOnSuccessListener {
             if (it.value == null) future.complete(true)
             else future.complete(false)
         }.addOnFailureListener {
@@ -38,7 +38,7 @@ class FireDatabase : Database() {
     override fun getUsernameFromUserId(userId: String): CompletableFuture<String> {
         val future = CompletableFuture<String>()
 
-        database.child(usersProfileFileName).child(userId).child(usernameFile).get().addOnSuccessListener {
+        accessUserAccountFile(userId).child(usernameFile).get().addOnSuccessListener {
             if(it.value == null) future.completeExceptionally(NoSuchFieldException("There is no username corresponding to the userId $userId"))
             else future.complete(it.value as String)
         }.addOnFailureListener{
@@ -86,16 +86,7 @@ class FireDatabase : Database() {
                     //update the link username to userId and the username on the userAccount
                     setUsername(username).thenAccept { isSetUsername ->
                         if (isSetUsername) {
-                            //remove the past username from the link username/userId
-                            accessUsernameToUserIdFile().child(pastUsername).removeValue()
-                                .addOnSuccessListener { future.complete(true) }
-                                .addOnFailureListener {
-                                    future.completeExceptionally(
-                                        java.lang.Error(
-                                            "Impossible to remove the past username link !"
-                                        )
-                                    )
-                                }
+                            future.thenApply { removeUsernameToUidMapping(username)}
                         } else {
                             future.completeExceptionally(java.lang.Error("Impossible to set this username !"))
                         }
@@ -158,7 +149,7 @@ class FireDatabase : Database() {
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
         val future = CompletableFuture<UserModel>()
 
-        database.child(usersProfileFileName).child(userId).get().addOnSuccessListener { userData ->
+        accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
             if(userData == null) {
                 future.completeExceptionally(java.lang.Error("There is no user account corresponding to this userId."))
             }else{
@@ -229,6 +220,14 @@ class FireDatabase : Database() {
         dataUpdated.put(nbOfPathsGoalFile, nbOfPathsGoal)
         return updateUserData(dataUpdated)
     }
+    /**
+     * Helper function to access the userAccount database file of a user
+     * @param userId od the user
+     * @return the database reference to this file
+     */
+    private fun accessUserAccountFile(userId: String): DatabaseReference{
+        return database.child(usersProfileFileName).child(userId)
+    }
 
     /**
      * Helper function to access the usernameToUserId database file
@@ -248,7 +247,7 @@ class FireDatabase : Database() {
         if(userId == null){
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
         }else{
-            database.child(usersProfileFileName).child(userId).updateChildren(data).addOnSuccessListener { future.complete(true) }
+            accessUserAccountFile(userId).updateChildren(data).addOnSuccessListener { future.complete(true) }
                 .addOnFailureListener { future.completeExceptionally(java.lang.Error("Impossible to update the data in the database !")) }
         }
         return future
@@ -262,7 +261,27 @@ class FireDatabase : Database() {
     private fun getUserId(): String?{
         return USER_AUTH?.getUid()
     }
+
+    /**
+     * Helper function to remove the past link from username->userId
+     * @param username that will be removed form the mapping
+     * @return a future that indicate if the username was correctly removed
+     */
+    private fun removeUsernameToUidMapping(username: String){
+        val future = CompletableFuture<Boolean>()
+        //remove the past username from the link username/userId
+        accessUsernameToUserIdFile().child(username).removeValue()
+            .addOnSuccessListener { future.complete(true) }
+            .addOnFailureListener {
+                future.completeExceptionally(
+                    java.lang.Error(
+                        "Impossible to remove the past username link !"
+                    )
+                )
+            }
+    }
 }
+
 
 
 
