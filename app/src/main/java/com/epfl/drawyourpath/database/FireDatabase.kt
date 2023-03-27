@@ -1,8 +1,10 @@
 package com.epfl.drawyourpath.database
 
+import com.epfl.drawyourpath.authentication.Auth
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -150,28 +152,7 @@ class FireDatabase : Database() {
         val future = CompletableFuture<UserModel>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
-            if(userData == null) {
-                future.completeExceptionally(java.lang.Error("There is no user account corresponding to this userId."))
-            }else{
-                if(USER_AUTH==null){
-                    future.completeExceptionally(java.lang.Error("There is no user logged on the app."))
-                }else{
-                    val username = userData.child(usernameFile).value
-                    val firstname = userData.child(firstnameFile).value
-                    val surname = userData.child(surnameFile).value
-                    val dateOfBirth = userData.child(dateOfBirthFile).value
-                    val distanceGoal = userData.child(distanceGoalFile).value
-                    val activityTimeGoal = userData.child(activityTimeGoalFile).value
-                    val nbOfPathsGoal = userData.child(nbOfPathsGoalFile).value
-                    if(firstname==null||surname==null||dateOfBirth==null||distanceGoal==null||activityTimeGoal==null||nbOfPathsGoal==null){
-                        future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
-                    }else{
-                        future.complete(
-                            UserModel(USER_AUTH,username as String, firstname as String, surname as String, LocalDate.ofEpochDay(dateOfBirth as Long),
-                                    distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int, FireDatabase()))
-                    }
-                }
-            }
+            future.thenApply { dataToUserModel(userData) }
         }.addOnFailureListener{
             future.completeExceptionally(it)
         }
@@ -279,6 +260,40 @@ class FireDatabase : Database() {
                     )
                 )
             }
+    }
+
+    /**
+     * Helper function to convert a data snapshot to a userModel
+     * @param data data snapshot to convert
+     * @param auth used to create the user model
+     * @return ta future that contains the user Model
+     */
+    private fun dataToUserModel(data: DataSnapshot?): CompletableFuture<UserModel>{
+        val future = CompletableFuture<UserModel>()
+
+        if(data == null) {
+            future.completeExceptionally(java.lang.Error("There is no user account corresponding to this userId."))
+        }else{
+            if(USER_AUTH==null){
+                future.completeExceptionally(java.lang.Error("There is no user logged on the app."))
+            }else{
+                val username = data.child(usernameFile).value
+                val firstname = data.child(firstnameFile).value
+                val surname = data.child(surnameFile).value
+                val dateOfBirth = data.child(dateOfBirthFile).value
+                val distanceGoal = data.child(distanceGoalFile).value
+                val activityTimeGoal = data.child(activityTimeGoalFile).value
+                val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
+                if(firstname==null||surname==null||dateOfBirth==null||distanceGoal==null||activityTimeGoal==null||nbOfPathsGoal==null){
+                    future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
+                }else{
+                    future.complete(
+                        UserModel(USER_AUTH,username as String, firstname as String, surname as String, LocalDate.ofEpochDay(dateOfBirth as Long),
+                            distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int, FireDatabase()))
+                }
+            }
+        }
+        return future
     }
 }
 
