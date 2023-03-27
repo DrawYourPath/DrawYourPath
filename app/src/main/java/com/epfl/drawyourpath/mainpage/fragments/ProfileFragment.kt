@@ -8,6 +8,7 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.challenge.TrophyDialog
 
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
@@ -33,7 +34,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun onTrophyClicked() {
-        // TODO: Redirect to trophy activity.
+        openTrophyFragment()
+    }
+
+    private fun openTrophyFragment() {
+        val fragmentManager = requireActivity().supportFragmentManager
+        TrophyDialog().show(fragmentManager, "dialog")
     }
 
     private fun populateFriendList(friends: List<String>) {
@@ -64,7 +70,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun setTrophyCount(trophyCount: Int) {
-        setTextViewText(R.id.IV_Trophy, trophyCount.toString())
+        setTextViewText(R.id.TV_Trophy, trophyCount.toString())
     }
 
     private fun setGoalsReached(goalsReached: Int) {
