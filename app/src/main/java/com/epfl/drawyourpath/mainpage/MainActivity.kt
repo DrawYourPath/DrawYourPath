@@ -12,6 +12,7 @@ import com.epfl.drawyourpath.R
 
 import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.mainpage.fragments.*
+import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Setup the components of the screen
+        //Setup the components of the screen
         setupTopBar()
         setupProfileButton()
         setupDrawerNavigationView()
@@ -41,6 +42,9 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView.selectedItemId = R.id.draw_menu_item
             replaceFragment<DrawFragment>()
         }
+
+        //Setup notifications
+        NotificationsHelper(applicationContext).setupNotifications()
     }
 
     private fun setupTopBar() {
