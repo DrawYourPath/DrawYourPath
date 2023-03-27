@@ -10,8 +10,23 @@ private val TIMEOUT_SERVER_REQUEST: Long = 10
 
 class FireDatabase : Database() {
     val database: DatabaseReference = Firebase.database.reference
+    override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
 
-    override fun isUserNameAvailable(userName: String): CompletableFuture<Boolean> {
+        database.child("users").child(userId).get().addOnSuccessListener {
+            if (it.value == null) future.complete(true)
+            else future.complete(false)
+        }.addOnFailureListener {
+            future.completeExceptionally(it)
+        }
+        return future
+    }
+
+    override fun getUsernameFromUserId(userId: String): CompletableFuture<String> {
+        TODO("Will be implemented in the rebase database task")
+    }
+
+    override fun isUsernameAvailable(userName: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
         database.child("users").child(userName).get().addOnSuccessListener {
@@ -23,9 +38,13 @@ class FireDatabase : Database() {
         return future
     }
 
-    override fun setUserName(userName: String) {
+    override fun updateUsername(username: String, userId: String): CompletableFuture<Boolean> {
+        TODO("This will be implmented during next task when I will clean the database organisation")
+    }
+
+    override fun setUsername(username: String) {
         val userAdd = HashMap<String, String>()
-        userAdd.put(userName, "empty")
+        userAdd.put(username, "empty")
         database.child("users").updateChildren(userAdd as Map<String, Any>)
             .addOnFailureListener { throw Exception("Impossible to add the username on the database") }
     }
@@ -50,8 +69,8 @@ class FireDatabase : Database() {
 
     override fun setUserGoals(
         username: String,
-        distanceGoal: Int,
-        timeGoal: Int,
+        distanceGoal: Double,
+        timeGoal: Double,
         nbOfPathsGoal: Int
     ) {
         val userAdd = HashMap<String, String>()
@@ -61,12 +80,28 @@ class FireDatabase : Database() {
         updateUserData(userAdd, username)
     }
 
+    override fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean> {
+        TODO("Will be done in the next task: database rebase")
+    }
+
+    override fun setActivityTimeGoal(
+        userId: String,
+        activityTimeGoal: Double
+    ): CompletableFuture<Boolean> {
+        TODO("Will be done in the next task: database rebase")
+    }
+
+    override fun setNbOfPathsGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+        TODO("Will be done in the next task: database rebase")
+    }
+
     /**
      * Helper functions to add some data to a user profile withe his username to the database
      * @param data date to add to the database
      * @param username corresponding to the user profile
      */
     private fun updateUserData(data: Map<String, Any>, username: String) {
+        //TODO:Fix this function in the next task such that the user profile is associated to the userId
         database.child("users").child(username).updateChildren(data)
             .addOnFailureListener {
                 throw Exception(buildString {
