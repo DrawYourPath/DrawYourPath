@@ -15,7 +15,6 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.login.LoginActivity
-import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 
@@ -115,14 +114,15 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                         if (activity != null) {
                             val fragManagement =
                                 requireActivity().supportFragmentManager.beginTransaction()
-                            val dataToEndProfileCreationFrag: Bundle = Bundle()
-                            //data to transmit to the UserGoalsInitFragment(username)
-                            dataToEndProfileCreationFrag.putString(database.usernameFile, username)
-                            val endProfileCreationFrag = EndProfileCreationFragment()
-                            endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
+                            val dataToPhotoProfileInitFrag: Bundle = Bundle()
+                            //data to transmit to the PhotoProfileInitFragment(username+ isRunningTestForDatabase)
+                            dataToPhotoProfileInitFrag.putBoolean("isRunningTestForDataBase", isTest)
+                            dataToPhotoProfileInitFrag.putString(database.usernameFile, username)
+                            val photoProfileFrag = PhotoProfileInitFragment()
+                            photoProfileFrag.arguments = dataToPhotoProfileInitFrag
                             fragManagement.replace(
                                 R.id.userGoalInitFragment,
-                                endProfileCreationFrag
+                                photoProfileFrag
                             )
                                 .commit()
                         }

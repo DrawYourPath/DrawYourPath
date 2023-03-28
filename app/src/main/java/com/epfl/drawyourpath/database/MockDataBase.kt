@@ -1,5 +1,7 @@
 package com.epfl.drawyourpath.database
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.userProfile.UserModel
@@ -133,6 +135,13 @@ class MockDataBase : Database() {
         }
         val updatedUser = UserModel(userAuthTest,usernameTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoalTest,
             activityTimeGoalTest, nbOfPathsGoal, this)
+        userIdToUserAccount.put(userIdTest, updatedUser)
+        return CompletableFuture.completedFuture(true)
+    }
+
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+        val updatedUser = UserModel(userIdTest, userAuthTest.getEmail(), usernameTest, firstnameTest, surnameTest,
+        dateOfBirthTest, distanceGoalTest,activityTimeGoalTest,nbOfPathsGoalTest,photo, this)
         userIdToUserAccount.put(userIdTest, updatedUser)
         return CompletableFuture.completedFuture(true)
     }

@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.database
 
+import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.Auth
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
@@ -201,6 +202,14 @@ class FireDatabase : Database() {
         dataUpdated.put(nbOfPathsGoalFile, nbOfPathsGoal)
         return updateUserData(dataUpdated)
     }
+
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        val dataUpdated = HashMap<String, Any>()
+        dataUpdated.put(profilePhotoFile, photo)
+        return updateUserData(dataUpdated)
+    }
+
     /**
      * Helper function to access the userAccount database file of a user
      * @param userId od the user
@@ -282,12 +291,13 @@ class FireDatabase : Database() {
             val distanceGoal = data.child(distanceGoalFile).value
             val activityTimeGoal = data.child(activityTimeGoalFile).value
             val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
+            val profilePhoto = data.child(profilePhotoFile).value
             if(firstname==null||surname==null||dateOfBirth==null||distanceGoal==null||activityTimeGoal==null||nbOfPathsGoal==null){
                 future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
             }else{
                 future.complete(
                     UserModel(userId, email as String, username as String, firstname as String, surname as String, LocalDate.ofEpochDay(dateOfBirth as Long),
-                        distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int, FireDatabase()))
+                        distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int,profilePhoto as Bitmap, FireDatabase()))
             }
 
         }

@@ -1,5 +1,11 @@
 package com.epfl.drawyourpath.bootcamp.userProfile
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.Picture
+import android.media.Image
+import androidx.core.graphics.set
 import com .epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.UserModel
@@ -120,6 +126,7 @@ class UserModelTest {
         assertEquals(user.getActivityTime(), timeGoal, 0.00001)
         assertEquals(user.getNumberOfPathsGoal(), nbOfPaths)
     }
+
 
     /**
      * Test if set a username unavailable will NOT change the username of the user

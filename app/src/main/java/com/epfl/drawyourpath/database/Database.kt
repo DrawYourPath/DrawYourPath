@@ -1,6 +1,8 @@
 package com.epfl.drawyourpath.database
 
 
+import android.graphics.Bitmap
+import android.provider.ContactsContract.Contacts.Photo
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 import java.util.*
@@ -16,6 +18,7 @@ abstract class Database {
     val distanceGoalFile: String = "distanceGoal"
     val activityTimeGoalFile: String = "activityTimeGoal"
     val nbOfPathsGoalFile: String = "nbOfPathsGoal"
+    val profilePhotoFile: String = "profilePhoto"
     /**
      * This function is used to know if a certain user is already store in the database
      * @param userId that correspond to the user
@@ -102,4 +105,11 @@ abstract class Database {
      * @return a future that indicate if the goal has been correctly set to the database
      */
     abstract  fun setNbOfPathsGoal(nbOfPathsGoal: Int):CompletableFuture<Boolean>
+
+    /**
+     * This function will set the profilePhoto to the database (Bitmap) of the user logged
+     * @param photo that will be set
+     * @return a future that indicate if the photo has been correctly set to the database
+     */
+    abstract  fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>
 }
