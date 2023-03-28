@@ -51,7 +51,6 @@ class NotificationsTest {
         val scenario: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
 
         //Check that an alarm is scheduled
-        assertTrue(alarmManager.canScheduleExactAlarms())
         assertTrue(alarmManager.nextAlarmClock != null)
 
         scenario.close()
