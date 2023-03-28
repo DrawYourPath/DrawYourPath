@@ -1,12 +1,26 @@
 package com.epfl.drawyourpath.misc
 
+import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 
-class NewsFragmentElement : Fragment(R.layout.fragment_news_element) {
+class NewsFragmentElement(private val title: String,
+                          private val description: String,
+                          private val action1: NewsAction?,
+                          private val action2: NewsAction?
+                          ) : Fragment(R.layout.fragment_news_element) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setTitle(title)
+        setDescription(description)
+        setAction1(action1)
+        setAction2(action2)
+    }
 
     /**
      * Sets the title of the news.
