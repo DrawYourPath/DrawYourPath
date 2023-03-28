@@ -6,19 +6,12 @@ import android.content.Context
 import android.content.Intent
 import java.util.*
 
-object RemindersManager {
+object DailyRemindersManager : RemindersManager {
 
-    /**
-     * Use this function to choose when the notification reminding to complete the challenges should be displayed.
-     *
-     * @param context: the app context
-     * @param reminderTime: the desired time at which the reminder notification should be displayed
-     * @param reminderId: the id of the reminder (let default for challenge notification)
-     */
-    fun startReminder(
+    override fun startReminder(
         context: Context,
-        reminderTime: String = "16:00", //Default, could create a setting to change that, requires to cancel the previous reminder.
-        reminderId: Int = 0
+        reminderTime: String,
+        reminderId: Int
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 

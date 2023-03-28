@@ -17,6 +17,8 @@ import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
+const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
+
 /**
  * Main activity of the application, should be launched after the login activity.
  */
@@ -43,8 +45,7 @@ class MainActivity : AppCompatActivity() {
             replaceFragment<DrawFragment>()
         }
 
-        //Setup notifications
-        NotificationsHelper(applicationContext).setupNotifications()
+        setupNotifications()
     }
 
     private fun setupTopBar() {
@@ -126,5 +127,10 @@ class MainActivity : AppCompatActivity() {
             bundle.putSerializable("user", user)
             replace<F>(R.id.fragmentContainerView, args = bundle)
         }
+    }
+
+    private fun setupNotifications() {
+        val useMockReminder = intent.getBooleanExtra(USE_MOCK_CHALLENGE_REMINDER, false)
+        NotificationsHelper(applicationContext).setupNotifications(useMockReminder)
     }
 }

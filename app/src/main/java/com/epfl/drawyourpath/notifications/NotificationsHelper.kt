@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.notifications
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import com.epfl.drawyourpath.R
 
 /**
  * Class that contains notifications related functions
@@ -16,18 +17,23 @@ class NotificationsHelper(private val context: Context) {
      * Creates the notifications channels and activates the notifications.
      * Should be called when creating the MainActivity.
      */
-    fun setupNotifications() {
+    fun setupNotifications(useMockRemindersManager: Boolean) {
         setupNotificationsChannels()
         //Starts the daily challenge reminders notifications
-        RemindersManager.startReminder(context)
+        val remindersManager = if (useMockRemindersManager) {
+            MockRemindersManager
+        } else {
+            DailyRemindersManager
+        }
+        remindersManager.startReminder(context)
     }
 
     private fun setupNotificationsChannels() {
         //Setup challenges reminder channel:
         setupChannel(
-            CHANNEL_CHALLENGES_REMINDER_ID,
-            CHANNEL_CHALLENGES_REMINDER_NAME,
-            CHANNEL_CHALLENGES_REMINDER_DESC,
+            context.resources.getString(R.string.channel_challenges_reminder_id),
+            context.resources.getString(R.string.channel_challenges_reminder_name),
+            context.resources.getString(R.string.channel_challenges_reminder_desc),
             NotificationManager.IMPORTANCE_DEFAULT
         )
         //Can setup other channels if needed (like social/friends, tournaments,...)
