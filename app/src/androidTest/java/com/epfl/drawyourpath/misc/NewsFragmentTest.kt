@@ -46,6 +46,11 @@ class NewsFragmentTest {
         },
         null)
 
+    private val news4 = News(
+        "TheRunner32 completed a drawing",
+        "Michel completed the drawing \"cat\" in 1 hour.",
+        null, null)
+
     private lateinit var scenario: FragmentScenario<NewsFragment>
 
     @Before
