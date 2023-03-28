@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.challenge
+package com.epfl.drawyourpath.community
 
 import java.time.Clock
 import java.time.Duration
@@ -11,7 +11,8 @@ data class Tournament(
     val name: String,
     val description: String,
     val startDate: LocalDateTime,
-    val endDate: LocalDateTime
+    val endDate: LocalDateTime,
+    var posts: List<TournamentPost> = mutableListOf()
     //val result: List<User>?
 ) : java.io.Serializable {
 
