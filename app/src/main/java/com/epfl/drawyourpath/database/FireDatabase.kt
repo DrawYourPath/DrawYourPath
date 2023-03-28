@@ -1,5 +1,10 @@
 package com.epfl.drawyourpath.database
 
+import com.epfl.drawyourpath.authentication.Auth
+import com.epfl.drawyourpath.authentication.FirebaseAuth
+import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.userProfile.UserModel
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -8,12 +13,22 @@ import java.util.concurrent.CompletableFuture
 
 private val TIMEOUT_SERVER_REQUEST: Long = 10
 
+
+/**
+ * The Firebase contains files:
+ * -usernameToUserId: that link the username to a unique userId
+ * -users: that contains users based on the UserModel defined by their userId
+ */
 class FireDatabase : Database() {
     val database: DatabaseReference = Firebase.database.reference
+    private val USER_AUTH: User? = FirebaseAuth.getUser()
+    private val usernameToUserIdFileName: String = "usernameToUserId"
+    private val usersProfileFileName: String = "users"
+
     override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
-        database.child("users").child(userId).get().addOnSuccessListener {
+        accessUserAccountFile(userId).get().addOnSuccessListener {
             if (it.value == null) future.complete(true)
             else future.complete(false)
         }.addOnFailureListener {
@@ -23,13 +38,33 @@ class FireDatabase : Database() {
     }
 
     override fun getUsernameFromUserId(userId: String): CompletableFuture<String> {
-        TODO("Will be implemented in the rebase database task")
+        val future = CompletableFuture<String>()
+
+        accessUserAccountFile(userId).child(usernameFile).get().addOnSuccessListener {
+            if(it.value == null) future.completeExceptionally(NoSuchFieldException("There is no username corresponding to the userId $userId"))
+            else future.complete(it.value as String)
+        }.addOnFailureListener{
+            future.completeExceptionally(it)
+        }
+        return future
+    }
+
+    override fun getUserIdFromUsername(username: String): CompletableFuture<String> {
+        val future = CompletableFuture<String>()
+
+        accessUsernameToUserIdFile().child(username).get().addOnSuccessListener {
+            if(it.value == null) future.completeExceptionally(NoSuchFieldException("There is no userId corresponding to the username $username"))
+            else future.complete(it.value as String)
+        }.addOnFailureListener{
+            future.completeExceptionally(it)
+        }
+        return future
     }
 
     override fun isUsernameAvailable(userName: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
-        database.child("users").child(userName).get().addOnSuccessListener {
+        accessUsernameToUserIdFile().child(userName).get().addOnSuccessListener {
             if (it.value == null) future.complete(true)
             else future.complete(false)
         }.addOnFailureListener {
@@ -38,79 +73,229 @@ class FireDatabase : Database() {
         return future
     }
 
-    override fun updateUsername(username: String, userId: String): CompletableFuture<Boolean> {
-        TODO("This will be implmented during next task when I will clean the database organisation")
+    override fun updateUsername(username: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+
+        val userId = getUserId()
+        if(userId == null){
+            future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+        }else {
+            //obtain the past username form the userId
+            getUsernameFromUserId(userId).thenAccept { pastUsername ->
+                if (pastUsername == null) {
+                    future.completeExceptionally(java.lang.Error("Impossible to find the past username !"))
+                } else {
+                    //update the link username to userId and the username on the userAccount
+                    setUsername(username).thenAccept { isSetUsername ->
+                        if (isSetUsername) {
+                            future.thenApply { removeUsernameToUidMapping(username)}
+                        } else {
+                            future.completeExceptionally(java.lang.Error("Impossible to set this username !"))
+                        }
+                    }
+                }
+            }
+        }
+        return future
     }
 
-    override fun setUsername(username: String) {
-        val userAdd = HashMap<String, String>()
-        userAdd.put(username, "empty")
-        database.child("users").updateChildren(userAdd as Map<String, Any>)
-            .addOnFailureListener { throw Exception("Impossible to add the username on the database") }
+    override fun setUsername(username: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        //TODO:Add security rules to database
+        val userId = getUserId()
+        if(userId == null){
+            future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+        }else{
+            //check if the username is available
+            isUsernameAvailable(username).thenAccept { isAvailable ->
+                if (isAvailable) {
+                    //add the link between the username and the userId
+                    val usernameToUserId = HashMap<String, String>()
+                    usernameToUserId.put(username, userId)
+                    accessUsernameToUserIdFile().updateChildren(usernameToUserId as Map<String, Any>)
+                        .addOnSuccessListener {
+                            //add the users account to the database and the username to the user account
+                            val userAccount = HashMap<String, String>()
+                            userAccount.put(usernameFile, username)
+                            database.child(usersProfileFileName).child(userId)
+                                .updateChildren(userAccount as Map<String, Any>)
+                                .addOnSuccessListener { future.complete(true) }
+                                .addOnFailureListener {
+                                    future.completeExceptionally(Exception("Impossible to create the user account."))
+                                }
+                        }
+                        .addOnFailureListener {
+                            future.completeExceptionally(java.lang.Error("Impossible to find the link between the username and the userId to the Database."))
+                        }
+                } else {
+                    future.completeExceptionally(java.lang.Error("The username is not available !"))
+                }
+            }
+        }
+        return future
     }
 
-    override fun setPersonalInfo(
-        username: String,
-        firstname: String,
-        surname: String,
-        dateOfBirth: LocalDate
-    ) {
-        val userAdd = HashMap<String, String>()
-        userAdd.put("firstname", firstname)
-        userAdd.put("surname", surname)
-        updateUserData(userAdd, username)
+    override fun initUserProfile(userModel: UserModel): CompletableFuture<Boolean> {
+        val userData = HashMap<String, Any>()
+        userData.put(emailFile, userModel.getEmailAddress())
+        userData.put(firstnameFile, userModel.getFirstname())
+        userData.put(surnameFile, userModel.getSurname())
+        userData.put(dateOfBirthFile, userModel.getDateOfBirth().toEpochDay())
+        userData.put(distanceGoalFile, userModel.getDistanceGoal())
+        userData.put(activityTimeGoalFile, userModel.getActivityTime())
+        userData.put(nbOfPathsGoalFile, userModel.getNumberOfPathsGoal())
 
-        //for the date
-        val unixDate: Long = dateOfBirth.toEpochDay()
-        val userDateMap = HashMap<String, Long>()
-        userDateMap.put("dateOfBirth", unixDate)
-        updateUserData(userDateMap, username)
+        return updateUserData(userData)
     }
 
-    override fun setUserGoals(
-        username: String,
-        distanceGoal: Double,
-        timeGoal: Double,
-        nbOfPathsGoal: Int
-    ) {
-        val userAdd = HashMap<String, String>()
-        userAdd.put("distanceGoal", distanceGoal.toString())
-        userAdd.put("activityTimeGoal", timeGoal.toString())
-        userAdd.put("numberOfPathsGoal", nbOfPathsGoal.toString())
-        updateUserData(userAdd, username)
+    override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
+        val future = CompletableFuture<UserModel>()
+
+        accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
+            future.thenApply { dataToUserModel(userData, userId) }
+        }.addOnFailureListener{
+            future.completeExceptionally(it)
+        }
+        return future
     }
 
-    override fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean> {
-        TODO("Will be done in the next task: database rebase")
+    override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
+        val userId = getUserId()
+        val future = CompletableFuture<UserModel>()
+        if(userId == null){
+            future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+        }else {
+            val future = getUserAccount(userId)
+        }
+        return future
     }
 
-    override fun setActivityTimeGoal(
-        userId: String,
-        activityTimeGoal: Double
-    ): CompletableFuture<Boolean> {
-        TODO("Will be done in the next task: database rebase")
+    override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+        if(distanceGoal <= 0.0){
+            val future = CompletableFuture<Boolean>()
+            future.completeExceptionally(java.lang.Error("The distance goal can't be less or equal than 0."))
+        }
+        val dataUpdated = HashMap<String, Any>()
+        dataUpdated.put(distanceGoalFile, distanceGoal)
+        return updateUserData(dataUpdated)
     }
 
-    override fun setNbOfPathsGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
-        TODO("Will be done in the next task: database rebase")
+    override fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+        if(activityTimeGoal <= 0.0){
+            val future = CompletableFuture<Boolean>()
+            future.completeExceptionally(java.lang.Error("The activity time goal can't be less or equal than 0."))
+            return future
+        }
+        val dataUpdated = HashMap<String, Any>()
+        dataUpdated.put(activityTimeGoalFile, activityTimeGoal)
+        return updateUserData(dataUpdated)
+    }
+
+    override fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+       if(nbOfPathsGoal <= 0){
+           val future = CompletableFuture<Boolean>()
+           future.completeExceptionally(java.lang.Error("The number of paths goal can't be less or equal than 0."))
+           return future
+        }
+        val dataUpdated = HashMap<String, Any>()
+        dataUpdated.put(nbOfPathsGoalFile, nbOfPathsGoal)
+        return updateUserData(dataUpdated)
+    }
+    /**
+     * Helper function to access the userAccount database file of a user
+     * @param userId od the user
+     * @return the database reference to this file
+     */
+    private fun accessUserAccountFile(userId: String): DatabaseReference{
+        return database.child(usersProfileFileName).child(userId)
     }
 
     /**
-     * Helper functions to add some data to a user profile withe his username to the database
-     * @param data date to add to the database
-     * @param username corresponding to the user profile
+     * Helper function to access the usernameToUserId database file
      */
-    private fun updateUserData(data: Map<String, Any>, username: String) {
-        //TODO:Fix this function in the next task such that the user profile is associated to the userId
-        database.child("users").child(username).updateChildren(data)
+    private fun accessUsernameToUserIdFile(): DatabaseReference{
+        return database.child(usernameToUserIdFileName)
+    }
+
+    /**
+     * Helper function to upadte data of the current user account
+     * @param data to be updated
+     * @return a future to indicated if the data have been correctly updated
+     */
+    private fun updateUserData(data: Map<String, Any>): CompletableFuture<Boolean>{
+        val future = CompletableFuture<Boolean>()
+        val userId = getUserId()
+        if(userId == null){
+            future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+        }else{
+            accessUserAccountFile(userId).updateChildren(data).addOnSuccessListener { future.complete(true) }
+                .addOnFailureListener { future.completeExceptionally(java.lang.Error("Impossible to update the data in the database !")) }
+        }
+        return future
+    }
+
+    /**
+     * Helper function to get the userId from the authentication and check if a user is log
+     * @return the userId of the user log on the app
+     * @throw an error if any user is log on the app
+     */
+    private fun getUserId(): String?{
+        return USER_AUTH?.getUid()
+    }
+
+    /**
+     * Helper function to remove the past link from username->userId
+     * @param username that will be removed form the mapping
+     * @return a future that indicate if the username was correctly removed
+     */
+    private fun removeUsernameToUidMapping(username: String){
+        val future = CompletableFuture<Boolean>()
+        //remove the past username from the link username/userId
+        accessUsernameToUserIdFile().child(username).removeValue()
+            .addOnSuccessListener { future.complete(true) }
             .addOnFailureListener {
-                throw Exception(buildString {
-                    append("Impossible to add the data on the user: ")
-                    append(username)
-                    append(" on the database")
-                })
+                future.completeExceptionally(
+                    java.lang.Error(
+                        "Impossible to remove the past username link !"
+                    )
+                )
             }
     }
+
+    /**
+     * Helper function to convert a data snapshot to a userModel
+     * @param data data snapshot to convert
+     * @param userId of the user
+     * @return ta future that contains the user Model
+     */
+    private fun dataToUserModel(data: DataSnapshot?, userId: String): CompletableFuture<UserModel>{
+        val future = CompletableFuture<UserModel>()
+
+        if(data == null) {
+            future.completeExceptionally(java.lang.Error("There is no user account corresponding to this userId."))
+        }else{
+            val email = data.child(emailFile).value
+            val username = data.child(usernameFile).value
+            val firstname = data.child(firstnameFile).value
+            val surname = data.child(surnameFile).value
+            val dateOfBirth = data.child(dateOfBirthFile).value
+            val distanceGoal = data.child(distanceGoalFile).value
+            val activityTimeGoal = data.child(activityTimeGoalFile).value
+            val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
+            if(firstname==null||surname==null||dateOfBirth==null||distanceGoal==null||activityTimeGoal==null||nbOfPathsGoal==null){
+                future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
+            }else{
+                future.complete(
+                    UserModel(userId, email as String, username as String, firstname as String, surname as String, LocalDate.ofEpochDay(dateOfBirth as Long),
+                        distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int, FireDatabase()))
+            }
+
+        }
+        return future
+    }
 }
+
+
+
 
 

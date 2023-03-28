@@ -57,14 +57,14 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
 
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    //espresso version at 3.5.0-alpha04 because of a bug
+    //see https://github.com/android/android-test/issues/1642
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha04'
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.0-alpha04")
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.0-alpha04'
 
     debugImplementation 'androidx.test:monitor:1.6.1'
     debugImplementation 'androidx.fragment:fragment-testing:1.5.6'
@@ -83,16 +83,16 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
 
-    testImplementation 'junit:junit:4.13.2'
+    //testImplementation 'junit:junit:4.13.2'
 
-    debugImplementation 'androidx.test:monitor:1.6.1'
-    debugImplementation 'androidx.fragment:fragment-testing:1.5.6'
-
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
+    //debugImplementation 'androidx.test:monitor:1.6.1'
+    //debugImplementation 'androidx.fragment:fragment-testing:1.5.6'
+    
+    //androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    //androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    //androidTestImplementation 'androidx.test:runner:1.5.2'
+    //androidTestImplementation 'androidx.test:rules:1.5.0'
+    //androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
     androidTestImplementation "androidx.test.uiautomator:uiautomator:2.3.0-alpha02"
 }
 

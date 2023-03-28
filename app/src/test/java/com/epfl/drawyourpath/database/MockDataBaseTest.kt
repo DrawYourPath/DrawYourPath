@@ -1,13 +1,11 @@
-package com.epfl.drawyourpath.bootcamp.database
+package com.epfl.drawyourpath.database
 
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
-import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.UserModel
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.lang.Error
 import java.time.LocalDate
 
 class MockDataBaseTest {

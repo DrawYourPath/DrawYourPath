@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.challenge
 
+import com.epfl.drawyourpath.community.Tournament
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
