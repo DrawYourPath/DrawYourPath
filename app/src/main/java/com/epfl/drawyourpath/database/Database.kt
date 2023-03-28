@@ -2,10 +2,7 @@ package com.epfl.drawyourpath.database
 
 
 import android.graphics.Bitmap
-import android.provider.ContactsContract.Contacts.Photo
 import com.epfl.drawyourpath.userProfile.UserModel
-import java.time.LocalDate
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 abstract class Database {
@@ -19,6 +16,7 @@ abstract class Database {
     val activityTimeGoalFile: String = "activityTimeGoal"
     val nbOfPathsGoalFile: String = "nbOfPathsGoal"
     val profilePhotoFile: String = "profilePhoto"
+
     /**
      * This function is used to know if a certain user is already store in the database
      * @param userId that correspond to the user
@@ -38,7 +36,7 @@ abstract class Database {
      * @param username of the user
      * @return a future that give the userId of the user
      */
-    abstract  fun getUserIdFromUsername(username: String): CompletableFuture<String>
+    abstract fun getUserIdFromUsername(username: String): CompletableFuture<String>
 
     /**
      * This function will return a future with a boolean to know if the username is available in the database
@@ -77,7 +75,7 @@ abstract class Database {
      * @param userId of the user that we want to retrieve is account
      * @return a future that return the UserModel corresponding to this user account
      */
-    abstract  fun getUserAccount(userId: String): CompletableFuture<UserModel>
+    abstract fun getUserAccount(userId: String): CompletableFuture<UserModel>
 
     /**
      * This function will return the UserModel of the user logged on the app
@@ -90,26 +88,26 @@ abstract class Database {
      * @param distanceGoal new distance goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean>
+    abstract fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean>
 
     /**
      * This function will set the daily activity time goal to the database(in minutes) of the user logged
      * @param activityTimeGoal new activity time goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean>
+    abstract fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean>
 
     /**
      * This function will set the daily number of paths goal to the database(integer) of the user logged
      * @param nbOfPathsGoal new number of paths goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract  fun setNbOfPathsGoal(nbOfPathsGoal: Int):CompletableFuture<Boolean>
+    abstract fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean>
 
     /**
      * This function will set the profilePhoto to the database (Bitmap) of the user logged
      * @param photo that will be set
      * @return a future that indicate if the photo has been correctly set to the database
      */
-    abstract  fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>
+    abstract fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>
 }

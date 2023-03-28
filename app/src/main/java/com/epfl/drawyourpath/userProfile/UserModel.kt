@@ -327,9 +327,9 @@ class UserModel {
     }
 
     /**
-     * This function will  the photo as the profile photo of the user
+     * This function will set the photo as the profile photo of the user
      * @param photo that we want to set
-     * @return a completable future that indicate if the photo was correctly stores
+     * @return a completable future that indicate if the photo was correctly stored
      */
     fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>{
         return database.setProfilePhoto(photo).thenApply {
