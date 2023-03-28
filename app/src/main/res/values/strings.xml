@@ -60,4 +60,5 @@
     <string name="channel_challenges_reminder_desc">Notifications to remind you to complete your weekly challenges.</string>
     <string name="challenge_reminder_notification_text">Have you completed all your challenges for today? If not, consider drawing more paths soon!</string>
     <string name="challenges_reminder">Challenges Reminder</string>
+    <string name="challenges_reminder_time">16:00</string>
 </resources>

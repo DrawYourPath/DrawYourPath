@@ -12,6 +12,9 @@ import com.epfl.drawyourpath.login.ENABLE_ONETAP_SIGNIN
 import com.epfl.drawyourpath.login.LoginActivity
 import com.epfl.drawyourpath.login.RESTORE_USER_IN_KEYCHAIN
 import com.epfl.drawyourpath.mainpage.USE_MOCK_CHALLENGE_REMINDER
+import com.epfl.drawyourpath.notifications.RemindersManager.Companion.CHALLENGES_REMINDER_ID
+import com.epfl.drawyourpath.notifications.RemindersManager.Companion.ERROR_REMINDER_ID
+import com.epfl.drawyourpath.notifications.RemindersManager.Companion.REMINDER_KEY
 
 /**
  * Class that can execute code when it receives an alarm (with onReceive())
@@ -29,14 +32,22 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val disableAutoReconnection = intent.getBooleanExtra(USE_MOCK_CHALLENGE_REMINDER, false)
 
-        notificationManager.sendChallengeReminderNotification(context, !disableAutoReconnection)
-        // Send other time-based notifications here
+        //Identify which notification to send, the intent is the one setup in the ReminderManager
+        when (intent.getIntExtra(REMINDER_KEY, ERROR_REMINDER_ID)) {
+            CHALLENGES_REMINDER_ID ->
+                notificationManager.sendChallengeReminderNotification(
+                    context,
+                    !disableAutoReconnection
+                )
+        }
+
     }
 }
 
 /**
  * Sends a challenge reminder notification
  * @param applicationContext: the application context
+ * @param enableAutoReconnection: set to true to allow immediate connection after clicking on notification
  */
 fun NotificationManager.sendChallengeReminderNotification(
     applicationContext: Context, enableAutoReconnection: Boolean

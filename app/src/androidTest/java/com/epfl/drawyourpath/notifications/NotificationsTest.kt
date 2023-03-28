@@ -31,6 +31,7 @@ class NotificationsTest {
 
     @Before
     fun clearCreatedNotifications() {
+        uiDevice.pressHome()
         val context = ApplicationProvider.getApplicationContext<Context>()
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.cancelAll()
@@ -78,7 +79,7 @@ class NotificationsTest {
 
         //Check that the title is the expected one
         val expectedTitle =
-            context.resources.getString(R.string.challenge_reminder_notification_title)
+            context.resources.getString(R.string.challenges_reminder)
         val title = uiDevice.findObject(By.text(expectedTitle))
         assertEquals(expectedTitle, title.text)
 
@@ -94,7 +95,7 @@ class NotificationsTest {
     }
 
     @Test
-    fun clickingOnNotificationLaunchesLoginActivity() {
+    fun clickingOnChallengeReminderNotificationLaunchesLoginActivity() {
         Intents.init()
         val context = ApplicationProvider.getApplicationContext<Context>()
 
@@ -116,7 +117,7 @@ class NotificationsTest {
 
         //Click on expected notification
         val expectedTitle =
-            context.resources.getString(R.string.challenge_reminder_notification_title)
+            context.resources.getString(R.string.challenges_reminder)
         val title = uiDevice.findObject(By.text(expectedTitle))
         title.click()
 

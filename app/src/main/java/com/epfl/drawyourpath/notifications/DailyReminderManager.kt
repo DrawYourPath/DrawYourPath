@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import com.epfl.drawyourpath.notifications.RemindersManager.Companion.REMINDER_KEY
 import java.util.*
 
 object DailyRemindersManager : RemindersManager {
@@ -19,6 +20,8 @@ object DailyRemindersManager : RemindersManager {
 
         val intent =
             Intent(context.applicationContext, AlarmReceiver::class.java).let { intent ->
+                //Put this extra to be able to identify which notification should be send when the alarm is triggered
+                intent.putExtra(REMINDER_KEY, reminderId)
                 PendingIntent.getBroadcast(
                     context.applicationContext,
                     reminderId,
