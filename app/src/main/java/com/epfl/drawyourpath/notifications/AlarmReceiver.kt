@@ -35,7 +35,7 @@ class AlarmReceiver : BroadcastReceiver() {
         //Identify which notification to send, the intent is the one setup in the ReminderManager
         when (intent.getIntExtra(REMINDER_KEY, ERROR_REMINDER_ID)) {
             CHALLENGES_REMINDER_ID ->
-                notificationManager.sendChallengeReminderNotification(
+                notificationManager.sendChallengesReminderNotification(
                     context,
                     !disableAutoReconnection
                 )
@@ -49,7 +49,7 @@ class AlarmReceiver : BroadcastReceiver() {
  * @param applicationContext: the application context
  * @param enableAutoReconnection: set to true to allow immediate connection after clicking on notification
  */
-fun NotificationManager.sendChallengeReminderNotification(
+fun NotificationManager.sendChallengesReminderNotification(
     applicationContext: Context, enableAutoReconnection: Boolean
 ) {
     // Intent to be launched when clicking on the notification
@@ -59,13 +59,23 @@ fun NotificationManager.sendChallengeReminderNotification(
 
     val pendingIntent = PendingIntent.getActivity(
         applicationContext,
-        0,
+        CHALLENGES_REMINDER_ID,
         contentIntent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
     // Build the notification
-    val builder = NotificationCompat.Builder(
+    val builder = createChallengesReminderNotification(applicationContext, pendingIntent)
+
+    // Activate the notification
+    notify(CHALLENGES_REMINDER_ID, builder.build())
+}
+
+private fun createChallengesReminderNotification(
+    applicationContext: Context,
+    pendingIntent: PendingIntent
+): NotificationCompat.Builder {
+    return NotificationCompat.Builder(
         applicationContext,
         applicationContext.resources.getString(R.string.channel_challenges_reminder_id)
     )
@@ -78,8 +88,5 @@ fun NotificationManager.sendChallengeReminderNotification(
         )
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
-
-    // Activate the notification
-    notify(0, builder.build())
 }
 

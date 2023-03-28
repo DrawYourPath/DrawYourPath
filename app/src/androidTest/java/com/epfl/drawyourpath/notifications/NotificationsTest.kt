@@ -98,7 +98,7 @@ class NotificationsTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.sendChallengeReminderNotification(context, false)
+        manager.sendChallengesReminderNotification(context, false)
 
         uiDevice.openNotification()
         //If no timeout, a notification has arrived
