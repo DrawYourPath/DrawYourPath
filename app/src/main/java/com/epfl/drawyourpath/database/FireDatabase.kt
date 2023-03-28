@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.epfl.drawyourpath.authentication.Auth
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
@@ -9,7 +10,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
+import java.util.Base64
 import java.util.concurrent.CompletableFuture
 
 private val TIMEOUT_SERVER_REQUEST: Long = 10
@@ -206,7 +209,12 @@ class FireDatabase : Database() {
     override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
         val dataUpdated = HashMap<String, Any>()
-        dataUpdated.put(profilePhotoFile, photo)
+
+        //convert the bitmap to a byte array
+        val byteArray = ByteArrayOutputStream()
+        photo.compress(Bitmap.CompressFormat.PNG, 100, byteArray)
+        val imageEncoded : String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
+        dataUpdated.put(profilePhotoFile, imageEncoded)
         return updateUserData(dataUpdated)
     }
 
@@ -291,13 +299,18 @@ class FireDatabase : Database() {
             val distanceGoal = data.child(distanceGoalFile).value
             val activityTimeGoal = data.child(activityTimeGoalFile).value
             val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
-            val profilePhoto = data.child(profilePhotoFile).value
+
+            //decode the photo
+            val profilePhotoEncoded = data.child(profilePhotoFile).value
+            val tabByte = Base64.getDecoder().decode(profilePhotoEncoded as String)
+            val profilePhoto = BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+
             if(firstname==null||surname==null||dateOfBirth==null||distanceGoal==null||activityTimeGoal==null||nbOfPathsGoal==null){
                 future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
             }else{
                 future.complete(
                     UserModel(userId, email as String, username as String, firstname as String, surname as String, LocalDate.ofEpochDay(dateOfBirth as Long),
-                        distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int,profilePhoto as Bitmap, FireDatabase()))
+                        distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int,profilePhoto, FireDatabase()))
             }
 
         }
