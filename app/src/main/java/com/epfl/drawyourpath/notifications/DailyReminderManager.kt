@@ -18,17 +18,8 @@ object DailyRemindersManager : RemindersManager {
 
         val (hours, min) = reminderTime.split(":").map { it.toInt() }
 
-        val intent =
-            Intent(context.applicationContext, AlarmReceiver::class.java).let { intent ->
-                //Put this extra to be able to identify which notification should be send when the alarm is triggered
-                intent.putExtra(REMINDER_KEY, reminderId)
-                PendingIntent.getBroadcast(
-                    context.applicationContext,
-                    reminderId,
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-            }
+        //Creates the pending intent to be sent to the AlarmReceiver
+        val intent = createPendingIntent(context, reminderId)
 
         //Sets the calendar that contain the reminder time
         val calendar: Calendar = Calendar.getInstance(Locale.ENGLISH).apply {
@@ -48,5 +39,18 @@ object DailyRemindersManager : RemindersManager {
             AlarmManager.AlarmClockInfo(calendar.timeInMillis, intent),
             intent
         )
+    }
+
+    private fun createPendingIntent(context: Context, reminderId: Int): PendingIntent {
+        return Intent(context.applicationContext, AlarmReceiver::class.java).let { intent ->
+            //Put this extra to be able to identify which notification should be send when the alarm is triggered
+            intent.putExtra(REMINDER_KEY, reminderId)
+            PendingIntent.getBroadcast(
+                context.applicationContext,
+                reminderId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
     }
 }
