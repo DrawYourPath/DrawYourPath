@@ -60,4 +60,15 @@
     <string name="select_a_photo">Select a photo</string>
     <string name="init_photo_description">You can choose your profile photo and click on VALIDATE to set it. If you don\'t want to set a profile photo, click on SKIP.</string>
     <string name="skip">Skip</string>
+    <string name="channel_challenges_reminder_id">CHALLENGES</string>
+    <string name="channel_challenges_reminder_desc">Notifications to remind you to complete your weekly challenges.</string>
+    <string name="challenge_reminder_notification_text">Have you completed all your challenges for today? If not, consider drawing more paths soon!</string>
+    <string name="challenges_reminder">Challenges Reminder</string>
+    <string name="challenges_reminder_time">16:00</string>
+    <string name="sort">sort</string>
+    <string name="menu">menu</string>
+    <string name="upvote">upvote</string>
+    <string name="downvote">downvote</string>
+    <string name="back">back</string>
+    <string name="home">Home</string>
 </resources>
