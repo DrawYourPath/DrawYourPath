@@ -67,4 +67,5 @@
     <string name="downvote">downvote</string>
     <string name="back">back</string>
     <string name="home">Home</string>
+    <string name="tournament_creation">Tournament Creation</string>
 </resources>
