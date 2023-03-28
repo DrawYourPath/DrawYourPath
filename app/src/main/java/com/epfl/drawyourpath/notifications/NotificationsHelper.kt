@@ -32,7 +32,7 @@ class NotificationsHelper(private val context: Context) {
         //Setup challenges reminder channel:
         setupChannel(
             context.resources.getString(R.string.channel_challenges_reminder_id),
-            context.resources.getString(R.string.channel_challenges_reminder_name),
+            context.resources.getString(R.string.challenges_reminder),
             context.resources.getString(R.string.channel_challenges_reminder_desc),
             NotificationManager.IMPORTANCE_DEFAULT
         )

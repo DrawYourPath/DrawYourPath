@@ -58,7 +58,6 @@
     <string name="preferences_menu_item">Preferences</string>
     <string name="channel_challenges_reminder_id">CHALLENGES</string>
     <string name="channel_challenges_reminder_desc">Notifications to remind you to complete your weekly challenges.</string>
-    <string name="channel_challenges_reminder_name">Challenges Reminder</string>
     <string name="challenge_reminder_notification_text">Have you completed all your challenges for today? If not, consider drawing more paths soon!</string>
-    <string name="challenge_reminder_notification_title">Challenges Reminder</string>
+    <string name="challenges_reminder">Challenges Reminder</string>
 </resources>

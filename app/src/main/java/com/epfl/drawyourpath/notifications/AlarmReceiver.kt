@@ -58,7 +58,7 @@ fun NotificationManager.sendChallengeReminderNotification(
         applicationContext,
         applicationContext.resources.getString(R.string.channel_challenges_reminder_id)
     )
-        .setContentTitle(applicationContext.resources.getString(R.string.challenge_reminder_notification_title))
+        .setContentTitle(applicationContext.resources.getString(R.string.challenges_reminder))
         .setContentText(applicationContext.resources.getString(R.string.challenge_reminder_notification_text))
         .setSmallIcon(R.drawable.ic_draw_path)
         .setStyle(
