@@ -8,7 +8,6 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
@@ -96,18 +95,11 @@ class NotificationsTest {
 
     @Test
     fun clickingOnChallengeReminderNotificationLaunchesLoginActivity() {
-        Intents.init()
         val context = ApplicationProvider.getApplicationContext<Context>()
 
-        //Launch the intent with mock alarm, so will trigger notification "instantly"
-        val intent = Intent(
-            context,
-            MainActivity::class.java
-        )
-        intent.putExtra(USE_MOCK_CHALLENGE_REMINDER, true)
-        val scenario: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.sendChallengeReminderNotification(context, false)
 
-        uiDevice.pressHome()
         uiDevice.openNotification()
         //If no timeout, a notification has arrived
         uiDevice.wait(
@@ -124,7 +116,5 @@ class NotificationsTest {
         //Check that the login page is displayed
         onView(withId(R.id.TXT_Title)).check(matches(isDisplayed()))
 
-        Intents.release()
-        scenario.close()
     }
 }
