@@ -34,8 +34,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     private lateinit var detailsLayout: LinearLayout
     private lateinit var tournamentPostsView: RecyclerView
     private lateinit var scroll: NestedScrollView
-
-    private lateinit var tournament: TournamentModel
+    private val tournament = TournamentModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,7 +65,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         tournamentPostsView = view.findViewById(R.id.display_community_tournaments_view)
         scroll = view.findViewById(R.id.community_nested_scroll_view)
 
-        tournament = TournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments())
+        tournament.setSample(TournamentModel.SampleTournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments()))
     }
 
     /**
@@ -75,7 +74,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      */
     private fun getTournaments() {
         if (arguments?.getSerializable("tournaments") != null) {
-            tournament = arguments?.getSerializable("tournaments") as TournamentModel
+            tournament.setSample(arguments?.getSerializable("tournaments") as TournamentModel.SampleTournamentModel)
         }
     }
 
@@ -129,7 +128,9 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         createTournamentButton(menu)
 
         val weekly = menu.addSubMenu("Weekly tournament")
-        createMenuItem(view, weekly, tournament.getWeeklyTournament())
+        if (tournament.getWeeklyTournament() != null) {
+            createMenuItem(view, weekly, tournament.getWeeklyTournament()!!)
+        }
 
         val your = menu.addSubMenu("Your tournament")
         for (t in tournament.getYourTournament("placeholder")) {
@@ -204,7 +205,10 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      * @return the list of all tournaments
      */
     private fun getAllTournaments(): List<Tournament> {
-        val list = mutableListOf(tournament.getWeeklyTournament())
+        val list = mutableListOf<Tournament>()
+        if (tournament.getWeeklyTournament() != null) {
+            list.add(tournament.getWeeklyTournament()!!)
+        }
         list.addAll(tournament.getYourTournament("placeholder"))
         list.addAll(tournament.getDiscoverTournament("placeholder"))
         return list

@@ -68,4 +68,14 @@
     <string name="back">back</string>
     <string name="home">Home</string>
     <string name="tournament_creation">Tournament Creation</string>
+    <string name="choose_the_title">Choose the title</string>
+    <string name="tournament_title">Tournament title</string>
+    <string name="choose_the_description">Choose the description</string>
+    <string name="tournament_description">Tournament description</string>
+    <string name="select_the_starting_date_and_time">Select the starting date and time</string>
+    <string name="select_the_ending_date_and_time">Select the ending date and time</string>
+    <string name="select_the_visibility">Select the visibility</string>
+    <string name="public_visibility">Public</string>
+    <string name="friends_only">Friends only</string>
+    <string name="create">Create</string>
 </resources>

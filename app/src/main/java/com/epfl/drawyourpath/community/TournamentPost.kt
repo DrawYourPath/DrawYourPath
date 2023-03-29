@@ -2,13 +2,15 @@ package com.epfl.drawyourpath.community
 
 import com.github.drawyourpath.bootcamp.path.Run
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.HashMap
 
 data class TournamentPost(
     val user: String, //TODO change to a real user
     val run: Run,
     private var votes: Int = 0,
     val date: LocalDateTime = LocalDateTime.now(),
-    private var userVotes: HashMap<String, Int> = HashMap(),
+    private var userVotes: HashMap<String, Int> = HashMap()
 ) : java.io.Serializable {
 
     /**
