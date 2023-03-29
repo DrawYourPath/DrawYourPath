@@ -84,23 +84,23 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         var error = false
 
         //check title
-        error = error or checkConstraint(tournamentTitle.isBlank(), "* Title should not be empty", titleError)
+        error = error or checkConstraint(tournamentTitle.isBlank(), getString(R.string.tournament_creation_title_error), titleError)
         //check description
-        error = error or checkConstraint(tournamentDescription.isBlank(), "* Description should not be empty", descriptionError)
+        error = error or checkConstraint(tournamentDescription.isBlank(), getString(R.string.tournament_creation_description_error), descriptionError)
         //check start date and time
         error = error or checkConstraint(
             tournamentStartDate < LocalDateTime.now().plus(MIN_START_TIME_INTERVAL),
-            "* Starting time and date should be at least 1 hour from now",
+            getString(R.string.tournament_creation_start_date_error),
             startDateError
         )
         //check end date and time
         error = error or checkConstraint(
             tournamentEndDate < tournamentStartDate.plus(MIN_END_TIME_INTERVAL),
-            "* Ending time and date should be at least 1 day from starting day and time",
+            getString(R.string.tournament_creation_end_date_error),
             endDateError
         )
         //check visibility
-        error = error or checkConstraint(tournamentVisibility == -1, "* One visibility option should be checked", visibilityError)
+        error = error or checkConstraint(tournamentVisibility == -1, getString(R.string.tournament_creation_visibility_error), visibilityError)
 
         if (error) {
             return null
@@ -115,6 +115,15 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         )
     }
 
+    /**
+     * check if the constraint holds or not and show the error message accordingly
+     *
+     * @param isError the constraint
+     * @param errorText the error message
+     * @param error the text view used to show the error message
+     * @return [isError]
+     *
+     */
     private fun checkConstraint(isError: Boolean, errorText: String, error: TextView): Boolean {
         if (isError) {
             error.text = errorText
@@ -125,18 +134,35 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         return isError
     }
 
+    /**
+     * create the visibility radio button
+     */
     private fun createVisibilityRadioButton(view: View) {
-        setVisibility(0, view.findViewById<RadioButton>(R.id.tournament_creation_visibility_item_0))
-        setVisibility(1, view.findViewById<RadioButton>(R.id.tournament_creation_visibility_item_1))
+        setVisibility(0, view.findViewById(R.id.tournament_creation_visibility_item_0))
+        setVisibility(1, view.findViewById(R.id.tournament_creation_visibility_item_1))
     }
 
-    private fun getVisibility(text: TextView): Tournament.Visibility {
-        return Tournament.Visibility.valueOf(text.text.toString().uppercase().replace(" ", "_"))
+    /**
+     * get the visibility from the radio button
+     *
+     * @param radioButton the radio button
+     * @return [Tournament.Visibility] the visibility
+     *
+     */
+    private fun getVisibility(radioButton: RadioButton): Tournament.Visibility {
+        return Tournament.Visibility.valueOf(radioButton.text.toString().uppercase().replace(" ", "_"))
     }
 
-    private fun setVisibility(index: Int, text: TextView) {
-        val name = Tournament.Visibility.values()[index].name.lowercase().replace("_", " ").replaceFirstChar { c -> c.uppercaseChar() }
-        text.text = name
+    /**
+     * set the visibility name to the radio button
+     *
+     * @param index the ordinal of the [Tournament.Visibility] enum
+     * @param radioButton the radio button
+     *
+     */
+    private fun setVisibility(index: Int, radioButton: RadioButton) {
+        radioButton.text = Tournament.Visibility.values()[index].name.lowercase().replace("_", " ")
+            .replaceFirstChar { c -> c.uppercaseChar() }
     }
 
     /**
@@ -152,6 +178,9 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         visibility = view.findViewById(R.id.tournament_creation_visibility)
     }
 
+    /**
+     * set the start date/time and the end date/date to default values
+     */
     private fun setDefaultTimeAndDate() {
         setDate(DEFAULT_START_DATE, startDate)
         setTime(DEFAULT_START_TIME, startTime)
@@ -202,8 +231,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         private val DEFAULT_START_TIME = LocalTime.now().plusHours(2L).minusMinutes(LocalTime.now().minute.toLong())
         private val DEFAULT_END_DATE = DEFAULT_START_DATE.plusWeeks(1L)
         private val DEFAULT_END_TIME = DEFAULT_START_TIME
-        private val MIN_START_TIME_INTERVAL = Duration.of(1L, ChronoUnit.HOURS)
-        private val MIN_END_TIME_INTERVAL = Duration.of(1L, ChronoUnit.DAYS)
+        val MIN_START_TIME_INTERVAL: Duration = Duration.of(1L, ChronoUnit.HOURS)
+        val MIN_END_TIME_INTERVAL: Duration = Duration.of(1L, ChronoUnit.DAYS)
 
         /**
          * get the date from the date text view

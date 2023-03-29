@@ -78,4 +78,10 @@
     <string name="public_visibility">Public</string>
     <string name="friends_only">Friends only</string>
     <string name="create">Create</string>
+    <string name="tournament_creation_title_error">* Title should not be empty</string>
+    <string name="tournament_creation_description_error">* Description should not be empty</string>
+    <string name="tournament_creation_start_date_error">* Starting time and date should be at least 1 hour from now</string>
+    <string name="tournament_creation_end_date_error">* Ending time and date should be at least 1 day from starting day and time</string>
+    <string name="tournament_creation_visibility_error">* One visibility option should be checked</string>
+    <string name="create_new_tournament">Create new tournament</string>
 </resources>

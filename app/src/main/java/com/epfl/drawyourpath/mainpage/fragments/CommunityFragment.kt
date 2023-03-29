@@ -143,7 +143,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     }
 
     private fun createTournamentButton(menu: Menu) {
-        menu.add("Create new tournament")
+        menu.add(getString(R.string.create_new_tournament))
             .setIcon(R.drawable.ic_add)
             .setOnMenuItemClickListener {
                 replaceFragment<TournamentCreationFragment>()
