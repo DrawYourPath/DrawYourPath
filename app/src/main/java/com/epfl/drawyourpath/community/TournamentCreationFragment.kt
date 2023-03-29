@@ -12,9 +12,11 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.fragments.CommunityFragment
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 
 class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creation) {
 
@@ -32,6 +34,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         super.onViewCreated(view, savedInstanceState)
 
         initVariable(view)
+
         setDefaultTimeAndDate()
 
         createBackButton(view)
@@ -86,13 +89,13 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         error = error or checkConstraint(tournamentDescription.isBlank(), "* Description should not be empty", descriptionError)
         //check start date and time
         error = error or checkConstraint(
-            tournamentStartDate < LocalDateTime.now().plusHours(1L),
+            tournamentStartDate < LocalDateTime.now().plus(MIN_START_TIME_INTERVAL),
             "* Starting time and date should be at least 1 hour from now",
             startDateError
         )
         //check end date and time
         error = error or checkConstraint(
-            tournamentEndDate < tournamentStartDate.plusDays(1L),
+            tournamentEndDate < tournamentStartDate.plus(MIN_END_TIME_INTERVAL),
             "* Ending time and date should be at least 1 day from starting day and time",
             endDateError
         )
@@ -196,9 +199,11 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         private const val DATE_SEPARATOR = " / "
         private const val TIME_SEPARATOR = " : "
         private val DEFAULT_START_DATE = LocalDate.now()
-        private val DEFAULT_START_TIME = LocalTime.now().plusHours(1L).minusMinutes(LocalTime.now().minute.toLong())
+        private val DEFAULT_START_TIME = LocalTime.now().plusHours(2L).minusMinutes(LocalTime.now().minute.toLong())
         private val DEFAULT_END_DATE = DEFAULT_START_DATE.plusWeeks(1L)
         private val DEFAULT_END_TIME = DEFAULT_START_TIME
+        private val MIN_START_TIME_INTERVAL = Duration.of(1L, ChronoUnit.HOURS)
+        private val MIN_END_TIME_INTERVAL = Duration.of(1L, ChronoUnit.DAYS)
 
         /**
          * get the date from the date text view
