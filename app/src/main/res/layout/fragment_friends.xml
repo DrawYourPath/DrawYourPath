@@ -10,7 +10,7 @@
         android:id="@+id/friends_search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search for users..."
+        android:hint="@string/friend_search_hint"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

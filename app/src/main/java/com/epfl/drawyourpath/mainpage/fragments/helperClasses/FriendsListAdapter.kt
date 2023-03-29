@@ -11,7 +11,7 @@ import com.epfl.drawyourpath.R
 data class Friend(
     val id: Int,
     val name: String,
-    val profileImage: Int, // Use a drawable resource ID for simplicity.
+    val profileImage: Int, // Use a drawable resource ID for simplicity. TODO probably change to a bitmap later
     val isFriend: Boolean
 )
 
@@ -35,6 +35,7 @@ class FriendsListAdapter(private val onAddFriendClicked: (Friend) -> Unit) :
         fun bind(friend: Friend) {
             name.text = friend.name
             profileImage.setImageResource(friend.profileImage)
+
 
             addFriendButton.setOnClickListener {
                 onAddFriendClicked(friend)
