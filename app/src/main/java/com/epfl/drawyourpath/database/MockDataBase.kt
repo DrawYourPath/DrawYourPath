@@ -1,41 +1,50 @@
 package com.epfl.drawyourpath.database
 
+import android.graphics.Bitmap
+import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
 class MockDataBase : Database() {
-    var usersDataBase: ArrayList<String> = ArrayList<String>()
-    var usernameToPersonalInfoDataBase: HashMap<String, PersonalInfo> = HashMap()
-    var usernameToUserGoalsDataBase: HashMap<String, UserGoals> = HashMap()
-
     //clean database
     //link to username to userId
     var usernameToUserId: HashMap<String, String> = HashMap()
 
-
+    //user account
+    val userIdToUserAccount: HashMap<String, UserModel> = HashMap()
     var userIdToUsername: HashMap<String, String> = HashMap() //1=userId 2=username
-    var userIdToDistanceGoal: HashMap<String, Double> = HashMap() //1:userid, 2:distance goal
-    var userIdToActivityTimeGoal: HashMap<String, Double> =
-        HashMap() //1:userid, 2:activity time goal
-    var userIdToNbOfPathsGoal: HashMap<String, Int> = HashMap() //1:userid, 2:number of paths goal
 
     val userIdTest: String = "aUyFLWgYxmoELRUr3jWYie61jbKO"
+    val userAuthTest: User = MockAuth.MOCK_USER
     val usernameTest: String = "albert"
     val distanceGoalTest: Double = 10.0
-    val timeGoalTest: Double = 60.0
+    val activityTimeGoalTest: Double = 60.0
     val nbOfPathsGoalTest: Int = 5
+    val firstnameTest = "Hugo"
+    val surnameTest = "Hof"
+    val takenUsername = "nathan"
+    val dateOfBirthTest = LocalDate.of(2000, 2, 20)
+    val userModelTest: UserModel
 
     init {
-        //add elements to the list of the user with userId for the tests
-        usersDataBase.add("albert")
-
-        //clean database
         usernameToUserId.put(usernameTest, userIdTest)
-        usernameToUserId.put("hugo", "exId")
+        usernameToUserId.put(takenUsername, "exId")
+
         userIdToUsername.put(userIdTest, usernameTest)
-        userIdToDistanceGoal.put(userIdTest, distanceGoalTest)
-        userIdToActivityTimeGoal.put(userIdTest, timeGoalTest)
-        userIdToNbOfPathsGoal.put(userIdTest, nbOfPathsGoalTest)
+        userModelTest = UserModel(
+            userAuthTest,
+            usernameTest,
+            firstnameTest,
+            surnameTest,
+            dateOfBirthTest,
+            distanceGoalTest,
+            activityTimeGoalTest,
+            nbOfPathsGoalTest,
+            this
+        )
+        userIdToUserAccount.put(userIdTest, userModelTest)
     }
 
     override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
@@ -46,76 +55,114 @@ class MockDataBase : Database() {
         return CompletableFuture.completedFuture(userIdToUsername.get(userId))
     }
 
+    override fun getUserIdFromUsername(username: String): CompletableFuture<String> {
+        return CompletableFuture.completedFuture(usernameToUserId.get(username))
+    }
+
     override fun isUsernameAvailable(userName: String): CompletableFuture<Boolean> {
-        return CompletableFuture.completedFuture(!usersDataBase.contains(userName))
+        return CompletableFuture.completedFuture(!usernameToUserId.contains(userName))
     }
 
-    override fun updateUsername(username: String, userId: String): CompletableFuture<Boolean> {
-        val available = !usernameToUserId.contains(username)
-        if (available) {
-            //remove the past username has taken
-            val pastUsername = userIdToUsername.get(userId)
-            usernameToUserId.remove(pastUsername)
-            //add the new username linck to the userId
-            usernameToUserId.put(username, userId)
-            //edit the userProfile
-            userIdToUsername.put(userId, username)
+    override fun updateUsername(username: String): CompletableFuture<Boolean> {
+        return isUsernameAvailable(username).thenApply {
+            if (it) {
+                //remove the past username has taken
+                val pastUsername = userIdToUsername.get(userIdTest)
+                usernameToUserId.remove(pastUsername)
+                //add the new username link to the userId
+                usernameToUserId.put(username, userIdTest)
+                //edit the userProfile
+                userIdToUsername.put(userIdTest, username)
+            }
+            it
         }
-        return CompletableFuture.completedFuture(available)
     }
 
-    override fun setUsername(username: String) {
-        usersDataBase.add(username)
+    override fun setUsername(username: String): CompletableFuture<Boolean> {
+        return isUsernameAvailable(username).thenApply {
+            if (it) {
+                usernameToUserId.put(username, userIdTest)
+                userIdToUsername.put(userIdTest, username)
+            }
+            it
+        }
     }
 
-    override fun setPersonalInfo(
-        username: String,
-        firstname: String,
-        surname: String,
-        dateOfBirth: LocalDate
-    ) {
-        val userPersonalInfo: PersonalInfo = PersonalInfo(firstname, surname, dateOfBirth)
-        usernameToPersonalInfoDataBase.put(username, userPersonalInfo)
+    override fun initUserProfile(userModel: UserModel): CompletableFuture<Boolean> {
+        userIdToUserAccount.put(userIdTest, userModel)
+        return CompletableFuture.completedFuture(true)
     }
 
-    override fun setUserGoals(
-        username: String,
-        distanceGoal: Double,
-        timeGoal: Double,
-        nbOfPathsGoal: Int
-    ) {
-        val userGoals: UserGoals = UserGoals(username, distanceGoal, timeGoal, nbOfPathsGoal)
-        usernameToUserGoalsDataBase.put(username, userGoals)
+    override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
+        return CompletableFuture.completedFuture(userIdToUserAccount.get(userId))
     }
 
-    override fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean> {
-        userIdToDistanceGoal.put(userId, distanceGoal)
-        return CompletableFuture.completedFuture(userIdToDistanceGoal.get(userId) == distanceGoal)
+    override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
+        return getUserAccount(userIdTest)
     }
 
-    override fun setActivityTimeGoal(
-        userId: String,
-        activityTimeGoal: Double
-    ): CompletableFuture<Boolean> {
-        userIdToActivityTimeGoal.put(userId, activityTimeGoal)
-        return CompletableFuture.completedFuture(userIdToActivityTimeGoal.get(userId) == activityTimeGoal)
+    override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        if (distanceGoal <= 0.0) {
+            future.completeExceptionally(Error("The distance goal can't be less or equal than 0."))
+            return future
+        }
+        val updatedUser = UserModel(
+            userAuthTest, usernameTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoal,
+            activityTimeGoalTest, nbOfPathsGoalTest, this
+        )
+        userIdToUserAccount.put(userIdTest, updatedUser)
+        return CompletableFuture.completedFuture(true)
     }
 
-    override fun setNbOfPathsGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
-        userIdToNbOfPathsGoal.put(userId, nbOfPathsGoal)
-        return CompletableFuture.completedFuture(userIdToNbOfPathsGoal.get(userId) == nbOfPathsGoal)
+    override fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        if (activityTimeGoal <= 0.0) {
+            future.completeExceptionally(Error("The activity time goal can't be less or equal than 0."))
+            return future
+        }
+        val updatedUser = UserModel(
+            userAuthTest,
+            usernameTest,
+            firstnameTest,
+            surnameTest,
+            dateOfBirthTest,
+            distanceGoalTest,
+            activityTimeGoal,
+            nbOfPathsGoalTest,
+            this
+        )
+        userIdToUserAccount.put(userIdTest, updatedUser)
+        return CompletableFuture.completedFuture(true)
     }
-}
 
-//create some enum to facilitate the tests
-class PersonalInfo(firstname: String, surname: String, dateOfBirth: LocalDate) {
-    private var firstname = firstname
-    private var surname = surname
-    private var dateOfBirth = dateOfBirth
-}
+    override fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        if (nbOfPathsGoal <= 0) {
+            future.completeExceptionally(Error("The number of paths goal can't be less or equal than 0."))
+            return future
+        }
+        val updatedUser = UserModel(
+            userAuthTest,
+            usernameTest,
+            firstnameTest,
+            surnameTest,
+            dateOfBirthTest,
+            distanceGoalTest,
+            activityTimeGoalTest,
+            nbOfPathsGoal,
+            this
+        )
+        userIdToUserAccount.put(userIdTest, updatedUser)
+        return CompletableFuture.completedFuture(true)
+    }
 
-class UserGoals(username: String, distanceGoal: Double, timeGoal: Double, nbOfPathsGoal: Int) {
-    private var distanceGoal = distanceGoal
-    private var timeGoal = timeGoal
-    private var nbOfPathsGoal = nbOfPathsGoal
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+        val updatedUser = UserModel(
+            userIdTest, userAuthTest.getEmail(), usernameTest, firstnameTest, surnameTest,
+            dateOfBirthTest, distanceGoalTest, activityTimeGoalTest, nbOfPathsGoalTest, photo, this
+        )
+        userIdToUserAccount.put(userIdTest, updatedUser)
+        return CompletableFuture.completedFuture(true)
+    }
 }

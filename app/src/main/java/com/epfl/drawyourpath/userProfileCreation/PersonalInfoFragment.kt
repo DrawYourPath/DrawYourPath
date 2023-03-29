@@ -23,22 +23,23 @@ private val MAX_AGE: Int = 100
 
 class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
     private var isTest: Boolean = false
-    private var userName: String = ""
+    private var username: String = ""
     private var dateOfBirth: LocalDate = LocalDate.now()
     private var firstname: String = ""
     private var surname: String = ""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        var database: Database = FireDatabase()
+
         //retrieve the isRunTestValue and userName from the UserNameTestAndSetFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag == null) {
             isTest = false
         } else {
             isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
-            userName = argsFromLastFrag.getString("userName").toString()
+            username = argsFromLastFrag.getString(database.usernameFile).toString()
         }
 
         //select the correct database in function of test scenario
-        var database: Database? = null
         database = if (isTest) {
             MockDataBase()
         } else {
@@ -111,14 +112,16 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
 
             //if the data are correct, set them to the database and show the next fragment when click on the validate button
             if (test1 && test2 && test3) {
-                database.setPersonalInfo(userName, firstname, surname, dateOfBirth)
                 val previousActivity = activity
                 if (previousActivity != null) {
                     val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
                     val dataToUserGoalsInitFrag: Bundle = Bundle()
-                    //data to transmit to the UserGoalsInitFragment(username + isTest)
+                    //data to transmit to the UserGoalsInitFragment(username + firstname + surname + dateOfBirth + isTest)
                     dataToUserGoalsInitFrag.putBoolean("isRunningTestForDataBase", isTest)
-                    dataToUserGoalsInitFrag.putString("userName", userName)
+                    dataToUserGoalsInitFrag.putString(database.usernameFile, username)
+                    dataToUserGoalsInitFrag.putString(database.firstnameFile, firstname)
+                    dataToUserGoalsInitFrag.putString(database.surnameFile, surname)
+                    dataToUserGoalsInitFrag.putLong(database.dateOfBirthFile, dateOfBirth.toEpochDay())
                     val userGoalsInitFrag = UserGoalsInitFragment()
                     userGoalsInitFrag.arguments = dataToUserGoalsInitFrag
                     fragManagement.replace(R.id.personalInfoFragment, userGoalsInitFrag).commit()

@@ -23,7 +23,7 @@ class EndProfileCreationFragmentTest : Fragment() {
      */
     @Test
     fun correctEndMeassageOutput() {
-        var t = goToEndUserProfileCreationFragment()
+        var t = goToProfilePhotoInitFragment()
         val username = "hugo"
         val correctMessage =
             "We are happy to welcome you, " + username + " in the DrawYourPath app." +
@@ -42,7 +42,7 @@ class EndProfileCreationFragmentTest : Fragment() {
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
-private fun goToEndUserProfileCreationFragment(): ActivityScenario<UserProfileCreationActivity> {
+private fun goToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreationActivity> {
     //pass in test mode to used the Mockdatabase instead of the Firebase
     var intent =
         Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)
@@ -79,6 +79,8 @@ private fun goToEndUserProfileCreationFragment(): ActivityScenario<UserProfileCr
         .perform(ViewActions.typeText("5"))
     Espresso.closeSoftKeyboard()
     Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
+        .perform(ViewActions.click())
+    Espresso.onView(withId(R.id.skipPhotoProfile_button_userProfileCreation))
         .perform(ViewActions.click())
     return t
 }
