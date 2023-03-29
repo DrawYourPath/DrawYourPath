@@ -22,6 +22,10 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
         // TODO: Create an actual news feed
     }
 
+    /**
+     * Adds a new at the bottom of the feed news.
+     * @param news The news to add to the news feed.
+     */
     fun addNews(news: News) {
         parentFragmentManager.beginTransaction()
             .add(R.id.LL_News, NewsFragmentElement(news.title, news. description, news.action1, news.action2))
