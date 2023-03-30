@@ -149,11 +149,11 @@ class FireDatabase : Database() {
     }
 
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
-        val future = CompletableFuture<UserModel>()
+        var future = CompletableFuture<UserModel>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
-            future.thenApply { dataToUserModel(userData, userId) }
-        }.addOnFailureListener {
+            future.complete(dataToUserModel(userData, userId))
+        }.addOnFailureListener{
             future.completeExceptionally(it)
         }
         return future
@@ -161,13 +161,13 @@ class FireDatabase : Database() {
 
     override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
         val userId = getUserId()
-        val future = CompletableFuture<UserModel>()
-        if (userId == null) {
+        if(userId == null){
+            val future = CompletableFuture<UserModel>()
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
-        } else {
-            val future = getUserAccount(userId)
+            return future
+        }else {
+            return getUserAccount(userId)
         }
-        return future
     }
 
     override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
@@ -282,11 +282,9 @@ class FireDatabase : Database() {
      * @param userId of the user
      * @return ta future that contains the user Model
      */
-    private fun dataToUserModel(data: DataSnapshot?, userId: String): CompletableFuture<UserModel> {
-        val future = CompletableFuture<UserModel>()
-
+    private fun dataToUserModel(data: DataSnapshot?, userId: String): UserModel {
         if (data == null) {
-            future.completeExceptionally(java.lang.Error("There is no user account corresponding to this userId."))
+            throw java.lang.Error("There is no user account corresponding to this userId.")
         } else {
             val email = data.child(emailFile).value
             val username = data.child(usernameFile).value
@@ -297,33 +295,45 @@ class FireDatabase : Database() {
             val activityTimeGoal = data.child(activityTimeGoalFile).value
             val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
 
-            //decode the photo
-            val profilePhotoEncoded = data.child(profilePhotoFile).value
-            val tabByte = Base64.getDecoder().decode(profilePhotoEncoded as String)
-            val profilePhoto = BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+
 
             if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null || nbOfPathsGoal == null) {
-                future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
+                throw java.lang.Error("The user account present on the database is incomplete.")
             } else {
-                future.complete(
-                    UserModel(
+                //test if the photoProfile is null to know if we need to decode it
+                val profilePhotoEncoded = data.child(profilePhotoFile).value
+                val profilePhoto = decodePhoto(profilePhotoEncoded)
+
+                //create the userModel
+                return UserModel(
                         userId,
                         email as String,
                         username as String,
                         firstname as String,
                         surname as String,
                         LocalDate.ofEpochDay(dateOfBirth as Long),
-                        distanceGoal as Double,
-                        activityTimeGoal as Double,
-                        nbOfPathsGoal as Int,
+                        (distanceGoal as Long).toDouble(),
+                        (activityTimeGoal as Long).toDouble(),
+                        (nbOfPathsGoal as Long).toInt(),
                         profilePhoto,
-                        FireDatabase()
-                    )
+                        this
                 )
             }
-
         }
-        return future
+    }
+
+    /**
+     * Helper function to decode the photo from string to bitmap format and return null if the dataSnapShot is null
+     * @param photoStr photo encoded
+     * @return the photo in bitmap format, and null if no photo is stored on the databse
+     */
+    private fun decodePhoto(photoStr: Any?): Bitmap? {
+        if(photoStr == null){
+            return null
+        }else{
+            val tabByte = Base64.getDecoder().decode(photoStr as String)
+            return BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+        }
     }
 }
 
