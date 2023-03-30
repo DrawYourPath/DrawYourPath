@@ -23,14 +23,14 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    override fun onMapReady(p0: GoogleMap) {
+    override fun onMapReady(map: GoogleMap) {
         val coordinates = LatLng(46.5185, 6.56177)
-        p0.addMarker(
+        map.addMarker(
             MarkerOptions()
                 .position(coordinates)
                 .title("EPFL")
         )
-        p0.moveCamera(CameraUpdateFactory.newLatLng(coordinates))
-        p0.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates,15F));
+        map.moveCamera(CameraUpdateFactory.newLatLng(coordinates))
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates,15F))
     }
 }

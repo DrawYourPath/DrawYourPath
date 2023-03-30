@@ -22,7 +22,6 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-
             android:name=".userProfileCreation.UserProfileCreationActivity"
             android:exported="true"></activity>
         <activity
