@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.userProfile
 
+import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import java.time.LocalDate
@@ -39,6 +40,9 @@ class UserModel {
 
     //friend list
     private var friendsList: HashMap<String, String> //(username, userId)
+
+    //profile photo, can be null if the user don't want to
+    private var profilePhoto: Bitmap? = null
 
 
     /**
@@ -91,7 +95,7 @@ class UserModel {
     /**
      * THis constructor will create a new user based on the user model of the app
      * @param userId of the user
-     * @param emailAddres of the user
+     * @param emailAddress of the user
      * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
      * @param firstname must respect the name convention of the app (name or name-name)
      * @param surname must respect the name convention of the app (name or name-name)
@@ -101,7 +105,7 @@ class UserModel {
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
      * @throws error if the inputs are incorrect
      */
-    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
+    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, database: Database){
         this.database = database
 
         //obtain the userId and the email give by the authentication
@@ -134,6 +138,7 @@ class UserModel {
         this.nbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = HashMap()
+        this.profilePhoto =profilePhoto
     }
 
     /**
@@ -311,6 +316,28 @@ class UserModel {
      */
     fun getFriendList(): Map<String, String> {
         return this.friendsList
+    }
+
+    /**
+     * This function will  return the profile photo of the user or null if it doesn't exit
+     * @return the profile photo if it exist
+     */
+    fun getProfilePhoto(): Bitmap?{
+        return profilePhoto
+    }
+
+    /**
+     * This function will set the photo as the profile photo of the user
+     * @param photo that we want to set
+     * @return a completable future that indicate if the photo was correctly stored
+     */
+    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>{
+        return database.setProfilePhoto(photo).thenApply {
+            if(it){
+                this.profilePhoto = photo
+            }
+            it
+        }
     }
 
 }

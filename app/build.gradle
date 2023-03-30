@@ -7,9 +7,13 @@ plugins {
 }
 
 
+
 android {
     namespace 'com.epfl.drawyourpath'
     compileSdk 33
+    dataBinding {
+        enabled = true
+    }
 
     defaultConfig {
         applicationId "com.epfl.drawyourpath"
@@ -24,6 +28,8 @@ android {
             useSupportLibrary = true
         }
     }
+
+
 
     buildTypes {
         release {
@@ -44,7 +50,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
@@ -57,14 +62,34 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
 
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    //espresso version at 3.5.0-alpha04 because of a bug
+    //see https://github.com/android/android-test/issues/1642
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha04'
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.0-alpha04")
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
+
+    implementation "androidx.fragment:fragment-ktx:1.5.5"
+
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+
+    implementation "androidx.fragment:fragment-ktx:1.5.5"
+
+    testImplementation 'org.mockito:mockito-core:3.11.2'
+    testImplementation 'org.mockito:mockito-inline:3.11.2'
+    testImplementation 'io.mockk:mockk:1.12.0'
+    testImplementation 'org.mockito:mockito-android:3.12.4'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+
+    //to have access to the PickerActions method
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    testImplementation("org.hamcrest:hamcrest:2.2")
+
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.0-alpha04'
+
 
     debugImplementation 'androidx.test:monitor:1.6.1'
     debugImplementation 'androidx.fragment:fragment-testing:1.5.6'
@@ -83,16 +108,16 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
 
-    testImplementation 'junit:junit:4.13.2'
+    //testImplementation 'junit:junit:4.13.2'
 
-    debugImplementation 'androidx.test:monitor:1.6.1'
-    debugImplementation 'androidx.fragment:fragment-testing:1.5.6'
-
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
+    //debugImplementation 'androidx.test:monitor:1.6.1'
+    //debugImplementation 'androidx.fragment:fragment-testing:1.5.6'
+    
+    //androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    //androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    //androidTestImplementation 'androidx.test:runner:1.5.2'
+    //androidTestImplementation 'androidx.test:rules:1.5.0'
+    //androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
     androidTestImplementation "androidx.test.uiautomator:uiautomator:2.3.0-alpha02"
 }
 

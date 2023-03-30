@@ -34,14 +34,4 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        app:key="notifications_category"
-        app:title="Notifications">
-
-        <SwitchPreferenceCompat
-            app:key="switch_notifications"
-            app:title="Enable notifications" />
-
-    </PreferenceCategory>
-
 </PreferenceScreen>
