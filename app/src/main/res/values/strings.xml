@@ -18,6 +18,9 @@
     <string name="enter_your_firstname">Enter your firstname</string>
     <string name="enter_your_surname">Enter your surname</string>
     <string name="your_date_of_birth">Your date of birth :</string>
+    <string name="profile_image">User\'s profile image</string>
+    <string name="add_friend">add friend</string>
+    <string name="friend_search_hint">Search for users...</string>
     <string name="empty_date_view">dd/mm/yyyy</string>
     <string name="select_a_date">Select a date</string>
     <string name="to_challenge_you_every_days">To challenge you...</string>
