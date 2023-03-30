@@ -166,14 +166,10 @@ class FireDatabase : Database() {
         if(userId == null){
             val future = CompletableFuture<UserModel>()
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
-<<<<<<< HEAD
-        } else {
-            future.thenApply{getUserAccount(userId)}
-=======
+
             return future
         }else {
             return getUserAccount(userId)
->>>>>>> origin/77-fix-the-bug-in-firebase-getLOggedUserAccount-function
         }
     }
 
