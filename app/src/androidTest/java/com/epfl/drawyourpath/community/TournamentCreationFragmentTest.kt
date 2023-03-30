@@ -2,9 +2,9 @@ package com.epfl.drawyourpath.community
 
 import android.widget.DatePicker
 import android.widget.TimePicker
+import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions.setDate
 import androidx.test.espresso.contrib.PickerActions.setTime
@@ -42,14 +42,17 @@ class TournamentCreationFragmentTest {
         pressCreate()
 
         onView(withId(R.id.tournament_creation_title_error))
+            .perform(scrollTo())
             .check(matches(withText(R.string.tournament_creation_title_error)))
             .check(matches(isDisplayed()))
 
         onView(withId(R.id.tournament_creation_description_error))
+            .perform(scrollTo())
             .check(matches(withText(R.string.tournament_creation_description_error)))
             .check(matches(isDisplayed()))
 
         onView(withId(R.id.tournament_creation_visibility_error))
+            .perform(scrollTo())
             .check(matches(withText(R.string.tournament_creation_visibility_error)))
             .check(matches(isDisplayed()))
     }
@@ -62,6 +65,7 @@ class TournamentCreationFragmentTest {
         pressCreate()
 
         onView(withId(R.id.tournament_creation_start_date_error))
+            .perform(scrollTo())
             .check(matches(withText(R.string.tournament_creation_start_date_error)))
             .check(matches(isDisplayed()))
     }
@@ -77,6 +81,7 @@ class TournamentCreationFragmentTest {
         pressCreate()
 
         onView(withId(R.id.tournament_creation_start_date_error))
+            .perform(scrollTo())
             .check(matches(withText(R.string.tournament_creation_start_date_error)))
             .check(matches(isDisplayed()))
     }
@@ -91,6 +96,7 @@ class TournamentCreationFragmentTest {
         pressCreate()
 
         onView(withId(R.id.tournament_creation_end_date_error))
+            .perform(scrollTo())
             .check(matches(withText(R.string.tournament_creation_end_date_error)))
             .check(matches(isDisplayed()))
     }
@@ -111,6 +117,7 @@ class TournamentCreationFragmentTest {
         pressCreate()
 
         onView(withId(R.id.tournament_creation_end_date_error))
+            .perform(scrollTo())
             .check(matches(withText(R.string.tournament_creation_end_date_error)))
             .check(matches(isDisplayed()))
     }
@@ -149,46 +156,48 @@ class TournamentCreationFragmentTest {
 
 
     private fun typeTitle(title: String) {
-        onView(withId(R.id.tournament_creation_title)).perform(typeText(title))
+        onView(withId(R.id.tournament_creation_title)).perform(scrollTo(),typeText(title))
+        closeSoftKeyboard()
     }
 
     private fun typeDescription(description: String) {
-        onView(withId(R.id.tournament_creation_description)).perform(typeText(description))
+        onView(withId(R.id.tournament_creation_description)).perform(scrollTo(),typeText(description))
+        closeSoftKeyboard()
     }
 
     private fun selectStartDate(date: LocalDate) {
-        onView(withId(R.id.tournament_creation_start_date)).perform(click())
+        onView(withId(R.id.tournament_creation_start_date)).perform(scrollTo(),click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(date.year, date.monthValue, date.dayOfMonth))
         onView(withId(android.R.id.button1)).perform(click())
     }
 
     private fun selectStartTime(time: LocalTime) {
-        onView(withId(R.id.tournament_creation_start_time)).perform(click())
+        onView(withId(R.id.tournament_creation_start_time)).perform(scrollTo(),click())
         onView(isAssignableFrom(TimePicker::class.java)).perform(setTime(time.hour, time.minute))
         onView(withId(android.R.id.button1)).perform(click())
     }
 
     private fun selectEndDate(date: LocalDate) {
-        onView(withId(R.id.tournament_creation_end_date)).perform(click())
+        onView(withId(R.id.tournament_creation_end_date)).perform(scrollTo(),click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(date.year, date.monthValue, date.dayOfMonth))
         onView(withId(android.R.id.button1)).perform(click())
     }
 
     private fun selectEndTime(time: LocalTime) {
-        onView(withId(R.id.tournament_creation_end_time)).perform(click())
+        onView(withId(R.id.tournament_creation_end_time)).perform(scrollTo(),click())
         onView(isAssignableFrom(TimePicker::class.java)).perform(setTime(time.hour, time.minute))
         onView(withId(android.R.id.button1)).perform(click())
     }
 
     private fun selectVisibility(visibility: Tournament.Visibility) {
         when (visibility.ordinal) {
-            0 -> onView(withId(R.id.tournament_creation_visibility_item_0)).perform(click())
-            1 -> onView(withId(R.id.tournament_creation_visibility_item_1)).perform(click())
+            0 -> onView(withId(R.id.tournament_creation_visibility_item_0)).perform(scrollTo(),click())
+            1 -> onView(withId(R.id.tournament_creation_visibility_item_1)).perform(scrollTo(),click())
         }
     }
 
     private fun pressCreate() {
-        onView(withId(R.id.tournament_creation_create_button)).perform(click())
+        onView(withId(R.id.tournament_creation_create_button)).perform(scrollTo(), click())
     }
 
 }
