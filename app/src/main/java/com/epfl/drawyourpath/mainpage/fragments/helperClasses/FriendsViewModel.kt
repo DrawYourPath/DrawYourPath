@@ -6,14 +6,19 @@ import androidx.lifecycle.ViewModel
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.userProfile.UserModel
 
-class FriendsViewModel(/*private val userModel: UserModel* TODO uncomment later*/) : ViewModel() {
+class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
 
-    // For now, create a dummy list of friends. TODO Replace with real data.
-    val allFriends = listOf(
+    // For now, create a dummy list of friends. TODO delete when userModel friends list is implemented
+    val testFriends = listOf(
         Friend(1, "John Doe", R.drawable.ic_profile_placeholder, false),
         Friend(2, "Jane Smith", R.drawable.ic_profile_placeholder, true),
+
+
         // Add more friends here.
     )
+
+    //empty list of Friend
+    var allFriends = listOf<Friend>()
 
     // _friendsList is a MutableLiveData, which is a private mutable version of the LiveData.
     // This is used to update the value internally within the ViewModel.
@@ -21,15 +26,17 @@ class FriendsViewModel(/*private val userModel: UserModel* TODO uncomment later*
 
     // The init block is executed when the ViewModel is created.
     init {
-        /*TODO Uncomment this code when you have a UserModel class instance.
+
         // Get the friend list from the UserModel
         val friendsMap = userModel.getFriendList()
 
         // Convert the friendsMap to a list of Friend objects
-         val allFriends = friendsMap.map { (username, userId) ->
+        val realFriends = friendsMap.map { (username, userId) ->
             Friend(userId.toInt(), username, R.drawable.ic_profile_placeholder, true)
         }
-        */
+
+        // Concatenate the testFriends and realFriends lists
+        allFriends = testFriends + realFriends
 
         // Set the initial value of _friendsList to allFriends.
         _friendsList.value = allFriends

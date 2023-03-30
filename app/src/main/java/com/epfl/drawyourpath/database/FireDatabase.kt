@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.userProfile.UserModel
@@ -160,12 +161,13 @@ class FireDatabase : Database() {
     }
 
     override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
+        Log.d("Debug", "getLoggedUserAccount called!!!!!!!!!!!!!!!!!!")
         val userId = getUserId()
         val future = CompletableFuture<UserModel>()
         if (userId == null) {
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
         } else {
-            val future = getUserAccount(userId)
+            future.thenApply{getUserAccount(userId)}
         }
         return future
     }
