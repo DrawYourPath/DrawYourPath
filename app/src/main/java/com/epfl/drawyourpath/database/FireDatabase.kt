@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.database
 
-import com.epfl.drawyourpath.authentication.Auth
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.userProfile.UserModel
@@ -8,11 +9,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
+import java.util.*
 import java.util.concurrent.CompletableFuture
-
-private val TIMEOUT_SERVER_REQUEST: Long = 10
-
 
 /**
  * The Firebase contains files:
@@ -21,7 +21,7 @@ private val TIMEOUT_SERVER_REQUEST: Long = 10
  */
 class FireDatabase : Database() {
     val database: DatabaseReference = Firebase.database.reference
-    private val USER_AUTH: User? = FirebaseAuth.getUser()
+    private val userAuth: User? = FirebaseAuth.getUser()
     private val usernameToUserIdFileName: String = "usernameToUserId"
     private val usersProfileFileName: String = "users"
 
@@ -41,9 +41,9 @@ class FireDatabase : Database() {
         val future = CompletableFuture<String>()
 
         accessUserAccountFile(userId).child(usernameFile).get().addOnSuccessListener {
-            if(it.value == null) future.completeExceptionally(NoSuchFieldException("There is no username corresponding to the userId $userId"))
+            if (it.value == null) future.completeExceptionally(NoSuchFieldException("There is no username corresponding to the userId $userId"))
             else future.complete(it.value as String)
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             future.completeExceptionally(it)
         }
         return future
@@ -53,9 +53,9 @@ class FireDatabase : Database() {
         val future = CompletableFuture<String>()
 
         accessUsernameToUserIdFile().child(username).get().addOnSuccessListener {
-            if(it.value == null) future.completeExceptionally(NoSuchFieldException("There is no userId corresponding to the username $username"))
+            if (it.value == null) future.completeExceptionally(NoSuchFieldException("There is no userId corresponding to the username $username"))
             else future.complete(it.value as String)
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             future.completeExceptionally(it)
         }
         return future
@@ -77,9 +77,9 @@ class FireDatabase : Database() {
         val future = CompletableFuture<Boolean>()
 
         val userId = getUserId()
-        if(userId == null){
+        if (userId == null) {
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
-        }else {
+        } else {
             //obtain the past username form the userId
             getUsernameFromUserId(userId).thenAccept { pastUsername ->
                 if (pastUsername == null) {
@@ -88,7 +88,7 @@ class FireDatabase : Database() {
                     //update the link username to userId and the username on the userAccount
                     setUsername(username).thenAccept { isSetUsername ->
                         if (isSetUsername) {
-                            future.thenApply { removeUsernameToUidMapping(username)}
+                            future.thenApply { removeUsernameToUidMapping(username) }
                         } else {
                             future.completeExceptionally(java.lang.Error("Impossible to set this username !"))
                         }
@@ -103,9 +103,9 @@ class FireDatabase : Database() {
         val future = CompletableFuture<Boolean>()
         //TODO:Add security rules to database
         val userId = getUserId()
-        if(userId == null){
+        if (userId == null) {
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
-        }else{
+        } else {
             //check if the username is available
             isUsernameAvailable(username).thenAccept { isAvailable ->
                 if (isAvailable) {
@@ -153,7 +153,7 @@ class FireDatabase : Database() {
 
         accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
             future.thenApply { dataToUserModel(userData, userId) }
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             future.completeExceptionally(it)
         }
         return future
@@ -162,16 +162,16 @@ class FireDatabase : Database() {
     override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
         val userId = getUserId()
         val future = CompletableFuture<UserModel>()
-        if(userId == null){
+        if (userId == null) {
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
-        }else {
+        } else {
             val future = getUserAccount(userId)
         }
         return future
     }
 
     override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
-        if(distanceGoal <= 0.0){
+        if (distanceGoal <= 0.0) {
             val future = CompletableFuture<Boolean>()
             future.completeExceptionally(java.lang.Error("The distance goal can't be less or equal than 0."))
         }
@@ -181,7 +181,7 @@ class FireDatabase : Database() {
     }
 
     override fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
-        if(activityTimeGoal <= 0.0){
+        if (activityTimeGoal <= 0.0) {
             val future = CompletableFuture<Boolean>()
             future.completeExceptionally(java.lang.Error("The activity time goal can't be less or equal than 0."))
             return future
@@ -192,28 +192,41 @@ class FireDatabase : Database() {
     }
 
     override fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
-       if(nbOfPathsGoal <= 0){
-           val future = CompletableFuture<Boolean>()
-           future.completeExceptionally(java.lang.Error("The number of paths goal can't be less or equal than 0."))
-           return future
+        if (nbOfPathsGoal <= 0) {
+            val future = CompletableFuture<Boolean>()
+            future.completeExceptionally(java.lang.Error("The number of paths goal can't be less or equal than 0."))
+            return future
         }
         val dataUpdated = HashMap<String, Any>()
         dataUpdated.put(nbOfPathsGoalFile, nbOfPathsGoal)
         return updateUserData(dataUpdated)
     }
+
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        val dataUpdated = HashMap<String, Any>()
+
+        //convert the bitmap to a byte array
+        val byteArray = ByteArrayOutputStream()
+        photo.compress(Bitmap.CompressFormat.PNG, 100, byteArray)
+        val imageEncoded: String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
+        dataUpdated.put(profilePhotoFile, imageEncoded)
+        return updateUserData(dataUpdated)
+    }
+
     /**
      * Helper function to access the userAccount database file of a user
      * @param userId od the user
      * @return the database reference to this file
      */
-    private fun accessUserAccountFile(userId: String): DatabaseReference{
+    private fun accessUserAccountFile(userId: String): DatabaseReference {
         return database.child(usersProfileFileName).child(userId)
     }
 
     /**
      * Helper function to access the usernameToUserId database file
      */
-    private fun accessUsernameToUserIdFile(): DatabaseReference{
+    private fun accessUsernameToUserIdFile(): DatabaseReference {
         return database.child(usernameToUserIdFileName)
     }
 
@@ -222,13 +235,14 @@ class FireDatabase : Database() {
      * @param data to be updated
      * @return a future to indicated if the data have been correctly updated
      */
-    private fun updateUserData(data: Map<String, Any>): CompletableFuture<Boolean>{
+    private fun updateUserData(data: Map<String, Any>): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
         val userId = getUserId()
-        if(userId == null){
+        if (userId == null) {
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
-        }else{
-            accessUserAccountFile(userId).updateChildren(data).addOnSuccessListener { future.complete(true) }
+        } else {
+            accessUserAccountFile(userId).updateChildren(data)
+                .addOnSuccessListener { future.complete(true) }
                 .addOnFailureListener { future.completeExceptionally(java.lang.Error("Impossible to update the data in the database !")) }
         }
         return future
@@ -239,8 +253,8 @@ class FireDatabase : Database() {
      * @return the userId of the user log on the app
      * @throw an error if any user is log on the app
      */
-    private fun getUserId(): String?{
-        return USER_AUTH?.getUid()
+    private fun getUserId(): String? {
+        return userAuth?.getUid()
     }
 
     /**
@@ -248,7 +262,7 @@ class FireDatabase : Database() {
      * @param username that will be removed form the mapping
      * @return a future that indicate if the username was correctly removed
      */
-    private fun removeUsernameToUidMapping(username: String){
+    private fun removeUsernameToUidMapping(username: String) {
         val future = CompletableFuture<Boolean>()
         //remove the past username from the link username/userId
         accessUsernameToUserIdFile().child(username).removeValue()
@@ -268,12 +282,12 @@ class FireDatabase : Database() {
      * @param userId of the user
      * @return ta future that contains the user Model
      */
-    private fun dataToUserModel(data: DataSnapshot?, userId: String): CompletableFuture<UserModel>{
+    private fun dataToUserModel(data: DataSnapshot?, userId: String): CompletableFuture<UserModel> {
         val future = CompletableFuture<UserModel>()
 
-        if(data == null) {
+        if (data == null) {
             future.completeExceptionally(java.lang.Error("There is no user account corresponding to this userId."))
-        }else{
+        } else {
             val email = data.child(emailFile).value
             val username = data.child(usernameFile).value
             val firstname = data.child(firstnameFile).value
@@ -282,12 +296,30 @@ class FireDatabase : Database() {
             val distanceGoal = data.child(distanceGoalFile).value
             val activityTimeGoal = data.child(activityTimeGoalFile).value
             val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
-            if(firstname==null||surname==null||dateOfBirth==null||distanceGoal==null||activityTimeGoal==null||nbOfPathsGoal==null){
+
+            //decode the photo
+            val profilePhotoEncoded = data.child(profilePhotoFile).value
+            val tabByte = Base64.getDecoder().decode(profilePhotoEncoded as String)
+            val profilePhoto = BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+
+            if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null || nbOfPathsGoal == null) {
                 future.completeExceptionally(java.lang.Error("The user account present on the database is incomplete."))
-            }else{
+            } else {
                 future.complete(
-                    UserModel(userId, email as String, username as String, firstname as String, surname as String, LocalDate.ofEpochDay(dateOfBirth as Long),
-                        distanceGoal as Double, activityTimeGoal as Double, nbOfPathsGoal as Int, FireDatabase()))
+                    UserModel(
+                        userId,
+                        email as String,
+                        username as String,
+                        firstname as String,
+                        surname as String,
+                        LocalDate.ofEpochDay(dateOfBirth as Long),
+                        distanceGoal as Double,
+                        activityTimeGoal as Double,
+                        nbOfPathsGoal as Int,
+                        profilePhoto,
+                        FireDatabase()
+                    )
+                )
             }
 
         }

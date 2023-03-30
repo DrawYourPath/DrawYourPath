@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/photoProfileInitFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/image_mountain_background"
+    tools:context="com.epfl.drawyourpath.userProfileCreation.PhotoProfileInitFragment">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        tools:context="com.epfl.drawyourpath.userProfileCreation.PhotoProfileInitFragment">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="@string/choose_a_profile_photo"
+            android:textAlignment="center"
+            android:textColor="@color/design_default_color_surface"
+            android:textIsSelectable="false"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/cardview_shadow_start_color"
+            android:justificationMode="inter_word"
+            android:padding="5dp"
+            android:text="@string/init_photo_description"
+            android:textAlignment="center"
+            android:textColor="@color/design_default_color_surface"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imagePhotoProfileInitFrag"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/profile_placholderpng"
+            android:layout_gravity="center|bottom"/>
+
+        <Button
+            android:id="@+id/selectPhotoInitPhotoFrag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:text="@string/select_a_photo"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/photoProfile_error_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="40dp"
+            android:textSize="20dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/setPhotoProfile_button_userProfileCreation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:text="@string/validate"
+            android:textSize="40sp" />
+        <Button
+            android:id="@+id/skipPhotoProfile_button_userProfileCreation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:text="@string/skip"
+            android:textSize="40sp" />
+    </LinearLayout>
+
+</FrameLayout>

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.*
+import com.epfl.drawyourpath.community.Tournament
 import java.util.*
 
 /**
