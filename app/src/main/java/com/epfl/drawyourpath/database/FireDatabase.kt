@@ -149,10 +149,10 @@ class FireDatabase : Database() {
     }
 
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
-        val future = CompletableFuture<UserModel>()
+        var future = CompletableFuture<UserModel>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
-            future.thenApply { dataToUserModel(userData, userId) }
+            future = dataToUserModel(userData, userId) 
         }.addOnFailureListener{
             future.completeExceptionally(it)
         }
@@ -161,13 +161,13 @@ class FireDatabase : Database() {
 
     override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
         val userId = getUserId()
-        val future = CompletableFuture<UserModel>()
         if(userId == null){
+            val future = CompletableFuture<UserModel>()
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+            return future
         }else {
-            future.thenApply{getUserAccount(userId)}
+            return getUserAccount(userId)
         }
-        return future
     }
 
     override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
