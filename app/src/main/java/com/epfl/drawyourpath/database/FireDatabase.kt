@@ -150,11 +150,11 @@ class FireDatabase : Database() {
     }
 
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
-        val future = CompletableFuture<UserModel>()
+        var future = CompletableFuture<UserModel>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
-            future.thenApply { dataToUserModel(userData, userId) }
-        }.addOnFailureListener {
+            future = dataToUserModel(userData, userId) 
+        }.addOnFailureListener{
             future.completeExceptionally(it)
         }
         return future
@@ -163,13 +163,18 @@ class FireDatabase : Database() {
     override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
         Log.d("Debug", "getLoggedUserAccount called!!!!!!!!!!!!!!!!!!")
         val userId = getUserId()
-        val future = CompletableFuture<UserModel>()
-        if (userId == null) {
+        if(userId == null){
+            val future = CompletableFuture<UserModel>()
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+<<<<<<< HEAD
         } else {
             future.thenApply{getUserAccount(userId)}
+=======
+            return future
+        }else {
+            return getUserAccount(userId)
+>>>>>>> origin/77-fix-the-bug-in-firebase-getLOggedUserAccount-function
         }
-        return future
     }
 
     override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
