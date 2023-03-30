@@ -24,7 +24,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun errorPrintedWhithEmptyDistanceGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
@@ -42,7 +42,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun errorPrintedWhithEmptyTimeGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
@@ -60,7 +60,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun errorPrintedWhithEmptyNbOfPathsGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
@@ -78,7 +78,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun errorPrintedWhithIncorrectDistanceGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
         //incorrect double
         Espresso.onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10.0"))
@@ -99,7 +99,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun errorPrintedWhithIncorrectTimeGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
         //incorrect double
         Espresso.onView(withId(R.id.input_timeGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10.0"))
@@ -120,7 +120,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun errorPrintedWhithIncorrectNbOfPathsGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
         //incorrect double
         Espresso.onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10.0"))
@@ -141,7 +141,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun noErrorPrintedWhithCorrectDistanceGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
 
         Espresso.onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10"))
@@ -163,7 +163,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun noErrorPrintedWhithCorrectTimeGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
 
         Espresso.onView(withId(R.id.input_timeGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10"))
@@ -185,7 +185,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun noErrorPrintedWhithCorrectNbOfPathsGoal() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
 
         Espresso.onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10"))
@@ -206,7 +206,7 @@ class UserGoalsInitFragmentTest {
      */
     @Test
     fun correctTransition() {
-        var t = goToUserGoalsInitFragment()
+        var t = goToProfilePhotoInitFragment()
 
         Espresso.onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10"))
@@ -221,7 +221,7 @@ class UserGoalsInitFragmentTest {
             .perform(ViewActions.click())
 
         //test if the correct fragment is show after clicking on VALIDATE button
-        Espresso.onView(withId(R.id.endProfileCreationFragment))
+        Espresso.onView(withId(R.id.photoProfileInitFragment))
             .check(matches(isDisplayed()))
 
         t.close()
@@ -233,7 +233,7 @@ class UserGoalsInitFragmentTest {
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
-private fun goToUserGoalsInitFragment(): ActivityScenario<UserProfileCreationActivity> {
+private fun goToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreationActivity> {
     //pass in test mode to used the Mockdatabase instead of the Firebase
     var intent =
         Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)

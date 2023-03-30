@@ -1,9 +1,9 @@
 package com.epfl.drawyourpath.database
 
+import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.userProfile.UserModel
-import java.lang.Error
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
@@ -103,36 +103,65 @@ class MockDataBase : Database() {
 
     override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
-        if(distanceGoal <= 0.0){
+        if (distanceGoal <= 0.0) {
             future.completeExceptionally(Error("The distance goal can't be less or equal than 0."))
             return future
         }
-        val updatedUser = UserModel(userAuthTest, usernameTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoal,
-            activityTimeGoalTest, nbOfPathsGoalTest, this)
+        val updatedUser = UserModel(
+            userAuthTest, usernameTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoal,
+            activityTimeGoalTest, nbOfPathsGoalTest, this
+        )
         userIdToUserAccount.put(userIdTest, updatedUser)
         return CompletableFuture.completedFuture(true)
     }
 
     override fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
-        if(activityTimeGoal <= 0.0){
+        if (activityTimeGoal <= 0.0) {
             future.completeExceptionally(Error("The activity time goal can't be less or equal than 0."))
             return future
         }
-        val updatedUser = UserModel(userAuthTest,usernameTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoalTest,
-            activityTimeGoal, nbOfPathsGoalTest, this)
+        val updatedUser = UserModel(
+            userAuthTest,
+            usernameTest,
+            firstnameTest,
+            surnameTest,
+            dateOfBirthTest,
+            distanceGoalTest,
+            activityTimeGoal,
+            nbOfPathsGoalTest,
+            this
+        )
         userIdToUserAccount.put(userIdTest, updatedUser)
         return CompletableFuture.completedFuture(true)
     }
 
     override fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
-        if(nbOfPathsGoal <= 0){
+        if (nbOfPathsGoal <= 0) {
             future.completeExceptionally(Error("The number of paths goal can't be less or equal than 0."))
             return future
         }
-        val updatedUser = UserModel(userAuthTest,usernameTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoalTest,
-            activityTimeGoalTest, nbOfPathsGoal, this)
+        val updatedUser = UserModel(
+            userAuthTest,
+            usernameTest,
+            firstnameTest,
+            surnameTest,
+            dateOfBirthTest,
+            distanceGoalTest,
+            activityTimeGoalTest,
+            nbOfPathsGoal,
+            this
+        )
+        userIdToUserAccount.put(userIdTest, updatedUser)
+        return CompletableFuture.completedFuture(true)
+    }
+
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+        val updatedUser = UserModel(
+            userIdTest, userAuthTest.getEmail(), usernameTest, firstnameTest, surnameTest,
+            dateOfBirthTest, distanceGoalTest, activityTimeGoalTest, nbOfPathsGoalTest, photo, this
+        )
         userIdToUserAccount.put(userIdTest, updatedUser)
         return CompletableFuture.completedFuture(true)
     }
