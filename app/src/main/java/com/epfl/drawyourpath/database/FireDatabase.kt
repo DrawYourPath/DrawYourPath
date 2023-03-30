@@ -165,7 +165,7 @@ class FireDatabase : Database() {
         if(userId == null){
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
         }else {
-            val future = getUserAccount(userId)
+            future.thenApply{getUserAccount(userId)}
         }
         return future
     }
