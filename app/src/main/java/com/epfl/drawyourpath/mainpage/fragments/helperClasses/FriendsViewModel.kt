@@ -80,4 +80,14 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
         // Update _friendsList with the updated friends list.
         _friendsList.value = updatedFriendsList
     }
+
+    /**
+     * The addPotentialFriend() function adds a new potential friend to the list of friends.
+     */
+    fun addPotentialFriend(friend: Friend) {
+        // Add the new friend to the list of all friends.
+        allFriends = allFriends + friend
+        // Update the friends list to show the new friend.
+        search("")
+    }
 }

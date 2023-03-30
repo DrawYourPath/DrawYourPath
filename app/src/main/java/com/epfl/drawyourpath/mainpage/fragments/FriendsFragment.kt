@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
+import com.epfl.drawyourpath.mainpage.fragments.helperClasses.Friend
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
@@ -65,8 +67,34 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
             // Set up the search functionality
             val searchView: SearchView = view.findViewById(R.id.friends_search_bar)
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
+                /*(override fun onQueryTextSubmit(query: String?): Boolean {
                     viewModel.search(query ?: "")
+                    return true
+                }*/
+
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    if (query != null && query.isNotBlank()) {
+                        database.isUsernameAvailable(query).thenAccept { isAvailable ->
+                            if (isAvailable == false) {
+                                Toast.makeText(requireContext(), "Username not found.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                database.getUserIdFromUsername(query).thenCompose { userId ->
+                                    database.getUserAccount(userId)
+                                }.thenAccept { userModel ->
+                                    val newFriend = Friend(
+                                        userModel.getUserId().toInt(),
+                                        userModel.getUsername(),
+                                        R.drawable.ic_profile_placeholder,
+                                        false
+                                    )
+
+                                    // Add the new friend to the list and update the UI
+                                    viewModel.addPotentialFriend(newFriend)
+
+                                }
+                            }
+                        }
+                    }
                     return true
                 }
 
@@ -74,6 +102,9 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                     viewModel.search(newText ?: "")
                     return true
                 }
+
+
+
             })
         }.exceptionally { exception ->
             Log.d("Debug", "exceptionally called")
