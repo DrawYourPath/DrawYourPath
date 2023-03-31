@@ -3,11 +3,11 @@ package com.epfl.drawyourpath.community
 /**
  *
  */
-data class TournamentModel(
-    private var weekly: Tournament,
-    private var your: List<Tournament> = mutableListOf(),
+class TournamentModel : java.io.Serializable {
+
+    private var weekly: Tournament? = null
+    private var your: List<Tournament> = mutableListOf()
     private var discover: List<Tournament> = mutableListOf()
-) : java.io.Serializable {
 
     /**
      * get the tournament of this week
@@ -15,7 +15,7 @@ data class TournamentModel(
      *
      * @return the weekly tournament
      */
-    fun getWeeklyTournament(): Tournament {
+    fun getWeeklyTournament(): Tournament? {
         return weekly
     }
 
@@ -41,6 +41,12 @@ data class TournamentModel(
         return discover.toList()
     }
 
-    //TODO link the tournaments with the database
+    fun setSample(sample: SampleTournamentModel) {
+        weekly = sample.weekly
+        your = sample.your
+        discover = sample.discover
+    }
+
+    data class SampleTournamentModel(val weekly: Tournament, val your: List<Tournament>, val discover: List<Tournament>) : java.io.Serializable
 
 }

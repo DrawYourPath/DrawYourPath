@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.mainpage.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.testing.FragmentScenario
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -243,7 +244,7 @@ class CommunityFragmentTest {
 
     private fun getBundle(weekly: Tournament, your: List<Tournament> = listOf(), discover: List<Tournament> = listOf()): Bundle {
         val bundle = Bundle()
-        bundle.putSerializable("tournaments", TournamentModel(weekly, your, discover))
+        bundle.putSerializable("tournaments", TournamentModel.SampleTournamentModel(weekly, your, discover))
         return bundle
     }
 

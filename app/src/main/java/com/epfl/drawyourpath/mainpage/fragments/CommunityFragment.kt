@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
+import android.view.Menu
 import android.view.SubMenu
 import android.view.View
 import android.widget.ImageButton
@@ -9,13 +10,12 @@ import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.community.CommunityTournamentPostViewAdapter
-import com.epfl.drawyourpath.community.Tournament
-import com.epfl.drawyourpath.community.TournamentModel
-import com.epfl.drawyourpath.community.TournamentPost
+import com.epfl.drawyourpath.community.*
 import com.epfl.drawyourpath.path.Path
 import com.github.drawyourpath.bootcamp.path.Run
 import com.google.android.gms.maps.model.LatLng
@@ -34,8 +34,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     private lateinit var detailsLayout: LinearLayout
     private lateinit var tournamentPostsView: RecyclerView
     private lateinit var scroll: NestedScrollView
-
-    private lateinit var tournament: TournamentModel
+    private val tournament = TournamentModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,7 +52,6 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         createSortButton(view)
 
         createBackButton(view)
-
     }
 
     /**
@@ -67,7 +65,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         tournamentPostsView = view.findViewById(R.id.display_community_tournaments_view)
         scroll = view.findViewById(R.id.community_nested_scroll_view)
 
-        tournament = TournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments())
+        tournament.setSample(TournamentModel.SampleTournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments()))
     }
 
     /**
@@ -76,7 +74,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      */
     private fun getTournaments() {
         if (arguments?.getSerializable("tournaments") != null) {
-            tournament = arguments?.getSerializable("tournaments") as TournamentModel
+            tournament.setSample(arguments?.getSerializable("tournaments") as TournamentModel.SampleTournamentModel)
         }
     }
 
@@ -127,9 +125,12 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      */
     private fun createNavigationMenu(view: View) {
         val menu = view.findViewById<NavigationView>(R.id.community_navigation_view).menu
+        createTournamentButton(menu)
 
         val weekly = menu.addSubMenu("Weekly tournament")
-        createMenuItem(view, weekly, tournament.getWeeklyTournament())
+        if (tournament.getWeeklyTournament() != null) {
+            createMenuItem(view, weekly, tournament.getWeeklyTournament()!!)
+        }
 
         val your = menu.addSubMenu("Your tournament")
         for (t in tournament.getYourTournament("placeholder")) {
@@ -139,6 +140,15 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         for (t in tournament.getDiscoverTournament("placeholder")) {
             createMenuItem(view, discover, t)
         }
+    }
+
+    private fun createTournamentButton(menu: Menu) {
+        menu.add(getString(R.string.create_new_tournament))
+            .setIcon(R.drawable.ic_add)
+            .setOnMenuItemClickListener {
+                replaceFragment<TournamentCreationFragment>()
+                true
+            }
     }
 
     /**
@@ -195,10 +205,23 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      * @return the list of all tournaments
      */
     private fun getAllTournaments(): List<Tournament> {
-        val list = mutableListOf(tournament.getWeeklyTournament())
+        val list = mutableListOf<Tournament>()
+        if (tournament.getWeeklyTournament() != null) {
+            list.add(tournament.getWeeklyTournament()!!)
+        }
         list.addAll(tournament.getYourTournament("placeholder"))
         list.addAll(tournament.getDiscoverTournament("placeholder"))
         return list
+    }
+
+    /**
+     * replace this fragment by another one
+     */
+    private inline fun <reified F : Fragment> replaceFragment() {
+        activity?.supportFragmentManager?.commit {
+            setReorderingAllowed(true)
+            replace<F>(R.id.fragmentContainerView)
+        }
     }
 
     //TODO replace by real tournaments

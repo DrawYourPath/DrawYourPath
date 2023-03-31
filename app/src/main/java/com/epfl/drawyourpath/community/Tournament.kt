@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.community
 import java.time.Clock
 import java.time.Duration
 import java.time.LocalDateTime
+import java.util.*
 
 /**
  * class representing tournaments that the user can take part in
@@ -12,7 +13,8 @@ data class Tournament(
     val description: String,
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
-    var posts: List<TournamentPost> = mutableListOf()
+    var posts: List<TournamentPost> = mutableListOf(),
+    var visibility: Visibility = Visibility.PUBLIC
     //val result: List<User>?
 ) : java.io.Serializable {
 
@@ -63,6 +65,10 @@ data class Tournament(
             res.append(" minutes")
         }
         return res.toString()
+    }
+
+    enum class Visibility {
+        FRIENDS_ONLY, PUBLIC
     }
 
 
