@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.userProfile.cache
 
-import android.graphics.Bitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -41,7 +40,7 @@ data class UserData(
      * the date of birth of the user
      */
     @ColumnInfo(name = "date_of_birth")
-    val dateOfBirth: LocalDate,
+    val dateOfBirth: Long,
 
     /**
      * the distance goal of the user
@@ -64,8 +63,8 @@ data class UserData(
     /**
      * the profile photo of the user (can be null)
      */
-    @ColumnInfo(name = "photo")
-    val profilePhoto: Bitmap?
+    /*@ColumnInfo(name = "photo")
+    val profilePhoto: Bitmap?*/
 ) {
 
     /**
@@ -73,7 +72,15 @@ data class UserData(
      * @return the age of the user
      */
     fun getAge(): Int {
-        return ChronoUnit.YEARS.between(dateOfBirth, LocalDate.now()).toInt()
+        return ChronoUnit.YEARS.between(getDateOfBirthAsLocalDate(), LocalDate.now()).toInt()
+    }
+
+    /**
+     * get the date of birth of the user
+     * @return the date of birth of the user
+     */
+    fun getDateOfBirthAsLocalDate(): LocalDate {
+        return LocalDate.ofEpochDay(dateOfBirth)
     }
 
 }

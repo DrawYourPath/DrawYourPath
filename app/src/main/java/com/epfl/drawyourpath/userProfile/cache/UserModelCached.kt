@@ -2,9 +2,10 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.*
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.room.Room
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
@@ -13,7 +14,7 @@ import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
-class UserModelCached(application: Application) : ViewModel() {
+class UserModelCached(application: Application) : AndroidViewModel(application) {
     //database where the user is store online
     private var database: Database = FireDatabase()
 
@@ -27,7 +28,7 @@ class UserModelCached(application: Application) : ViewModel() {
         .build()
         .userDao()
 
-    // user read-only
+    // user
     private var user: LiveData<UserData> = MutableLiveData()
 
     //TODO add friendList
@@ -111,7 +112,7 @@ class UserModelCached(application: Application) : ViewModel() {
         checkActivityTimeGoal(activityTimeGoal)
         checkNbOfPathsGoal(nbOfPathsGoal)
 
-        CompletableFuture<Unit>().thenAccept {
+        CompletableFuture.supplyAsync {
             db.insert(
                 UserData(
                     userId,
@@ -119,17 +120,29 @@ class UserModelCached(application: Application) : ViewModel() {
                     emailAddress,
                     firstname,
                     surname,
-                    dateOfBirth,
+                    dateOfBirth.toEpochDay(),
                     distanceGoal,
                     activityTimeGoal,
-                    nbOfPathsGoal,
-                    profilePhoto
+                    nbOfPathsGoal
                 )
             )
+        }.thenAccept {
             setUser(userId)
         }
 
-        userModel = UserModel(userId, emailAddress, username, firstname, surname, dateOfBirth, distanceGoal, activityTimeGoal, nbOfPathsGoal, profilePhoto, database)
+        userModel = UserModel(
+            userId,
+            emailAddress,
+            username,
+            firstname,
+            surname,
+            dateOfBirth,
+            distanceGoal,
+            activityTimeGoal,
+            nbOfPathsGoal,
+            profilePhoto,
+            database
+        )
 
     }
 
@@ -138,11 +151,19 @@ class UserModelCached(application: Application) : ViewModel() {
      * @param userId the userId of the new current user
      */
     fun setUser(userId: String) {
-        CompletableFuture<Boolean>().thenApply {
+        CompletableFuture.supplyAsync {
             user = db.getUserById(userId)
         }.exceptionally {
             throw Error("user id does not exist\n${it.printStackTrace()}")
         }
+    }
+
+    /**
+     * get userModel
+     * @return the userModel
+     */
+    fun getUserModel(): UserModel {
+        return userModel
     }
 
     /**
@@ -154,7 +175,7 @@ class UserModelCached(application: Application) : ViewModel() {
     }
 
     /**
-     * get the current user
+     * get the current user (read-only)
      * @return the [LiveData] of [UserData]
      */
     fun getUser(): LiveData<UserData> {
@@ -233,7 +254,7 @@ class UserModelCached(application: Application) : ViewModel() {
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
      */
-    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+    /*fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
         return userModel.setProfilePhoto(photo).thenApply {
             if (it) {
                 if (user.value == null) {
@@ -242,6 +263,20 @@ class UserModelCached(application: Application) : ViewModel() {
                 db.updatePhoto(user.value!!.userId, photo)
             }
             it
+        }
+    }*/
+    companion object {
+        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(
+                modelClass: Class<T>,
+                extras: CreationExtras
+            ): T {
+                // Get the Application object from extras
+                val application = checkNotNull(extras[APPLICATION_KEY])
+
+                return UserModelCached(application) as T
+            }
         }
     }
 

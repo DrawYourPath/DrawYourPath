@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.userProfileCreation
 
+import android.app.Application
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -8,6 +9,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelStoreOwner
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
@@ -16,6 +20,7 @@ import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.login.LoginActivity
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.time.LocalDate
 
 class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
@@ -29,6 +34,8 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
     private var timeGoal: Int = 0
     private var distanceGoal: Int = 0
     private var nunberOfPathGoal: Int = 0
+
+    private val userCached: UserModelCached by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var database: Database = FireDatabase()
@@ -99,18 +106,16 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                 if(userLog == null) {
                     this.startActivity(Intent(activity, LoginActivity::class.java))
                 }else {
-                    val user = UserModel(
-                        userLog,
+                    userCached.setDatabase(database)
+                    userCached.setUser(userLog,
                         username,
                         firstname,
                         surname,
                         LocalDate.ofEpochDay(dateOfBirth),
                         distanceGoal.toDouble(),
                         timeGoal.toDouble(),
-                        nunberOfPathGoal,
-                        database
-                    )
-                    database.initUserProfile(user).thenAccept {
+                        nunberOfPathGoal)
+                    database.initUserProfile(userCached.getUserModel()).thenAccept {
                         if (activity != null) {
                             val fragManagement =
                                 requireActivity().supportFragmentManager.beginTransaction()

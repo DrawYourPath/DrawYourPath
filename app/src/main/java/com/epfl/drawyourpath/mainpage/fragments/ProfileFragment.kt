@@ -7,11 +7,15 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.TrophyDialog
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
+
+    private val userCached: UserModelCached by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -21,6 +25,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         view.findViewById<TextView>(R.id.TV_Trophy).setOnClickListener { onTrophyClicked() }
 
+        setUsername()
         // TODO: Pull data from user model.
         populateFriendList(listOf(
             "Miguel", "Jean Radiateur", "XxDenisXX", "CrazyRunnerDu18", "Alphonso9", "SCRUM Masseur"))
@@ -31,6 +36,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         setGoalsReached(33)
         setTrophyCount(459)
         setAchievementsCount(14)
+    }
+
+    private fun setUsername() {
+        userCached.getUser().observe(viewLifecycleOwner) {
+            setTextViewText(R.id.TV_username, it.username)
+        }
     }
 
     private fun onTrophyClicked() {
