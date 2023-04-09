@@ -1,8 +1,11 @@
 package com.epfl.drawyourpath.userProfile.cache
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -63,8 +66,8 @@ data class UserData(
     /**
      * the profile photo of the user (can be null)
      */
-    /*@ColumnInfo(name = "photo")
-    val profilePhoto: Bitmap?*/
+    @ColumnInfo(name = "photo", typeAffinity = ColumnInfo.BLOB)
+    val profilePhoto: ByteArray?
 ) {
 
     /**
@@ -76,11 +79,48 @@ data class UserData(
     }
 
     /**
+     * get the profile photo of the user
+     * @return the profile photo of the user
+     */
+    fun getProfilePhotoAsBitmap(): Bitmap? {
+        if (profilePhoto == null) {
+            return null
+        }
+        return BitmapFactory.decodeByteArray(profilePhoto, 0, profilePhoto.size, BitmapFactory.Options())
+    }
+
+    /**
      * get the date of birth of the user
      * @return the date of birth of the user
      */
     fun getDateOfBirthAsLocalDate(): LocalDate {
         return LocalDate.ofEpochDay(dateOfBirth)
+    }
+
+    companion object {
+        fun fromBitmapToByteArray(image: Bitmap?): ByteArray? {
+            if (image == null) {
+                return null
+            }
+            val stream = ByteArrayOutputStream()
+            image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            return stream.toByteArray()
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as UserData
+
+        if (userId != other.userId) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return userId.hashCode()
     }
 
 }

@@ -79,6 +79,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupProfileButton() {
         val profileImageButton: ImageButton = findViewById(R.id.profile_button)
+        /*userData.thenApply { doesn't work for some odd reason
+            it.observe(this) {user ->
+                val image = user.getProfilePhotoAsBitmap()
+                if (image != null) {
+                    profileImageButton.setImageBitmap(image)
+                }
+            }
+            it
+        }*/
         drawerLayout = findViewById(R.id.drawerLayout)
         //Set a listener to open the drawer menu (we might want it on the right)
         profileImageButton.setOnClickListener {
@@ -89,12 +98,13 @@ class MainActivity : AppCompatActivity() {
     private fun setupDrawerNavigationView() {
         val drawerNavigationView: NavigationView = findViewById(R.id.navigationView)
         val header = drawerNavigationView.getHeaderView(0)
-        userData.thenAccept {
+        userData.thenApply {
             it.observe(this) {user ->
                 Log.d("test", "this is the username ${user.username}")
                 header.findViewById<TextView>(R.id.header_username).text = user.username
                 header.findViewById<TextView>(R.id.header_email).text = user.emailAddress
             }
+            it
         }
         //Handle the items in the drawer menu
         drawerNavigationView.setNavigationItemSelectedListener { menuItem ->

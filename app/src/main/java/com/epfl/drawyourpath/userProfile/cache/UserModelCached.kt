@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -122,7 +123,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                     dateOfBirth.toEpochDay(),
                     distanceGoal,
                     activityTimeGoal,
-                    nbOfPathsGoal
+                    nbOfPathsGoal,
+                    UserData.fromBitmapToByteArray(profilePhoto)
                 )
             )
         }.thenAccept {
@@ -151,10 +153,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @return the current user
      */
     fun setAndGetCurrentUser(userId: String): CompletableFuture<LiveData<UserData>> {
+        //TODO first check the database (and copy to cache) then check the cache
         return CompletableFuture.supplyAsync {
             user = db.getUserById(userId)
         }.exceptionally {
-            throw Error("user id does not exist\n${it.printStackTrace()}")
+            throw Error("user with id: $userId does not exist\n${it.stackTraceToString()}")
         }.thenApply {
             getUser()
         }
@@ -189,13 +192,10 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun setUsername(username: String): CompletableFuture<Boolean> {
-        return userModel.setUsername(username).thenApply {
+    fun setUsername(userId: String, username: String): CompletableFuture<Boolean> {
+        return database.setUsername(username).thenApply {
             if (it) {
-                if (user.value == null) {
-                    throw Error("user should not be null")
-                }
-                db.updateUsername(user.value!!.userId, username)
+                db.updateUsername(userId, username)
             }
             it
         }
@@ -205,14 +205,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Use this function to modify the daily distance goal of the user
      * @param distanceGoal new daily distance goal
      */
-    fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+    fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean> {
         checkDistanceGoal(distanceGoal)
-        return userModel.setDistanceGoal(distanceGoal).thenApply {
+        return database.setDistanceGoal(distanceGoal).thenApply {
             if (it) {
-                if (user.value == null) {
-                    throw Error("user should not be null")
-                }
-                db.updateDistanceGoal(user.value!!.userId, distanceGoal)
+                db.updateDistanceGoal(userId, distanceGoal)
             }
             it
         }
@@ -222,14 +219,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Use this function to modify the daily activity time goal of the user
      * @param activityTimeGoal new daily activity time goal
      */
-    fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+    fun setActivityTimeGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean> {
         checkActivityTimeGoal(activityTimeGoal)
-        return userModel.setActivityTimeGoal(activityTimeGoal).thenApply {
+        return database.setActivityTimeGoal(activityTimeGoal).thenApply {
             if (it) {
-                if (user.value == null) {
-                    throw Error("user should not be null")
-                }
-                db.updateTimeGoal(user.value!!.userId, activityTimeGoal)
+                db.updateTimeGoal(userId, activityTimeGoal)
             }
             it
         }
@@ -239,14 +233,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Use this function to modify the daily number of paths goal of the user
      * @param nbOfPathsGoal new daily number of paths goal
      */
-    fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    fun setNumberOfPathsGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         checkNbOfPathsGoal(nbOfPathsGoal)
-        return userModel.setNumberOfPathsGoal(nbOfPathsGoal).thenApply {
+        return database.setNbOfPathsGoal(nbOfPathsGoal).thenApply {
             if (it) {
-                if (user.value == null) {
-                    throw Error("user should not be null")
-                }
-                db.updatePathsGoal(user.value!!.userId, nbOfPathsGoal)
+                db.updatePathsGoal(userId, nbOfPathsGoal)
             }
             it
         }
@@ -257,29 +248,12 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
      */
-    /*fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
-        return userModel.setProfilePhoto(photo).thenApply {
+    fun setProfilePhoto(userId: String, photo: Bitmap): CompletableFuture<Boolean> {
+        return database.setProfilePhoto(photo).thenApply {
             if (it) {
-                if (user.value == null) {
-                    throw Error("user should not be null")
-                }
-                db.updatePhoto(user.value!!.userId, photo)
+                db.updatePhoto(userId, UserData.fromBitmapToByteArray(photo))
             }
             it
-        }
-    }*/
-    companion object {
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(
-                modelClass: Class<T>,
-                extras: CreationExtras
-            ): T {
-                // Get the Application object from extras
-                val application = checkNotNull(extras[APPLICATION_KEY])
-
-                return UserModelCached(application) as T
-            }
         }
     }
 

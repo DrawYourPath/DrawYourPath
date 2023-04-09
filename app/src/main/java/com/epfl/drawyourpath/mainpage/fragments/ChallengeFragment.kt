@@ -32,8 +32,6 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         val tournamentsView = view.findViewById<RecyclerView>(R.id.tournaments_view)
         val trophiesView = view.findViewById<RecyclerView>(R.id.trophies_view)
 
-
-
         val tempUser = TemporaryUser(LinkedList(mutableListOf()), listOf())
         tempUser.addTrophy(Trophy.MARATHON)
         tempUser.addTrophy(Trophy.THEFIRSTPATH)

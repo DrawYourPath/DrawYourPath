@@ -66,8 +66,8 @@ interface UserDao {
      * @param id the id of the user
      * @param photo the new profile photo of the user
      */
-    /*@Query("UPDATE User SET photo = :photo WHERE id = :id")
-    fun updatePhoto(id: String, photo: Bitmap)*/
+    @Query("UPDATE User SET photo = :photo WHERE id = :id")
+    fun updatePhoto(id: String, photo: ByteArray?)
 
     /**
      * delete the user from the room database
