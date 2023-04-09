@@ -148,6 +148,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     /**
      * set the user to an existing user inside the cache (needs to be called at least once in order to initialize user)
+     * needs to be synchronous
      * @param userId the userId of the new current user
      */
     fun setUser(userId: String) {
@@ -155,7 +156,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             user = db.getUserById(userId)
         }.exceptionally {
             throw Error("user id does not exist\n${it.printStackTrace()}")
-        }
+        }.join()
     }
 
     /**
