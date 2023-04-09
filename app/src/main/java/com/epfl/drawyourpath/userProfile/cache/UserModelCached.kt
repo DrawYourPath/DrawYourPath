@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -46,7 +45,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param profilePhoto the photo of the user (default is null)
      * @throws error if the inputs are incorrect
      */
-    fun setUser(
+    fun setNewUser(
         userAuth: User,
         username: String,
         firstname: String,
@@ -57,7 +56,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         nbOfPathsGoal: Int,
         profilePhoto: Bitmap? = null
     ) {
-        setUser(
+        setNewUser(
             userAuth.getUid(),
             userAuth.getEmail(),
             username,
@@ -85,7 +84,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param profilePhoto the photo of the user (default is null)
      * @throws error if the inputs are incorrect
      */
-    fun setUser(
+    fun setNewUser(
         userId: String,
         emailAddress: String,
         username: String,
@@ -127,7 +126,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 )
             )
         }.thenAccept {
-            setUser(userId)
+            setAndGetCurrentUser(userId)
         }
 
         userModel = UserModel(
@@ -147,16 +146,27 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * set the user to an existing user inside the cache (needs to be called at least once in order to initialize user)
-     * needs to be synchronous
+     * set the user to an existing user inside the cache (should be called once only inside activity)
      * @param userId the userId of the new current user
+     * @return the current user
      */
-    fun setUser(userId: String) {
-        CompletableFuture.supplyAsync {
+    fun setAndGetCurrentUser(userId: String): CompletableFuture<LiveData<UserData>> {
+        return CompletableFuture.supplyAsync {
             user = db.getUserById(userId)
         }.exceptionally {
             throw Error("user id does not exist\n${it.printStackTrace()}")
-        }.join()
+        }.thenApply {
+            getUser()
+        }
+    }
+
+    /**
+     * get the current user (read-only) (should be called only inside fragment
+     * and [setAndGetCurrentUser] or [setNewUser] should have been called inside the parent activity )
+     * @return the [LiveData] of [UserData]
+     */
+    fun getUser(): LiveData<UserData> {
+        return user
     }
 
     /**
@@ -173,14 +183,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun setDatabase(database: Database) {
         this.database = database
-    }
-
-    /**
-     * get the current user (read-only)
-     * @return the [LiveData] of [UserData]
-     */
-    fun getUser(): LiveData<UserData> {
-        return user
     }
 
     /**

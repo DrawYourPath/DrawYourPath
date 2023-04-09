@@ -11,14 +11,16 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.LiveData
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
+import com.epfl.drawyourpath.userProfile.cache.UserData
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import java.util.concurrent.CompletableFuture
 
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
 
@@ -33,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
 
     private val userCached: UserModelCached by viewModels()
+
+    private lateinit var userData: CompletableFuture<LiveData<UserData>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupUserCache() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId != null) {
-            userCached.setUser(userId)
+            userData = userCached.setAndGetCurrentUser(userId)
         } else {
             throw Error("user should not be null")
         }
@@ -85,9 +89,12 @@ class MainActivity : AppCompatActivity() {
     private fun setupDrawerNavigationView() {
         val drawerNavigationView: NavigationView = findViewById(R.id.navigationView)
         val header = drawerNavigationView.getHeaderView(0)
-        userCached.getUser().observe(this) {
-            header.findViewById<TextView>(R.id.header_username).text = it.username
-            header.findViewById<TextView>(R.id.header_email).text = it.emailAddress
+        userData.thenAccept {
+            it.observe(this) {user ->
+                Log.d("test", "this is the username ${user.username}")
+                header.findViewById<TextView>(R.id.header_username).text = user.username
+                header.findViewById<TextView>(R.id.header_email).text = user.emailAddress
+            }
         }
         //Handle the items in the drawer menu
         drawerNavigationView.setNavigationItemSelectedListener { menuItem ->
