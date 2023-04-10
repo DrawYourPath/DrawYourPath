@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
@@ -36,6 +39,8 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         val factory = FriendsViewModelFactory(userModel)
         viewModel = ViewModelProvider(this, factory).get(FriendsViewModel::class.java)
         */
+
+        view.findViewById<Button>(R.id.BT_ScanQR).setOnClickListener { onScanQRClicked() }
 
         viewModel = ViewModelProvider(this).get(FriendsViewModel::class.java)
 
@@ -65,5 +70,16 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                 return true
             }
         })
+    }
+
+    private fun onScanQRClicked() {
+        val mainActivity = requireActivity() as MainActivity
+        mainActivity.scanQRCode()
+            .thenApply {
+                // TODO: Add friend from ID "it"
+            }
+            .exceptionally {
+                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+            }
     }
 }

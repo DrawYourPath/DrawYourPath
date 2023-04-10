@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.mainpage
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
@@ -14,8 +15,10 @@ import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
+import com.epfl.drawyourpath.qrcode.QRScanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import java.util.concurrent.CompletableFuture
 
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
 
@@ -28,6 +31,8 @@ class MainActivity : AppCompatActivity() {
 
     // The drawer menu displayed when clicking the "head" icon
     private lateinit var drawerLayout: DrawerLayout
+
+    private lateinit var qrScanner: QRScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +51,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupNotifications()
+
+        qrScanner = QRScanner()
+    }
+
+    /**
+     * Launches the QR scanner.
+     * @return a future completed when the user scanned something.
+     */
+    fun scanQRCode(): CompletableFuture<String> {
+        return qrScanner.launchScanner(this)
     }
 
     private fun setupTopBar() {
@@ -73,7 +88,6 @@ class MainActivity : AppCompatActivity() {
 
                 //Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
-
 
                 //Display challenge fragment
                 R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>(TemporaryUser.SAMPLE_DATA)
@@ -132,5 +146,11 @@ class MainActivity : AppCompatActivity() {
     private fun setupNotifications() {
         val useMockReminder = intent.getBooleanExtra(USE_MOCK_CHALLENGE_REMINDER, false)
         NotificationsHelper(applicationContext).setupNotifications(useMockReminder)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        qrScanner.onResult(requestCode, resultCode, data)
     }
 }

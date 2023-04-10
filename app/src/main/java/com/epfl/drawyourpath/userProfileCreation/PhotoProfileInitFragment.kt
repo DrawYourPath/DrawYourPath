@@ -60,6 +60,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
         createValidateButton(view, database)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == requestCodeFrag) {
