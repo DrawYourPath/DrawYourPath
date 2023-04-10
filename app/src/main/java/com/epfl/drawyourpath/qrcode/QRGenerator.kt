@@ -4,6 +4,12 @@ import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 
+/**
+ * Generates a QRCode bitmap image.
+ * @param data The data encoded inside the QRCode.
+ * @param size The size of the QR code.
+ * @return A Bitmap object containing the QRCode.
+ */
 fun generateQR(data: String, size: Int): Bitmap {
     val writer = QRCodeWriter()
     val bitMatrix = writer.encode(data, BarcodeFormat.QR_CODE, size, size)
