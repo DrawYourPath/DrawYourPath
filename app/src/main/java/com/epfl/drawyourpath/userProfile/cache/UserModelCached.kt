@@ -10,6 +10,7 @@ import androidx.room.Room
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
+import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
@@ -28,8 +29,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         .build()
         .userDao()
 
+    // current user id
+    private val currentUserID = MutableLiveData<String>()
+
     // user
-    private var user: LiveData<UserData> = MutableLiveData()
+    private val user: LiveData<UserData> = currentUserID.switchMap { db.getUserById(it) }
 
     //TODO add friendList
 
@@ -128,7 +132,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 )
             )
         }.thenAccept {
-            setAndGetCurrentUser(userId)
+            setCurrentUser(userId)
         }
 
         userModel = UserModel(
@@ -148,19 +152,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * set the user to an existing user inside the cache (should be called once only inside activity)
+     * set the user to an existing user inside the cache
      * @param userId the userId of the new current user
-     * @return the current user
      */
-    fun setAndGetCurrentUser(userId: String): CompletableFuture<LiveData<UserData>> {
-        //TODO first check the database (and copy to cache) then check the cache
-        return CompletableFuture.supplyAsync {
-            user = db.getUserById(userId)
-        }.exceptionally {
-            throw Error("user with id: $userId does not exist\n${it.stackTraceToString()}")
-        }.thenApply {
-            getUser()
-        }
+    fun setCurrentUser(userId: String) {
+        currentUserID.value = userId
     }
 
     /**

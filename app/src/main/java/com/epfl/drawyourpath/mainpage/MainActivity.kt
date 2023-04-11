@@ -13,6 +13,7 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.lifecycle.LiveData
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
@@ -35,8 +36,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
 
     private val userCached: UserModelCached by viewModels()
-
-    private lateinit var userData: CompletableFuture<LiveData<UserData>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +63,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupUserCache() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId != null) {
-            userData = userCached.setAndGetCurrentUser(userId)
+            userCached.setCurrentUser(userId)
         } else {
             throw Error("user should not be null")
         }
@@ -79,15 +78,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupProfileButton() {
         val profileImageButton: ImageButton = findViewById(R.id.profile_button)
-        /*userData.thenApply { doesn't work for some odd reason
-            it.observe(this) {user ->
-                val image = user.getProfilePhotoAsBitmap()
-                if (image != null) {
-                    profileImageButton.setImageBitmap(image)
-                }
+        userCached.getUser().observe(this) {
+            val image = it.getProfilePhotoAsBitmap()
+            if (image != null) {
+                profileImageButton.setImageBitmap(image)
             }
-            it
-        }*/
+        }
         drawerLayout = findViewById(R.id.drawerLayout)
         //Set a listener to open the drawer menu (we might want it on the right)
         profileImageButton.setOnClickListener {
@@ -98,13 +94,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupDrawerNavigationView() {
         val drawerNavigationView: NavigationView = findViewById(R.id.navigationView)
         val header = drawerNavigationView.getHeaderView(0)
-        userData.thenApply {
-            it.observe(this) {user ->
-                Log.d("test", "this is the username ${user.username}")
-                header.findViewById<TextView>(R.id.header_username).text = user.username
-                header.findViewById<TextView>(R.id.header_email).text = user.emailAddress
-            }
-            it
+        userCached.getUser().observe(this) {
+            header.findViewById<TextView>(R.id.header_username).text = it.username
+            header.findViewById<TextView>(R.id.header_email).text = it.emailAddress
         }
         //Handle the items in the drawer menu
         drawerNavigationView.setNavigationItemSelectedListener { menuItem ->
