@@ -18,6 +18,7 @@ class MockDataBase : Database() {
 
     val userIdTest: String = "aUyFLWgYxmoELRUr3jWYie61jbKO"
     val userAuthTest: User = MockAuth.MOCK_USER
+    val userMailTest: String = userAuthTest.getEmail()
     val usernameTest: String = "albert"
     val distanceGoalTest: Double = 10.0
     val activityTimeGoalTest: Double = 60.0
@@ -26,15 +27,29 @@ class MockDataBase : Database() {
     val surnameTest = "Hof"
     val takenUsername = "nathan"
     val dateOfBirthTest = LocalDate.of(2000, 2, 20)
+    val friendsListTest: List<String>
     val userModelTest: UserModel
+    val userIdFriend1: String = "idFriend1"
+    val userIdFriend2: String = "idFriend2"
+    val friend1: UserModel
+    val friend2: UserModel
 
     init {
+        //init the friendsList of the current user
+        friendsListTest = listOf<String>(userIdFriend1)
+
         usernameToUserId.put(usernameTest, userIdTest)
         usernameToUserId.put(takenUsername, "exId")
+        usernameToUserId.put("friend1", userIdFriend1)
+        usernameToUserId.put("friend2", userIdFriend2)
 
         userIdToUsername.put(userIdTest, usernameTest)
+        userIdToUsername.put(userIdFriend1, "friend1")
+        userIdToUsername.put(userIdFriend2, "friend2")
+
         userModelTest = UserModel(
-            userAuthTest,
+            userIdTest,
+            userMailTest,
             usernameTest,
             firstnameTest,
             surnameTest,
@@ -42,9 +57,18 @@ class MockDataBase : Database() {
             distanceGoalTest,
             activityTimeGoalTest,
             nbOfPathsGoalTest,
+            null,
+            friendsListTest,
             this
         )
+        friend1 = UserModel(userIdFriend1, "friend1@mail.com", "friend1","firstnameFriendOne", "surnameFriendOne", LocalDate.of(2000,1,1),
+            10.0,60.0,2, null, listOf(userIdTest, userIdFriend2),this)
+        friend2 = UserModel(userIdFriend2, "friend2@mail.com", "friend2","firstnameFriendTwo", "surnameFriendTwo", LocalDate.of(2000,1,1),
+            10.0,60.0,2, null, listOf(userIdTest, userIdFriend1),this)
+        //add the different user to the database
         userIdToUserAccount.put(userIdTest, userModelTest)
+        userIdToUserAccount.put(userIdFriend1, friend1)
+        userIdToUserAccount.put(userIdFriend2, friend2)
     }
 
     override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
@@ -160,9 +184,45 @@ class MockDataBase : Database() {
     override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
         val updatedUser = UserModel(
             userIdTest, userAuthTest.getEmail(), usernameTest, firstnameTest, surnameTest,
-            dateOfBirthTest, distanceGoalTest, activityTimeGoalTest, nbOfPathsGoalTest, photo, this
+            dateOfBirthTest, distanceGoalTest, activityTimeGoalTest, nbOfPathsGoalTest, photo, friendsListTest, this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
         return CompletableFuture.completedFuture(true)
+    }
+
+    override fun addUserToFriendsList(userId: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        isUserStoredInDatabase(userId).thenAccept {
+            if(!it){
+                future.completeExceptionally(java.lang.Error("The user with $userId is not present on the database."))
+            }else{
+                val newFriendsList = friendsListTest.toMutableList()
+                newFriendsList.add(userId)
+                val updatedUser = UserModel(userIdTest, userAuthTest.getEmail(), usernameTest,
+                    firstnameTest,surnameTest, dateOfBirthTest, distanceGoalTest, activityTimeGoalTest, nbOfPathsGoalTest,
+                    null, newFriendsList, this)
+                userIdToUserAccount.put(userIdTest, updatedUser)
+                future.complete(true)
+            }
+        }
+        return future
+    }
+
+    override fun removeUserToFriendsList(userId: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        val pastFriendsList = userIdToUserAccount.get(userIdTest)!!.getFriendList()
+        if(!pastFriendsList.contains(userId)){
+            future.completeExceptionally(java.lang.Error("The userId $userId is not in the friends list on the database."))
+        }else{
+            val newFriendsList = pastFriendsList.filter { it != userId }
+            val updatedUser = UserModel(userIdTest, userAuthTest.getEmail(), usernameTest,
+                firstnameTest,surnameTest, dateOfBirthTest, distanceGoalTest, activityTimeGoalTest, nbOfPathsGoalTest,
+                null,
+                newFriendsList, this)
+            userIdToUserAccount.put(userIdTest, updatedUser)
+            future.complete(true)
+        }
+
+        return future
     }
 }

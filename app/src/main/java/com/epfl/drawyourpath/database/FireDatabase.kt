@@ -13,6 +13,8 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * The Firebase contains files:
@@ -203,7 +205,6 @@ class FireDatabase : Database() {
     }
 
     override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
         val dataUpdated = HashMap<String, Any>()
 
         //convert the bitmap to a byte array
@@ -212,6 +213,41 @@ class FireDatabase : Database() {
         val imageEncoded: String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
         dataUpdated.put(profilePhotoFile, imageEncoded)
         return updateUserData(dataUpdated)
+    }
+
+    override fun addUserToFriendsList(userId: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+        isUserStoredInDatabase(userId).thenAccept {
+            if(!it){
+                future.completeExceptionally(java.lang.Error("The user with $userId is not present on the database."))
+            }else{
+                val newFriend = HashMap<String,Any?>()
+                newFriend.put(userId, null)
+                accessUserAccountFile(userId).child(friendsListFile).updateChildren(newFriend)
+                    .addOnSuccessListener { future.complete(true) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+            }
+        }
+        return future
+    }
+
+    override fun removeUserToFriendsList(userId: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+
+        accessUserAccountFile(userId).child(friendsListFile).get()
+            .addOnSuccessListener {previousFriendsList->
+                if(!previousFriendsList.children.contains(userId as DataSnapshot)){
+                    future.completeExceptionally(java.lang.Error("The userId $userId is not in the friends list."))
+                }else{
+                    //delete the user if it is present in the friends list
+                    val updateData = previousFriendsList.children.filter { (it.key as String)!=userId }
+                    accessUserAccountFile(userId).child(userId).setValue(updateData)
+                        .addOnSuccessListener { future.complete(true) }
+                        .addOnFailureListener { future.completeExceptionally(it) }
+                }
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
     }
 
     /**
@@ -294,8 +330,7 @@ class FireDatabase : Database() {
             val distanceGoal = data.child(distanceGoalFile).value
             val activityTimeGoal = data.child(activityTimeGoalFile).value
             val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
-
-
+            val friendsListData = data.child(friendsListFile)
 
             if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null || nbOfPathsGoal == null) {
                 throw java.lang.Error("The user account present on the database is incomplete.")
@@ -303,6 +338,9 @@ class FireDatabase : Database() {
                 //test if the photoProfile is null to know if we need to decode it
                 val profilePhotoEncoded = data.child(profilePhotoFile).value
                 val profilePhoto = decodePhoto(profilePhotoEncoded)
+
+                //obtain the friendsList
+                val friendsList = transformFriendsList(friendsListData)
 
                 //create the userModel
                 return UserModel(
@@ -316,6 +354,7 @@ class FireDatabase : Database() {
                         (activityTimeGoal as Long).toDouble(),
                         (nbOfPathsGoal as Long).toInt(),
                         profilePhoto,
+                        friendsList,
                         this
                 )
             }
@@ -334,6 +373,23 @@ class FireDatabase : Database() {
             val tabByte = Base64.getDecoder().decode(photoStr as String)
             return BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
         }
+    }
+
+    /**
+     * Helper function to obtain the friends list from the database of the user
+     * @param data the data snapshot containing the user List
+     * @return a list containing the userIds of the friends
+     */
+    private fun transformFriendsList(data: DataSnapshot?): List<String>{
+        if(data == null){
+            throw java.lang.Error("The friends list is not present on the database.")
+        }
+        val friendListUserIds = ArrayList<String>()
+
+        for(friend in data.children){
+            friendListUserIds.add(friend.key as String)
+        }
+        return friendListUserIds
     }
 }
 
