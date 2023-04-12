@@ -24,6 +24,11 @@
             app:useSimpleSummaryProvider="true" />
 
         <Preference
+            app:fragment="com.epfl.drawyourpath.preferences.ModifyProfilePhotoFragment"
+            app:key="modify_profilePhoto"
+            app:title="Modify Profile Photo"/>
+
+        <Preference
             app:fragment="com.epfl.drawyourpath.preferences.ModifyPasswordFragment"
             app:key="modify_password"
             app:title="Modify password" />
