@@ -110,7 +110,7 @@ private fun testUsernameAvailability(
             append(" is ")
             append(if (!it) "NOT " else "")
             append("available")
-            append(if (!it) "or equal to the previous one" else "")
+            append(if (!it) " or equal to the previous one" else "")
         }
         errorMessage.setTextColor(if (it) Color.GREEN else Color.RED)
         it
