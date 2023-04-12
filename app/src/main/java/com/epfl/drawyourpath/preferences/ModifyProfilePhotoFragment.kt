@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture
 
 class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_photo) {
     //for the test
-    private val photoProfileTest : Bitmap = Bitmap.createBitmap(14,14, Bitmap.Config.RGB_565)
+    private val photoProfileTest : Bitmap = Bitmap.createBitmap(8,5, Bitmap.Config.RGB_565)
 
     private var isTest: Boolean = false
 
@@ -30,6 +30,8 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
     private lateinit var photoPreview: ImageView
 
     private lateinit var errorText: TextView
+
+    private lateinit var photoDescription: TextView
 
     private var photoInitiate: Boolean = false
 
@@ -52,7 +54,7 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
             database = MockDataBase()
         }
         //retrieve the different elements of the UI
-        val photoDescription: TextView = view.findViewById(R.id.photo_description_modify_profile_photo)
+        photoDescription = view.findViewById(R.id.photo_description_modify_profile_photo)
         errorText = view.findViewById(R.id.error_modify_profile_photo)
         photoPreview = view.findViewById(R.id.photo_modify_profile_photo)
         val selectPhotoButton: Button = view.findViewById(R.id.select_photo_modify_profile_photo)
@@ -66,8 +68,6 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
 
         //create the photo picker
         createSelectPhotoButton(selectPhotoButton, isTest)
-
-        actualizePhotoDescription(photoDescription)
 
         //return back to preferences if click on cancel button without modifying the username
         cancelButton.setOnClickListener{
@@ -89,19 +89,7 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
                     ImageDecoder.createSource(requireActivity().contentResolver, imageURI)
                 newProfilePhoto = ImageDecoder.decodeBitmap(sourceURI)
                 photoPreview.setImageBitmap(newProfilePhoto)
-                //remove the error, since a photo has been selected
-                errorText.text = ""
             }
-        }
-    }
-
-    /**
-     * Helper function to set the description text of the photo in function if a new photo has been selected
-     * @param textView where the description will be displayed
-     */
-    private fun actualizePhotoDescription(textView: TextView){
-        if(newProfilePhoto != null){
-            textView.text = getString(R.string.new_profile_photo_selected)
         }
     }
 
@@ -117,6 +105,8 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
             if(profilePhoto != null){
                 photoPreview.setImageBitmap(profilePhoto)
             }
+            //for the test
+            photoPreview.setTag(R.drawable.profile_placholderpng)
         }
     }
 
@@ -127,6 +117,9 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
      */
     private fun createSelectPhotoButton(selectButton: Button, isTest: Boolean) {
         selectButton.setOnClickListener {
+            //remove the error, since a photo has been selected
+            errorText.text = ""
+            photoDescription.text = getString(R.string.new_profile_photo_selected)
             if(!isTest){
                 val photoPicker =
                     Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
@@ -134,6 +127,9 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
             }else{
                 //affect a simple image in test scenario
                 newProfilePhoto = photoProfileTest
+                photoPreview.setImageBitmap(photoProfileTest)
+                photoPreview.setTag(photoProfileTest.byteCount)
+                photoPreview.setTag(photoProfileTest.byteCount)
             }
         }
     }
