@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:justificationMode="inter_word"
         android:padding="4dp"
+        android:text = "@string/modify_profile_photo_description"
         android:textIsSelectable="false"
         android:textSize="15sp" />
 
