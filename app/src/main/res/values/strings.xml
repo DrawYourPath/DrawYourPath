@@ -92,4 +92,7 @@
     <string name="tournament_creation_visibility_error">* One visibility option should be checked</string>
     <string name="create_new_tournament">Create new tournament</string>
     <string name="choose_your_new_username">Choose your new username :</string>
+    <string name="username_can_t_be_empty">The username can\'t be empty !</string>
+    <string name="username_available">*The username %s is available</string>
+    <string name="username_not_vailable_or_previous_one">*The username %s is NOT available or equal to the previous one</string>
 </resources>

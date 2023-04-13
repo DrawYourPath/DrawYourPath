@@ -81,39 +81,33 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
     private fun returnBackToPreviousFrag(){
         activity?.onBackPressed()
     }
-}
 
-/**
- * Helper function that display a message with outputMessage to the user on the UI and return a boolean that indicate
- * if the username is available and not equal to the previous username that user have.
- * @param username username with the availability to test
- * @param database used to test if the username is available
- * @param errorMessage editText used to show an error message to the user on the UI if the username is not available
- * @return true if the username is available or not equal to the previous one, and false otherwise
- */
-private fun testUsernameAvailability(
-    database: Database,
-    username: String,
-    errorMessage: TextView
-): CompletableFuture<Boolean> {
-    if (username == "") {
-        errorMessage.text = buildString { append("The username can't be empty !") }
-        errorMessage.setTextColor(Color.RED)
-        return CompletableFuture.completedFuture(false)
-    }
-    val future = database.isUsernameAvailable(username)
-
-    val durationFuture = future.thenApply {
-        errorMessage.text = buildString {
-            append("*The username ")
-            append(username)
-            append(" is ")
-            append(if (!it) "NOT " else "")
-            append("available")
-            append(if (!it) " or equal to the previous one" else "")
+    /**
+     * Helper function that display a message with outputMessage to the user on the UI and return a boolean that indicate
+     * if the username is available and not equal to the previous username that user have.
+     * @param username username with the availability to test
+     * @param database used to test if the username is available
+     * @param errorMessage editText used to show an error message to the user on the UI if the username is not available
+     * @return true if the username is available or not equal to the previous one, and false otherwise
+     */
+    private fun testUsernameAvailability(
+        database: Database,
+        username: String,
+        errorMessage: TextView
+    ): CompletableFuture<Boolean> {
+        if (username == "") {
+            errorMessage.text = getString(R.string.username_can_t_be_empty)
+            errorMessage.setTextColor(Color.RED)
+            return CompletableFuture.completedFuture(false)
         }
-        errorMessage.setTextColor(if (it) Color.GREEN else Color.RED)
-        it
+        val future = database.isUsernameAvailable(username)
+
+        val durationFuture = future.thenApply {available ->
+            errorMessage.text = if(available) getString(R.string.username_available).format(username)
+                else getString(R.string.username_not_vailable_or_previous_one).format(username)
+            errorMessage.setTextColor(if (available) Color.GREEN else Color.RED)
+            available
+        }
+        return durationFuture
     }
-    return durationFuture
 }
