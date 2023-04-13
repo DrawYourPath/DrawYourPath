@@ -1,7 +1,7 @@
 package com.epfl.drawyourpath.mainpage
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -11,17 +11,13 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import androidx.lifecycle.LiveData
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
-import com.epfl.drawyourpath.userProfile.cache.UserData
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import java.util.concurrent.CompletableFuture
 
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
 
@@ -42,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //get the user id given by login or register to use it inside this activity and its child fragment
-        setupUserCache()
+        setupUser()
 
         //Setup the components of the screen
         setupTopBar()
@@ -60,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         setupNotifications()
     }
 
-    private fun setupUserCache() {
+    private fun setupUser() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId != null) {
             userCached.setCurrentUser(userId)
@@ -76,12 +72,15 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(topAppBar)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun setupProfileButton() {
         val profileImageButton: ImageButton = findViewById(R.id.profile_button)
         userCached.getUser().observe(this) {
             val image = it.getProfilePhotoAsBitmap()
             if (image != null) {
-                profileImageButton.setImageBitmap(image)
+                profileImageButton.setImageBitmap(it.getProfilePhotoAsBitmap())
+            } else {
+                profileImageButton.setImageDrawable(applicationContext.getDrawable(R.drawable.ic_profile))
             }
         }
         drawerLayout = findViewById(R.id.drawerLayout)

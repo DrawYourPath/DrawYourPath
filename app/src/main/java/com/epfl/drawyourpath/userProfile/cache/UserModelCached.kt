@@ -3,14 +3,14 @@ package com.epfl.drawyourpath.userProfile.cache
 import android.app.Application
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.lifecycle.*
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import androidx.room.Room
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
-import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
@@ -23,17 +23,21 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private lateinit var userModel: UserModel
 
     //cached room database for user
-    private val db = Room
+    private val cache = Room
         .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
         .fallbackToDestructiveMigration()
+        .allowMainThreadQueries() // for Room CompletableFuture == main thread
         .build()
         .userDao()
+
+    // current user id
+    private var currentUserIDRepository: String? = null
 
     // current user id
     private val currentUserID = MutableLiveData<String>()
 
     // user
-    private val user: LiveData<UserData> = currentUserID.switchMap { db.getUserById(it) }
+    private val user: LiveData<UserData> = currentUserID.switchMap { cache.getUserById(it) }
 
     //TODO add friendList
 
@@ -50,7 +54,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param profilePhoto the photo of the user (default is null)
      * @throws error if the inputs are incorrect
      */
-    fun setNewUser(
+    fun createNewUser(
         userAuth: User,
         username: String,
         firstname: String,
@@ -61,7 +65,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         nbOfPathsGoal: Int,
         profilePhoto: Bitmap? = null
     ) {
-        setNewUser(
+        createNewUser(
             userAuth.getUid(),
             userAuth.getEmail(),
             username,
@@ -89,7 +93,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param profilePhoto the photo of the user (default is null)
      * @throws error if the inputs are incorrect
      */
-    fun setNewUser(
+    fun createNewUser(
         userId: String,
         emailAddress: String,
         username: String,
@@ -116,55 +120,50 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkActivityTimeGoal(activityTimeGoal)
         checkNbOfPathsGoal(nbOfPathsGoal)
 
-        CompletableFuture.supplyAsync {
-            db.insert(
-                UserData(
-                    userId,
-                    username,
-                    emailAddress,
-                    firstname,
-                    surname,
-                    dateOfBirth.toEpochDay(),
-                    distanceGoal,
-                    activityTimeGoal,
-                    nbOfPathsGoal,
-                    UserData.fromBitmapToByteArray(profilePhoto)
-                )
-            )
-        }.thenAccept {
-            setCurrentUser(userId)
-        }
-
-        userModel = UserModel(
+        val userData = UserData(
             userId,
-            emailAddress,
             username,
+            emailAddress,
             firstname,
             surname,
-            dateOfBirth,
+            UserData.fromLocalDateToLong(dateOfBirth),
             distanceGoal,
             activityTimeGoal,
             nbOfPathsGoal,
-            profilePhoto,
-            database
+            UserData.fromBitmapToByteArray(profilePhoto)
         )
 
+        userModel = fromUserDataToUserModel(userData, database)
+
+        CompletableFuture.supplyAsync {
+            cache.insert(userData)
+        }.thenAccept {
+            setUserId(userId)
+        }
     }
 
     /**
-     * set the user to an existing user inside the cache
-     * @param userId the userId of the new current user
+     * set the user to an existing user
+     * @param userId the user id of the new current user
      */
     fun setCurrentUser(userId: String) {
+        database.getUserAccount(userId).thenApply {
+            cache.update(fromUserModelToUserData(it))
+        }
+        setUserId(userId)
+    }
+
+    private fun setUserId(userId: String) {
+        currentUserIDRepository = userId
         currentUserID.value = userId
     }
 
     /**
-     * get the current user (read-only) (should be called only inside fragment
-     * and [setAndGetCurrentUser] or [setNewUser] should have been called inside the parent activity )
+     * get the current user (read-only)
      * @return the [LiveData] of [UserData]
      */
     fun getUser(): LiveData<UserData> {
+        checkCurrentUser()
         return user
     }
 
@@ -188,10 +187,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun setUsername(userId: String, username: String): CompletableFuture<Boolean> {
+    fun setUsername(username: String): CompletableFuture<Boolean> {
+        checkCurrentUser()
         return database.setUsername(username).thenApply {
             if (it) {
-                db.updateUsername(userId, username)
+                cache.updateUsername(currentUserIDRepository!!, username)
             }
             it
         }
@@ -201,11 +201,12 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Use this function to modify the daily distance goal of the user
      * @param distanceGoal new daily distance goal
      */
-    fun setDistanceGoal(userId: String, distanceGoal: Double): CompletableFuture<Boolean> {
+    fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+        checkCurrentUser()
         checkDistanceGoal(distanceGoal)
         return database.setDistanceGoal(distanceGoal).thenApply {
             if (it) {
-                db.updateDistanceGoal(userId, distanceGoal)
+                cache.updateDistanceGoal(currentUserIDRepository!!, distanceGoal)
             }
             it
         }
@@ -215,11 +216,12 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Use this function to modify the daily activity time goal of the user
      * @param activityTimeGoal new daily activity time goal
      */
-    fun setActivityTimeGoal(userId: String, activityTimeGoal: Double): CompletableFuture<Boolean> {
+    fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+        checkCurrentUser()
         checkActivityTimeGoal(activityTimeGoal)
         return database.setActivityTimeGoal(activityTimeGoal).thenApply {
             if (it) {
-                db.updateTimeGoal(userId, activityTimeGoal)
+                cache.updateTimeGoal(currentUserIDRepository!!, activityTimeGoal)
             }
             it
         }
@@ -229,11 +231,12 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Use this function to modify the daily number of paths goal of the user
      * @param nbOfPathsGoal new daily number of paths goal
      */
-    fun setNumberOfPathsGoal(userId: String, nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+        checkCurrentUser()
         checkNbOfPathsGoal(nbOfPathsGoal)
         return database.setNbOfPathsGoal(nbOfPathsGoal).thenApply {
             if (it) {
-                db.updatePathsGoal(userId, nbOfPathsGoal)
+                cache.updatePathsGoal(currentUserIDRepository!!, nbOfPathsGoal)
             }
             it
         }
@@ -244,15 +247,53 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
      */
-    fun setProfilePhoto(userId: String, photo: Bitmap): CompletableFuture<Boolean> {
+    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+        checkCurrentUser()
         return database.setProfilePhoto(photo).thenApply {
             if (it) {
-                db.updatePhoto(userId, UserData.fromBitmapToByteArray(photo))
+                cache.updatePhoto(currentUserIDRepository!!, UserData.fromBitmapToByteArray(photo))
             }
             it
         }
     }
 
+    private fun checkCurrentUser() {
+        if (currentUserIDRepository == null) {
+            throw Error("current user must be set")
+        }
+    }
+
+}
+
+private fun fromUserDataToUserModel(data: UserData, database: Database): UserModel {
+    return UserModel(
+        data.userId,
+        data.emailAddress,
+        data.username,
+        data.firstname,
+        data.surname,
+        data.getDateOfBirthAsLocalDate(),
+        data.distanceGoal,
+        data.activityTimeGoal,
+        data.nbOfPathsGoal,
+        data.getProfilePhotoAsBitmap(),
+        database
+    )
+}
+
+private fun fromUserModelToUserData(userModel: UserModel): UserData {
+    return UserData(
+        userModel.getUserId(),
+        userModel.getUsername(),
+        userModel.getEmailAddress(),
+        userModel.getFirstname(),
+        userModel.getSurname(),
+        UserData.fromLocalDateToLong(userModel.getDateOfBirth()),
+        userModel.getDistanceGoal(),
+        userModel.getActivityTime(),
+        userModel.getNumberOfPathsGoal(),
+        UserData.fromBitmapToByteArray(userModel.getProfilePhoto())
+    )
 }
 
 /**

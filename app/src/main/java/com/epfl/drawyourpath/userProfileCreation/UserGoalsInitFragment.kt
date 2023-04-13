@@ -103,7 +103,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                     this.startActivity(Intent(activity, LoginActivity::class.java))
                 }else {
                     userCached.setDatabase(database)
-                    userCached.setNewUser(userLog,
+                    userCached.createNewUser(userLog,
                         username,
                         firstname,
                         surname,

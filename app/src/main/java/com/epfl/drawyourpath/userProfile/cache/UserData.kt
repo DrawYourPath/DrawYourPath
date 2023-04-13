@@ -106,6 +106,10 @@ data class UserData(
             image.compress(Bitmap.CompressFormat.PNG, 90, stream)
             return stream.toByteArray()
         }
+
+        fun fromLocalDateToLong(date: LocalDate): Long {
+            return date.toEpochDay()
+        }
     }
 
     override fun equals(other: Any?): Boolean {
