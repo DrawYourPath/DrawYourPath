@@ -10,14 +10,12 @@ import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
-import java.util.concurrent.CompletableFuture
 
 class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_photo) {
     //for the test

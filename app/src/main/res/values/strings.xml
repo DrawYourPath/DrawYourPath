@@ -95,5 +95,5 @@
     <string name="modify_profile_photo_description">You can choose a new profile photo and click on VALIDATE to set it. If you want to keep your past profile photo, click on CANCEL.</string>
     <string name="actual_profile_photo">Actual profile photo :</string>
     <string name="new_profile_photo_selected">New profile photo selected :</string>
-    <string name="error_select_new_profile_photo">You have forgot to select a new profile photo.</string>
+    <string name="error_select_new_profile_photo">You have forgotten to select a new profile photo.</string>
 </resources>

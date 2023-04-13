@@ -38,6 +38,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center|bottom"
+        android:scaleType="centerCrop"
         android:src="@drawable/profile_placholderpng" />
 
     <Button

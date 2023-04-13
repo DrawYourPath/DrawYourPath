@@ -82,6 +82,8 @@ class PreferencesFragmentTest {
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
 
         onView(withId(R.id.photo_description_modify_profile_photo)).check(matches(withText(R.string.actual_profile_photo)))
+
+        scenario.close()
     }
 
     /**
@@ -95,6 +97,8 @@ class PreferencesFragmentTest {
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
 
         onView(withId(R.id.photo_modify_profile_photo)).check(matches(withTagValue(equalTo( R.drawable.profile_placholderpng))))
+
+        scenario.close()
     }
 
     /**
@@ -110,6 +114,8 @@ class PreferencesFragmentTest {
         onView(withId(R.id.select_photo_modify_profile_photo)).perform(click())
 
         onView(withId(R.id.photo_modify_profile_photo)).check(matches(withTagValue(equalTo(photoSelectedInPicker.byteCount))))
+
+        scenario.close()
     }
 
     /**
@@ -125,6 +131,8 @@ class PreferencesFragmentTest {
         onView(withId(R.id.select_photo_modify_profile_photo)).perform(click())
 
         onView(withId(R.id.photo_description_modify_profile_photo)).check(matches(withText(R.string.new_profile_photo_selected)))
+
+        scenario.close()
     }
 
     /**
