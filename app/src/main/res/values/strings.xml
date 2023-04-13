@@ -96,4 +96,8 @@
     <string name="actual_profile_photo">Actual profile photo :</string>
     <string name="new_profile_photo_selected">New profile photo selected :</string>
     <string name="error_select_new_profile_photo">You have forgotten to select a new profile photo.</string>
+    <string name="choose_your_new_username">Choose your new username :</string>
+    <string name="username_can_t_be_empty">The username can\'t be empty !</string>
+    <string name="username_available">*The username %s is available</string>
+    <string name="username_not_vailable_or_previous_one">*The username %s is NOT available or equal to the previous one</string>
 </resources>
