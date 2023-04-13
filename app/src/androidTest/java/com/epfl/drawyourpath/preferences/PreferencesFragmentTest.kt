@@ -12,8 +12,8 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.login.ENABLE_ONETAP_SIGNIN
-import com.epfl.drawyourpath.login.LoginActivity
+import com.epfl.drawyourpath.authentication.ENABLE_ONETAP_SIGNIN
+import com.epfl.drawyourpath.login.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4

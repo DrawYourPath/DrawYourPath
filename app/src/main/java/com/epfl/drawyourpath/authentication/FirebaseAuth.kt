@@ -15,9 +15,39 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import java.util.concurrent.CompletableFuture
 
 private const val REQ_ONE_TAP = 9993
 private const val REQ_GSI = 9994
+
+const val USE_MOCK_AUTH = "useMockAuth"
+const val MOCK_AUTH_FAIL = "useMockAuthFailing"
+const val MOCK_FORCE_SIGNED = "useMockSigned"
+const val RESTORE_USER_IN_KEYCHAIN = "restoreUserInKeychain"
+const val ENABLE_ONETAP_SIGNIN = "enableOneTapSignIn"
+
+/**
+ * Creates a auth object from a bundle. Allows to automatically parse data
+ * from tests to create the correct auth object.
+ * By adding USE_MOCK_AUTH = true in the bundle, the mock auth will be used.
+ */
+fun createAuth(bundle: Bundle?, failing: Boolean = false, userInKeychain: Boolean = false): Auth {
+    return when (bundle != null && bundle.getBoolean(USE_MOCK_AUTH, false)) {
+        true -> {
+            android.util.Log.i("DYP", "Creating mock auth object.")
+            MockAuth(
+                failing = bundle.getBoolean(MOCK_AUTH_FAIL, failing),
+                userInKeyChain = bundle.getBoolean(RESTORE_USER_IN_KEYCHAIN, userInKeychain),
+                withOneTapSignIn = bundle.getBoolean(ENABLE_ONETAP_SIGNIN, false),
+                forceSigned = bundle.getBoolean(MOCK_FORCE_SIGNED, false),
+            )
+        }
+        false -> {
+            android.util.Log.i("DYP", "Creating Firebase auth object.")
+            FirebaseAuth()
+        }
+    }
+}
 
 class FirebaseAuth : Auth {
     private val auth = FirebaseAuth.getInstance()
@@ -54,6 +84,19 @@ class FirebaseAuth : Auth {
 
                 override fun isAnonymous(): Boolean {
                     return user.isAnonymous
+                }
+
+                override fun updatePassword(password: String): CompletableFuture<Void> {
+                    val result = CompletableFuture<Void>()
+                    try {
+                        user.updatePassword(password)
+                            .addOnSuccessListener { result.complete(null) }
+                            .addOnFailureListener { result.completeExceptionally(it) }
+                    }
+                    catch (ex: Exception) {
+                        result.completeExceptionally(ex)
+                    }
+                    return result
                 }
             }
         }
