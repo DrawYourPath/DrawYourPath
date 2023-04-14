@@ -6,6 +6,8 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.database.MockDataBase
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,6 +59,16 @@ class MainActivityTest {
         // see https://stackoverflow.com/questions/45172505/testing-android-preferencefragment-with-espresso
         onView(withId(androidx.preference.R.id.recycler_view)).check(matches(isDisplayed()))
 
+    }
+
+    @Test
+    fun usernameAndEmailAreCorrectInDrawerMenu() {
+        // go to drawer menu
+        onView(withId(R.id.profile_button)).perform(click())
+
+        // check username and email are correct
+        onView(withId(R.id.header_username)).check(matches(withText(MockDataBase().usernameTest)))
+        onView(withId(R.id.header_email)).check(matches(withText(MockAuth.MOCK_USER.getEmail())))
     }
 
     @Test

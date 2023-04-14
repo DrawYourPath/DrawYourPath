@@ -14,7 +14,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Entity(tableName = "User")
-data class UserData(
+data class UserEntity(
     /**
      * the id of the user
      */
@@ -115,6 +115,11 @@ data class UserData(
     }
 
     companion object {
+        /**
+         * create a byteArray from a bitmap image
+         * @param image the bitmap
+         * @return the bytearray
+         */
         fun fromBitmapToByteArray(image: Bitmap?): ByteArray? {
             if (image == null) {
                 return null
@@ -124,6 +129,11 @@ data class UserData(
             return stream.toByteArray()
         }
 
+        /**
+         * create a Long from a LocalDate
+         * @param date the localDate
+         * @return the Long
+         */
         fun fromLocalDateToLong(date: LocalDate): Long {
             return date.toEpochDay()
         }
@@ -133,7 +143,7 @@ data class UserData(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as UserData
+        other as UserEntity
 
         if (userId != other.userId) return false
 

@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.userProfile.cache
 
-import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.room.*
 
@@ -10,24 +9,24 @@ interface UserDao {
     /**
      * returns a read-only user
      * @param id the id of the user
-     * @return [LiveData] of [UserData]
+     * @return [LiveData] of [UserEntity]
      */
     @Query("SELECT * FROM User WHERE id = :id")
-    fun getUserById(id: String): LiveData<UserData>
+    fun getUserById(id: String): LiveData<UserEntity>
 
     /**
      * insert a new user inside the room database and will replace if there is a conflict with the id
      * @param user the user to insert
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(user: UserData)
+    fun insert(user: UserEntity)
 
     /**
      * update the user with new data
      * @param user the user to update
      */
     @Update
-    fun update(user: UserData)
+    fun update(user: UserEntity)
 
     /**
      * set a new username to user with the corresponding id
@@ -74,7 +73,7 @@ interface UserDao {
      * @param user the user to delete
      */
     @Delete
-    fun delete(user: UserData)
+    fun delete(user: UserEntity)
 
     /**
      * delete all the users

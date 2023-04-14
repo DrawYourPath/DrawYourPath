@@ -39,9 +39,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val _currentUserID = MutableLiveData<String>()
 
     // user
-    private val user: LiveData<UserData> = _currentUserID.switchMap { cache.getUserById(it) }
-
-    //TODO add friendList
+    private val user: LiveData<UserEntity> = _currentUserID.switchMap { cache.getUserById(it) }
 
     /**
      * This function will create a new user based on the user model of the app
@@ -122,23 +120,23 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkActivityTimeGoal(activityTimeGoal)
         checkNbOfPathsGoal(nbOfPathsGoal)
 
-        val userData = UserData(
+        val userEntity = UserEntity(
             userId,
             username,
             emailAddress,
             firstname,
             surname,
-            UserData.fromLocalDateToLong(dateOfBirth),
+            UserEntity.fromLocalDateToLong(dateOfBirth),
             distanceGoal,
             activityTimeGoal,
             nbOfPathsGoal,
-            UserData.fromBitmapToByteArray(profilePhoto)
+            UserEntity.fromBitmapToByteArray(profilePhoto)
         )
 
-        userModel = fromUserDataToUserModel(userData, database)
+        userModel = fromUserDataToUserModel(userEntity, database)
 
         CompletableFuture.supplyAsync {
-            cache.insert(userData)
+            cache.insert(userEntity)
         }.thenAccept {
             setUserId(userId)
         }
@@ -151,7 +149,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun setCurrentUser(userId: String) {
         checkCurrentUser(false)
         CompletableFuture.supplyAsync {
-            cache.insert(UserData(userId))
+            cache.insert(UserEntity(userId))
         }.thenComposeAsync {
             database.getUserAccount(userId)
         }.thenApplyAsync {
@@ -167,9 +165,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     /**
      * get the current user (read-only)
-     * @return the [LiveData] of [UserData]
+     * @return the [LiveData] of [UserEntity]
      */
-    fun getUser(): LiveData<UserData> {
+    fun getUser(): LiveData<UserEntity> {
         checkCurrentUser()
         return user
     }
@@ -282,7 +280,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             database.setProfilePhoto(photo).join()
         }.thenApplyAsync {
             if (it) {
-                cache.updatePhoto(currentUserID!!, UserData.fromBitmapToByteArray(photo))
+                cache.updatePhoto(currentUserID!!, UserEntity.fromBitmapToByteArray(photo))
             }
             it
         }
@@ -301,7 +299,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
 }
 
-private fun fromUserDataToUserModel(data: UserData, database: Database): UserModel {
+/**
+ * helper function to create a UserModel from a UserData
+ * @param data the userData
+ * @param database the database
+ * @return the resulting UserModel
+ */
+private fun fromUserDataToUserModel(data: UserEntity, database: Database): UserModel {
     return UserModel(
         data.userId,
         data.emailAddress,
@@ -317,18 +321,23 @@ private fun fromUserDataToUserModel(data: UserData, database: Database): UserMod
     )
 }
 
-private fun fromUserModelToUserData(userModel: UserModel): UserData {
-    return UserData(
+/**
+ * helper function to create a UserData from a UserModel
+ * @param userModel the userModel
+ * @return the resulting UserData
+ */
+private fun fromUserModelToUserData(userModel: UserModel): UserEntity {
+    return UserEntity(
         userModel.getUserId(),
         userModel.getUsername(),
         userModel.getEmailAddress(),
         userModel.getFirstname(),
         userModel.getSurname(),
-        UserData.fromLocalDateToLong(userModel.getDateOfBirth()),
+        UserEntity.fromLocalDateToLong(userModel.getDateOfBirth()),
         userModel.getDistanceGoal(),
         userModel.getActivityTime(),
         userModel.getNumberOfPathsGoal(),
-        UserData.fromBitmapToByteArray(userModel.getProfilePhoto())
+        UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto())
     )
 }
 
