@@ -88,7 +88,7 @@ class FireDatabase : Database() {
                     //update the link username to userId and the username on the userAccount
                     setUsername(username).thenAccept { isSetUsername ->
                         if (isSetUsername) {
-                            future.thenApply { removeUsernameToUidMapping(username) }
+                            removeUsernameToUidMapping(pastUsername, future)
                         } else {
                             future.completeExceptionally(java.lang.Error("Impossible to set this username !"))
                         }
@@ -260,10 +260,10 @@ class FireDatabase : Database() {
     /**
      * Helper function to remove the past link from username->userId
      * @param username that will be removed form the mapping
+     * @param future future state before the execution of this function
      * @return a future that indicate if the username was correctly removed
      */
-    private fun removeUsernameToUidMapping(username: String) {
-        val future = CompletableFuture<Boolean>()
+    private fun removeUsernameToUidMapping(username: String, future: CompletableFuture<Boolean>) {
         //remove the past username from the link username/userId
         accessUsernameToUserIdFile().child(username).removeValue()
             .addOnSuccessListener { future.complete(true) }
