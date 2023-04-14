@@ -1,10 +1,14 @@
 package com.epfl.drawyourpath.userProfile.cache
 
+import android.annotation.SuppressLint
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.core.graphics.drawable.toBitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.epfl.drawyourpath.R
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -21,53 +25,53 @@ data class UserData(
     /**
      * the username of the user
      */
-    val username: String,
+    val username: String = "",
 
     /**
      * the email address of the user
      */
     @ColumnInfo(name = "email_address")
-    val emailAddress: String,
+    val emailAddress: String = "",
 
     /**
      * the firstname of the user
      */
-    val firstname: String,
+    val firstname: String = "",
 
     /**
      * the surname of the user
      */
-    val surname: String,
+    val surname: String = "",
 
     /**
      * the date of birth of the user
      */
     @ColumnInfo(name = "date_of_birth")
-    val dateOfBirth: Long,
+    val dateOfBirth: Long = 0L,
 
     /**
      * the distance goal of the user
      */
     @ColumnInfo(name = "distance_goal")
-    val distanceGoal: Double,
+    val distanceGoal: Double = 0.0,
 
     /**
      * the activity time goal of the user
      */
     @ColumnInfo(name = "time_goal")
-    val activityTimeGoal: Double,
+    val activityTimeGoal: Double = 0.0,
 
     /**
      * the number of paths goal of the user
      */
     @ColumnInfo(name = "paths_goal")
-    val nbOfPathsGoal: Int,
+    val nbOfPathsGoal: Int = 0,
 
     /**
      * the profile photo of the user (can be null)
      */
     @ColumnInfo(name = "photo", typeAffinity = ColumnInfo.BLOB)
-    val profilePhoto: ByteArray?
+    val profilePhoto: ByteArray? = null
 ) {
 
     /**
@@ -76,6 +80,19 @@ data class UserData(
      */
     fun getAge(): Int {
         return ChronoUnit.YEARS.between(getDateOfBirthAsLocalDate(), LocalDate.now()).toInt()
+    }
+
+    /**
+     * get the profile photo of the user or if none the default profile photo
+     * @param res the resources used to get the default profile photo
+     * @return the profile photo of the user or the default profile photo
+     */
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun getProfilePhotoOrDefaultAsBitmap(res: Resources): Bitmap {
+        if (profilePhoto == null) {
+            return res.getDrawable(R.drawable.profile_placholderpng, null).toBitmap()
+        }
+        return BitmapFactory.decodeByteArray(profilePhoto, 0, profilePhoto.size, BitmapFactory.Options())
     }
 
     /**
@@ -103,7 +120,7 @@ data class UserData(
                 return null
             }
             val stream = ByteArrayOutputStream()
-            image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            image.compress(Bitmap.CompressFormat.WEBP, 80, stream)
             return stream.toByteArray()
         }
 

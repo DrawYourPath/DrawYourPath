@@ -1,18 +1,14 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.*
 import com.epfl.drawyourpath.community.Tournament
-import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.util.*
 
 /**
@@ -23,8 +19,6 @@ import java.util.*
  */
 class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
 
-    private val userCached: UserModelCached by activityViewModels()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -32,15 +26,18 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         val tournamentsView = view.findViewById<RecyclerView>(R.id.tournaments_view)
         val trophiesView = view.findViewById<RecyclerView>(R.id.trophies_view)
 
-        val tempUser = TemporaryUser(LinkedList(mutableListOf()), listOf())
+        var tempUser = TemporaryUser(LinkedList(mutableListOf(DailyGoal(5.0, 15.0, 1))), listOf())
         tempUser.addTrophy(Trophy.MARATHON)
         tempUser.addTrophy(Trophy.THEFIRSTPATH)
         tempUser.addTrophy(Trophy.TENKM)
 
-        goalView.layoutManager = LinearLayoutManager(context)
-        userCached.getUser().observe(viewLifecycleOwner) {
-            goalView.adapter = DailyGoalViewAdapter(DailyGoal(it.distanceGoal, it.activityTimeGoal, it.nbOfPathsGoal, 5.9, 15.2, 1))
+        if (arguments?.getSerializable("user") != null) {
+            //getSerializable(key: String?) deprecated but alternative requires API level 33
+            tempUser = arguments?.getSerializable("user") as TemporaryUser
         }
+
+        goalView.layoutManager = LinearLayoutManager(context)
+        goalView.adapter = DailyGoalViewAdapter(tempUser.getTodayDailyGoal())
 
         tournamentsView.layoutManager = LinearLayoutManager(context)
         tournamentsView.adapter = TournamentViewAdapter(tempUser.tournaments)

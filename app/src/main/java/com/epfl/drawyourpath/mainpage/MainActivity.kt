@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -61,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         if (userId != null) {
             userCached.setCurrentUser(userId)
         } else {
-            throw Error("user should not be null")
+            Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG).show()
         }
 
     }
@@ -72,16 +73,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(topAppBar)
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     private fun setupProfileButton() {
         val profileImageButton: ImageButton = findViewById(R.id.profile_button)
         userCached.getUser().observe(this) {
-            val image = it.getProfilePhotoAsBitmap()
-            if (image != null) {
-                profileImageButton.setImageBitmap(it.getProfilePhotoAsBitmap())
-            } else {
-                profileImageButton.setImageDrawable(applicationContext.getDrawable(R.drawable.ic_profile))
-            }
+            profileImageButton.setImageBitmap(it.getProfilePhotoOrDefaultAsBitmap(resources))
         }
         drawerLayout = findViewById(R.id.drawerLayout)
         //Set a listener to open the drawer menu (we might want it on the right)

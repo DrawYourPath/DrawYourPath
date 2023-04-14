@@ -20,6 +20,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.login.ENABLE_ONETAP_SIGNIN
 import com.epfl.drawyourpath.login.LoginActivity
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -212,7 +213,6 @@ class PreferencesFragmentTest {
     @Test
     fun correctTransitionCancelButtonModifyProfilePhoto(){
         val scenario = launchFragmentInContainer<PreferencesFragment>(themeResId = R.style.Theme_Bootcamp)
-
         clickOnPreference("Modify Profile Photo")
 
         onView(withId(R.id.cancel_modify_profile_photo)).perform(click())

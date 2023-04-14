@@ -2,15 +2,18 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import androidx.room.Room
+import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
+import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
@@ -26,18 +29,17 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val cache = Room
         .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
         .fallbackToDestructiveMigration()
-        .allowMainThreadQueries() // for Room CompletableFuture == main thread
         .build()
         .userDao()
 
     // current user id
-    private var currentUserIDRepository: String? = null
+    private var currentUserID: String? = null
 
     // current user id
-    private val currentUserID = MutableLiveData<String>()
+    private val _currentUserID = MutableLiveData<String>()
 
     // user
-    private val user: LiveData<UserData> = currentUserID.switchMap { cache.getUserById(it) }
+    private val user: LiveData<UserData> = _currentUserID.switchMap { cache.getUserById(it) }
 
     //TODO add friendList
 
@@ -147,15 +149,20 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param userId the user id of the new current user
      */
     fun setCurrentUser(userId: String) {
-        database.getUserAccount(userId).thenApply {
-            cache.update(fromUserModelToUserData(it))
+        checkCurrentUser(false)
+        CompletableFuture.supplyAsync {
+            cache.insert(UserData(userId))
+        }.thenComposeAsync {
+            database.getUserAccount(userId)
+        }.thenApplyAsync {
+            cache.insert(fromUserModelToUserData(it))
         }
         setUserId(userId)
     }
 
     private fun setUserId(userId: String) {
-        currentUserIDRepository = userId
-        currentUserID.value = userId
+        currentUserID = userId
+        _currentUserID.value = userId
     }
 
     /**
@@ -181,6 +188,20 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun setDatabase(database: Database) {
         this.database = database
+        // if database is mock then set user to a test user
+        if (database is MockDataBase) {
+            setCurrentUser(database.userIdTest)
+        }
+    }
+
+    /**
+     * This function will return a future with a boolean to know if the username is available in the database
+     * (i.e the userName proposed is not already associated to another user profile)
+     * @param userName userName that the user want to use for his user profile
+     * @return the future that indicate if the username is available
+     */
+    fun isUsernameAvailable(userName: String): CompletableFuture<Boolean> {
+        return database.isUsernameAvailable(userName)
     }
 
     /**
@@ -189,9 +210,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun setUsername(username: String): CompletableFuture<Boolean> {
         checkCurrentUser()
-        return database.setUsername(username).thenApply {
+        return CompletableFuture.supplyAsync {
+            database.setUsername(username).join()
+        }.thenApplyAsync {
             if (it) {
-                cache.updateUsername(currentUserIDRepository!!, username)
+                cache.updateUsername(currentUserID!!, username)
             }
             it
         }
@@ -204,9 +227,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
         checkCurrentUser()
         checkDistanceGoal(distanceGoal)
-        return database.setDistanceGoal(distanceGoal).thenApply {
+        return CompletableFuture.supplyAsync {
+            database.setDistanceGoal(distanceGoal).join()
+        }.thenApplyAsync {
             if (it) {
-                cache.updateDistanceGoal(currentUserIDRepository!!, distanceGoal)
+                cache.updateDistanceGoal(currentUserID!!, distanceGoal)
             }
             it
         }
@@ -219,9 +244,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
         checkCurrentUser()
         checkActivityTimeGoal(activityTimeGoal)
-        return database.setActivityTimeGoal(activityTimeGoal).thenApply {
+        return CompletableFuture.supplyAsync {
+            database.setActivityTimeGoal(activityTimeGoal).join()
+        }.thenApplyAsync {
             if (it) {
-                cache.updateTimeGoal(currentUserIDRepository!!, activityTimeGoal)
+                cache.updateTimeGoal(currentUserID!!, activityTimeGoal)
             }
             it
         }
@@ -234,9 +261,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         checkCurrentUser()
         checkNbOfPathsGoal(nbOfPathsGoal)
-        return database.setNbOfPathsGoal(nbOfPathsGoal).thenApply {
+        return CompletableFuture.supplyAsync {
+            database.setNbOfPathsGoal(nbOfPathsGoal).join()
+        }.thenApplyAsync {
             if (it) {
-                cache.updatePathsGoal(currentUserIDRepository!!, nbOfPathsGoal)
+                cache.updatePathsGoal(currentUserID!!, nbOfPathsGoal)
             }
             it
         }
@@ -249,17 +278,24 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
         checkCurrentUser()
-        return database.setProfilePhoto(photo).thenApply {
+        return CompletableFuture.supplyAsync {
+            database.setProfilePhoto(photo).join()
+        }.thenApplyAsync {
             if (it) {
-                cache.updatePhoto(currentUserIDRepository!!, UserData.fromBitmapToByteArray(photo))
+                cache.updatePhoto(currentUserID!!, UserData.fromBitmapToByteArray(photo))
             }
             it
         }
     }
 
-    private fun checkCurrentUser() {
-        if (currentUserIDRepository == null) {
-            throw Error("current user must be set")
+    private fun checkCurrentUser(checkIfNull: Boolean = true) {
+        if (database is MockDataBase) {
+            return //already a test
+        }
+        if ((checkIfNull && currentUserID == null) || currentUserID == MockAuth.MOCK_USER.getUid()) {
+            // if current user null then it is a test
+            setDatabase(MockDataBase())
+            Toast.makeText(getApplication(), R.string.toast_test_error_message, Toast.LENGTH_LONG).show()
         }
     }
 
