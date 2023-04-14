@@ -16,6 +16,7 @@ abstract class Database {
     val activityTimeGoalFile: String = "activityTimeGoal"
     val nbOfPathsGoalFile: String = "nbOfPathsGoal"
     val profilePhotoFile: String = "profilePhoto"
+    val friendsListFile: String = "friendsList"
 
     /**
      * This function is used to know if a certain user is already store in the database
@@ -110,4 +111,20 @@ abstract class Database {
      * @return a future that indicate if the photo has been correctly set to the database
      */
     abstract fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>
+
+    /**
+     * This function will add a user to the the friends list of the current user with his userId if this user is present on the database
+     * @param userId of the user that we want to add to the friendsList of the current user
+     * @throws an Error if the user that we want to added to the friends list is not present on the database.
+     * @return a future that indicate if the user has been correctly added to the current user friends list
+     */
+    abstract fun addUserToFriendsList(userId: String): CompletableFuture<Boolean>
+
+    /**
+     * This function will remove a user to the the friends list of the current user with his userId
+     * @param userId of the user that we want to remove to the friendsList of the current user
+     * @throws an Error if the user that we want to removed is not present on the database.
+     * @return a future that indicate if the user has been correctly removed to the current user friends list
+     */
+    abstract fun removeUserToFriendsList(userId: String): CompletableFuture<Boolean>
 }
