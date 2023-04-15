@@ -51,7 +51,7 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         Log.w("Debug", "View is created!!!!!!!!!!!!!!")
 
         userAccountFuture.thenApply { userModel ->
-            Log.d("Debug", "thenApply called")
+
             // Initialize the ViewModel with the userModel
             val factory = FriendsViewModelFactory(userModel)
             viewModel = ViewModelProvider(this, factory).get(FriendsViewModel::class.java)
@@ -74,9 +74,12 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
 
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (query != null && query.isNotBlank()) {
+                        Log.d("Debug", "Submitting query!!!")
                         database.isUsernameAvailable(query).thenAccept { isAvailable ->
+
                             if (isAvailable == false) {
                                 Toast.makeText(requireContext(), "Username not found.", Toast.LENGTH_SHORT).show()
+                                Log.d("Debug", "username not found! ")
                             } else {
                                 database.getUserIdFromUsername(query).thenCompose { userId ->
                                     database.getUserAccount(userId)

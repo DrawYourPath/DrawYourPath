@@ -1,10 +1,17 @@
 package com.epfl.drawyourpath.mainpage.fragments.helperClasses
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.userProfile.UserModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 
 class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
 
@@ -27,22 +34,58 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
     // The init block is executed when the ViewModel is created.
     init {
 
-        // Get the friend list from the UserModel
-        val friendsMap = userModel.getFriendList()
+        // Load friends asynchronously
+        loadFriends()
 
-        // Convert the friendsMap to a list of Friend objects
-        val realFriends = friendsMap.map { (username, userId) ->
-            Friend(userId.toInt(), username, R.drawable.ic_profile_placeholder, true)
-        }
 
-        // Concatenate the testFriends and realFriends lists
-        allFriends = testFriends + realFriends
 
-        // Set the initial value of _friendsList to allFriends.
-        _friendsList.value = allFriends
+
     }
 
 
+    private fun loadFriends() {
+        Log.w("Debug", "Load friends!!!!!!!!!!!!!!")
+        // Get the friend list from the UserModel
+        val friendsList = userModel.getFriendList()
+        val database: Database = FireDatabase()
+
+        // Use a mutable list to store the realFriends
+        val realFriends = mutableListOf<Friend>()
+
+        // Counter for tracking when all friends are loaded
+        var friendsLoaded = 0
+
+        // Iterate through each userId in friendsList
+        for (userId in friendsList) {
+            Log.w("Debug", "Got Username from database!!!!!!!!!!!!!!")
+            // Get the username CompletableFuture
+            val usernameFuture = database.getUsernameFromUserId(userId)
+
+
+            // When the CompletableFuture completes, update the list of friends
+            usernameFuture.whenComplete { username, exception ->
+                if (exception == null) {
+
+                    // Add the new Friend object to the realFriends list
+                    realFriends.add(Friend(userId.toInt(), username, R.drawable.ic_profile_placeholder, true))
+
+                    // Increment the friendsLoaded counter
+                    friendsLoaded++
+
+                    // Check if all friends have been loaded
+                    if (friendsLoaded == friendsList.size) {
+                        // Concatenate the testFriends and realFriends lists
+                        allFriends = testFriends + realFriends
+
+                        // Set the initial value of _friendsList to allFriends.
+                        _friendsList.postValue(allFriends)
+                    }
+                } else {
+                    // Handle the exception (e.g., log the error, show a message to the user, etc.)
+                }
+            }
+        }
+    }
 
 
     // friendsList is a LiveData that the UI will observe for changes.
