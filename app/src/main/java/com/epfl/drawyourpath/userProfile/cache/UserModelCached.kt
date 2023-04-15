@@ -149,7 +149,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun setCurrentUser(userId: String) {
         checkCurrentUser(false)
         CompletableFuture.supplyAsync {
-            cache.insert(UserEntity(userId))
+            cache.insertIfEmpty(UserEntity(userId))
         }.thenComposeAsync {
             database.getUserAccount(userId)
         }.thenApplyAsync {

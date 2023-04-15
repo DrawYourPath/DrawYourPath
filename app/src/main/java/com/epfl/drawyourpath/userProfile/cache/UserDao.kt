@@ -22,6 +22,13 @@ interface UserDao {
     fun insert(user: UserEntity)
 
     /**
+     * insert a new user inside the room database and abort if it already exist inside the room database
+     * @param user the user to insert
+     */
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun insertIfEmpty(user: UserEntity)
+
+    /**
      * update the user with new data
      * @param user the user to update
      */
