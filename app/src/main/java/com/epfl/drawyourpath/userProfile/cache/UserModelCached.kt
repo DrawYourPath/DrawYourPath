@@ -18,6 +18,18 @@ import com.epfl.drawyourpath.userProfile.UserModel
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
+/**
+ * This class is persistent between fragment but not between activity.
+ *
+ * To use it inside fragment: `private val user: UserModelCached by activityViewModels()`
+ *
+ * To use it inside activity: `private val user: UserModelCached by viewModels()`
+ *
+ * Inside the activity, either create a new user with [createNewUser] or set to an existing user [setCurrentUser].
+ *
+ * For testing: either never use [createNewUser] or [setCurrentUser] or use [setDatabase] with [MockDataBase] as argument
+ * both options will set the current user to a mock user with the [MockDataBase]
+ */
 class UserModelCached(application: Application) : AndroidViewModel(application) {
     //database where the user is store online
     private var database: Database = FireDatabase()
@@ -149,6 +161,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun setCurrentUser(userId: String) {
         checkCurrentUser(false)
         CompletableFuture.supplyAsync {
+            // insert empty user in cache to avoid null user
             cache.insertIfEmpty(UserEntity(userId))
         }.thenComposeAsync {
             database.getUserAccount(userId)
@@ -158,13 +171,19 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         setUserId(userId)
     }
 
+    /**
+     * helper function for setting the userId
+     * @param userId the user id
+     */
     private fun setUserId(userId: String) {
         currentUserID = userId
         _currentUserID.value = userId
     }
 
     /**
-     * get the current user (read-only)
+     * get the current user (read-only).
+     *
+     * Its usage is as follow : `getUser().observe(viewLifecycleOwner) { viewText.text = it.username }`
      * @return the [LiveData] of [UserEntity]
      */
     fun getUser(): LiveData<UserEntity> {
