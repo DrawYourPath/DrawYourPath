@@ -526,7 +526,7 @@ class UserModelTest {
             nbOfPaths,
             database
         )
-        val exception = assertThrows(java.lang.Error::class.java) {
+        val exception = assertThrows(Exception::class.java) {
             user.removeFriend("notId")
         }
         assertEquals("This user with userId notId is not in the friend list !", exception.message)
@@ -545,8 +545,8 @@ class UserModelTest {
         //check that at the beginning the friends list contains one user
         assertEquals(user.getFriendList(), listOf(newDataBase.userIdFriend1))
         //remove the user
-        val isRemoved = user.removeFriend(newDataBase.userIdFriend1).get()
-        assertEquals(isRemoved, true)
+        user.removeFriend(newDataBase.userIdFriend1).get()
+
         assertEquals(user.getFriendList(), expectedFriendsList)
         //check the database
         assertEquals(newDataBase.userIdToUserAccount.get(userId)?.getFriendList() ?: listOf("not"),expectedFriendsList)
@@ -564,8 +564,7 @@ class UserModelTest {
         //check that at the beginning the friends list of the user contains only one user: friend1
         assertEquals(user.getFriendList(), listOf(newDatabase.userIdFriend1))
         ///add the user with userId friend2
-        val isAdded = user.addFriend(newDatabase.userIdFriend2).get()
-        assertEquals(isAdded, true)
+        user.addFriend(newDatabase.userIdFriend2).get()
         assertEquals(user.getFriendList(), expectedFriendList)
         //check the database
         assertEquals(newDatabase.userIdToUserAccount.get(userId)?.getFriendList() ?: listOf("not"), expectedFriendList)
@@ -585,7 +584,7 @@ class UserModelTest {
         val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
             user.addFriend("notId").get()
         }
-        assertEquals("java.lang.Error: The user with notId is not present on the database.", exception.message)
+        assertEquals("java.lang.Exception: The user with notId is not present on the database.", exception.message)
         assertEquals(newDatabase.userIdToUserAccount.get(userId)?.getFriendList(), listOf(newDatabase.userIdFriend1))
     }
 }

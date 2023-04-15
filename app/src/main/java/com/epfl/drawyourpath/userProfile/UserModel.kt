@@ -296,16 +296,14 @@ class UserModel {
      * @param userId of the user that we want to remove
      * @return a future that indicate if the user has been correctly removed from the friends list
      */
-    fun removeFriend(userId: String): CompletableFuture<Boolean> {
+    fun removeFriend(userId: String): CompletableFuture<Unit> {
         if (!friendsList.contains(userId)) {
-            throw java.lang.Error("This user with userId $userId is not in the friend list !")
+            throw Exception("This user with userId $userId is not in the friend list !")
         }
-        return database.removeUserToFriendsList(userId).thenApply {
-            if(it){
-                val interList = friendsList.toMutableList()
-                interList.remove(userId)
-                friendsList = interList
-            }
+        return database.removeUserFromFriendlist(userId).thenApply {
+            val interList = friendsList.toMutableList()
+            interList.remove(userId)
+            friendsList = interList
             it
         }
     }
@@ -315,13 +313,11 @@ class UserModel {
      * @param userId of the user that we want to add to the friend list
      * @return a future that indicate if the user was correctly added to the database
      */
-    fun addFriend(userId: String): CompletableFuture<Boolean> {
+    fun addFriend(userId: String): CompletableFuture<Unit> {
         return database.addUserToFriendsList(userId).thenApply {
-            if(it){
-                val interList = friendsList.toMutableList()
-                interList.add(userId)
-                friendsList = interList
-            }
+            val interList = friendsList.toMutableList()
+            interList.add(userId)
+            friendsList = interList
             it
         }
     }

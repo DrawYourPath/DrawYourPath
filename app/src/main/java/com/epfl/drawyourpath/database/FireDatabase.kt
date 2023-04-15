@@ -215,39 +215,39 @@ class FireDatabase : Database() {
         return updateUserData(dataUpdated)
     }
 
-    override fun addUserToFriendsList(userId: String): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
-        isUserStoredInDatabase(userId).thenAccept {
+    override fun addUserToFriendsList(userId: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        return isUserStoredInDatabase(userId).thenApply {
             if(!it){
-                future.completeExceptionally(java.lang.Error("The user with $userId is not present on the database."))
+                throw Exception("The user with $userId is not present on the database.")
             }else{
-                val newFriend = HashMap<String,Any?>()
-                newFriend.put(userId, null)
-                accessUserAccountFile(userId).child(friendsListFile).updateChildren(newFriend)
-                    .addOnSuccessListener { future.complete(true) }
-                    .addOnFailureListener { future.completeExceptionally(it) }
-            }
-        }
-        return future
-    }
-
-    override fun removeUserToFriendsList(userId: String): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
-
-        accessUserAccountFile(userId).child(friendsListFile).get()
-            .addOnSuccessListener {previousFriendsList->
-                if(!previousFriendsList.children.contains(userId as DataSnapshot)){
-                    future.completeExceptionally(java.lang.Error("The userId $userId is not in the friends list."))
+                //add the user to the the friendList of the current user
+                val currentUserId = getUserId()
+                if(currentUserId==null){
+                    throw Exception("The userId can't be null !")
                 }else{
-                    //delete the user if it is present in the friends list
-                    val updateData = previousFriendsList.children.filter { (it.key as String)!=userId }
-                    accessUserAccountFile(userId).child(userId).setValue(updateData)
-                        .addOnSuccessListener { future.complete(true) }
-                        .addOnFailureListener { future.completeExceptionally(it) }
+                    addUserIdToFriendList(currentUserId, userId).thenApply {
+                        //add the currentUser to the friend list of the user with userId
+                        addUserIdToFriendList(userId, currentUserId)
+                    }
                 }
             }
-            .addOnFailureListener { future.completeExceptionally(it) }
-        return future
+        }
+    }
+
+    override fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit> {
+        val currentUserId = getUserId()
+        if(currentUserId==null){
+            val future = CompletableFuture<Unit>()
+            future.completeExceptionally(Exception("The userId can't be null !"))
+            return future
+        }else{
+            //remove the userId from the friendlist of the current user
+            return removeUserIdToFriendList(currentUserId, userId).thenApply{
+                //remove the current userId to the friendlist of the user with userId
+                removeUserIdToFriendList(userId, currentUserId)
+            }
+        }
     }
 
     /**
@@ -382,7 +382,7 @@ class FireDatabase : Database() {
      */
     private fun transformFriendsList(data: DataSnapshot?): List<String>{
         if(data == null){
-            throw java.lang.Error("The friends list is not present on the database.")
+            return emptyList()
         }
         val friendListUserIds = ArrayList<String>()
 
@@ -390,6 +390,49 @@ class FireDatabase : Database() {
             friendListUserIds.add(friend.key as String)
         }
         return friendListUserIds
+    }
+
+    /**
+     * Helper function to add a userId "friendUserId" to the friendList of a a user with userId "currentUserId"
+     * @param currentUserId userId that belong the friendlist
+     * @param friendUserId userId that we want to add from the friendlist
+     * @return a future that indicate if the userId has been correctly added to the friendlist
+     */
+    private fun addUserIdToFriendList(currentUserId: String, friendUserId: String): CompletableFuture<Unit>{
+        val future = CompletableFuture<Unit>()
+
+        //create the field for the new friend
+        val newFriend = HashMap<String, Boolean>()
+        newFriend.put(friendUserId, true)
+        //updated the friendlist in the database
+        accessUserAccountFile(currentUserId).child(friendsListFile).updateChildren(newFriend as Map<String, Any>)
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+    /**
+     * Helper function to remove a userId "removeUserId" to the friendList of a a user with userId "currentUserId"
+     * @param currentUserId userId that belong the friendlist
+     * @param removeUserId userId that we want to remove from the friendlist
+     * @return a future that indicate if the userId has been correctly added to the friendlist
+     */
+    private fun removeUserIdToFriendList(currentUserId: String, removeUserId: String): CompletableFuture<Unit>{
+        val future = CompletableFuture<Unit>()
+
+        //obtain the previous friendList
+        accessUserAccountFile(currentUserId).child(friendsListFile).get()
+            .addOnSuccessListener {previousFriendList ->
+                if(!previousFriendList.children.contains(removeUserId as DataSnapshot)){
+                    future.completeExceptionally(Exception("The user with userId $removeUserId is not on the freindlist of the user with userId $currentUserId"))
+                }else{
+                    val newFriendList = previousFriendList.children.filter { (it.key as String) != removeUserId }
+                    accessUserAccountFile(currentUserId).child(friendsListFile).setValue(newFriendList)
+                        .addOnSuccessListener { future.complete(Unit) }
+                        .addOnFailureListener{err -> future.completeExceptionally(err)}
+                }
+            }
+            .addOnFailureListener {err -> future.completeExceptionally(err) }
+        return future
     }
 }
 

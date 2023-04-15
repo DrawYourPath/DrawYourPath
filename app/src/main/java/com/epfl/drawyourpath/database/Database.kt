@@ -118,7 +118,7 @@ abstract class Database {
      * @throws an Error if the user that we want to added to the friends list is not present on the database.
      * @return a future that indicate if the user has been correctly added to the current user friends list
      */
-    abstract fun addUserToFriendsList(userId: String): CompletableFuture<Boolean>
+    abstract fun addUserToFriendsList(userId: String): CompletableFuture<Unit>
 
     /**
      * This function will remove a user to the the friends list of the current user with his userId
@@ -126,5 +126,5 @@ abstract class Database {
      * @throws an Error if the user that we want to removed is not present on the database.
      * @return a future that indicate if the user has been correctly removed to the current user friends list
      */
-    abstract fun removeUserToFriendsList(userId: String): CompletableFuture<Boolean>
+    abstract fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit>
 }
