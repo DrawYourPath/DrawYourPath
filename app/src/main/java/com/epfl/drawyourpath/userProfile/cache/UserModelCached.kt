@@ -29,6 +29,8 @@ import java.util.concurrent.CompletableFuture
  *
  * For testing: either never use [createNewUser] or [setCurrentUser] or use [setDatabase] with [MockDataBase] as argument
  * both options will set the current user to a mock user with the [MockDataBase]
+ *
+ * @see <a href="https://github.com/DrawYourPath/DrawYourPath/pull/105">more information</a>
  */
 class UserModelCached(application: Application) : AndroidViewModel(application) {
     //database where the user is store online
