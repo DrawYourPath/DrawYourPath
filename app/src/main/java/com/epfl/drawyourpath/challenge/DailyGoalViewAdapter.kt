@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.lang.Integer.min
 
 

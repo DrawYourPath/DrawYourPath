@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.challenge
+package com.epfl.drawyourpath.userProfile.dailygoal
 
 import java.time.LocalDate
 

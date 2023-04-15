@@ -14,7 +14,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.challenge.DailyGoal
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.challenge.Trophy
