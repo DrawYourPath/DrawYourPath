@@ -332,18 +332,4 @@ class MockDataBaseTest {
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFriendList(), database.friendsListTest)
         assertEquals(database.userIdToUserAccount.get(database.userIdFriend2)?.getFriendList(), emptyList<String>())
     }
-
-    /**
-     * Test if removing a friend to the friendsList that is not on the friends list throw an error
-     */
-    @Test
-    fun removeInvalidUserToFriendsList(){
-        val database = MockDataBase()
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
-            database.removeUserFromFriendlist("faultId").get()
-        }
-        assertEquals("java.lang.Exception: The user with userId faultId is not on the friendlist of the user with userId $userIdTest", exception.message)
-        //check that the friends list in the database has not changed
-        assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFriendList(), database.friendsListTest)
-    }
 }

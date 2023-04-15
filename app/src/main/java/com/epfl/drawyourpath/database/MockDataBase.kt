@@ -249,16 +249,12 @@ class MockDataBase : Database() {
         //obtain the previous friendList
         getUserAccount(currentUserId).thenAccept {user ->
             val previousFriendList = user.getFriendList()
-            if(!previousFriendList.contains(removeUserId)){
-                future.completeExceptionally(Exception("The user with userId $removeUserId is not on the friendlist of the user with userId $currentUserId"))
-            }else {
-                val newFriendList = previousFriendList.filter { it != removeUserId }
-                val newUser = UserModel(user.getUserId(), user.getEmailAddress(), user.getUsername(), user.getFirstname()
-                    ,user.getSurname(), user.getDateOfBirth(), user.getDistanceGoal(), user.getActivityTime(), user.getNumberOfPathsGoal(),
-                    user.getProfilePhoto(), newFriendList, this)
-                userIdToUserAccount.put(currentUserId, newUser)
-                future.complete(Unit)
-            }
+            val newFriendList = previousFriendList.filter { it != removeUserId }
+            val newUser = UserModel(user.getUserId(), user.getEmailAddress(), user.getUsername(), user.getFirstname()
+                ,user.getSurname(), user.getDateOfBirth(), user.getDistanceGoal(), user.getActivityTime(), user.getNumberOfPathsGoal(),
+                user.getProfilePhoto(), newFriendList, this)
+            userIdToUserAccount.put(currentUserId, newUser)
+            future.complete(Unit)
         }
         return future
     }

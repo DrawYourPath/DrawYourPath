@@ -422,14 +422,10 @@ class FireDatabase : Database() {
         //obtain the previous friendList
         accessUserAccountFile(currentUserId).child(friendsListFile).get()
             .addOnSuccessListener {previousFriendList ->
-                if(!previousFriendList.children.contains(removeUserId as DataSnapshot)){
-                    future.completeExceptionally(Exception("The user with userId $removeUserId is not on the freindlist of the user with userId $currentUserId"))
-                }else{
-                    val newFriendList = previousFriendList.children.filter { (it.key as String) != removeUserId }
-                    accessUserAccountFile(currentUserId).child(friendsListFile).setValue(newFriendList)
-                        .addOnSuccessListener { future.complete(Unit) }
-                        .addOnFailureListener{err -> future.completeExceptionally(err)}
-                }
+                val newFriendList = previousFriendList.children.filter { (it.key as String) != removeUserId }
+                accessUserAccountFile(currentUserId).child(friendsListFile).setValue(newFriendList)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener{err -> future.completeExceptionally(err)}
             }
             .addOnFailureListener {err -> future.completeExceptionally(err) }
         return future
