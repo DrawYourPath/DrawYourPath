@@ -13,8 +13,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
-class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
-    
+class FriendsViewModel(private val userModel: UserModel, private val database: Database) : ViewModel() {
+
 
 
     //empty list of Friend
@@ -40,7 +40,7 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
         Log.w("Debug", "Load friends!!!!!!!!!!!!!!")
         // Get the friend list from the UserModel
         val friendsList = userModel.getFriendList()
-        val database: Database = FireDatabase()
+        val database: Database = this.database
 
         // Use a mutable list to store the realFriends
         val realFriends = mutableListOf<Friend>()

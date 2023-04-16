@@ -11,6 +11,8 @@ import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
 
 import com.epfl.drawyourpath.challenge.TemporaryUser
+import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
@@ -38,6 +40,13 @@ class MainActivity : AppCompatActivity() {
         setupProfileButton()
         setupDrawerNavigationView()
         setupBottomNavigationView()
+
+        // Create an instance of your database
+        val database: Database = FireDatabase()
+
+        // Create an instance of FriendsFragmentFactory and set it as the fragment factory
+        val friendsFragmentFactory = FriendsFragmentFactory(database)
+        supportFragmentManager.fragmentFactory = friendsFragmentFactory
 
         //Display the main fragment when no saved state
         if (savedInstanceState == null) {

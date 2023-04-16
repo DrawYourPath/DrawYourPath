@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +22,7 @@ import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
 import com.epfl.drawyourpath.userProfile.UserModel
 
-class FriendsFragment : Fragment(R.layout.fragment_friends) {
+class FriendsFragment(private val database: Database) : Fragment(R.layout.fragment_friends) {
     private lateinit var viewModel: FriendsViewModel
     private lateinit var friendsListAdapter: FriendsListAdapter
 
@@ -36,7 +37,7 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val database: Database = FireDatabase()
+        val database: Database = this.database
 
         // Set up the RecyclerView with an empty adapter initially
         val recyclerView: RecyclerView = view.findViewById(R.id.friends_list)
@@ -53,7 +54,7 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         userAccountFuture.thenApply { userModel ->
 
             // Initialize the ViewModel with the userModel
-            val factory = FriendsViewModelFactory(userModel)
+            val factory = FriendsViewModelFactory(userModel, this.database)
             viewModel = ViewModelProvider(this, factory).get(FriendsViewModel::class.java)
 
             // Update the adapter with the fetched data
@@ -125,6 +126,16 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
             // Handle any exceptions that occurred during the CompletableFuture execution
             Log.e(TAG, "Error while getting UserAccount: ", exception)
             null
+        }
+    }
+}
+
+
+class FriendsFragmentFactory(private val database: Database) : FragmentFactory() {
+    override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
+        return when (className) {
+            FriendsFragment::class.java.name -> FriendsFragment(database)
+            else -> super.instantiate(classLoader, className)
         }
     }
 }
