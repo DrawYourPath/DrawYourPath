@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.path.Run
 import java.util.concurrent.CompletableFuture
 
 abstract class Database {
@@ -17,6 +18,7 @@ abstract class Database {
     val nbOfPathsGoalFile: String = "nbOfPathsGoal"
     val profilePhotoFile: String = "profilePhoto"
     val friendsListFile: String = "friendsList"
+    val runsHistoryFile: String = "pathsHistory"
 
     /**
      * This function is used to know if a certain user is already store in the database
@@ -127,4 +129,18 @@ abstract class Database {
      * @return a future that indicate if the user has been correctly removed to the current user friends list
      */
     abstract fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit>
+
+    /**
+     * This function will add a run to the history of runs, using its starting time as a key
+     * @param run to be stored
+     * @return a future that indicate if the run has been correctly added to the history in the database
+     */
+    abstract fun addRunToHistory(run: Run): CompletableFuture<Unit>
+
+    /**
+     * This function will remove a run from the history of runs, using its starting time as a key
+     * @param run to be removed
+     * @return a future that indicate if the run has been correctly removed from the history in the database
+     */
+    abstract fun removeRunFromHistory(run: Run): CompletableFuture<Unit>
 }

@@ -1,4 +1,4 @@
-package com.github.drawyourpath.bootcamp.path
+package com.epfl.drawyourpath.path
 
 import com.epfl.drawyourpath.path.Path
 import java.text.SimpleDateFormat

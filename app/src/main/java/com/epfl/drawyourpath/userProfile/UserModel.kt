@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.userProfile
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.path.Run
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
@@ -44,9 +45,12 @@ class UserModel {
     //profile photo, can be null if the user don't want to
     private var profilePhoto: Bitmap? = null
 
+    //runs history
+    private var runsHistory: List<Run>
+
 
     /**
-     * THis constructor will create a new user based on the user model of the app(constructor at the the profile creation)
+     * This constructor will create a new user based on the user model of the app (constructor at the the profile creation)
      * @param userAuth user authenticate give by the login
      * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
      * @param firstname must respect the name convention of the app (name or name-name)
@@ -91,10 +95,12 @@ class UserModel {
 
         this.friendsList = ArrayList()
         this.profilePhoto = null
+
+        this.runsHistory = ArrayList()
     }
 
     /**
-     * THis constructor will create a new user based on the user model of the app
+     * This constructor will create a new user based on the user model of the app
      * @param userId of the user
      * @param emailAddress of the user
      * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
@@ -107,7 +113,7 @@ class UserModel {
      * @param friendsList the friendsList of the user(with a default empty friendsList
      * @throws error if the inputs are incorrect
      */
-    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, friendsList: List<String>, database: Database){
+    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, friendsList: List<String>, runsHistory: List<Run>, database: Database){
         this.database = database
 
         //obtain the userId and the email give by the authentication
@@ -141,6 +147,8 @@ class UserModel {
 
         this.friendsList = friendsList
         this.profilePhoto =profilePhoto
+
+        this.runsHistory = runsHistory
     }
 
     /**
@@ -328,6 +336,44 @@ class UserModel {
      */
     fun getFriendList(): List<String> {
         return this.friendsList
+    }
+
+    /**
+     * This function will add a run to the history of the user in the local history and the database.
+     * @param run to be added to the history
+     * @return a future that indicate if the run was correctly added to the database
+     */
+    fun addRunToHistory(run: Run): CompletableFuture<Unit> {
+        return database.addRunToHistory(run).thenApply {
+            val tmpList = runsHistory.toMutableList()
+            tmpList.add(run)
+            runsHistory = tmpList
+        }
+    }
+
+    /**
+     * This function will remove a run from the history of the user in the local history and the database.
+     * @param run to be removed from the history
+     * @return a future that indicate if the run was correctly removed from the database
+     */
+    fun removeRunFromHistory(run: Run): CompletableFuture<Unit> {
+        if (!runsHistory.contains(run)) {
+            throw Exception("This path is not in the history !")
+        }
+
+        return database.removeRunFromHistory(run).thenApply {
+            val tmpList = runsHistory.toMutableList()
+            tmpList.remove(run)
+            runsHistory = tmpList
+        }
+    }
+
+    /**
+     * This function will return the runs history of a user
+     * @return the runs history of the user
+     */
+    fun getRunsHistory(): List<Run> {
+        return runsHistory
     }
 
     /**

@@ -506,7 +506,7 @@ class UserModelTest {
     fun correctFriendsListIsGet(){
         val expectedFriendsList = listOf<String>("friend1", "friend2")
         val user = UserModel(userId, auth.getEmail(), username, firstname, surname, dateOfBirth, distanceGoal,
-        timeGoal, nbOfPaths, null, expectedFriendsList, database)
+        timeGoal, nbOfPaths, null, expectedFriendsList, emptyList(), database)
         assertEquals(user.getFriendList(), expectedFriendsList)
     }
 
