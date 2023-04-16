@@ -39,14 +39,14 @@ class UserModel {
     private var database: Database
 
     //friend list
-    private var friendsList: HashMap<String, String> //(username, userId)
+    private var friendsList: List<String> //a list of userId
 
     //profile photo, can be null if the user don't want to
     private var profilePhoto: Bitmap? = null
 
 
     /**
-     * THis constructor will create a new user based on the user model of the app
+     * THis constructor will create a new user based on the user model of the app(constructor at the the profile creation)
      * @param userAuth user authenticate give by the login
      * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
      * @param firstname must respect the name convention of the app (name or name-name)
@@ -89,7 +89,8 @@ class UserModel {
         checkNbOfPathsGoal(nbOfPathsGoal)
         this.nbOfPathsGoal=nbOfPathsGoal
 
-        this.friendsList = HashMap()
+        this.friendsList = ArrayList()
+        this.profilePhoto = null
     }
 
     /**
@@ -103,9 +104,10 @@ class UserModel {
      * @param distanceGoal init at the user profile creation and can be modify after(daily goal)
      * @param activityTimeGoal init at the user profile creation and can be modify after(daily goal)
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
+     * @param friendsList the friendsList of the user(with a default empty friendsList
      * @throws error if the inputs are incorrect
      */
-    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, database: Database){
+    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, friendsList: List<String>, database: Database){
         this.database = database
 
         //obtain the userId and the email give by the authentication
@@ -137,7 +139,7 @@ class UserModel {
         checkNbOfPathsGoal(nbOfPathsGoal)
         this.nbOfPathsGoal = nbOfPathsGoal
 
-        this.friendsList = HashMap()
+        this.friendsList = friendsList
         this.profilePhoto =profilePhoto
     }
 
@@ -290,31 +292,41 @@ class UserModel {
     }
 
     /**
-     * This function will remove the user with username to the friend list
-     * @param username of the user that we want to remove
+     * This function will remove the user with userId to the friend list
+     * @param userId of the user that we want to remove
+     * @return a future that indicate if the user has been correctly removed from the friends list
      */
-    fun removeFriend(username: String) {
-        if (!friendsList.contains(username)) {
-            throw java.lang.Error("This user is not in the friend list !")
+    fun removeFriend(userId: String): CompletableFuture<Unit> {
+        if (!friendsList.contains(userId)) {
+            throw Exception("This user with userId $userId is not in the friend list !")
         }
-        friendsList.remove(username)
-        //TODO: Update the friend list in the database
+        return database.removeUserFromFriendlist(userId).thenApply {
+            val interList = friendsList.toMutableList()
+            interList.remove(userId)
+            friendsList = interList
+            it
+        }
     }
 
     /**
-     * This function will add the user with username to the friend list. To be added the user must be present in the database.
-     * @param username of the user that we want to add to the friend list
+     * This function will add the user with userId to the friend list. To be added the user must be present in the database.
+     * @param userId of the user that we want to add to the friend list
+     * @return a future that indicate if the user was correctly added to the database
      */
-    fun addFriend(username: String) {
-        //TODO:this function will be implemented during a next task when the database will be cleaned
-        //TODO: Update the friend list in the database
+    fun addFriend(userId: String): CompletableFuture<Unit> {
+        return database.addUserToFriendsList(userId).thenApply {
+            val interList = friendsList.toMutableList()
+            interList.add(userId)
+            friendsList = interList
+            it
+        }
     }
 
     /**
-     * This function will return the friend list of a user
+     * This function will return the friend list of a user(a list the his friends userId's)
      * @return the friend list of the user
      */
-    fun getFriendList(): Map<String, String> {
+    fun getFriendList(): List<String> {
         return this.friendsList
     }
 

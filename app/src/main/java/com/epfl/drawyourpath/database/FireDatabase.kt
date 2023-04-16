@@ -13,6 +13,8 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * The Firebase contains files:
@@ -29,7 +31,7 @@ class FireDatabase : Database() {
         val future = CompletableFuture<Boolean>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener {
-            if (it.value == null) future.complete(true)
+            if (it.value != null) future.complete(true)
             else future.complete(false)
         }.addOnFailureListener {
             future.completeExceptionally(it)
@@ -203,7 +205,6 @@ class FireDatabase : Database() {
     }
 
     override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
         val dataUpdated = HashMap<String, Any>()
 
         //convert the bitmap to a byte array
@@ -212,6 +213,41 @@ class FireDatabase : Database() {
         val imageEncoded: String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
         dataUpdated.put(profilePhotoFile, imageEncoded)
         return updateUserData(dataUpdated)
+    }
+
+    override fun addUserToFriendsList(userId: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        return isUserStoredInDatabase(userId).thenApply {
+            if(!it){
+                throw Exception("The user with $userId is not present on the database.")
+            }else{
+                //add the user to the the friendList of the current user
+                val currentUserId = getUserId()
+                if(currentUserId==null){
+                    throw Exception("Any user is logged !")
+                }else{
+                    addUserIdToFriendList(currentUserId, userId).thenApply {
+                        //add the currentUser to the friend list of the user with userId
+                        addUserIdToFriendList(userId, currentUserId)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit> {
+        val currentUserId = getUserId()
+        if(currentUserId==null){
+            val future = CompletableFuture<Unit>()
+            future.completeExceptionally(Exception("Any user is logged !"))
+            return future
+        }else{
+            //remove the userId from the friendlist of the current user
+            return removeUserIdToFriendList(currentUserId, userId).thenApply{
+                //remove the current userId to the friendlist of the user with userId
+                removeUserIdToFriendList(userId, currentUserId)
+            }
+        }
     }
 
     /**
@@ -294,8 +330,7 @@ class FireDatabase : Database() {
             val distanceGoal = data.child(distanceGoalFile).value
             val activityTimeGoal = data.child(activityTimeGoalFile).value
             val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
-
-
+            val friendsListData = data.child(friendsListFile)
 
             if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null || nbOfPathsGoal == null) {
                 throw java.lang.Error("The user account present on the database is incomplete.")
@@ -303,6 +338,9 @@ class FireDatabase : Database() {
                 //test if the photoProfile is null to know if we need to decode it
                 val profilePhotoEncoded = data.child(profilePhotoFile).value
                 val profilePhoto = decodePhoto(profilePhotoEncoded)
+
+                //obtain the friendsList
+                val friendsList = transformFriendsList(friendsListData)
 
                 //create the userModel
                 return UserModel(
@@ -316,6 +354,7 @@ class FireDatabase : Database() {
                         (activityTimeGoal as Long).toDouble(),
                         (nbOfPathsGoal as Long).toInt(),
                         profilePhoto,
+                        friendsList,
                         this
                 )
             }
@@ -334,6 +373,62 @@ class FireDatabase : Database() {
             val tabByte = Base64.getDecoder().decode(photoStr as String)
             return BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
         }
+    }
+
+    /**
+     * Helper function to obtain the friends list from the database of the user
+     * @param data the data snapshot containing the user List
+     * @return a list containing the userIds of the friends
+     */
+    private fun transformFriendsList(data: DataSnapshot?): List<String>{
+        if(data == null){
+            return emptyList()
+        }
+        val friendListUserIds = ArrayList<String>()
+
+        for(friend in data.children){
+            friendListUserIds.add(friend.key as String)
+        }
+        return friendListUserIds
+    }
+
+    /**
+     * Helper function to add a userId "friendUserId" to the friendList of a a user with userId "currentUserId"
+     * @param currentUserId userId that belong the friendlist
+     * @param friendUserId userId that we want to add from the friendlist
+     * @return a future that indicate if the userId has been correctly added to the friendlist
+     */
+    private fun addUserIdToFriendList(currentUserId: String, friendUserId: String): CompletableFuture<Unit>{
+        val future = CompletableFuture<Unit>()
+
+        //create the field for the new friend
+        val newFriend = HashMap<String, Boolean>()
+        newFriend.put(friendUserId, true)
+        //updated the friendlist in the database
+        accessUserAccountFile(currentUserId).child(friendsListFile).updateChildren(newFriend as Map<String, Any>)
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+    /**
+     * Helper function to remove a userId "removeUserId" to the friendList of a a user with userId "currentUserId"
+     * @param currentUserId userId that belong the friendlist
+     * @param removeUserId userId that we want to remove from the friendlist
+     * @return a future that indicate if the userId has been correctly added to the friendlist
+     */
+    private fun removeUserIdToFriendList(currentUserId: String, removeUserId: String): CompletableFuture<Unit>{
+        val future = CompletableFuture<Unit>()
+
+        //obtain the previous friendList
+        accessUserAccountFile(currentUserId).child(friendsListFile).get()
+            .addOnSuccessListener {previousFriendList ->
+                val newFriendList = previousFriendList.children.filter { (it.key as String) != removeUserId }
+                accessUserAccountFile(currentUserId).child(friendsListFile).setValue(newFriendList)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener{err -> future.completeExceptionally(err)}
+            }
+            .addOnFailureListener {err -> future.completeExceptionally(err) }
+        return future
     }
 }
 

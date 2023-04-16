@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile
 
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.MockDataBase
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -27,7 +28,7 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidFirstname() {
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 "558",
@@ -42,7 +43,7 @@ class UserModelTest {
         assertEquals("Incorrect firstname", exception.message)
 
         val exception2 = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 "",
@@ -63,7 +64,7 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidSurname() {
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 firstname,
@@ -78,7 +79,7 @@ class UserModelTest {
         assertEquals("Incorrect surname", exception.message)
 
         val exception2 = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 firstname,
@@ -100,7 +101,7 @@ class UserModelTest {
     fun createUserWithInvalidDate() {
         //under 10 years
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 firstname,
@@ -115,7 +116,7 @@ class UserModelTest {
         assertEquals("Incorrect date of birth !", exception.message)
         //over 100 years
         val exception2 = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 firstname,
@@ -136,7 +137,7 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidDistanceGoal() {
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 firstname,
@@ -157,7 +158,7 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidActivityTimeGoal() {
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 firstname,
@@ -178,7 +179,7 @@ class UserModelTest {
     @Test
     fun createUserWithInvalidNbOfPathsGoal() {
         val exception = assertThrows(java.lang.Error::class.java) {
-            val user = UserModel(
+            UserModel(
                 auth,
                 username,
                 firstname,
@@ -336,7 +337,7 @@ class UserModelTest {
             nbOfPaths,
             database
         )
-        val ret = user.setDistanceGoal(12.0)
+        user.setDistanceGoal(12.0)
         assertEquals(user.getDistanceGoal(), 12.0, 0.0001)
         //check the database(compare with boolean to evict the null if condition)
         assertEquals(
@@ -499,11 +500,22 @@ class UserModelTest {
     }
 
     /**
+     * This function test if the correct friends list is return after initialize it in the constructor
+     */
+    @Test
+    fun correctFriendsListIsGet(){
+        val expectedFriendsList = listOf<String>("friend1", "friend2")
+        val user = UserModel(userId, auth.getEmail(), username, firstname, surname, dateOfBirth, distanceGoal,
+        timeGoal, nbOfPaths, null, expectedFriendsList, database)
+        assertEquals(user.getFriendList(), expectedFriendsList)
+    }
+
+    /**
      * Test if remove a user with username not present in the friend list throw an error
      */
     @Test
     fun removeFriendNotOnFriendList() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -514,29 +526,30 @@ class UserModelTest {
             nbOfPaths,
             database
         )
-        val exception = assertThrows(java.lang.Error::class.java) {
-            user.removeFriend("nathan")
+        val exception = assertThrows(Exception::class.java) {
+            user.removeFriend("notId")
         }
-        assertEquals("This user is not in the friend list !", exception.message)
+        assertEquals("This user with userId notId is not in the friend list !", exception.message)
     }
 
+
     /**
-     * Test if remove a user with username will remove this user of the friend list
+     * Test if remove a user with userId will remove this user of the friend list
      */
     @Test
     fun removeFriendOnFriendList() {
-        val user: UserModel = UserModel(
-            auth,
-            username,
-            firstname,
-            surname,
-            dateOfBirth,
-            distanceGoal,
-            timeGoal,
-            nbOfPaths,
-            database
-        )
-        //TODO: This function will be implemented during a next task
+        val newDataBase = MockDataBase()
+        val expectedFriendsList = emptyList<String>()
+        //select a user present on the database
+        val user = newDataBase.userModelTest
+        //check that at the beginning the friends list contains one user
+        assertEquals(user.getFriendList(), listOf(newDataBase.userIdFriend1))
+        //remove the user
+        user.removeFriend(newDataBase.userIdFriend1).get()
+
+        assertEquals(user.getFriendList(), expectedFriendsList)
+        //check the database
+        assertEquals(newDataBase.userIdToUserAccount.get(userId)?.getFriendList() ?: listOf("not"),expectedFriendsList)
     }
 
     /**
@@ -544,36 +557,34 @@ class UserModelTest {
      */
     @Test
     fun addFriendOnFriendList() {
-        val user: UserModel = UserModel(
-            auth,
-            username,
-            firstname,
-            surname,
-            dateOfBirth,
-            distanceGoal,
-            timeGoal,
-            nbOfPaths,
-            database
-        )
-        //TODO: This function will be implemented during a next task
+        val newDatabase = MockDataBase()
+        val expectedFriendList = listOf<String>(newDatabase.userIdFriend1, newDatabase.userIdFriend2)
+        //select a user present on the database
+        val user = newDatabase.userModelTest
+        //check that at the beginning the friends list of the user contains only one user: friend1
+        assertEquals(user.getFriendList(), listOf(newDatabase.userIdFriend1))
+        ///add the user with userId friend2
+        user.addFriend(newDatabase.userIdFriend2).get()
+        assertEquals(user.getFriendList(), expectedFriendList)
+        //check the database
+        assertEquals(newDatabase.userIdToUserAccount.get(userId)?.getFriendList() ?: listOf("not"), expectedFriendList)
     }
 
     /**
-     * Test if add a user with username not present on the database throw an error
+     * Test if add a user with userId not present on the database throw an error
      */
     @Test
-    fun addFriendOnFriendListNotPresentOnDataBase() {
-        val user: UserModel = UserModel(
-            auth,
-            username,
-            firstname,
-            surname,
-            dateOfBirth,
-            distanceGoal,
-            timeGoal,
-            nbOfPaths,
-            database
-        )
-        //TODO: This function will be implemented during a next task
+    fun addFriendOnFriendListNotPresentOnDatabse() {
+        val newDatabase = MockDataBase()
+        //select a user present on the database
+        val user = newDatabase.userModelTest
+        //check that at the beginning the friends list of the user contains only one user: friend1
+        assertEquals(user.getFriendList(), listOf(newDatabase.userIdFriend1))
+        ///add the user with userId "notId" not present on the database
+        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+            user.addFriend("notId").get()
+        }
+        assertEquals("java.lang.Exception: The user with notId is not present on the database.", exception.message)
+        assertEquals(newDatabase.userIdToUserAccount.get(userId)?.getFriendList(), listOf(newDatabase.userIdFriend1))
     }
 }
