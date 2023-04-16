@@ -41,8 +41,8 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         // Set up the RecyclerView with an empty adapter initially
         val recyclerView: RecyclerView = view.findViewById(R.id.friends_list)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        friendsListAdapter = FriendsListAdapter { friend ->
-            viewModel.addFriend(friend)
+        friendsListAdapter = FriendsListAdapter { friend, isFriend ->
+            viewModel.addOrRemoveFriend(friend, isFriend)
         }
         recyclerView.adapter = friendsListAdapter
 

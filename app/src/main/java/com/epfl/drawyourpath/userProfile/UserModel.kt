@@ -314,8 +314,8 @@ class UserModel {
      * @param userId of the user that we want to add to the friend list
      * @return a future that indicate if the user was correctly added to the database
      */
-        fun addFriend(userId: String): CompletableFuture<Unit> {
-        Log.d("addFriend", "userId: $userId")
+    fun addFriend(userId: String): CompletableFuture<Unit> {
+        Log.d("addFriend", "addFriend: $userId")
         return database.addUserToFriendsList(userId).thenApply {
             val interList = friendsList.toMutableList()
             interList.add(userId)
@@ -420,6 +420,5 @@ private fun checkNbOfPathsGoal(nbOfPathsGoal: Int) {
         throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
     }
 }
-
 
 

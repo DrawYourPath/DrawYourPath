@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 
@@ -17,7 +18,7 @@ data class Friend(
 
 
 // This adapter is responsible for displaying the list of friends in a RecyclerView.
-class FriendsListAdapter(private val onAddFriendClicked: (Friend) -> Unit) :
+class FriendsListAdapter(private val onAddOrRemoveFriendClicked: (Friend, Boolean) -> Unit) :
     RecyclerView.Adapter<FriendsListAdapter.FriendViewHolder>() {
 
     // This is the list of friends that the adapter will display.
@@ -36,17 +37,18 @@ class FriendsListAdapter(private val onAddFriendClicked: (Friend) -> Unit) :
             name.text = friend.name
             profileImage.setImageResource(friend.profileImage)
 
-
-            addFriendButton.setOnClickListener {
-                onAddFriendClicked(friend)
-            }
-
             if (friend.isFriend) {
-                addFriendButton.text = "Friend"
-                addFriendButton.isEnabled = false
+                addFriendButton.text = "Unfriend"
+                addFriendButton.backgroundTintList = ContextCompat.getColorStateList(itemView.context, R.color.unfriend_button_color)
+                addFriendButton.setOnClickListener {
+                    onAddOrRemoveFriendClicked(friend, true)
+                }
             } else {
                 addFriendButton.text = "Add Friend"
-                addFriendButton.isEnabled = true
+                addFriendButton.backgroundTintList = ContextCompat.getColorStateList(itemView.context, R.color.add_friend_button_color)
+                addFriendButton.setOnClickListener {
+                    onAddOrRemoveFriendClicked(friend, false)
+                }
             }
         }
     }

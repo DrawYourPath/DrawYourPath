@@ -110,20 +110,30 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
     }
 
     /**
-     * The addFriend() function updates the isFriend property of a Friend object.
+     * The addOrRemoveFriend() function adds or removes a friend from the list of friends and updated the database.
      */
-    fun addFriend(friend: Friend) {
-        // Map through all friends and update the isFriend property for the matching friend.
-        userModel.addFriend(friend.id).whenComplete() { result, exception ->
-            if (exception != null) {
-                Log.w("Debug", "Error adding friend!!!!!!!!!!!!!!")
-            }else{
-                Log.w("Debug", "Friend added!!!!!!!!!!!!!!")
+    fun addOrRemoveFriend(friend: Friend, isFriend: Boolean) {
+        if (isFriend) {
+            userModel.removeFriend(friend.id).whenComplete() { result, exception ->
+                if (exception != null) {
+                    Log.w("Debug", "Error removing friend!!!!!!!!!!!!!!")
+                } else {
+                    Log.w("Debug", "Friend removed!!!!!!!!!!!!!!")
+                }
+            }
+        } else {
+            userModel.addFriend(friend.id).whenComplete() { result, exception ->
+                if (exception != null) {
+                    Log.w("Debug", "Error adding friend!!!!!!!!!!!!!!")
+                } else {
+                    Log.w("Debug", "Friend added!!!!!!!!!!!!!!")
+                }
             }
         }
+
         val updatedFriendsList = allFriends.map {
             if (it.id == friend.id) {
-                it.copy(isFriend = true)
+                it.copy(isFriend = !isFriend)
             } else {
                 it
             }
