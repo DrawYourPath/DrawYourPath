@@ -1,4 +1,5 @@
 package com.epfl.drawyourpath.mainpage.fragments.helperClasses
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,7 @@ import com.epfl.drawyourpath.R
 data class Friend(
     val id: String,
     val name: String,
-    val profileImage: Int, // Use a drawable resource ID for simplicity. TODO probably change to a bitmap later
+    val profileImage: Bitmap?,
     val isFriend: Boolean
 )
 
@@ -35,7 +36,11 @@ class FriendsListAdapter(private val onAddOrRemoveFriendClicked: (Friend, Boolea
          */
         fun bind(friend: Friend) {
             name.text = friend.name
-            profileImage.setImageResource(friend.profileImage)
+            if (friend.profileImage != null) {
+                profileImage.setImageBitmap(friend.profileImage)
+            } else {
+                profileImage.setImageResource(R.drawable.ic_profile_placeholder)
+            }
 
             if (friend.isFriend) {
                 addFriendButton.text = "Unfriend"

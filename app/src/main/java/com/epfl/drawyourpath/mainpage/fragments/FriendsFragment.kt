@@ -94,7 +94,7 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                                         val newFriend = Friend(
                                             userModel.getUserId(),
                                             userModel.getUsername(),
-                                            R.drawable.ic_profile_placeholder,
+                                            userModel.getProfilePhoto(),
                                             false
                                         )
 

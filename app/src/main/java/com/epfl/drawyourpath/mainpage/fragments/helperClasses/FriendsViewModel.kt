@@ -14,15 +14,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
+    
 
-    // For now, create a dummy list of friends. TODO delete when userModel friends list is implemented
-    val testFriends = listOf(
-        Friend("1", "John Doe", R.drawable.ic_profile_placeholder, false),
-        Friend("2", "Jane Smith", R.drawable.ic_profile_placeholder, true),
-
-
-        // Add more friends here.
-    )
 
     //empty list of Friend
     var allFriends = listOf<Friend>()
@@ -65,24 +58,35 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
             // When the CompletableFuture completes, update the list of friends
             usernameFuture.whenComplete { username, exception ->
                 if (exception == null) {
+                    database.getUserAccount(userId).whenComplete { userAccount, exception ->
+                        if (exception == null) {
+                            // Add the new Friend object to the realFriends list
+                            realFriends.add(
+                                Friend(
+                                    userId,
+                                    username,
+                                    userAccount.getProfilePhoto(),
+                                    true
+                                )
+                            )
 
-                    // Add the new Friend object to the realFriends list
-                    realFriends.add(Friend(userId, username, R.drawable.ic_profile_placeholder, true))
+                            // Increment the friendsLoaded counter
+                            friendsLoaded++
 
-                    // Increment the friendsLoaded counter
-                    friendsLoaded++
+                            // Check if all friends have been loaded
+                            if (friendsLoaded == friendsList.size) {
+                                // Concatenate the testFriends and realFriends lists
+                                allFriends = realFriends
 
-                    // Check if all friends have been loaded
-                    if (friendsLoaded == friendsList.size) {
-                        // Concatenate the testFriends and realFriends lists
-                        allFriends = testFriends + realFriends
-
-                        // Set the initial value of _friendsList to allFriends.
-                        _friendsList.postValue(allFriends)
+                                // Set the initial value of _friendsList to allFriends.
+                                _friendsList.postValue(allFriends)
+                            }
+                        } else {
+                            // Handle the exception (e.g., log the error, show a message to the user, etc.)
+                            Log.w("Debug", "Error getting username from database!!!!!!!!!!!!!!")
+                        }
                     }
-                } else {
-                    // Handle the exception (e.g., log the error, show a message to the user, etc.)
-                    Log.w("Debug", "Error getting username from database!!!!!!!!!!!!!!")
+
                 }
             }
         }
