@@ -146,9 +146,17 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
      * The addPotentialFriend() function adds a new potential friend to the list of friends.
      */
     fun addPotentialFriend(friend: Friend) {
-        // Add the new friend to the list of all friends.
-        allFriends = allFriends + friend
-        // Update the friends list to show the new friend.
-        search("")
+        // Check if the friend is already in the list.
+        val isFriendAlreadyInList = allFriends.any { it.id == friend.id }
+
+        // If the friend is not already in the list, add them.
+        if (!isFriendAlreadyInList) {
+            // Add the new friend to the list of all friends.
+            allFriends = allFriends + friend
+            // Update the friends list to show the new friend.
+            search("")
+        } else {
+            // You can show a message here that the user is already in the list if you want.
+        }
     }
 }
