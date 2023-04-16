@@ -32,7 +32,7 @@ class FireDatabase : Database() {
         val future = CompletableFuture<Boolean>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener {
-            if (it.value == null) future.complete(true)
+            if (it.value != null) future.complete(true)
             else future.complete(false)
         }.addOnFailureListener {
             future.completeExceptionally(it)
