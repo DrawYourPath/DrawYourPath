@@ -224,7 +224,7 @@ class FireDatabase : Database() {
                 //add the user to the the friendList of the current user
                 val currentUserId = getUserId()
                 if(currentUserId==null){
-                    throw Exception("The userId can't be null !")
+                    throw Exception("Any user is logged !")
                 }else{
                     addUserIdToFriendList(currentUserId, userId).thenApply {
                         //add the currentUser to the friend list of the user with userId
@@ -239,7 +239,7 @@ class FireDatabase : Database() {
         val currentUserId = getUserId()
         if(currentUserId==null){
             val future = CompletableFuture<Unit>()
-            future.completeExceptionally(Exception("The userId can't be null !"))
+            future.completeExceptionally(Exception("Any user is logged !"))
             return future
         }else{
             //remove the userId from the friendlist of the current user
