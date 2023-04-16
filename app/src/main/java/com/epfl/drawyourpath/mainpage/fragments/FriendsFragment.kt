@@ -75,28 +75,39 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (query != null && query.isNotBlank()) {
                         Log.d("Debug", "Submitting query!!!")
-                        database.isUsernameAvailable(query).thenAccept { isAvailable ->
+                        database.isUsernameAvailable(query).thenApply { isAvailable ->
+                            Log.d("Debug", "fount if username is available! ")
 
-                            if (isAvailable == false) {
-                                Toast.makeText(requireContext(), "Username not found.", Toast.LENGTH_SHORT).show()
+                            if (isAvailable == true) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Username not found.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 Log.d("Debug", "username not found! ")
                             } else {
-                                database.getUserIdFromUsername(query).thenCompose { userId ->
-                                    database.getUserAccount(userId)
-                                }.thenAccept { userModel ->
-                                    val newFriend = Friend(
-                                        userModel.getUserId().toInt(),
-                                        userModel.getUsername(),
-                                        R.drawable.ic_profile_placeholder,
-                                        false
-                                    )
+                                Log.d("Debug", "fount that username is available! ")
+                                database.getUserIdFromUsername(query).thenApply { userId ->
+                                    Log.d("Debug", "Got user ID! ")
+                                    database.getUserAccount(userId).thenApply { userModel ->
+                                        Log.d("Debug", "Got user account! ")
+                                        val newFriend = Friend(
+                                            userModel.getUserId(),
+                                            userModel.getUsername(),
+                                            R.drawable.ic_profile_placeholder,
+                                            false
+                                        )
 
-                                    // Add the new friend to the list and update the UI
-                                    viewModel.addPotentialFriend(newFriend)
+                                        Log.d("Debug", "Added user to list! ")
 
+                                        // Add the new friend to the list and update the UI
+                                        viewModel.addPotentialFriend(newFriend)
+
+                                    }
                                 }
                             }
                         }
+
                     }
                     return true
                 }

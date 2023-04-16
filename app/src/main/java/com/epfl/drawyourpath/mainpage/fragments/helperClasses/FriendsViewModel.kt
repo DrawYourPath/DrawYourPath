@@ -17,8 +17,8 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
 
     // For now, create a dummy list of friends. TODO delete when userModel friends list is implemented
     val testFriends = listOf(
-        Friend(1, "John Doe", R.drawable.ic_profile_placeholder, false),
-        Friend(2, "Jane Smith", R.drawable.ic_profile_placeholder, true),
+        Friend("1", "John Doe", R.drawable.ic_profile_placeholder, false),
+        Friend("2", "Jane Smith", R.drawable.ic_profile_placeholder, true),
 
 
         // Add more friends here.
@@ -67,7 +67,7 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
                 if (exception == null) {
 
                     // Add the new Friend object to the realFriends list
-                    realFriends.add(Friend(userId.toInt(), username, R.drawable.ic_profile_placeholder, true))
+                    realFriends.add(Friend(userId, username, R.drawable.ic_profile_placeholder, true))
 
                     // Increment the friendsLoaded counter
                     friendsLoaded++
@@ -82,6 +82,7 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
                     }
                 } else {
                     // Handle the exception (e.g., log the error, show a message to the user, etc.)
+                    Log.w("Debug", "Error getting username from database!!!!!!!!!!!!!!")
                 }
             }
         }
@@ -113,6 +114,13 @@ class FriendsViewModel(private val userModel: UserModel) : ViewModel() {
      */
     fun addFriend(friend: Friend) {
         // Map through all friends and update the isFriend property for the matching friend.
+        userModel.addFriend(friend.id).whenComplete() { result, exception ->
+            if (exception != null) {
+                Log.w("Debug", "Error adding friend!!!!!!!!!!!!!!")
+            }else{
+                Log.w("Debug", "Friend added!!!!!!!!!!!!!!")
+            }
+        }
         val updatedFriendsList = allFriends.map {
             if (it.id == friend.id) {
                 it.copy(isFriend = true)

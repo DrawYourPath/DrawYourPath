@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.userProfile
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import java.time.LocalDate
@@ -316,6 +317,7 @@ class UserModel {
      * @return a future that indicate if the user was correctly added to the database
      */
     fun addFriend(userId: String): CompletableFuture<Boolean> {
+        Log.d("addFriend", "userId: $userId")
         return database.addUserToFriendsList(userId).thenApply {
             if(it){
                 val interList = friendsList.toMutableList()

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 
 data class Friend(
-    val id: Int,
+    val id: String,
     val name: String,
     val profileImage: Int, // Use a drawable resource ID for simplicity. TODO probably change to a bitmap later
     val isFriend: Boolean
