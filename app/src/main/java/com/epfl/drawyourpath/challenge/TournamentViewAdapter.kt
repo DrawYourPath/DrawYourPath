@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.community
+package com.epfl.drawyourpath.challenge
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.community.Tournament
 
 
 /**
