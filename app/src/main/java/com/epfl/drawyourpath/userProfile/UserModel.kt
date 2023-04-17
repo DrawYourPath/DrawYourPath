@@ -2,10 +2,12 @@ package com.epfl.drawyourpath.userProfile
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.database.Database
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
 
 class UserModel {
     //the userId of the user
@@ -27,13 +29,16 @@ class UserModel {
     private val dateOfBirth: LocalDate
 
     //the distance goal is initialize at the profile creation and can be modify
-    private var distanceGoal: Double
+    private var currentDistanceGoal: Double
 
     //the activity time goal is initialize at the profile creation and can be modify
-    private var activityTimeGoal: Double
+    private var currentActivityTimeGoal: Double
 
     //the number of path goal is initialize at the profile creation and can be modify
-    private var nbOfPathsGoal: Int
+    private var currentNbOfPathsGoal: Int
+
+    //list of daily goals realized by the user
+    private var dailyGoalList: List<DailyGoal>
 
     //database where the user is store online
     private var database: Database
@@ -43,6 +48,14 @@ class UserModel {
 
     //profile photo, can be null if the user don't want to
     private var profilePhoto: Bitmap? = null
+
+    //user achievements
+    //total distance run by the user
+    private var totalDistance: Double
+    //total activity time of the user
+    private var totalActivityTime: Double
+    //total number of paths draw by the user
+    private var totalNbOfPaths: Int
 
 
     /**
@@ -55,9 +68,15 @@ class UserModel {
      * @param distanceGoal init at the user profile creation and can be modify after(daily goal)
      * @param activityTimeGoal init at the user profile creation and can be modify after(daily goal)
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
+     * @param dailyGoalList a list of daily goal realized by the user (by default the list is empty)
+     * @param totalDistance total distance run by the user since the creation of his profile(default value is 0)
+     * @param totalActivityTime total activity time since the creation of the his profile(default value is 0)
+     * @param totalNbOfPaths total number of paths draw by the user since the creation of his profile
      * @throws error if the inputs are incorrect
      */
-    constructor(userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
+    constructor(userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double,
+                activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database, dailyGoalList: List<DailyGoal> = emptyList(),
+                totalDistance: Double = 0.0, totalActivityTime: Double = 0.0, totalNbOfPaths: Int = 0){
         this.database = database
 
         //obtain the userId and the email give by the authentication
@@ -81,16 +100,22 @@ class UserModel {
 
         //test the goals, the goals can't be equal or less than 0
         checkDistanceGoal(distanceGoal)
-        this.distanceGoal=distanceGoal
+        this.currentDistanceGoal=distanceGoal
 
         checkActivityTimeGoal(activityTimeGoal)
-        this.activityTimeGoal=activityTimeGoal
+        this.currentActivityTimeGoal=activityTimeGoal
 
         checkNbOfPathsGoal(nbOfPathsGoal)
-        this.nbOfPathsGoal=nbOfPathsGoal
+        this.currentNbOfPathsGoal=nbOfPathsGoal
 
         this.friendsList = ArrayList()
         this.profilePhoto = null
+        this.dailyGoalList = dailyGoalList
+
+        //init the user achievements
+        this.totalDistance = totalDistance
+        this.totalActivityTime = totalActivityTime
+        this.totalNbOfPaths = totalNbOfPaths
     }
 
     /**
@@ -104,10 +129,16 @@ class UserModel {
      * @param distanceGoal init at the user profile creation and can be modify after(daily goal)
      * @param activityTimeGoal init at the user profile creation and can be modify after(daily goal)
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
-     * @param friendsList the friendsList of the user(with a default empty friendsList
+     * @param friendsList the friendsList of the user(with a default empty friendsList)
+     * @param dailyGoalList a list of daily goal realized by the user (by default the list is empty)
+     * @param totalDistance total distance run by the user since the creation of his profile(default value is 0)
+     * @param totalActivityTime total activity time since the creation of the his profile(default value is 0)
+     * @param totalNbOfPaths total number of paths draw by the user since the creation of his profile
      * @throws error if the inputs are incorrect
      */
-    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, friendsList: List<String>, database: Database){
+    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double,
+                activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, friendsList: List<String>, database: Database, dailyGoalList: List<DailyGoal> = emptyList(),
+                totalDistance: Double = 0.0, totalActivityTime: Double = 0.0, totalNbOfPaths: Int = 0){
         this.database = database
 
         //obtain the userId and the email give by the authentication
@@ -131,16 +162,22 @@ class UserModel {
 
         //test the goals, the goals can't be equal or less than 0
         checkDistanceGoal(distanceGoal)
-        this.distanceGoal = distanceGoal
+        this.currentDistanceGoal = distanceGoal
 
         checkActivityTimeGoal(activityTimeGoal)
-        this.activityTimeGoal = activityTimeGoal
+        this.currentActivityTimeGoal = activityTimeGoal
 
         checkNbOfPathsGoal(nbOfPathsGoal)
-        this.nbOfPathsGoal = nbOfPathsGoal
+        this.currentNbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = friendsList
         this.profilePhoto =profilePhoto
+        this.dailyGoalList = dailyGoalList
+
+        //init the user achievements
+        this.totalDistance = totalDistance
+        this.totalActivityTime = totalActivityTime
+        this.totalNbOfPaths = totalNbOfPaths
     }
 
     /**
@@ -221,19 +258,19 @@ class UserModel {
      * Get the daily distance goal of the user
      * @return daily distance goal of the user
      */
-    fun getDistanceGoal(): Double {
-        return distanceGoal
+    fun getCurrentDistanceGoal(): Double {
+        return currentDistanceGoal
     }
 
     /**
      * Use this function to modify the daily distance goal of the user
      * @param distanceGoal new daily distance goal
      */
-    fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+    fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
         checkDistanceGoal(distanceGoal)
-        return database.setDistanceGoal(distanceGoal).thenApply {
+        return database.setCurrentDistanceGoal(distanceGoal).thenApply {
             if(it){
-                this.distanceGoal=distanceGoal
+                this.currentDistanceGoal=distanceGoal
             }
             it
         }
@@ -243,19 +280,19 @@ class UserModel {
      * Get the daily activity time goal of the user
      * @return daily activity time goal of the user
      */
-    fun getActivityTime(): Double {
-        return activityTimeGoal
+    fun getCurrentActivityTime(): Double {
+        return currentActivityTimeGoal
     }
 
     /**
      * Use this function to modify the daily activity time goal of the user
      * @param time new daily activity time goal
      */
-    fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+    fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
         checkActivityTimeGoal(activityTimeGoal)
-        return database.setActivityTimeGoal(activityTimeGoal).thenApply {
+        return database.setCurrentActivityTimeGoal(activityTimeGoal).thenApply {
             if(it){
-                this.activityTimeGoal=activityTimeGoal
+                this.currentActivityTimeGoal=activityTimeGoal
             }
             it
         }
@@ -265,19 +302,19 @@ class UserModel {
      * Get the daily number of paths goal of the user
      * @return daily number of paths goal of the user
      */
-    fun getNumberOfPathsGoal(): Int {
-        return nbOfPathsGoal
+    fun getCurrentNumberOfPathsGoal(): Int {
+        return currentNbOfPathsGoal
     }
 
     /**
      * Use this function to modify the daily number of paths goal of the user
      * @param nbOfPaths new daily number of paths goal
      */
-    fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    fun setCurrentNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         checkNbOfPathsGoal(nbOfPathsGoal)
-        return database.setNbOfPathsGoal(nbOfPathsGoal).thenApply {
+        return database.setCurrentNbOfPathsGoal(nbOfPathsGoal).thenApply {
             if(it){
-                this.nbOfPathsGoal=nbOfPathsGoal
+                this.currentNbOfPathsGoal=nbOfPathsGoal
             }
             it
         }
@@ -349,6 +386,69 @@ class UserModel {
                 this.profilePhoto = photo
             }
             it
+        }
+    }
+
+    /**
+     * This function will return a list of daily goal that the user have realized
+     * @return a list of daily realized by the user
+     */
+    fun getDailyGoalList():List<DailyGoal>{
+        return this.dailyGoalList
+    }
+
+    /**
+     * This function will add (or update it if a daily is already present at this date)a daily goal to the list of daily goal that the user has realized
+     * @param dailyGoal that we want to add to the list of daily goals
+     * @return a future that indicate if the daily has been correctly added
+     */
+    fun addDailyGoalToListOfDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit>{
+        return this.database.addDailyGoal(dailyGoal).thenApply { isSet->
+            val newDailyGoalList = this.dailyGoalList.filter { it.date != dailyGoal.date }.toMutableList()
+            newDailyGoalList.add(dailyGoal)
+            this.dailyGoalList = newDailyGoalList
+            isSet
+        }
+    }
+
+    /**
+     * This function will return the total run by the user since the creation of his profile
+     * @return the total distance run by the user
+     */
+    fun getTotalDistance():Double{
+        return this.totalDistance
+    }
+
+    /**
+     * This function will return the total activity time that the user has made since the creation of his profile
+     * @return the total activity time of the user
+     */
+    fun getTotalActivityTime():Double{
+        return this.totalActivityTime
+    }
+
+    /**
+     * This function will return the total number of paths draw by the user since the creation of his profile
+     * @return the total number of paths draw by the user
+     */
+    fun getTotalNbOfPaths():Int{
+        return this.totalNbOfPaths
+    }
+
+    /**
+     * Function used to update the user achievements(total distance, total activity time and total nb of paths draw by the user)
+     * with the result at the end of a drawing activity(remark: the total number of path will be incremented by one, since only one drw
+     * can be achieved each drawing activity).
+     * @param distanceDrawing distance run by user to achieve the drawing
+     * @param activityTimeDrawing time take by the user to realized the drawing
+     * @return a future that indicate if the achievements of the user have been correctly updated.
+     */
+    fun updateAchievements(distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit>{
+        return this.database.updateUserAchievements(distanceDrawing, activityTimeDrawing).thenApply { isSet ->
+            this.totalDistance += distanceDrawing
+            this.totalActivityTime += activityTimeDrawing
+            this.totalNbOfPaths += 1
+            isSet
         }
     }
 

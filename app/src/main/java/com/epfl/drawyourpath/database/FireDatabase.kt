@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.userProfile.UserModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
@@ -143,9 +144,9 @@ class FireDatabase : Database() {
         userData.put(firstnameFile, userModel.getFirstname())
         userData.put(surnameFile, userModel.getSurname())
         userData.put(dateOfBirthFile, userModel.getDateOfBirth().toEpochDay())
-        userData.put(distanceGoalFile, userModel.getDistanceGoal())
-        userData.put(activityTimeGoalFile, userModel.getActivityTime())
-        userData.put(nbOfPathsGoalFile, userModel.getNumberOfPathsGoal())
+        userData.put(currentDistanceGoalFile, userModel.getCurrentDistanceGoal())
+        userData.put(currentActivityTimeGoalFile, userModel.getCurrentActivityTime())
+        userData.put(currentNOfPathsGoalFile, userModel.getCurrentNumberOfPathsGoal())
 
         return updateUserData(userData)
     }
@@ -172,35 +173,35 @@ class FireDatabase : Database() {
         }
     }
 
-    override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+    override fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
         if (distanceGoal <= 0.0) {
             val future = CompletableFuture<Boolean>()
             future.completeExceptionally(java.lang.Error("The distance goal can't be less or equal than 0."))
         }
         val dataUpdated = HashMap<String, Any>()
-        dataUpdated.put(distanceGoalFile, distanceGoal)
+        dataUpdated.put(currentDistanceGoalFile, distanceGoal)
         return updateUserData(dataUpdated)
     }
 
-    override fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+    override fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
         if (activityTimeGoal <= 0.0) {
             val future = CompletableFuture<Boolean>()
             future.completeExceptionally(java.lang.Error("The activity time goal can't be less or equal than 0."))
             return future
         }
         val dataUpdated = HashMap<String, Any>()
-        dataUpdated.put(activityTimeGoalFile, activityTimeGoal)
+        dataUpdated.put(currentActivityTimeGoalFile, activityTimeGoal)
         return updateUserData(dataUpdated)
     }
 
-    override fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    override fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         if (nbOfPathsGoal <= 0) {
             val future = CompletableFuture<Boolean>()
             future.completeExceptionally(java.lang.Error("The number of paths goal can't be less or equal than 0."))
             return future
         }
         val dataUpdated = HashMap<String, Any>()
-        dataUpdated.put(nbOfPathsGoalFile, nbOfPathsGoal)
+        dataUpdated.put(currentNOfPathsGoalFile, nbOfPathsGoal)
         return updateUserData(dataUpdated)
     }
 
@@ -248,6 +249,77 @@ class FireDatabase : Database() {
                 removeUserIdToFriendList(userId, currentUserId)
             }
         }
+    }
+
+    override fun addDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+
+        val currentUserId = getUserId()
+        if(currentUserId==null){
+            future.completeExceptionally(Exception("Any user is logged !"))
+        }else{
+            /*
+            This is how the data are store in the database:
+            dailyGoals = {
+                date = {
+                    expectedDistance = Value
+                    expectedTime = Value
+                    expectedNbOfPaths = Value
+                    obtainedDistance = Value
+                    obtainedActivityTime = Value
+                    obtainedNbOfPaths = Value
+                }
+                date = {.....}
+             }
+             */
+            //transform daily goal to data(except the date)
+            val dailyGoalData = transformDailyGoalToData(dailyGoal)
+            //add the daily goal or update it if it already exist with the new data at this date
+            accessUserAccountFile(currentUserId).child(dailyGoalsFile)
+                .child(dailyGoal.date.toEpochDay().toString())
+                .updateChildren(dailyGoalData)
+                .addOnSuccessListener { future.complete(Unit) }
+                .addOnFailureListener { it }
+        }
+        return future
+    }
+
+    override fun updateUserAchievements(
+        distanceDrawing: Double,
+        activityTimeDrawing: Double
+    ): CompletableFuture<Unit> {
+        /*
+        This is how the achievements are store in the firebase:
+        Users{
+            userId{
+                username: Value
+                ....
+                achievements{
+                    totalDistance: Value
+                    totalActivityTime: Value
+                    totalNbOfPaths: Value
+                }
+            }
+        }
+         */
+        val future = CompletableFuture<Unit>()
+
+        //obtain the current achievements
+        getCurrentUserAchievements().thenApply { pastAchievements ->
+            val newAchievement = HashMap<String, Any>()
+            newAchievement.put(totalDistanceFile, pastAchievements.get(totalDistanceFile) as Double + distanceDrawing)
+            newAchievement.put(totalActivityTimeFile, pastAchievements.get(totalActivityTimeFile) as Double + activityTimeDrawing)
+            newAchievement.put(totalNbOfPathsFile, pastAchievements.get(totalNbOfPathsFile) as Int + 1)
+            val userId = getUserId()
+            if (userId == null) {
+                future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+            } else {
+                accessUserAccountFile(userId).child(achievementsFile).updateChildren(newAchievement)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener{ it }
+            }
+        }
+        return future
     }
 
     /**
@@ -327,10 +399,11 @@ class FireDatabase : Database() {
             val firstname = data.child(firstnameFile).value
             val surname = data.child(surnameFile).value
             val dateOfBirth = data.child(dateOfBirthFile).value
-            val distanceGoal = data.child(distanceGoalFile).value
-            val activityTimeGoal = data.child(activityTimeGoalFile).value
-            val nbOfPathsGoal = data.child(nbOfPathsGoalFile).value
+            val distanceGoal = data.child(currentDistanceGoalFile).value
+            val activityTimeGoal = data.child(currentActivityTimeGoalFile).value
+            val nbOfPathsGoal = data.child(currentNOfPathsGoalFile).value
             val friendsListData = data.child(friendsListFile)
+            val dailyGoalData = data.child(dailyGoalsFile)
 
             if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null || nbOfPathsGoal == null) {
                 throw java.lang.Error("The user account present on the database is incomplete.")
@@ -341,6 +414,9 @@ class FireDatabase : Database() {
 
                 //obtain the friendsList
                 val friendsList = transformFriendsList(friendsListData)
+
+                //obtain the daily goal list
+                val dailyGoalList = transformDataToDailyGoalList(dailyGoalData)
 
                 //create the userModel
                 return UserModel(
@@ -355,7 +431,8 @@ class FireDatabase : Database() {
                         (nbOfPathsGoal as Long).toInt(),
                         profilePhoto,
                         friendsList,
-                        this
+                        this,
+                        dailyGoalList
                 )
             }
         }
@@ -430,6 +507,73 @@ class FireDatabase : Database() {
             .addOnFailureListener {err -> future.completeExceptionally(err) }
         return future
     }
+
+    /**
+     * Helper function to transform a DailyGoal of a certain date object to a data object
+     * @param dailyGoal DailyGoal object that we would like to transform in data object
+     */
+    private fun transformDailyGoalToData(dailyGoal: DailyGoal): HashMap<String, Any>{
+        val dailyGoalData = HashMap<String, Any>()
+        dailyGoalData.put(expectedDistanceFile, dailyGoal.distanceInKilometerGoal)
+        dailyGoalData.put(expectedActivityTimeFile, dailyGoal.timeInMinutesGoal)
+        dailyGoalData.put(expectedNbOfPathsFile, dailyGoal.nbOfPathsGoal)
+        dailyGoalData.put(obtainedDistanceFile, dailyGoal.distanceInKilometerProgress)
+        dailyGoalData.put(obtainedActivityTimeFile, dailyGoal.timeInMinutesProgress)
+        dailyGoalData.put(obtainedNbOfPathsFile, dailyGoal.nbOfPathsProgress)
+
+        return dailyGoalData
+    }
+
+    /**
+     * Helper function to obtain the daily goal list from the database of the user
+     * @param data the data snapshot containing the daily goal list
+     * @return a list containing the daily goal realized by the user
+     */
+    private fun transformDataToDailyGoalList(data: DataSnapshot?): List<DailyGoal>{
+        if(data == null){
+            return emptyList()
+        }
+        val dailyGoalList = ArrayList<DailyGoal>()
+
+        for(dailyGoal in data.children){
+            val date: LocalDate = LocalDate.ofEpochDay(dailyGoal.key as Long)
+            val expectedDistance: Double = (dailyGoal.child(expectedDistanceFile).value as Long).toDouble()
+            val expectedActivityTime: Double = (dailyGoal.child(expectedActivityTimeFile).value as Long).toDouble()
+            val expectedNbOfPaths: Int = (dailyGoal.child(expectedNbOfPathsFile).value as Long).toInt()
+            val obtainedDistance: Double = (dailyGoal.child(obtainedDistanceFile).value as Long).toDouble()
+            val obtainedActivityTime: Double = (dailyGoal.child(obtainedActivityTimeFile).value as Long).toDouble()
+            val obtainedNbOfPaths: Int = (dailyGoal.child(obtainedNbOfPathsFile).value as Long).toInt()
+
+            dailyGoalList.add(DailyGoal(expectedDistance, expectedActivityTime, expectedNbOfPaths, obtainedDistance,
+                obtainedActivityTime, obtainedNbOfPaths, date)
+            )
+        }
+        return dailyGoalList
+    }
+
+    /**
+     * Helper function to get the current user achievements from the database
+     * @return a future that contains a map that contains the current achievements data(total distance, total activity time and total number of paths draw by the user)
+     */
+    private fun getCurrentUserAchievements(): CompletableFuture<HashMap<String, Any>>{
+        val future = CompletableFuture<HashMap<String, Any>>()
+        val userId = getUserId()
+        if (userId == null) {
+            future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+        } else {
+            accessUserAccountFile(userId).child(achievementsFile).get()
+                .addOnSuccessListener { dataAchievements->
+                    val achievementsMap = HashMap<String, Any>()
+                    achievementsMap.put(totalDistanceFile, (dataAchievements.child(totalDistanceFile).value as Long).toDouble())
+                    achievementsMap.put(totalActivityTimeFile, (dataAchievements.child(totalActivityTimeFile).value as Long).toDouble())
+                    achievementsMap.put(totalNbOfPathsFile, (dataAchievements.child(totalNbOfPathsFile).value as Long).toInt())
+                    future.complete(achievementsMap)
+                }
+                .addOnFailureListener { it }
+        }
+        return future
+    }
+
 }
 
 
