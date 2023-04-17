@@ -340,13 +340,15 @@ class UserModel {
 
     /**
      * This function will add a run to the history of the user in the local history and the database.
+     * The key is the startTime, the history is sorted based on it.
      * @param run to be added to the history
      * @return a future that indicate if the run was correctly added to the database
      */
     fun addRunToHistory(run: Run): CompletableFuture<Unit> {
         return database.addRunToHistory(run).thenApply {
-            val tmpList = runsHistory.toMutableList()
+            val tmpList = runsHistory.filter { it.getStartTime() != run.getStartTime() }.toMutableList()
             tmpList.add(run)
+            tmpList.sortBy { it.getStartTime() }
             runsHistory = tmpList
         }
     }
@@ -354,6 +356,7 @@ class UserModel {
     /**
      * This function will remove a run from the history of the user in the local history and the database.
      * @param run to be removed from the history
+     * @throws Exception if the path is not in the history
      * @return a future that indicate if the run was correctly removed from the database
      */
     fun removeRunFromHistory(run: Run): CompletableFuture<Unit> {

@@ -37,27 +37,20 @@ class MockDataBase : Database() {
     val friend1: UserModel
     val friend2: UserModel
     val runsHistoryTest: List<Run>
-    val run1: Run
-    val run1StartTime: Long = 1651673000000
-    val run2: Run
-    val run2StartTime: Long = 1681673000000
+    val runTest: Run
+    val runTestStartTime: Long = 1651673000000
 
     init {
         //init the friendsList of the current user
         friendsListTest = listOf(userIdFriend1)
 
         //init the runs history of the current user
-        run1 = Run(
+        runTest = Run(
             Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0))),
-            run1StartTime,
-            run1StartTime + 1e6.toLong()
+            runTestStartTime,
+            runTestStartTime + 1e6.toLong()
         )
-        run2 = Run(
-            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
-            run2StartTime,
-            run2StartTime + 2e6.toLong()
-        )
-        runsHistoryTest = listOf(run1, run2)
+        runsHistoryTest = listOf(runTest)
 
         usernameToUserId.put(usernameTest, userIdTest)
         usernameToUserId.put(takenUsername, "exId")
@@ -350,8 +343,10 @@ class MockDataBase : Database() {
         val future = CompletableFuture<Unit>()
         //update the history in the database
         getUserAccount(userIdTest).thenAccept { user ->
-            val newHistory = user.getRunsHistory().toMutableList()
+            //filter and sort on startTime to have the same behavior as Firebase
+            val newHistory = user.getRunsHistory().filter { it.getStartTime() != run.getStartTime() }.toMutableList()
             newHistory.add(run)
+            newHistory.sortBy { it.getStartTime() }
             val newUser = UserModel(
                 user.getUserId(),
                 user.getEmailAddress(),
