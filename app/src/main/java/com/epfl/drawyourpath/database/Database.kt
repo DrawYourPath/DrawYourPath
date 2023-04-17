@@ -6,16 +6,19 @@ import com.epfl.drawyourpath.userProfile.UserModel
 import java.util.concurrent.CompletableFuture
 
 abstract class Database {
-    //name of the different attributes inside the user account
-    val usernameFile: String = "username"
-    val firstnameFile: String = "firstname"
-    val surnameFile: String = "surname"
-    val emailFile: String = "email"
-    val dateOfBirthFile: String = "dateOfBirth"
-    val distanceGoalFile: String = "distanceGoal"
-    val activityTimeGoalFile: String = "activityTimeGoal"
-    val nbOfPathsGoalFile: String = "nbOfPathsGoal"
-    val profilePhotoFile: String = "profilePhoto"
+    companion object {
+        //name of the different attributes inside the user account
+        const val usernameFile: String = "username"
+        const val firstnameFile: String = "firstname"
+        const val surnameFile: String = "surname"
+        const val emailFile: String = "email"
+        const val dateOfBirthFile: String = "dateOfBirth"
+        const val distanceGoalFile: String = "distanceGoal"
+        const val activityTimeGoalFile: String = "activityTimeGoal"
+        const val nbOfPathsGoalFile: String = "nbOfPathsGoal"
+        const val profilePhotoFile: String = "profilePhoto"
+        const val friendsListFile: String = "friendsList"
+    }
 
     /**
      * This function is used to know if a certain user is already store in the database
@@ -110,4 +113,20 @@ abstract class Database {
      * @return a future that indicate if the photo has been correctly set to the database
      */
     abstract fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>
+
+    /**
+     * This function will add a user to the the friends list of the current user with his userId if this user is present on the database
+     * @param userId of the user that we want to add to the friendsList of the current user
+     * @throws an Error if the user that we want to added to the friends list is not present on the database.
+     * @return a future that indicate if the user has been correctly added to the current user friends list
+     */
+    abstract fun addUserToFriendsList(userId: String): CompletableFuture<Unit>
+
+    /**
+     * This function will remove a user to the the friends list of the current user with his userId
+     * @param userId of the user that we want to remove to the friendsList of the current user
+     * @throws an Error if the user that we want to removed is not present on the database.
+     * @return a future that indicate if the user has been correctly removed to the current user friends list
+     */
+    abstract fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit>
 }

@@ -125,7 +125,7 @@ data class UserEntity(
                 return null
             }
             val stream = ByteArrayOutputStream()
-            image.compress(Bitmap.CompressFormat.WEBP, 80, stream)
+            image.compress(Bitmap.CompressFormat.WEBP, 70, stream)
             return stream.toByteArray()
         }
 

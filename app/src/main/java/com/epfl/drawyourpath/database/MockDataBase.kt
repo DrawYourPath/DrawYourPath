@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.google.firebase.database.DataSnapshot
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
@@ -18,6 +19,7 @@ class MockDataBase : Database() {
 
     val userIdTest: String = "aUyFLWgYxmoELRUr3jWYie61jbKO"
     val userAuthTest: User = MockAuth.MOCK_USER
+    val userMailTest: String = userAuthTest.getEmail()
     val usernameTest: String = "albert"
     val distanceGoalTest: Double = 10.0
     val activityTimeGoalTest: Double = 60.0
@@ -26,15 +28,29 @@ class MockDataBase : Database() {
     val surnameTest = "Hof"
     val takenUsername = "nathan"
     val dateOfBirthTest = LocalDate.of(2000, 2, 20)
+    val friendsListTest: List<String>
     val userModelTest: UserModel
+    val userIdFriend1: String = "idFriend1"
+    val userIdFriend2: String = "idFriend2"
+    val friend1: UserModel
+    val friend2: UserModel
 
     init {
+        //init the friendsList of the current user
+        friendsListTest = listOf<String>(userIdFriend1)
+
         usernameToUserId.put(usernameTest, userIdTest)
         usernameToUserId.put(takenUsername, "exId")
+        usernameToUserId.put("friend1", userIdFriend1)
+        usernameToUserId.put("friend2", userIdFriend2)
 
         userIdToUsername.put(userIdTest, usernameTest)
+        userIdToUsername.put(userIdFriend1, "friend1")
+        userIdToUsername.put(userIdFriend2, "friend2")
+
         userModelTest = UserModel(
-            userAuthTest,
+            userIdTest,
+            userMailTest,
             usernameTest,
             firstnameTest,
             surnameTest,
@@ -42,9 +58,18 @@ class MockDataBase : Database() {
             distanceGoalTest,
             activityTimeGoalTest,
             nbOfPathsGoalTest,
+            null,
+            friendsListTest,
             this
         )
+        friend1 = UserModel(userIdFriend1, "friend1@mail.com", "friend1","firstnameFriendOne", "surnameFriendOne", LocalDate.of(2000,1,1),
+            10.0,60.0,2, null, emptyList(),this)
+        friend2 = UserModel(userIdFriend2, "friend2@mail.com", "friend2","firstnameFriendTwo", "surnameFriendTwo", LocalDate.of(2000,1,1),
+            10.0,60.0,2, null, emptyList(),this)
+        //add the different user to the database
         userIdToUserAccount.put(userIdTest, userModelTest)
+        userIdToUserAccount.put(userIdFriend1, friend1)
+        userIdToUserAccount.put(userIdFriend2, friend2)
     }
 
     override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
@@ -160,9 +185,78 @@ class MockDataBase : Database() {
     override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
         val updatedUser = UserModel(
             userIdTest, userAuthTest.getEmail(), usernameTest, firstnameTest, surnameTest,
-            dateOfBirthTest, distanceGoalTest, activityTimeGoalTest, nbOfPathsGoalTest, photo, this
+            dateOfBirthTest, distanceGoalTest, activityTimeGoalTest, nbOfPathsGoalTest, photo, friendsListTest, this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
         return CompletableFuture.completedFuture(true)
     }
+
+    override fun addUserToFriendsList(userId: String): CompletableFuture<Unit> {
+        return isUserStoredInDatabase(userId).thenApply {
+            if(!it){
+                throw Exception("The user with $userId is not present on the database.")
+            }else{
+                //add the user to the the friendList of the current user
+                addUserIdToFriendList(userIdTest, userId).thenApply {
+                    //add the currentUser to the friend list of the user with userId
+                    addUserIdToFriendList(userId, userIdTest)
+                }
+            }
+        }
+    }
+
+    override fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit> {
+        //remove the userId from the friendlist of the current user
+        return removeUserIdToFriendList(userIdTest, userId).thenApply {
+            //remove the current userId to the friendlist of the user with userId
+            removeUserIdToFriendList(userId, userIdTest)
+        }
+    }
+    /**
+     * Helper function to add a userId "friendUserId" to the friendList of a a user with userId "currentUserId"
+     * @param currentUserId userId that belong the friendlist
+     * @param friendUserId userId that we want to add from the friendlist
+     * @return a future that indicate if the userId has been correctly added to the friendlist
+     */
+    private fun addUserIdToFriendList(currentUserId: String, friendUserId: String): CompletableFuture<Unit>{
+        val future = CompletableFuture<Unit>()
+
+        //create the field for the new friend
+        val newFriend = HashMap<String, Boolean>()
+        newFriend.put(friendUserId, true)
+        //updated the friendlist in the database
+        getUserAccount(currentUserId).thenAccept {user->
+            val newFriendList = user.getFriendList().toMutableList()
+            newFriendList.add(friendUserId)
+            val newUser = UserModel(user.getUserId(), user.getEmailAddress(), user.getUsername(), user.getFirstname()
+            ,user.getSurname(), user.getDateOfBirth(), user.getDistanceGoal(), user.getActivityTime(), user.getNumberOfPathsGoal(),
+            user.getProfilePhoto(), newFriendList, this)
+            userIdToUserAccount.put(currentUserId, newUser)
+            future.complete(Unit)
+        }
+
+        return future
+    }
+    /**
+     * Helper function to remove a userId "removeUserId" to the friendList of a a user with userId "currentUserId"
+     * @param currentUserId userId that belong the friendlist
+     * @param removeUserId userId that we want to remove from the friendlist
+     * @return a future that indicate if the userId has been correctly added to the friendlist
+     */
+    private fun removeUserIdToFriendList(currentUserId: String, removeUserId: String): CompletableFuture<Unit>{
+        val future = CompletableFuture<Unit>()
+
+        //obtain the previous friendList
+        getUserAccount(currentUserId).thenAccept {user ->
+            val previousFriendList = user.getFriendList()
+            val newFriendList = previousFriendList.filter { it != removeUserId }
+            val newUser = UserModel(user.getUserId(), user.getEmailAddress(), user.getUsername(), user.getFirstname()
+                ,user.getSurname(), user.getDateOfBirth(), user.getDistanceGoal(), user.getActivityTime(), user.getNumberOfPathsGoal(),
+                user.getProfilePhoto(), newFriendList, this)
+            userIdToUserAccount.put(currentUserId, newUser)
+            future.complete(Unit)
+        }
+        return future
+    }
 }
+

@@ -16,6 +16,7 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.login.LoginActivity
+import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.time.LocalDate
 
@@ -34,7 +35,6 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
     private val userCached: UserModelCached by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var database: Database = FireDatabase()
 
         //retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
@@ -42,14 +42,15 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
             isTest = false
         } else {
             isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
-            username = argsFromLastFrag.getString(database.usernameFile).toString()
-            firstname = argsFromLastFrag.getString(database.firstnameFile).toString()
-            surname = argsFromLastFrag.getString(database.surnameFile).toString()
-            dateOfBirth = argsFromLastFrag.getLong(database.dateOfBirthFile)
+            username = argsFromLastFrag.getString(Database.usernameFile).toString()
+            firstname = argsFromLastFrag.getString(Database.firstnameFile).toString()
+            surname = argsFromLastFrag.getString(Database.surnameFile).toString()
+            dateOfBirth = argsFromLastFrag.getLong(Database.dateOfBirthFile)
         }
 
         //select the correct database in function of test scenario
-        database = if (isTest) {
+        val database: Database = if (isTest) {
+            userCached.setDatabase(MockDataBase())
             MockDataBase()
         } else {
             FireDatabase()
@@ -103,22 +104,26 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                     this.startActivity(Intent(activity, LoginActivity::class.java))
                 }else {
                     userCached.setDatabase(database)
-                    userCached.createNewUser(userLog,
+                    val user = UserModel(
+                        userLog,
                         username,
                         firstname,
                         surname,
                         LocalDate.ofEpochDay(dateOfBirth),
                         distanceGoal.toDouble(),
                         timeGoal.toDouble(),
-                        nunberOfPathGoal)
-                    database.initUserProfile(userCached.getUserModel()).thenAccept {
+                        nunberOfPathGoal,
+                        database
+                    )
+                    userCached.createNewUser(user)
+                    database.initUserProfile(user).thenAccept {
                         if (activity != null) {
                             val fragManagement =
                                 requireActivity().supportFragmentManager.beginTransaction()
                             val dataToPhotoProfileInitFrag: Bundle = Bundle()
                             //data to transmit to the PhotoProfileInitFragment(username+ isRunningTestForDatabase)
                             dataToPhotoProfileInitFrag.putBoolean("isRunningTestForDataBase", isTest)
-                            dataToPhotoProfileInitFrag.putString(database.usernameFile, username)
+                            dataToPhotoProfileInitFrag.putString(Database.usernameFile, username)
                             val photoProfileFrag = PhotoProfileInitFragment()
                             photoProfileFrag.arguments = dataToPhotoProfileInitFrag
                             fragManagement.replace(

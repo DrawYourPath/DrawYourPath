@@ -289,4 +289,47 @@ class MockDataBaseTest {
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getNumberOfPathsGoal(), 1)
     }
 
+    /**
+     * Test if adding a friend to the friendsList that is not on the database throw an error
+     */
+    @Test
+    fun addInvalidUserToFriendsList(){
+        val database = MockDataBase()
+        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+            database.addUserToFriendsList("faultId").get()
+        }
+        assertEquals("java.lang.Exception: The user with faultId is not present on the database.", exception.message)
+        assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFriendList(), database.friendsListTest)
+    }
+
+    /**
+     * Test if adding a friend to the friendsList is correctly added
+     */
+    @Test
+    fun addValidUserToFriendsList(){
+        val database = MockDataBase()
+        database.addUserToFriendsList(database.userIdFriend2).get()
+
+        val expectedList = database.friendsListTest.toMutableList()
+        expectedList.add(database.userIdFriend2)
+        assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFriendList(), expectedList)
+        assertEquals(database.userIdToUserAccount.get(database.userIdFriend2)?.getFriendList(), listOf(database.userIdTest))
+    }
+
+    /**
+     * Test if removing a friend to the friendsList is correctly removed
+     */
+    @Test
+    fun removeValidUserToFriendsList(){
+        val database = MockDataBase()
+        database.addUserToFriendsList(database.userIdFriend2).get()
+        //test if the user has been correctly added
+        val expectedList = database.friendsListTest.toMutableList()
+        expectedList.add(database.userIdFriend2)
+        assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFriendList(), expectedList)
+        //test if the same user has been correctly removed
+        database.removeUserFromFriendlist(database.userIdFriend2).get()
+        assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFriendList(), database.friendsListTest)
+        assertEquals(database.userIdToUserAccount.get(database.userIdFriend2)?.getFriendList(), emptyList<String>())
+    }
 }

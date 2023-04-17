@@ -68,7 +68,7 @@ class MainActivityTest {
 
         // check username and email are correct
         onView(withId(R.id.header_username)).check(matches(withText(MockDataBase().usernameTest)))
-        onView(withId(R.id.header_email)).check(matches(withText(MockAuth.MOCK_USER.getEmail())))
+        onView(withId(R.id.header_email)).check(matches(withText(MockDataBase().userAuthTest.getEmail())))
     }
 
     @Test

@@ -36,7 +36,7 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
             isTest = false
         } else {
             isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
-            username = argsFromLastFrag.getString(database.usernameFile).toString()
+            username = argsFromLastFrag.getString(Database.usernameFile).toString()
         }
 
         //select the correct database in function of test scenario
@@ -118,10 +118,10 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
                     val dataToUserGoalsInitFrag: Bundle = Bundle()
                     //data to transmit to the UserGoalsInitFragment(username + firstname + surname + dateOfBirth + isTest)
                     dataToUserGoalsInitFrag.putBoolean("isRunningTestForDataBase", isTest)
-                    dataToUserGoalsInitFrag.putString(database.usernameFile, username)
-                    dataToUserGoalsInitFrag.putString(database.firstnameFile, firstname)
-                    dataToUserGoalsInitFrag.putString(database.surnameFile, surname)
-                    dataToUserGoalsInitFrag.putLong(database.dateOfBirthFile, dateOfBirth.toEpochDay())
+                    dataToUserGoalsInitFrag.putString(Database.usernameFile, username)
+                    dataToUserGoalsInitFrag.putString(Database.firstnameFile, firstname)
+                    dataToUserGoalsInitFrag.putString(Database.surnameFile, surname)
+                    dataToUserGoalsInitFrag.putLong(Database.dateOfBirthFile, dateOfBirth.toEpochDay())
                     val userGoalsInitFrag = UserGoalsInitFragment()
                     userGoalsInitFrag.arguments = dataToUserGoalsInitFrag
                     fragManagement.replace(R.id.personalInfoFragment, userGoalsInitFrag).commit()

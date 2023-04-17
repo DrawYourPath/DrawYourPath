@@ -39,14 +39,14 @@ class UserModel {
     private var database: Database
 
     //friend list
-    private var friendsList: HashMap<String, String> //(username, userId)
+    private var friendsList: List<String> //a list of userId
 
     //profile photo, can be null if the user don't want to
     private var profilePhoto: Bitmap? = null
 
 
     /**
-     * THis constructor will create a new user based on the user model of the app
+     * THis constructor will create a new user based on the user model of the app(constructor at the the profile creation)
      * @param userAuth user authenticate give by the login
      * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
      * @param firstname must respect the name convention of the app (name or name-name)
@@ -89,7 +89,8 @@ class UserModel {
         checkNbOfPathsGoal(nbOfPathsGoal)
         this.nbOfPathsGoal=nbOfPathsGoal
 
-        this.friendsList = HashMap()
+        this.friendsList = ArrayList()
+        this.profilePhoto = null
     }
 
     /**
@@ -103,9 +104,10 @@ class UserModel {
      * @param distanceGoal init at the user profile creation and can be modify after(daily goal)
      * @param activityTimeGoal init at the user profile creation and can be modify after(daily goal)
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
+     * @param friendsList the friendsList of the user(with a default empty friendsList
      * @throws error if the inputs are incorrect
      */
-    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, database: Database){
+    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, friendsList: List<String>, database: Database){
         this.database = database
 
         //obtain the userId and the email give by the authentication
@@ -137,7 +139,7 @@ class UserModel {
         checkNbOfPathsGoal(nbOfPathsGoal)
         this.nbOfPathsGoal = nbOfPathsGoal
 
-        this.friendsList = HashMap()
+        this.friendsList = friendsList
         this.profilePhoto =profilePhoto
     }
 
@@ -290,31 +292,41 @@ class UserModel {
     }
 
     /**
-     * This function will remove the user with username to the friend list
-     * @param username of the user that we want to remove
+     * This function will remove the user with userId to the friend list
+     * @param userId of the user that we want to remove
+     * @return a future that indicate if the user has been correctly removed from the friends list
      */
-    fun removeFriend(username: String) {
-        if (!friendsList.contains(username)) {
-            throw java.lang.Error("This user is not in the friend list !")
+    fun removeFriend(userId: String): CompletableFuture<Unit> {
+        if (!friendsList.contains(userId)) {
+            throw Exception("This user with userId $userId is not in the friend list !")
         }
-        friendsList.remove(username)
-        //TODO: Update the friend list in the database
+        return database.removeUserFromFriendlist(userId).thenApply {
+            val interList = friendsList.toMutableList()
+            interList.remove(userId)
+            friendsList = interList
+            it
+        }
     }
 
     /**
-     * This function will add the user with username to the friend list. To be added the user must be present in the database.
-     * @param username of the user that we want to add to the friend list
+     * This function will add the user with userId to the friend list. To be added the user must be present in the database.
+     * @param userId of the user that we want to add to the friend list
+     * @return a future that indicate if the user was correctly added to the database
      */
-    fun addFriend(username: String) {
-        //TODO:this function will be implemented during a next task when the database will be cleaned
-        //TODO: Update the friend list in the database
+    fun addFriend(userId: String): CompletableFuture<Unit> {
+        return database.addUserToFriendsList(userId).thenApply {
+            val interList = friendsList.toMutableList()
+            interList.add(userId)
+            friendsList = interList
+            it
+        }
     }
 
     /**
-     * This function will return the friend list of a user
+     * This function will return the friend list of a user(a list the his friends userId's)
      * @return the friend list of the user
      */
-    fun getFriendList(): Map<String, String> {
+    fun getFriendList(): List<String> {
         return this.friendsList
     }
 
@@ -340,72 +352,73 @@ class UserModel {
         }
     }
 
-}
+    companion object {
+        /**
+         * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
+         * @param name to be check
+         * @param variableName to be checked
+         * @throw an error if the format is not correct
+         */
+        fun checkNameFormat(name: String, variableName: String) {
+            if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
+                throw java.lang.Error("Incorrect $variableName")
+            }
+        }
 
-/**
- * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
- * @param name to be check
- * @param variableName to be checked
- * @throw an error if the format is not correct
- */
-private fun checkNameFormat(name: String, variableName: String) {
-    if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
-        throw java.lang.Error("Incorrect " + variableName)
+        /**
+         * Helper function to check if the email address is correct
+         * @param email to be checked
+         * @return true is the email is in the correct format, and false otherwise
+         */
+        fun checkEmail(email: String): Boolean {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        }
+
+        /**
+         * Helper function to check if the date of birth of the user respect the age condition of the app
+         * @param date of the user birth
+         * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
+         */
+        fun checkDateOfBirth(date: LocalDate) {
+            if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))) {
+                throw java.lang.Error("Incorrect date of birth !")
+            }
+        }
+
+        /**
+         * Helper function to check if the distance goal is greater or equal than zero
+         * @param distanceGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkDistanceGoal(distanceGoal: Double) {
+            if (distanceGoal <= 0.0) {
+                throw java.lang.Error("The distance goal can't be equal or less than 0.")
+            }
+        }
+
+        /**
+         * Helper function to check if the activity time goal is greater or equal than zero
+         * @param activityTimeGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkActivityTimeGoal(activityTimeGoal: Double) {
+            if (activityTimeGoal <= 0.0) {
+                throw java.lang.Error("The activity time goal can't be equal or less than 0.")
+            }
+        }
+
+        /**
+         * Helper function to check if the number of paths goal is greater or equal than zero
+         * @param nbOfPathsGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkNbOfPathsGoal(nbOfPathsGoal: Int) {
+            if (nbOfPathsGoal <= 0) {
+                throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
+            }
+        }
+
     }
+
 }
-
-/**
- * Helper function to check if the email address is correct
- * @param email to be checked
- * @return true is the email is in the correct format, and false otherwise
- */
-private fun checkEmail(email: String): Boolean {
-    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-}
-
-/**
- * Helper function to check if the date of birth of the user respect the age condition of the app
- * @param date of the user birth
- * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
- */
-private fun checkDateOfBirth(date: LocalDate) {
-    if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))) {
-        throw java.lang.Error("Incorrect date of birth !")
-    }
-}
-
-/**
- * Helper function to check if the distance goal is greater or equal than zero
- * @param distanceGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkDistanceGoal(distanceGoal: Double) {
-    if (distanceGoal <= 0.0) {
-        throw java.lang.Error("The distance goal can't be equal or less than 0.")
-    }
-}
-
-/**
- * Helper function to check if the activity time goal is greater or equal than zero
- * @param activityTimeGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkActivityTimeGoal(activityTimeGoal: Double) {
-    if (activityTimeGoal <= 0.0) {
-        throw java.lang.Error("The activity time goal can't be equal or less than 0.")
-    }
-}
-
-/**
- * Helper function to check if the number of paths goal is greater or equal than zero
- * @param nbOfPathsGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkNbOfPathsGoal(nbOfPathsGoal: Int) {
-    if (nbOfPathsGoal <= 0) {
-        throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
-    }
-}
-
-
 
