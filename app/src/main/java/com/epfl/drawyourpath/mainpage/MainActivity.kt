@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == SCAN_QR_REQ_CODE && resultCode == SCANNER_ACTIVITY_RESULT_CODE) {
-            val scannedData = intent.getStringExtra(SCANNER_ACTIVITY_RESULT_KEY)
+            val scannedData = data?.getStringExtra(SCANNER_ACTIVITY_RESULT_KEY)
             if (qrScanResult != null) {
                 qrScanResult!!.complete(scannedData)
                 qrScanResult = null

@@ -32,6 +32,7 @@ class QRScannerActivity : AppCompatActivity(R.layout.activity_scan_friend_qr) {
 
     private fun onCancelClicked() {
         completeWithResult(null)
+        scannerView.pause()
     }
 
     private fun setupCamera() {
@@ -41,13 +42,17 @@ class QRScannerActivity : AppCompatActivity(R.layout.activity_scan_friend_qr) {
         scannerView.setStatusText("Place a friend's QR inside the rectangle to scan it.")
         scannerView.resume()
         scannerView.decodeSingle {
+            android.util.Log.i("DYP", "Scanned ${it.text}.")
             completeWithResult(it.text)
+            scannerView.pause()
         }
     }
 
     private fun completeWithResult(data: String?) {
         val resultIntent = Intent()
-        resultIntent.putExtra(SCANNER_ACTIVITY_RESULT_KEY, data)
+        if (data != null) {
+            resultIntent.putExtra(SCANNER_ACTIVITY_RESULT_KEY, data)
+        }
         setResult(SCANNER_ACTIVITY_RESULT_CODE, resultIntent)
         finish()
     }
