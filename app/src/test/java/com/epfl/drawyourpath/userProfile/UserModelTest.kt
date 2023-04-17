@@ -5,12 +5,10 @@ import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.time.LocalDate
-import kotlin.math.exp
 
 class UserModelTest {
     private val userId = "aUyFLWgYxmoELRUr3jWYie61jbKO"
@@ -464,7 +462,7 @@ class UserModelTest {
     }
 
     /**
-     * This function check that the correct empty firenlist is return with getFriendList function
+     * This function check that the correct empty friendlist is return with getFriendList function
      */
     @Test
     fun emptyFriendListIsGet() {
@@ -559,7 +557,7 @@ class UserModelTest {
     fun addFriendOnFriendList() {
         val newDatabase = MockDataBase()
         val expectedFriendList =
-            listOf<String>(newDatabase.userIdFriend1, newDatabase.userIdFriend2)
+            listOf(newDatabase.userIdFriend1, newDatabase.userIdFriend2)
         //select a user present on the database
         val user = newDatabase.userModelTest
         //check that at the beginning the friends list of the user contains only one user: friend1
@@ -585,7 +583,7 @@ class UserModelTest {
         //check that at the beginning the friends list of the user contains only one user: friend1
         assertEquals(user.getFriendList(), listOf(newDatabase.userIdFriend1))
         ///add the user with userId "notId" not present on the database
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+        val exception = assertThrows(java.util.concurrent.ExecutionException::class.java) {
             user.addFriend("notId").get()
         }
         assertEquals(

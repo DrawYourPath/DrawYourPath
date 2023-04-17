@@ -257,7 +257,7 @@ class UserModel {
 
     /**
      * Use this function to modify the daily activity time goal of the user
-     * @param time new daily activity time goal
+     * @param activityTimeGoal new daily activity time goal
      */
     fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
         checkActivityTimeGoal(activityTimeGoal)
@@ -279,7 +279,7 @@ class UserModel {
 
     /**
      * Use this function to modify the daily number of paths goal of the user
-     * @param nbOfPaths new daily number of paths goal
+     * @param nbOfPathsGoal new daily number of paths goal
      */
     fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         checkNbOfPathsGoal(nbOfPathsGoal)
@@ -312,7 +312,6 @@ class UserModel {
             val interList = friendsList.toMutableList()
             interList.remove(userId)
             friendsList = interList
-            it
         }
     }
 
@@ -326,7 +325,6 @@ class UserModel {
             val interList = friendsList.toMutableList()
             interList.add(userId)
             friendsList = interList
-            it
         }
     }
 
@@ -411,7 +409,7 @@ class UserModel {
  */
 private fun checkNameFormat(name: String, variableName: String) {
     if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
-        throw java.lang.Error("Incorrect " + variableName)
+        throw java.lang.Error("Incorrect $variableName")
     }
 }
 

@@ -164,12 +164,12 @@ class FireDatabase : Database() {
 
     override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
         val userId = getUserId()
-        if (userId == null) {
+        return if (userId == null) {
             val future = CompletableFuture<UserModel>()
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
-            return future
+            future
         } else {
-            return getUserAccount(userId)
+            getUserAccount(userId)
         }
     }
 
@@ -217,7 +217,6 @@ class FireDatabase : Database() {
     }
 
     override fun addUserToFriendsList(userId: String): CompletableFuture<Unit> {
-        val future = CompletableFuture<Unit>()
         return isUserStoredInDatabase(userId).thenApply {
             if (!it) {
                 throw Exception("The user with $userId is not present on the database.")
@@ -314,7 +313,7 @@ class FireDatabase : Database() {
     }
 
     /**
-     * Helper function to upadte data of the current user account
+     * Helper function to update data of the current user account
      * @param data to be updated
      * @return a future to indicated if the data have been correctly updated
      */
@@ -416,14 +415,14 @@ class FireDatabase : Database() {
     /**
      * Helper function to decode the photo from string to bitmap format and return null if the dataSnapShot is null
      * @param photoStr photo encoded
-     * @return the photo in bitmap format, and null if no photo is stored on the databse
+     * @return the photo in bitmap format, and null if no photo is stored on the database
      */
     private fun decodePhoto(photoStr: Any?): Bitmap? {
-        if (photoStr == null) {
-            return null
+        return if (photoStr == null) {
+            null
         } else {
             val tabByte = Base64.getDecoder().decode(photoStr as String)
-            return BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+            BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
         }
     }
 

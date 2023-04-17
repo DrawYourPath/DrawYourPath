@@ -100,8 +100,8 @@ class MockDataBaseTest {
     @Test
     fun isUsernameAvailablePresent() {
         val database = MockDataBase()
-        val avaibility = database.isUsernameAvailable(usernameTest).get()
-        assertEquals(avaibility, false)
+        val availability = database.isUsernameAvailable(usernameTest).get()
+        assertEquals(availability, false)
     }
 
     /**
@@ -110,8 +110,8 @@ class MockDataBaseTest {
     @Test
     fun isUsernameAvailableNotPresent() {
         val database = MockDataBase()
-        val avaibility = database.isUsernameAvailable("test").get()
-        assertEquals(avaibility, true)
+        val availability = database.isUsernameAvailable("test").get()
+        assertEquals(availability, true)
     }
 
     /**
@@ -244,7 +244,7 @@ class MockDataBaseTest {
     fun setDistanceGoalInvalid() {
         val database = MockDataBase()
         val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
-            val isSet = database.setDistanceGoal(-1.00).get()
+            database.setDistanceGoal(-1.00).get()
         }
         assertEquals(
             "java.lang.Error: The distance goal can't be less or equal than 0.",
@@ -274,7 +274,7 @@ class MockDataBaseTest {
     fun setActivityTimeGoalInvalid() {
         val database = MockDataBase()
         val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
-            val isSet = database.setActivityTimeGoal(-1.00).get()
+            database.setActivityTimeGoal(-1.00).get()
         }
         assertEquals(
             "java.lang.Error: The activity time goal can't be less or equal than 0.",
@@ -304,15 +304,15 @@ class MockDataBaseTest {
     fun setNbOfPathsGoalInvalid() {
         val database = MockDataBase()
         val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
-            val isSet = database.setNbOfPathsGoal(-1).get()
+            database.setNbOfPathsGoal(-1).get()
         }
         assertEquals(
             "java.lang.Error: The number of paths goal can't be less or equal than 0.",
             exception.message
         )
         assertEquals(
-            database.userIdToUserAccount.get(userIdTest)?.getNumberOfPathsGoal()?.toInt(),
-            nbOfPathsGoalTest.toInt()
+            database.userIdToUserAccount.get(userIdTest)?.getNumberOfPathsGoal(),
+            nbOfPathsGoalTest
         )
     }
 
