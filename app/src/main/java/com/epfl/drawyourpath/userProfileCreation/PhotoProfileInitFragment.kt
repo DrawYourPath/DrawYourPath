@@ -12,10 +12,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.util.concurrent.CompletableFuture
 
 class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) {
@@ -31,8 +33,9 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
     private lateinit var imageView: ImageView
     private lateinit var errorText: TextView
 
+    val userCached: UserModelCached by activityViewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var database: Database = FireDatabase()
 
         //retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
@@ -40,14 +43,12 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             isTest = false
         } else {
             isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
-            username = argsFromLastFrag.getString(database.usernameFile).toString()
+            username = argsFromLastFrag.getString(Database.usernameFile).toString()
         }
 
         //select the correct database in function of test scenario
-        database = if (isTest) {
-            MockDataBase()
-        } else {
-            FireDatabase()
+        if (isTest) {
+            userCached.setDatabase(MockDataBase())
         }
 
         imageView = view.findViewById(R.id.imagePhotoProfileInitFrag)
@@ -55,9 +56,9 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
 
         createSelectPhotoButton(view, isTest)
 
-        createSkipButton(view, database)
+        createSkipButton(view)
 
-        createValidateButton(view, database)
+        createValidateButton(view)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -77,10 +78,9 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
 
     /**
      * Helper function to show a message if the user forgot to select a photo and store the photo in the database if the photo is not null
-     * @param database used to store the photo
      * @return a future to indicate if the photo was store in the database
      */
-    private fun isPhotoSelected(database: Database): CompletableFuture<Boolean> {
+    private fun isPhotoSelected(): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
         if (photoProfile == null) {
@@ -89,28 +89,21 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             errorText.setTextColor(Color.RED)
             future.complete(false)
         } else {
-            database.setProfilePhoto(photoProfile!!).thenApply {
-                if (it) {
-                    future.complete(true)
-                } else {
-                    future.completeExceptionally(java.lang.Error("Impossible to set the photo in the database !"))
-                }
-            }
+            return userCached.setProfilePhoto(photoProfile!!)
         }
         return future
     }
 
     /**
      * Helper function to show the endProfileCreationFragment
-     * @param database used
      */
-    private fun showEndProfileCreationFrag(database: Database) {
+    private fun showEndProfileCreationFrag() {
         if (activity != null) {
             val fragManagement =
                 requireActivity().supportFragmentManager.beginTransaction()
             val dataToEndProfileCreationFrag: Bundle = Bundle()
             //data to transmit to the UserGoalsInitFragment(username)
-            dataToEndProfileCreationFrag.putString(database.usernameFile, username)
+            dataToEndProfileCreationFrag.putString(Database.usernameFile, username)
             val endProfileCreationFrag = EndProfileCreationFragment()
             endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
             fragManagement.replace(
@@ -143,29 +136,27 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
     /**
      * Helper function to create a skip button
      * @param view where the button is located
-     * @param database used in this view
      */
-    private fun createSkipButton(view: View, database: Database) {
+    private fun createSkipButton(view: View) {
         //if we click on the skip button we simply pass the end profile creation fragment
         val skipButton: Button = view.findViewById(R.id.skipPhotoProfile_button_userProfileCreation)
         skipButton.setOnClickListener {
-            showEndProfileCreationFrag(database)
+            showEndProfileCreationFrag()
         }
     }
 
     /**
      * Helper function to create a skip button
      * @param view where the button is located
-     * @param database used in this view
      */
-    private fun createValidateButton(view: View, database: Database) {
+    private fun createValidateButton(view: View) {
         //if we click on the validate button we store the photo and ass the end profile creation fragment
         val validateButton: Button =
             view.findViewById(R.id.setPhotoProfile_button_userProfileCreation)
         validateButton.setOnClickListener {
-            isPhotoSelected(database).thenApply {
+            isPhotoSelected().thenApply {
                 if (it) {
-                    showEndProfileCreationFrag(database)
+                    showEndProfileCreationFrag()
                 }
             }
         }

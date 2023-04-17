@@ -10,12 +10,10 @@ import androidx.lifecycle.switchMap
 import androidx.room.Room
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.UserModel
-import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -35,9 +33,6 @@ import java.util.concurrent.CompletableFuture
 class UserModelCached(application: Application) : AndroidViewModel(application) {
     //database where the user is store online
     private var database: Database = FireDatabase()
-
-    //userModel
-    private lateinit var userModel: UserModel
 
     //cached room database for user
     private val cache = Room
