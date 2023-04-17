@@ -1,10 +1,14 @@
 package com.epfl.drawyourpath.mainpage
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -67,7 +71,16 @@ class MainActivity : AppCompatActivity() {
         }
         else {
             qrScanResult = result
-            launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
+
+            // Asks for camera permission if we don't have it.
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),
+                    SCAN_QR_REQ_CODE)
+            }
+            else {
+                launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
+            }
         }
         return result
     }
@@ -165,6 +178,24 @@ class MainActivity : AppCompatActivity() {
             val scannedData = intent.getStringExtra(SCANNER_ACTIVITY_RESULT_KEY)
             if (qrScanResult != null) {
                 qrScanResult!!.complete(scannedData)
+                qrScanResult = null
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == SCAN_QR_REQ_CODE) {
+            if (grantResults.isNotEmpty()
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
+            } else if (qrScanResult != null) {
+                qrScanResult!!.completeExceptionally(Exception("No camera access"))
                 qrScanResult = null
             }
         }

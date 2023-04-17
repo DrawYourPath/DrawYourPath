@@ -37,7 +37,6 @@ class QRScannerActivity : AppCompatActivity(R.layout.activity_scan_friend_qr) {
     private fun setupCamera() {
         val settings = CameraSettings()
         settings.requestedCameraId = 0
-
         scannerView.cameraSettings = settings
         scannerView.setStatusText("Place a friend's QR inside the rectangle to scan it.")
         scannerView.resume()
