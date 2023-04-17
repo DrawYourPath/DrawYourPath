@@ -77,6 +77,12 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         mainActivity.scanQRCode()
             .thenApply {
                 // TODO: Add friend from ID "it"
+                if (it == null) {
+                    Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
+                }
+                else {
+                    Toast.makeText(mainActivity, "Scanned $it", Toast.LENGTH_LONG).show()
+                }
             }
             .exceptionally {
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()

@@ -9,11 +9,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="154dp">
 
         <LinearLayout
+            android:id="@+id/margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="4dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.SearchView
@@ -26,7 +30,7 @@
 
             <Button
                 android:id="@+id/BT_ScanQR"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="SCAN QR" />
@@ -37,6 +41,7 @@
             android:id="@+id/friends_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_weight="1"
             tools:listitem="@layout/item_friend" />
 
     </LinearLayout>

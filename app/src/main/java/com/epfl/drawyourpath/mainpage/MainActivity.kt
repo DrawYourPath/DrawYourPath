@@ -15,12 +15,15 @@ import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
-import com.epfl.drawyourpath.qrcode.QRScanner
+import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
+import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_KEY
+import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import java.util.concurrent.CompletableFuture
 
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
+const val SCAN_QR_REQ_CODE = 8233
 
 /**
  * Main activity of the application, should be launched after the login activity.
@@ -32,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     // The drawer menu displayed when clicking the "head" icon
     private lateinit var drawerLayout: DrawerLayout
 
-    private lateinit var qrScanner: QRScanner
+    private var qrScanResult: CompletableFuture<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +54,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupNotifications()
-
-        qrScanner = QRScanner()
     }
 
     /**
@@ -60,7 +61,15 @@ class MainActivity : AppCompatActivity() {
      * @return a future completed when the user scanned something.
      */
     fun scanQRCode(): CompletableFuture<String> {
-        return qrScanner.launchScanner(this)
+        val result = CompletableFuture<String>()
+        if (qrScanResult != null) {
+            result.completeExceptionally(Exception("QR scan is still pending."))
+        }
+        else {
+            qrScanResult = result
+            launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
+        }
+        return result
     }
 
     private fun setupTopBar() {
@@ -151,6 +160,13 @@ class MainActivity : AppCompatActivity() {
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        qrScanner.onResult(requestCode, resultCode, data)
+
+        if (requestCode == SCAN_QR_REQ_CODE && resultCode == SCANNER_ACTIVITY_RESULT_CODE) {
+            val scannedData = intent.getStringExtra(SCANNER_ACTIVITY_RESULT_KEY)
+            if (qrScanResult != null) {
+                qrScanResult!!.complete(scannedData)
+                qrScanResult = null
+            }
+        }
     }
 }

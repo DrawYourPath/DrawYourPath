@@ -45,7 +45,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     LoginActivityListener {
     private val viewModel: LoginViewModel by viewModels()
 
-
     // The auth object used to authenticate the user.
     private lateinit var auth: Auth
 

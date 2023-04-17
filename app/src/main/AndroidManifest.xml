@@ -33,6 +33,10 @@
             android:exported="true" />
 
         <activity
+            android:name=".qrcode.QRScannerActivity"
+            android:exported="true" />
+
+        <activity
             android:name=".mainpage.MainActivity"
             android:exported="false" />
 
