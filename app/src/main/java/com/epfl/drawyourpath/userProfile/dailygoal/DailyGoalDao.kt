@@ -38,7 +38,7 @@ interface DailyGoalDao {
      * @param date the date of the daily goal
      * @param timeGoal the new time goal of the user
      */
-    @Query("UPDATE DailyGoal SET distance_goal = :timeGoal WHERE user_id = :userId AND date = :date")
+    @Query("UPDATE DailyGoal SET time_goal = :timeGoal WHERE user_id = :userId AND date = :date")
     fun updateTimeGoal(userId: String, date: Long, timeGoal: Double)
 
     /**
@@ -47,7 +47,7 @@ interface DailyGoalDao {
      * @param date the date of the daily goal
      * @param pathsGoal the new number of paths goal of the user
      */
-    @Query("UPDATE DailyGoal SET distance_goal = :pathsGoal WHERE user_id = :userId AND date = :date")
+    @Query("UPDATE DailyGoal SET path_goal = :pathsGoal WHERE user_id = :userId AND date = :date")
     fun updatePathsGoal(userId: String, date: Long, pathsGoal: Int)
 
     /**

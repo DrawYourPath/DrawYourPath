@@ -50,6 +50,7 @@
         android:lines="1"
         android:maxLines="1"
         android:singleLine="true"
+        android:imeOptions="actionDone"
         android:textAlignment="textEnd"
         android:textSize="20sp" />
 

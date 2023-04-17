@@ -2,9 +2,11 @@ package com.epfl.drawyourpath.challenge
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -63,18 +65,15 @@ class DailyGoalViewAdapter(
 
         displayGoal(viewHolder, goalPos)
 
-        viewHolder.editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s != null) {
-                    //TODO auto update needs fix
-                    //updateGoal(s.toString(), goalPos)
-                }
+        viewHolder.editText.setOnEditorActionListener { text, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                //TODO add checks like if empty or if same as before
+                updateGoal(text.text.toString(), goalPos)
+                true
+            } else {
+                false
             }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
+        }
     }
 
     // Return the size of the dataset (invoked by the layout manager)
