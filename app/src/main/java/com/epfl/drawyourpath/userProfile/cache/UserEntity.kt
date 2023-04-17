@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
