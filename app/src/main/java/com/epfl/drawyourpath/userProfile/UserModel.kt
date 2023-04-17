@@ -340,72 +340,73 @@ class UserModel {
         }
     }
 
-}
+    companion object {
+        /**
+         * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
+         * @param name to be check
+         * @param variableName to be checked
+         * @throw an error if the format is not correct
+         */
+        fun checkNameFormat(name: String, variableName: String) {
+            if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
+                throw java.lang.Error("Incorrect $variableName")
+            }
+        }
 
-/**
- * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
- * @param name to be check
- * @param variableName to be checked
- * @throw an error if the format is not correct
- */
-private fun checkNameFormat(name: String, variableName: String) {
-    if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
-        throw java.lang.Error("Incorrect " + variableName)
+        /**
+         * Helper function to check if the email address is correct
+         * @param email to be checked
+         * @return true is the email is in the correct format, and false otherwise
+         */
+        fun checkEmail(email: String): Boolean {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        }
+
+        /**
+         * Helper function to check if the date of birth of the user respect the age condition of the app
+         * @param date of the user birth
+         * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
+         */
+        fun checkDateOfBirth(date: LocalDate) {
+            if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))) {
+                throw java.lang.Error("Incorrect date of birth !")
+            }
+        }
+
+        /**
+         * Helper function to check if the distance goal is greater or equal than zero
+         * @param distanceGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkDistanceGoal(distanceGoal: Double) {
+            if (distanceGoal <= 0.0) {
+                throw java.lang.Error("The distance goal can't be equal or less than 0.")
+            }
+        }
+
+        /**
+         * Helper function to check if the activity time goal is greater or equal than zero
+         * @param activityTimeGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkActivityTimeGoal(activityTimeGoal: Double) {
+            if (activityTimeGoal <= 0.0) {
+                throw java.lang.Error("The activity time goal can't be equal or less than 0.")
+            }
+        }
+
+        /**
+         * Helper function to check if the number of paths goal is greater or equal than zero
+         * @param nbOfPathsGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkNbOfPathsGoal(nbOfPathsGoal: Int) {
+            if (nbOfPathsGoal <= 0) {
+                throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
+            }
+        }
+
     }
+
 }
-
-/**
- * Helper function to check if the email address is correct
- * @param email to be checked
- * @return true is the email is in the correct format, and false otherwise
- */
-private fun checkEmail(email: String): Boolean {
-    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-}
-
-/**
- * Helper function to check if the date of birth of the user respect the age condition of the app
- * @param date of the user birth
- * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
- */
-private fun checkDateOfBirth(date: LocalDate) {
-    if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))) {
-        throw java.lang.Error("Incorrect date of birth !")
-    }
-}
-
-/**
- * Helper function to check if the distance goal is greater or equal than zero
- * @param distanceGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkDistanceGoal(distanceGoal: Double) {
-    if (distanceGoal <= 0.0) {
-        throw java.lang.Error("The distance goal can't be equal or less than 0.")
-    }
-}
-
-/**
- * Helper function to check if the activity time goal is greater or equal than zero
- * @param activityTimeGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkActivityTimeGoal(activityTimeGoal: Double) {
-    if (activityTimeGoal <= 0.0) {
-        throw java.lang.Error("The activity time goal can't be equal or less than 0.")
-    }
-}
-
-/**
- * Helper function to check if the number of paths goal is greater or equal than zero
- * @param nbOfPathsGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkNbOfPathsGoal(nbOfPathsGoal: Int) {
-    if (nbOfPathsGoal <= 0) {
-        throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
-    }
-}
-
-
 

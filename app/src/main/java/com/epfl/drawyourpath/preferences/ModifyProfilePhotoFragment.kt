@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -16,6 +17,9 @@ import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
+import java.io.ByteArrayOutputStream
+import java.util.*
+import java.util.concurrent.CompletableFuture
 
 class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_photo) {
     //for the test

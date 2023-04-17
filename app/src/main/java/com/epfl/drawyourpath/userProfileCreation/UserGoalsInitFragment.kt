@@ -16,6 +16,7 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.login.LoginActivity
+import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.time.LocalDate
 
@@ -103,15 +104,19 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                     this.startActivity(Intent(activity, LoginActivity::class.java))
                 }else {
                     userCached.setDatabase(database)
-                    userCached.createNewUser(userLog,
+                    val user = UserModel(
+                        userLog,
                         username,
                         firstname,
                         surname,
                         LocalDate.ofEpochDay(dateOfBirth),
                         distanceGoal.toDouble(),
                         timeGoal.toDouble(),
-                        nunberOfPathGoal)
-                    database.initUserProfile(userCached.getUserModel()).thenAccept {
+                        nunberOfPathGoal,
+                        database
+                    )
+                    userCached.createNewUser(user)
+                    database.initUserProfile(user).thenAccept {
                         if (activity != null) {
                             val fragManagement =
                                 requireActivity().supportFragmentManager.beginTransaction()

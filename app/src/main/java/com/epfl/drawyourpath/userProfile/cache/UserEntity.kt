@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -125,7 +126,7 @@ data class UserEntity(
                 return null
             }
             val stream = ByteArrayOutputStream()
-            image.compress(Bitmap.CompressFormat.WEBP, 80, stream)
+            image.compress(Bitmap.CompressFormat.WEBP, 70, stream)
             return stream.toByteArray()
         }
 
