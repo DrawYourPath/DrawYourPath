@@ -18,7 +18,7 @@ abstract class Database {
     val nbOfPathsGoalFile: String = "nbOfPathsGoal"
     val profilePhotoFile: String = "profilePhoto"
     val friendsListFile: String = "friendsList"
-    val runsHistoryFile: String = "pathsHistory"
+    val runsHistoryFile: String = "runsHistory"
 
     /**
      * This function is used to know if a certain user is already store in the database

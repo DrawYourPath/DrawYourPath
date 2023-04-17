@@ -152,7 +152,7 @@ class FireDatabase : Database() {
     }
 
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
-        var future = CompletableFuture<UserModel>()
+        val future = CompletableFuture<UserModel>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
             future.complete(dataToUserModel(userData, userId))
@@ -261,14 +261,15 @@ class FireDatabase : Database() {
         }
 
         //create the field for the new path, the key is the start time
-        val newPath = HashMap<String, Any>()
-        newPath.put(run.getStartTime().toString(), run)
+        val newRun = HashMap<String, Any>()
+        newRun.put(run.getStartTime().toString(), run)
         //update the runs history on the database
         accessUserAccountFile(currentUserId).child(runsHistoryFile)
-            .updateChildren(newPath as Map<String, Any>)
+            .updateChildren(newRun as Map<String, Any>)
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
+
     }
 
     override fun removeRunFromHistory(run: Run): CompletableFuture<Unit> {
@@ -455,15 +456,15 @@ class FireDatabase : Database() {
         val runsHistory = ArrayList<Run>()
 
         for (run in data.children) {
-            val path = ArrayList<LatLng>()
-            for (point in run.child("path").children) {
-                val lat = point.child("latitude").value as Double
-                val lon = point.child("longitude").value as Double
-                path.add(LatLng(lat, lon))
+            val points = ArrayList<LatLng>()
+            for (point in run.child("path").child("points").children) {
+                val lat = point.child("latitude").value as Long
+                val lon = point.child("longitude").value as Long
+                points.add(LatLng(lat.toDouble(), lon.toDouble()))
             }
             val startTime = run.child("startTime").value as Long
             val endTime = run.child("endTime").value as Long
-            runsHistory.add(Run(Path(path), startTime, endTime))
+            runsHistory.add(Run(Path(points), startTime, endTime))
         }
 
         return runsHistory
