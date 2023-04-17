@@ -139,6 +139,8 @@ class FireDatabase : Database() {
     }
 
     override fun initUserProfile(userModel: UserModel): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+
         val userData = HashMap<String, Any>()
         userData.put(emailFile, userModel.getEmailAddress())
         userData.put(firstnameFile, userModel.getFirstname())
@@ -148,7 +150,15 @@ class FireDatabase : Database() {
         userData.put(currentActivityTimeGoalFile, userModel.getCurrentActivityTime())
         userData.put(currentNOfPathsGoalFile, userModel.getCurrentNumberOfPathsGoal())
 
-        return updateUserData(userData)
+        updateUserData(userData).thenApply {
+            initUserAchievement().thenAccept { isInit ->
+                if(isInit){
+                    future.complete(true)
+                }
+                future.completeExceptionally(Exception("The user profile was not correctly initiate in the database !"))
+            }
+        }
+        return future
     }
 
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
@@ -404,8 +414,12 @@ class FireDatabase : Database() {
             val nbOfPathsGoal = data.child(currentNOfPathsGoalFile).value
             val friendsListData = data.child(friendsListFile)
             val dailyGoalData = data.child(dailyGoalsFile)
+            val totalDistance = data.child(achievementsFile).child(totalDistanceFile).value
+            val totalActivityTime = data.child(achievementsFile).child(totalActivityTimeFile).value
+            val totalNbOfPaths = data.child(achievementsFile).child(totalNbOfPathsFile).value
 
-            if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null || nbOfPathsGoal == null) {
+            if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null ||
+                nbOfPathsGoal == null ||totalDistance == null || totalActivityTime == null || totalNbOfPaths == null) {
                 throw java.lang.Error("The user account present on the database is incomplete.")
             } else {
                 //test if the photoProfile is null to know if we need to decode it
@@ -432,7 +446,10 @@ class FireDatabase : Database() {
                         profilePhoto,
                         friendsList,
                         this,
-                        dailyGoalList
+                        dailyGoalList,
+                        (totalDistance as Long).toDouble(),
+                        (totalActivityTime as Long).toDouble(),
+                        (totalNbOfPaths as Long).toInt()
                 )
             }
         }
@@ -570,6 +587,28 @@ class FireDatabase : Database() {
                     future.complete(achievementsMap)
                 }
                 .addOnFailureListener { it }
+        }
+        return future
+    }
+
+    /**
+     * Helper function to init the user achievement
+     */
+    private fun initUserAchievement(): CompletableFuture<Boolean>{
+        val future = CompletableFuture<Boolean>()
+
+        val initAchievementData = HashMap<String, Any>()
+        initAchievementData.put(totalDistanceFile, 0.0)
+        initAchievementData.put(totalActivityTimeFile, 0.0)
+        initAchievementData.put(totalNbOfPathsFile, 0)
+
+        val userId = getUserId()
+        if (userId == null) {
+            future.completeExceptionally(java.lang.Error("The userId can't be null !"))
+        } else {
+            accessUserAccountFile(userId).child(achievementsFile).updateChildren(initAchievementData)
+                .addOnSuccessListener { future.complete(true) }
+                .addOnFailureListener { future.completeExceptionally(it) }
         }
         return future
     }
