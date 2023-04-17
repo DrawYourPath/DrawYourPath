@@ -3,10 +3,7 @@ package com.epfl.drawyourpath.userProfile.cache
 import android.app.Application
 import android.graphics.Bitmap
 import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.*
 import androidx.room.Room
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
@@ -14,6 +11,9 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
+import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -34,12 +34,17 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     //database where the user is store online
     private var database: Database = FireDatabase()
 
-    //cached room database for user
-    private val cache = Room
+    // room database
+    private val roomDatabase = Room
         .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
         .fallbackToDestructiveMigration()
         .build()
-        .userDao()
+
+    // room database user
+    private val userCache = roomDatabase.userDao()
+
+    // room database daily goal
+    private val dailyGoalCache = roomDatabase.dailyGoalDao()
 
     // current user id
     private var currentUserID: String? = null
@@ -48,7 +53,14 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val _currentUserID = MutableLiveData<String>()
 
     // user
-    private val user: LiveData<UserEntity> = _currentUserID.switchMap { cache.getUserById(it) }
+    private val user: LiveData<UserEntity> = _currentUserID.switchMap { userCache.getUserById(it) }
+
+    // dailyGoal
+    private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
+        dailyGoalCache.getDailyGoalById(user.userId).map {
+            getTodayDailyGoal(user.distanceGoal, user.activityTimeGoal, user.nbOfPathsGoal, it.firstOrNull())
+        }
+    }
 
     /**
      * This function will create a new user based on the user model of the app
@@ -56,7 +68,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun createNewUser(userModel: UserModel) {
         CompletableFuture.supplyAsync {
-            cache.insert(fromUserModelToUserData(userModel))
+            userCache.insert(fromUserModelToUserData(userModel))
         }.thenAccept {
             setUserId(userModel.getUserId())
         }
@@ -70,11 +82,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser(false)
         CompletableFuture.supplyAsync {
             // insert empty user in cache to avoid null user
-            cache.insertIfEmpty(UserEntity(userId))
+            userCache.insertIfEmpty(UserEntity(userId))
         }.thenComposeAsync {
             database.getUserAccount(userId)
         }.thenApplyAsync {
-            cache.insert(fromUserModelToUserData(it))
+            userCache.insert(fromUserModelToUserData(it))
         }
         setUserId(userId)
     }
@@ -97,6 +109,16 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun getUser(): LiveData<UserEntity> {
         checkCurrentUser()
         return user
+    }
+
+    /**
+     * get today's daily goal (read-only).
+     *
+     * @return the [LiveData] of [DailyGoal]
+     */
+    fun getTodayDailyGoal(): LiveData<DailyGoal> {
+        checkCurrentUser()
+        return todayDailyGoal
     }
 
     /**
@@ -137,7 +159,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser()
         return database.updateUsername(username).thenApplyAsync {
             if (it) {
-                cache.updateUsername(currentUserID!!, username)
+                userCache.updateUsername(currentUserID!!, username)
             }
             it
         }
@@ -151,7 +173,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser()
         return database.setDistanceGoal(distanceGoal).thenApplyAsync {
             if (it) {
-                cache.updateDistanceGoal(currentUserID!!, distanceGoal)
+                userCache.updateDistanceGoal(currentUserID!!, distanceGoal)
+                dailyGoalCache.updateDistanceGoal(currentUserID!!, LocalDate.now().toEpochDay(), distanceGoal)
             }
             it
         }
@@ -166,7 +189,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         UserModel.checkActivityTimeGoal(activityTimeGoal)
         return database.setActivityTimeGoal(activityTimeGoal).thenApplyAsync {
             if (it) {
-                cache.updateTimeGoal(currentUserID!!, activityTimeGoal)
+                userCache.updateTimeGoal(currentUserID!!, activityTimeGoal)
+                dailyGoalCache.updateTimeGoal(currentUserID!!, LocalDate.now().toEpochDay(), activityTimeGoal)
             }
             it
         }
@@ -181,7 +205,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         UserModel.checkNbOfPathsGoal(nbOfPathsGoal)
         return database.setNbOfPathsGoal(nbOfPathsGoal).thenApplyAsync {
             if (it) {
-                cache.updatePathsGoal(currentUserID!!, nbOfPathsGoal)
+                userCache.updatePathsGoal(currentUserID!!, nbOfPathsGoal)
+                dailyGoalCache.updatePathsGoal(currentUserID!!, LocalDate.now().toEpochDay(), nbOfPathsGoal)
             }
             it
         }
@@ -196,7 +221,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser()
         return database.setProfilePhoto(photo).thenApplyAsync {
             if (it) {
-                cache.updatePhoto(currentUserID!!, UserEntity.fromBitmapToByteArray(photo))
+                userCache.updatePhoto(currentUserID!!, UserEntity.fromBitmapToByteArray(photo))
             }
             it
         }
@@ -211,6 +236,22 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             setDatabase(MockDataBase())
             Toast.makeText(getApplication(), R.string.toast_test_error_message, Toast.LENGTH_LONG).show()
         }
+    }
+
+    /**
+     * get Today's Daily Goal or create a new one if there is no Daily Goals for today
+     *
+     * @return DailyGoal representing today's Daily Goal
+     */
+    private fun getTodayDailyGoal(distanceGoal: Double, timeGoal: Double, pathGoal: Int, entity: DailyGoalEntity?): DailyGoal {
+        if (entity == null || LocalDate.ofEpochDay(entity.date) != LocalDate.now()) {
+            val dailyGoal = DailyGoal(distanceGoal, timeGoal, pathGoal)
+            CompletableFuture.supplyAsync {
+                dailyGoalCache.insert(dailyGoal.toDailyGoalEntity(currentUserID!!))
+            }
+            return dailyGoal
+        }
+        return DailyGoal(entity)
     }
 
 }

@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.userProfile.dailygoal
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.epfl.drawyourpath.userProfile.cache.UserEntity
@@ -8,7 +9,7 @@ import java.time.LocalDate
 
 @Entity(
     tableName = "DailyGoal",
-    primaryKeys = ["userId, date"],
+    primaryKeys = ["user_id", "date"],
     foreignKeys = [ForeignKey(entity = UserEntity::class, parentColumns = ["id"], childColumns = ["user_id"], onDelete = ForeignKey.CASCADE)]
 )
 data class DailyGoalEntity(
@@ -56,5 +57,4 @@ data class DailyGoalEntity(
             return date.toEpochDay()
         }
     }
-
 }

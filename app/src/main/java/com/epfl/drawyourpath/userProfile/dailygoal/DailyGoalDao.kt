@@ -2,19 +2,17 @@ package com.epfl.drawyourpath.userProfile.dailygoal
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.epfl.drawyourpath.userProfile.cache.UserEntity
 
 @Dao
 interface DailyGoalDao {
 
     /**
-     * returns a read-only DailyGoal
+     * returns an ordered list read-only DailyGoal from most recent to least recent
      * @param userId the id of the user
-     * @param date the date of the DailyGoal
      * @return [LiveData] of [DailyGoalEntity]
      */
-    @Query("SELECT * FROM DailyGoal WHERE user_id = :userId AND date = :date")
-    fun getDailyGoalByIdAndDate(userId: String, date: Long): LiveData<DailyGoalEntity>
+    @Query("SELECT * FROM DailyGoal WHERE user_id = :userId ORDER BY date DESC")
+    fun getDailyGoalById(userId: String): LiveData<List<DailyGoalEntity>>
 
     /**
      * TODO
@@ -23,7 +21,7 @@ interface DailyGoalDao {
     fun insert(dailyGoal: DailyGoalEntity)
 
     //TODO
-    fun addProgress()
+    //fun addProgress()
 
     /**
      * set a new distance goal to DailyGoal with the corresponding id and date

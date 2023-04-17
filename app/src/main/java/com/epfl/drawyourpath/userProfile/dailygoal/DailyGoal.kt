@@ -24,4 +24,31 @@ data class DailyGoal(
         return DailyGoal(this.distanceInKilometerGoal, this.timeInMinutesGoal, this.nbOfPathsGoal)
     }
 
+    /**
+     * constructor to transform a [DailyGoalEntity] into a [DailyGoal]
+     * @param entity the entity to transform
+     */
+    constructor(entity: DailyGoalEntity) : this(
+        entity.distanceInKilometerGoal,
+        entity.timeInMinutesGoal,
+        entity.nbOfPathsGoal,
+        entity.distanceInKilometerProgress,
+        entity.timeInMinutesProgress,
+        entity.nbOfPathsProgress,
+        entity.getDateAsLocalDate()
+    )
+
+    fun toDailyGoalEntity(userId: String): DailyGoalEntity {
+        return DailyGoalEntity(
+            userId,
+            DailyGoalEntity.fromLocalDateToLong(date),
+            distanceInKilometerGoal,
+            timeInMinutesGoal,
+            nbOfPathsGoal,
+            distanceInKilometerProgress,
+            timeInMinutesProgress,
+            nbOfPathsProgress
+        )
+    }
+
 }

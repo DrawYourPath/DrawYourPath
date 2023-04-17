@@ -12,13 +12,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.lang.Integer.min
+import java.util.concurrent.CompletableFuture
 
 
 /**
  * used in a recycler view to display the [DailyGoal]
  */
-class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
+class DailyGoalViewAdapter(
+    private val setDistanceGoal: (distance: Double) -> CompletableFuture<Boolean>,
+    private val setTimeGoal: (time: Double) -> CompletableFuture<Boolean>,
+    private val setPathGoal: (path: Int) -> CompletableFuture<Boolean>
+) :
     RecyclerView.Adapter<DailyGoalViewAdapter.ViewHolder>() {
+
+    private var dailyGoal = DailyGoal(0.0, 0.0, 0)
 
     /**
      * Custom view holder using a custom layout for DailyGoal
@@ -54,25 +61,33 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
         viewHolder.text.text = getGoalUnit(goalPos)
         viewHolder.editText.setText(getGoalToDouble(dailyGoal, goalPos).toInt().toString())
 
+        displayGoal(viewHolder, goalPos)
+
         viewHolder.editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s != null) {
-                    updateGoal(dailyGoal, s.toString(), goalPos)
-                    displayGoal(viewHolder, goalPos)
+                    //TODO auto update needs fix
+                    //updateGoal(s.toString(), goalPos)
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
-
-        displayGoal(viewHolder, goalPos)
-
     }
 
     // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = 3
+
+    /**
+     * update the daily goal
+     * @param dailyGoal the new daily goal
+     */
+    fun updateDailyGoal(dailyGoal: DailyGoal) {
+        this.dailyGoal = dailyGoal
+        notifyItemRangeChanged(0, itemCount)
+    }
 
     /**
      * display the goal to the view
@@ -109,16 +124,16 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
      * @param value the value
      * @param pos the position of the goal
      */
-    private fun updateGoal(goal: DailyGoal, value: String, pos: GoalPos) {
+    private fun updateGoal(value: String, pos: GoalPos) {
         val doubleValue = value.toDoubleOrNull()
 
         if ((doubleValue == null) || (doubleValue <= 0)) {
             return
         }
         when (pos) {
-            GoalPos.DISTANCE -> goal.distanceInKilometerGoal = doubleValue
-            GoalPos.TIME -> goal.timeInMinutesGoal = doubleValue
-            GoalPos.PATH -> goal.nbOfPathsGoal = doubleValue.toInt()
+            GoalPos.DISTANCE -> setDistanceGoal(doubleValue)
+            GoalPos.TIME -> setTimeGoal(doubleValue)
+            GoalPos.PATH -> setPathGoal(doubleValue.toInt())
         }
     }
 
