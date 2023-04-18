@@ -450,13 +450,17 @@ class FireDatabase : Database() {
         for (run in data.children) {
             val points = ArrayList<LatLng>()
             for (point in run.child("path").child("points").children) {
-                val lat = point.child("latitude").value as Double
-                val lon = point.child("longitude").value as Double
-                points.add(LatLng(lat, lon))
+                val lat = point.child("latitude").getValue(Double::class.java)
+                val lon = point.child("longitude").getValue(Double::class.java)
+                if (lat != null && lon != null) {
+                    points.add(LatLng(lat, lon))
+                }
             }
-            val startTime = run.child("startTime").value as Long
-            val endTime = run.child("endTime").value as Long
-            runsHistory.add(Run(Path(points), startTime, endTime))
+            val startTime = run.child("startTime").value as? Long
+            val endTime = run.child("endTime").value as? Long
+            if (startTime != null && endTime != null) {
+                runsHistory.add(Run(Path(points), startTime, endTime))
+            }
         }
 
         return runsHistory
