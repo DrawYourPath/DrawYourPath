@@ -61,7 +61,17 @@ class UserModel {
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
      * @throws error if the inputs are incorrect
      */
-    constructor(userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database){
+    constructor(
+        userAuth: User,
+        username: String,
+        firstname: String,
+        surname: String,
+        dateOfBirth: LocalDate,
+        distanceGoal: Double,
+        activityTimeGoal: Double,
+        nbOfPathsGoal: Int,
+        database: Database
+    ) {
         this.database = database
 
         //obtain the userId and the email give by the authentication
@@ -85,13 +95,13 @@ class UserModel {
 
         //test the goals, the goals can't be equal or less than 0
         checkDistanceGoal(distanceGoal)
-        this.distanceGoal=distanceGoal
+        this.distanceGoal = distanceGoal
 
         checkActivityTimeGoal(activityTimeGoal)
-        this.activityTimeGoal=activityTimeGoal
+        this.activityTimeGoal = activityTimeGoal
 
         checkNbOfPathsGoal(nbOfPathsGoal)
-        this.nbOfPathsGoal=nbOfPathsGoal
+        this.nbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = ArrayList()
         this.profilePhoto = null
@@ -113,12 +123,26 @@ class UserModel {
      * @param friendsList the friendsList of the user(with a default empty friendsList
      * @throws error if the inputs are incorrect
      */
-    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double, activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, friendsList: List<String>, runsHistory: List<Run>, database: Database){
+    constructor(
+        userId: String,
+        emailAddress: String,
+        username: String,
+        firstname: String,
+        surname: String,
+        dateOfBirth: LocalDate,
+        distanceGoal: Double,
+        activityTimeGoal: Double,
+        nbOfPathsGoal: Int,
+        profilePhoto: Bitmap?,
+        friendsList: List<String>,
+        runsHistory: List<Run>,
+        database: Database
+    ) {
         this.database = database
 
         //obtain the userId and the email give by the authentication
-        this.userId=userId
-        this.emailAddress=emailAddress
+        this.userId = userId
+        this.emailAddress = emailAddress
 
         //obtain the username
         this.username = username
@@ -146,7 +170,7 @@ class UserModel {
         this.nbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = friendsList
-        this.profilePhoto =profilePhoto
+        this.profilePhoto = profilePhoto
 
         this.runsHistory = runsHistory
     }
@@ -171,10 +195,10 @@ class UserModel {
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun setUsername(username: String): CompletableFuture<Boolean>{
-        return database.updateUsername(username).thenApply{
-            if(it){
-                this.username=username
+    fun setUsername(username: String): CompletableFuture<Boolean> {
+        return database.updateUsername(username).thenApply {
+            if (it) {
+                this.username = username
             }
             it
         }
@@ -240,8 +264,8 @@ class UserModel {
     fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
         checkDistanceGoal(distanceGoal)
         return database.setDistanceGoal(distanceGoal).thenApply {
-            if(it){
-                this.distanceGoal=distanceGoal
+            if (it) {
+                this.distanceGoal = distanceGoal
             }
             it
         }
@@ -262,8 +286,8 @@ class UserModel {
     fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
         checkActivityTimeGoal(activityTimeGoal)
         return database.setActivityTimeGoal(activityTimeGoal).thenApply {
-            if(it){
-                this.activityTimeGoal=activityTimeGoal
+            if (it) {
+                this.activityTimeGoal = activityTimeGoal
             }
             it
         }
@@ -284,8 +308,8 @@ class UserModel {
     fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         checkNbOfPathsGoal(nbOfPathsGoal)
         return database.setNbOfPathsGoal(nbOfPathsGoal).thenApply {
-            if(it){
-                this.nbOfPathsGoal=nbOfPathsGoal
+            if (it) {
+                this.nbOfPathsGoal = nbOfPathsGoal
             }
             it
         }
@@ -344,7 +368,8 @@ class UserModel {
      */
     fun addRunToHistory(run: Run): CompletableFuture<Unit> {
         return database.addRunToHistory(run).thenApply {
-            val tmpList = runsHistory.filter { it.getStartTime() != run.getStartTime() }.toMutableList()
+            val tmpList =
+                runsHistory.filter { it.getStartTime() != run.getStartTime() }.toMutableList()
             tmpList.add(run)
             tmpList.sortBy { it.getStartTime() }
             runsHistory = tmpList
@@ -359,7 +384,9 @@ class UserModel {
      */
     fun removeRunFromHistory(run: Run): CompletableFuture<Unit> {
         if (!runsHistory.contains(run)) {
-            throw Exception("This path is not in the history !")
+            val future = CompletableFuture<Unit>()
+            future.completeExceptionally(Exception("This path is not in the history !"))
+            return future
         }
 
         return database.removeRunFromHistory(run).thenApply {
@@ -381,7 +408,7 @@ class UserModel {
      * This function will  return the profile photo of the user or null if it doesn't exit
      * @return the profile photo if it exist
      */
-    fun getProfilePhoto(): Bitmap?{
+    fun getProfilePhoto(): Bitmap? {
         return profilePhoto
     }
 
@@ -390,9 +417,9 @@ class UserModel {
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
      */
-    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>{
+    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
         return database.setProfilePhoto(photo).thenApply {
-            if(it){
+            if (it) {
                 this.profilePhoto = photo
             }
             it

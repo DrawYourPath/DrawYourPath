@@ -673,9 +673,9 @@ class UserModelTest {
         )
 
         val exception = assertThrows(Exception::class.java) {
-            user.removeRunFromHistory(database.runTest)
+            user.removeRunFromHistory(database.runTest).get()
         }
-        assertEquals("This path is not in the history !", exception.message)
+        assertEquals("java.lang.Exception: This path is not in the history !", exception.message)
     }
 
     /**

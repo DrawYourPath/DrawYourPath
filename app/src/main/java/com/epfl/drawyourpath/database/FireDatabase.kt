@@ -5,8 +5,8 @@ import android.graphics.BitmapFactory
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.path.Path
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.userProfile.UserModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
@@ -280,18 +280,11 @@ class FireDatabase : Database() {
             return future
         }
 
-        //obtain the previous history
-        accessUserAccountFile(currentUserId).child(runsHistoryFile).get()
-            .addOnSuccessListener { previousHistory ->
-                val newHistory =
-                    previousHistory.children.filter { (it.key as String) != run.getStartTime().toString()}
-                //set the new history
-                accessUserAccountFile(currentUserId).child(runsHistoryFile).setValue(newHistory)
-                    .addOnSuccessListener { future.complete(Unit) }
-                    .addOnFailureListener { err -> future.completeExceptionally(err) }
-
-            }
-            .addOnFailureListener { err -> future.completeExceptionally(err) }
+        //remove the run
+        accessUserAccountFile(currentUserId).child(runsHistoryFile)
+            .child(run.getStartTime().toString()).removeValue()
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
 
         return future
     }
@@ -457,9 +450,9 @@ class FireDatabase : Database() {
         for (run in data.children) {
             val points = ArrayList<LatLng>()
             for (point in run.child("path").child("points").children) {
-                val lat = point.child("latitude").value as Long
-                val lon = point.child("longitude").value as Long
-                points.add(LatLng(lat.toDouble(), lon.toDouble()))
+                val lat = point.child("latitude").value as Double
+                val lon = point.child("longitude").value as Double
+                points.add(LatLng(lat, lon))
             }
             val startTime = run.child("startTime").value as Long
             val endTime = run.child("endTime").value as Long
