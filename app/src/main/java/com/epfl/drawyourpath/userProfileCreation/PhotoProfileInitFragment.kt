@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.util.concurrent.CompletableFuture
@@ -81,17 +80,14 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
      * @return a future to indicate if the photo was store in the database
      */
     private fun isPhotoSelected(): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
 
         if (photoProfile == null) {
-
             errorText.text = "* You have forgotten to select a photo !"
             errorText.setTextColor(Color.RED)
-            future.complete(false)
+            return CompletableFuture<Boolean>().thenApplyAsync { false }
         } else {
-            return userCached.setProfilePhoto(photoProfile!!)
+            return userCached.updateProfilePhoto(photoProfile!!).thenApplyAsync { true }
         }
-        return future
     }
 
     /**
@@ -154,7 +150,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
         val validateButton: Button =
             view.findViewById(R.id.setPhotoProfile_button_userProfileCreation)
         validateButton.setOnClickListener {
-            isPhotoSelected().thenApply {
+            isPhotoSelected().thenApplyAsync {
                 if (it) {
                     showEndProfileCreationFrag()
                 }

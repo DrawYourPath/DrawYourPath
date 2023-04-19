@@ -113,7 +113,8 @@ dependencies {
     testImplementation "androidx.lifecycle:lifecycle-runtime-testing:$lifecycle_version"
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
 
     implementation "androidx.fragment:fragment-ktx:1.5.5"
 
@@ -121,7 +122,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:3.11.2'
     testImplementation 'io.mockk:mockk:1.12.0'
     testImplementation 'org.mockito:mockito-android:3.12.4'
-    testImplementation 'androidx.arch.core:core-testing:2.1.0'
 
     //to have access to the PickerActions method
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")

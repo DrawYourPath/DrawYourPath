@@ -62,18 +62,15 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
      * @param errorMessage text view to display the potential error message to the user
      */
     private fun validateButtonAction(username: String, errorMessage: TextView) {
-        testUsernameAvailability(username, errorMessage).thenComposeAsync { available ->
+        testUsernameAvailability(username, errorMessage).thenApplyAsync { available ->
             if (available) {
-                user.setUsername(username)
-            } else {
-                CompletableFuture.completedFuture(false)
-            }
-        }.thenAcceptAsync { usernameSet ->
-            if (usernameSet) {
-                returnBackToPreviousFrag()
+                user.updateUsername(username).thenApplyAsync {
+                    returnBackToPreviousFrag()
+                }
             }
         }
     }
+
 
     /**
      * Helper function to return back to the previous fragment
