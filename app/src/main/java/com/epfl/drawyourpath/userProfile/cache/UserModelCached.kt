@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import androidx.room.Room
@@ -84,6 +85,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         setUserId(userId)
         return CompletableFuture.supplyAsync {
             // insert empty user in cache to avoid null user
+            userCache.clear()
             userCache.insertIfEmpty(UserEntity(userId))
         }.thenComposeAsync {
             database.getUserAccount(userId)
@@ -172,7 +174,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser()
         UserModel.checkDistanceGoal(distanceGoal)
         return database.setCurrentDistanceGoal(distanceGoal).thenApplyAsync {
-            userCache.updateDistanceGoal(currentUserID!!, distanceGoal)
+            dailyGoalCache.updateDistanceGoal(currentUserID!!, LocalDate.now().toEpochDay(), distanceGoal)
         }
     }
 
@@ -184,7 +186,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser()
         UserModel.checkActivityTimeGoal(activityTimeGoal)
         return database.setCurrentActivityTimeGoal(activityTimeGoal).thenApplyAsync {
-            userCache.updateTimeGoal(currentUserID!!, activityTimeGoal)
+            dailyGoalCache.updateTimeGoal(currentUserID!!, LocalDate.now().toEpochDay(), activityTimeGoal)
         }
     }
 
@@ -196,7 +198,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser()
         UserModel.checkNbOfPathsGoal(nbOfPathsGoal)
         return database.setCurrentNbOfPathsGoal(nbOfPathsGoal).thenApplyAsync {
-            userCache.updatePathsGoal(currentUserID!!, nbOfPathsGoal)
+            dailyGoalCache.updatePathsGoal(currentUserID!!, LocalDate.now().toEpochDay(), nbOfPathsGoal)
         }
     }
 
@@ -241,7 +243,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         if (entity == null || LocalDate.ofEpochDay(entity.date) != LocalDate.now()) {
             val dailyGoal = DailyGoal(distanceGoal, timeGoal, pathGoal)
             CompletableFuture.supplyAsync {
-                dailyGoalCache.insert(dailyGoal.toDailyGoalEntity(currentUserID!!))
+                database.addDailyGoal(dailyGoal).thenApplyAsync {
+                    dailyGoalCache.insert(dailyGoal.toDailyGoalEntity(currentUserID!!))
+                }
             }
             return dailyGoal
         }

@@ -1,12 +1,11 @@
 package com.epfl.drawyourpath.challenge
 
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -37,8 +36,10 @@ class DailyGoalViewAdapter(
         val editText: EditText
         val progressText: TextView
         val progressBar: ProgressBar
+        val view: View
 
         init {
+            this.view = view
             text = view.findViewById(R.id.goal_display_text)
             editText = view.findViewById(R.id.goal_display_edit_text)
             progressText = view.findViewById(R.id.goal_progress_text)
@@ -69,6 +70,7 @@ class DailyGoalViewAdapter(
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 //TODO add checks like if empty or if same as before
                 updateGoal(text.text.toString(), goalPos)
+                closeKeyboard(viewHolder.view)
                 true
             } else {
                 false
@@ -86,6 +88,11 @@ class DailyGoalViewAdapter(
     fun updateDailyGoal(dailyGoal: DailyGoal) {
         this.dailyGoal = dailyGoal
         notifyItemRangeChanged(0, itemCount)
+    }
+
+    private fun closeKeyboard(view: View) {
+        val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     /**

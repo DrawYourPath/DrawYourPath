@@ -44,30 +44,6 @@ interface UserDao {
     fun updateUsername(id: String, username: String)
 
     /**
-     * set a new distance goal to user with the corresponding id
-     * @param id the id of the user
-     * @param distanceGoal the new distance goal of the user
-     */
-    @Query("UPDATE User SET distance_goal = :distanceGoal WHERE id = :id")
-    fun updateDistanceGoal(id: String, distanceGoal: Double)
-
-    /**
-     * set a new time goal to user with the corresponding id
-     * @param id the id of the user
-     * @param timeGoal the new time goal of the user
-     */
-    @Query("UPDATE User SET time_goal = :timeGoal WHERE id = :id")
-    fun updateTimeGoal(id: String, timeGoal: Double)
-
-    /**
-     * set a new number of paths goal to user with the corresponding id
-     * @param id the id of the user
-     * @param pathsGoal the new number of paths goal of the user
-     */
-    @Query("UPDATE User SET paths_goal = :pathsGoal WHERE id = :id")
-    fun updatePathsGoal(id: String, pathsGoal: Int)
-
-    /**
      * set a new profile photo to user with the corresponding id
      * @param id the id of the user
      * @param photo the new profile photo of the user
