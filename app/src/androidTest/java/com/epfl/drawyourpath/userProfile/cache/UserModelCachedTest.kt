@@ -55,151 +55,115 @@ class UserModelCachedTest {
 
     @Test
     fun getCorrectUserFromGetter() {
-        user.setCurrentUser(testUserModel.getUserId()).thenApplyAsync {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
     }
 
     @Test
     fun createNewUserIsInCache() {
         // create a new user
-        user.createNewUser(newUser).thenApplyAsync {
-            //check if new user is correct
-            assertEqualUser(newUser, user.getUser().getOrAwaitValue())
-        }.thenComposeAsync {
-            // set to another user to evict new user from livedata
-            user.setCurrentUser(testUserModel.getUserId())
-        }.thenApplyAsync {
-            //check that it is the correct user
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-        }.thenApplyAsync {
-            // set non working database
-            user.setDatabase(MockNonWorkingDatabase())
-        }.thenComposeAsync {
-            // set current user to new user fom cache
-            user.setCurrentUser(newUser.getUserId())
-        }.exceptionally {
-            assertEqualUser(newUser, user.getUser().getOrAwaitValue())
-            true
-        }.get(timeout, TimeUnit.SECONDS)
+        user.createNewUser(newUser).get(timeout, TimeUnit.SECONDS)
+        //check if new user is correct
+        assertEqualUser(newUser, user.getUser().getOrAwaitValue())
+        // set to another user to evict new user from livedata
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        //check that it is the correct user
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
+        // set non working database
+        user.setDatabase(MockNonWorkingDatabase())
+        // set current user to new user fom cache
+        user.setCurrentUser(newUser.getUserId()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        //check the user in the cache
+        assertEqualUser(newUser, user.getUser().getOrAwaitValue())
     }
 
     @Test
     fun setUsernameModifyUsername() {
-        user.setCurrentUser(testUserModel.getUserId()).thenComposeAsync {
-            user.updateUsername(newUser.getUsername())
-        }.thenApplyAsync {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newUsername = newUser.getUsername())
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.updateUsername(newUser.getUsername()).get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newUsername = newUser.getUsername())
     }
 
     @Test
     fun setUsernameWhenNoInternetDoesNotModifyUsername() {
-        user.setCurrentUser(testUserModel.getUserId()).thenApplyAsync {
-            user.setDatabase(MockNonWorkingDatabase())
-        }.thenComposeAsync {
-            user.updateUsername(newUser.getUsername())
-        }.exceptionally {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-            true
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.setDatabase(MockNonWorkingDatabase())
+        user.updateUsername(newUser.getUsername()).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
     }
 
     @Test
     fun setDistanceGoalModifyDistanceGoal() {
-        user.setCurrentUser(testUserModel.getUserId()).thenComposeAsync {
-            user.updateDistanceGoal(newUser.getDistanceGoal())
-        }.thenApplyAsync {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.getDistanceGoal())
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.updateDistanceGoal(newUser.getDistanceGoal()).get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.getDistanceGoal())
     }
 
     @Test
     fun setDistanceGoalWhenNoInternetDoesNotModifyDistanceGoal() {
-        user.setCurrentUser(testUserModel.getUserId()).thenApplyAsync {
-            user.setDatabase(MockNonWorkingDatabase())
-        }.thenComposeAsync {
-            user.updateDistanceGoal(newUser.getDistanceGoal())
-        }.exceptionally {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-            true
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.setDatabase(MockNonWorkingDatabase())
+        user.updateDistanceGoal(newUser.getDistanceGoal()).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
     }
 
     @Test
     fun setActivityTimeGoalModifyActivityTimeGoal() {
-        user.setCurrentUser(testUserModel.getUserId()).thenComposeAsync {
-            user.updateActivityTimeGoal(newUser.getActivityTime())
-        }.thenApplyAsync {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getActivityTime())
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.updateActivityTimeGoal(newUser.getActivityTime()).get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getActivityTime())
     }
 
     @Test
     fun setActivityTimeGoalWhenNoInternetDoesNotModifyActivityTimeGoal() {
-        user.setCurrentUser(testUserModel.getUserId()).thenApplyAsync {
-            user.setDatabase(MockNonWorkingDatabase())
-        }.thenComposeAsync {
-            user.updateActivityTimeGoal(newUser.getActivityTime())
-        }.exceptionally {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-            true
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.setDatabase(MockNonWorkingDatabase())
+        user.updateActivityTimeGoal(newUser.getActivityTime()).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
+
     }
 
     @Test
     fun setNumberOfPathsGoalModifyNumberOfPathsGoal() {
 
-        user.setCurrentUser(testUserModel.getUserId()).thenComposeAsync {
-            user.updateNumberOfPathsGoal(newUser.getNumberOfPathsGoal())
-        }.thenApplyAsync {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.getNumberOfPathsGoal())
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.updateNumberOfPathsGoal(newUser.getNumberOfPathsGoal()).get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.getNumberOfPathsGoal())
     }
 
     @Test
     fun setNumberOfPathsGoalWhenNoInternetDoesNotModifyNumberOfPathsGoal() {
-        user.setCurrentUser(testUserModel.getUserId()).thenApplyAsync {
-            user.setDatabase(MockNonWorkingDatabase())
-        }.thenComposeAsync {
-            user.updateNumberOfPathsGoal(newUser.getNumberOfPathsGoal())
-        }.exceptionally {
-            assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-            true
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.setDatabase(MockNonWorkingDatabase())
+        user.updateNumberOfPathsGoal(newUser.getNumberOfPathsGoal()).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
     }
 
     @Test
     fun setProfilePhotoModifyProfilePhoto() {
-        user.setCurrentUser(testUserModel.getUserId()).thenComposeAsync {
-            user.updateProfilePhoto(newPicture)
-        }.thenApplyAsync {
-            assertNotNull(user.getUser().getOrAwaitValue().getProfilePhotoAsBitmap())
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.updateProfilePhoto(newPicture).get(timeout, TimeUnit.SECONDS)
+        assertNotNull(user.getUser().getOrAwaitValue().getProfilePhotoAsBitmap())
     }
 
     @Test
     fun setProfilePhotoWhenNoInternetDoesNotModifyProfilePhoto() {
-        user.setCurrentUser(testUserModel.getUserId()).thenApplyAsync {
-            user.setDatabase(MockNonWorkingDatabase())
-        }.thenComposeAsync {
-            user.updateProfilePhoto(newPicture)
-        }.exceptionally {
-            assertNull(user.getUser().getOrAwaitValue().getProfilePhotoAsBitmap())
-            true
-        }.get(timeout, TimeUnit.SECONDS)
+        user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
+        user.setDatabase(MockNonWorkingDatabase())
+        user.updateProfilePhoto(newPicture).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        assertNull(user.getUser().getOrAwaitValue().getProfilePhotoAsBitmap())
     }
 
 
     @Before
     fun setup() {
         user.setDatabase(mockDataBase)
-        user.clearCache().join()
+        user.clearCache().get(timeout, TimeUnit.SECONDS)
     }
 
     @After
     fun clear() {
-        user.clearCache().join()
+        user.clearCache().get(timeout, TimeUnit.SECONDS)
     }
 
     private fun assertEqualUser(
