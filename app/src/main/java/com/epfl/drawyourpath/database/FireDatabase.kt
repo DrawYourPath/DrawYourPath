@@ -460,6 +460,8 @@ class FireDatabase : Database() {
             val endTime = run.child("endTime").value as? Long
             if (startTime != null && endTime != null) {
                 runsHistory.add(Run(Path(points), startTime, endTime))
+            } else {
+                android.util.Log.w(FireDatabase::class.java.name, "A point of a run has invalid coordinates => ignoring the point")
             }
         }
 
