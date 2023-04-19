@@ -46,6 +46,7 @@ class UserModelCachedTest {
         22,
         null,
         listOf(),
+        listOf(),
         mockDataBase
     )
 
