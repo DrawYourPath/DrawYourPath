@@ -66,10 +66,8 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
         val testUsername = testUsernameAvailability(database, username, errorMessage)
         testUsername.thenAccept{available ->
             if(available){
-                database.updateUsername(username).thenAccept{usernameSet ->
-                    if(usernameSet){
-                        returnBackToPreviousFrag()
-                    }
+                database.updateUsername(username).thenAccept{
+                    returnBackToPreviousFrag()
                 }
             }
         }

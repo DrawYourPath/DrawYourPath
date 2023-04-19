@@ -143,10 +143,8 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
             errorMessage.text = getString(R.string.error_select_new_profile_photo)
             errorMessage.setTextColor(Color.RED)
         } else {
-            database.setProfilePhoto(profilePhoto).thenAccept {isPhotoSet->
-                if (isPhotoSet) {
-                    returnBackToPreviousFrag()
-                }
+            database.setProfilePhoto(profilePhoto).thenAccept {
+                returnBackToPreviousFrag()
             }
         }
     }
