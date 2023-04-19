@@ -4,10 +4,10 @@ import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.path.Run
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 
 class UserModel {
     //the userId of the user
@@ -49,6 +49,9 @@ class UserModel {
     //profile photo, can be null if the user don't want to
     private var profilePhoto: Bitmap? = null
 
+    //runs history
+    private var runsHistory: List<Run>
+
     //user achievements
     //total distance run by the user
     private var totalDistance: Double
@@ -61,7 +64,7 @@ class UserModel {
 
 
     /**
-     * THis constructor will create a new user based on the user model of the app(constructor at the the profile creation)
+     * This constructor will create a new user based on the user model of the app (constructor at the the profile creation)
      * @param userAuth user authenticate give by the login
      * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
      * @param firstname must respect the name convention of the app (name or name-name)
@@ -77,9 +80,19 @@ class UserModel {
      * @throws error if the inputs are incorrect
      */
     constructor(
-        userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double,
-        activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database, dailyGoalList: List<DailyGoal> = emptyList(),
-        totalDistance: Double = 0.0, totalActivityTime: Double = 0.0, totalNbOfPaths: Int = 0
+        userAuth: User,
+        username: String,
+        firstname: String,
+        surname: String,
+        dateOfBirth: LocalDate,
+        distanceGoal: Double,
+        activityTimeGoal: Double,
+        nbOfPathsGoal: Int,
+        database: Database,
+        dailyGoalList: List<DailyGoal> = emptyList(),
+        totalDistance: Double = 0.0,
+        totalActivityTime: Double = 0.0,
+        totalNbOfPaths: Int = 0
     ) {
         this.database = database
 
@@ -114,6 +127,7 @@ class UserModel {
 
         this.friendsList = ArrayList()
         this.profilePhoto = null
+        this.runsHistory = ArrayList()
         this.dailyGoalList = dailyGoalList
 
         //init the user achievements
@@ -123,7 +137,7 @@ class UserModel {
     }
 
     /**
-     * THis constructor will create a new user based on the user model of the app
+     * This constructor will create a new user based on the user model of the app
      * @param userId of the user
      * @param emailAddress of the user
      * @param username is chosen during the profile create and each user has  unique username and it can be change later(if available in the database = not taken by another user)(the username is consider to be correct, since tested in the profile creation)
@@ -134,6 +148,7 @@ class UserModel {
      * @param activityTimeGoal init at the user profile creation and can be modify after(daily goal)
      * @param nbOfPathsGoal init at the user profile creation and can be modify after(daily goal)
      * @param friendsList the friendsList of the user(with a default empty friendsList)
+     * @param runsHistory the runs history of the user
      * @param dailyGoalList a list of daily goal realized by the user (by default the list is empty)
      * @param totalDistance total distance run by the user since the creation of his profile(default value is 0)
      * @param totalActivityTime total activity time since the creation of the his profile(default value is 0)
@@ -152,6 +167,7 @@ class UserModel {
         nbOfPathsGoal: Int,
         profilePhoto: Bitmap?,
         friendsList: List<String>,
+        runsHistory: List<Run>,
         database: Database,
         dailyGoalList: List<DailyGoal> = emptyList(),
         totalDistance: Double = 0.0,
@@ -191,6 +207,7 @@ class UserModel {
 
         this.friendsList = friendsList
         this.profilePhoto = profilePhoto
+        this.runsHistory = runsHistory
         this.dailyGoalList = dailyGoalList
 
         //init the user achievements
@@ -222,7 +239,6 @@ class UserModel {
     fun setUsername(username: String): CompletableFuture<Unit> {
         return database.updateUsername(username).thenApply {
             this.username = username
-            it
         }
     }
 
@@ -287,7 +303,6 @@ class UserModel {
         checkDistanceGoal(distanceGoal)
         return database.setCurrentDistanceGoal(distanceGoal).thenApply {
             this.currentDistanceGoal = distanceGoal
-            it
         }
     }
 
@@ -301,13 +316,12 @@ class UserModel {
 
     /**
      * Use this function to modify the daily activity time goal of the user
-     * @param time new daily activity time goal
+     * @param activityTimeGoal new daily activity time goal
      */
     fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
         checkActivityTimeGoal(activityTimeGoal)
         return database.setCurrentActivityTimeGoal(activityTimeGoal).thenApply {
             this.currentActivityTimeGoal = activityTimeGoal
-            it
         }
     }
 
@@ -321,13 +335,12 @@ class UserModel {
 
     /**
      * Use this function to modify the daily number of paths goal of the user
-     * @param nbOfPaths new daily number of paths goal
+     * @param nbOfPathsGoal new daily number of paths goal
      */
     fun setCurrentNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
         checkNbOfPathsGoal(nbOfPathsGoal)
         return database.setCurrentNbOfPathsGoal(nbOfPathsGoal).thenApply {
             this.currentNbOfPathsGoal = nbOfPathsGoal
-            it
         }
     }
 
@@ -352,7 +365,6 @@ class UserModel {
             val interList = friendsList.toMutableList()
             interList.remove(userId)
             friendsList = interList
-            it
         }
     }
 
@@ -366,7 +378,6 @@ class UserModel {
             val interList = friendsList.toMutableList()
             interList.add(userId)
             friendsList = interList
-            it
         }
     }
 
@@ -376,6 +387,50 @@ class UserModel {
      */
     fun getFriendList(): List<String> {
         return this.friendsList
+    }
+
+    /**
+     * This function will add a run to the history of the user in the local history and the database.
+     * The key is the startTime, the history is sorted based on it.
+     * @param run to be added to the history
+     * @return a future that indicate if the run was correctly added to the database
+     */
+    fun addRunToHistory(run: Run): CompletableFuture<Unit> {
+        return database.addRunToHistory(run).thenApply {
+            val tmpList =
+                runsHistory.filter { it.getStartTime() != run.getStartTime() }.toMutableList()
+            tmpList.add(run)
+            tmpList.sortBy { it.getStartTime() }
+            runsHistory = tmpList
+        }
+    }
+
+    /**
+     * This function will remove a run from the history of the user in the local history and the database.
+     * @param run to be removed from the history
+     * @throws Exception if the path is not in the history
+     * @return a future that indicate if the run was correctly removed from the database
+     */
+    fun removeRunFromHistory(run: Run): CompletableFuture<Unit> {
+        if (!runsHistory.contains(run)) {
+            val future = CompletableFuture<Unit>()
+            future.completeExceptionally(Exception("This path is not in the history !"))
+            return future
+        }
+
+        return database.removeRunFromHistory(run).thenApply {
+            val tmpList = runsHistory.toMutableList()
+            tmpList.remove(run)
+            runsHistory = tmpList
+        }
+    }
+
+    /**
+     * This function will return the runs history of a user
+     * @return the runs history of the user
+     */
+    fun getRunsHistory(): List<Run> {
+        return runsHistory
     }
 
     /**
@@ -394,7 +449,6 @@ class UserModel {
     fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
         return database.setProfilePhoto(photo).thenApply {
             this.profilePhoto = photo
-            it
         }
     }
 
@@ -413,10 +467,10 @@ class UserModel {
      */
     fun addDailyGoalToListOfDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit> {
         return this.database.addDailyGoal(dailyGoal).thenApply { isSet ->
-            val newDailyGoalList = this.dailyGoalList.filter { it.date != dailyGoal.date }.toMutableList()
+            val newDailyGoalList =
+                this.dailyGoalList.filter { it.date != dailyGoal.date }.toMutableList()
             newDailyGoalList.add(dailyGoal)
             this.dailyGoalList = newDailyGoalList
-            isSet
         }
     }
 
@@ -452,13 +506,17 @@ class UserModel {
      * @param activityTimeDrawing time take by the user to realized the drawing
      * @return a future that indicate if the achievements of the user have been correctly updated.
      */
-    fun updateAchievements(distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit> {
-        return this.database.updateUserAchievements(distanceDrawing, activityTimeDrawing).thenApply { isSet ->
-            this.totalDistance += distanceDrawing
-            this.totalActivityTime += activityTimeDrawing
-            this.totalNbOfPaths += 1
-            isSet
-        }
+    fun updateAchievements(
+        distanceDrawing: Double,
+        activityTimeDrawing: Double
+    ): CompletableFuture<Unit> {
+        return this.database.updateUserAchievements(distanceDrawing, activityTimeDrawing)
+            .thenApply { isSet ->
+                this.totalDistance += distanceDrawing
+                this.totalActivityTime += activityTimeDrawing
+                this.totalNbOfPaths += 1
+                isSet
+            }
     }
 
     companion object {
@@ -489,7 +547,9 @@ class UserModel {
          * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
          */
         fun checkDateOfBirth(date: LocalDate) {
-            if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))) {
+            if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now()
+                    .plusYears(-100))
+            ) {
                 throw java.lang.Error("Incorrect date of birth !")
             }
         }

@@ -4,15 +4,18 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
 import java.util.concurrent.CompletableFuture
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -158,11 +161,11 @@ class FireDatabase : Database() {
     }
 
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
-        var future = CompletableFuture<UserModel>()
+        val future = CompletableFuture<UserModel>()
 
         accessUserAccountFile(userId).get().addOnSuccessListener { userData ->
             future.complete(dataToUserModel(userData, userId))
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             future.completeExceptionally(it)
         }
         return future
@@ -170,12 +173,12 @@ class FireDatabase : Database() {
 
     override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
         val userId = getUserId()
-        if(userId == null){
+        return if (userId == null) {
             val future = CompletableFuture<UserModel>()
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
-            return future
-        }else {
-            return getUserAccount(userId)
+            future
+        } else {
+            getUserAccount(userId)
         }
     }
 
@@ -224,16 +227,15 @@ class FireDatabase : Database() {
     }
 
     override fun addUserToFriendsList(userId: String): CompletableFuture<Unit> {
-        val future = CompletableFuture<Unit>()
         return isUserStoredInDatabase(userId).thenApply {
-            if(!it){
+            if (!it) {
                 throw Exception("The user with $userId is not present on the database.")
-            }else{
+            } else {
                 //add the user to the the friendList of the current user
                 val currentUserId = getUserId()
-                if(currentUserId==null){
+                if (currentUserId == null) {
                     throw Exception("Any user is logged !")
-                }else{
+                } else {
                     addUserIdToFriendList(currentUserId, userId).thenApply {
                         //add the currentUser to the friend list of the user with userId
                         addUserIdToFriendList(userId, currentUserId)
@@ -245,17 +247,56 @@ class FireDatabase : Database() {
 
     override fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit> {
         val currentUserId = getUserId()
-        if(currentUserId==null){
+        if (currentUserId == null) {
             val future = CompletableFuture<Unit>()
             future.completeExceptionally(Exception("Any user is logged !"))
             return future
-        }else{
+        } else {
             //remove the userId from the friendlist of the current user
-            return removeUserIdToFriendList(currentUserId, userId).thenApply{
+            return removeUserIdToFriendList(currentUserId, userId).thenApply {
                 //remove the current userId to the friendlist of the user with userId
                 removeUserIdToFriendList(userId, currentUserId)
             }
         }
+    }
+
+    override fun addRunToHistory(run: Run): CompletableFuture<Unit> {
+        //check if user is correctly logged
+        val currentUserId = getUserId()
+        val future = CompletableFuture<Unit>()
+        if (currentUserId == null) {
+            future.completeExceptionally(Exception("Any user is logged !"))
+            return future
+        }
+
+        //create the field for the new path, the key is the start time
+        val newRun = HashMap<String, Any>()
+        newRun.put(run.getStartTime().toString(), run)
+        //update the runs history on the database
+        accessUserAccountFile(currentUserId).child(runsHistoryFile)
+            .updateChildren(newRun as Map<String, Any>)
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+
+    }
+
+    override fun removeRunFromHistory(run: Run): CompletableFuture<Unit> {
+        //check if user is correctly logged
+        val currentUserId = getUserId()
+        val future = CompletableFuture<Unit>()
+        if (currentUserId == null) {
+            future.completeExceptionally(Exception("Any user is logged !"))
+            return future
+        }
+
+        //remove the run
+        accessUserAccountFile(currentUserId).child(runsHistoryFile)
+            .child(run.getStartTime().toString()).removeValue()
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+
+        return future
     }
 
     override fun addDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit> {
@@ -346,7 +387,7 @@ class FireDatabase : Database() {
     }
 
     /**
-     * Helper function to upadte data of the current user account
+     * Helper function to update data of the current user account
      * @param data to be updated
      * @return a future to indicated if the data have been correctly updated
      */
@@ -409,6 +450,7 @@ class FireDatabase : Database() {
             val activityTimeGoal = data.child(currentActivityTimeGoalFile).value
             val nbOfPathsGoal = data.child(currentNOfPathsGoalFile).value
             val friendsListData = data.child(friendsListFile)
+            val runsHistoryData = data.child(runsHistoryFile)
             val dailyGoalData = data.child(dailyGoalsFile)
             val totalDistance = data.child(achievementsFile).child(totalDistanceFile).value
             val totalActivityTime = data.child(achievementsFile).child(totalActivityTimeFile).value
@@ -425,27 +467,31 @@ class FireDatabase : Database() {
                 //obtain the friendsList
                 val friendsList = transformFriendsList(friendsListData)
 
+                //obtain the history
+                val runsHistory = transformRunsHistory(runsHistoryData)
+
                 //obtain the daily goal list
                 val dailyGoalList = transformDataToDailyGoalList(dailyGoalData)
 
                 //create the userModel
                 return UserModel(
-                        userId,
-                        email as String,
-                        username as String,
-                        firstname as String,
-                        surname as String,
-                        LocalDate.ofEpochDay(dateOfBirth as Long),
-                        (distanceGoal as Long).toDouble(),
-                        (activityTimeGoal as Long).toDouble(),
-                        (nbOfPathsGoal as Long).toInt(),
-                        profilePhoto,
-                        friendsList,
-                        this,
-                        dailyGoalList,
-                        (totalDistance as Long).toDouble(),
-                        (totalActivityTime as Long).toDouble(),
-                        (totalNbOfPaths as Long).toInt()
+                    userId,
+                    email as String,
+                    username as String,
+                    firstname as String,
+                    surname as String,
+                    LocalDate.ofEpochDay(dateOfBirth as Long),
+                    (distanceGoal as Long).toDouble(),
+                    (activityTimeGoal as Long).toDouble(),
+                    (nbOfPathsGoal as Long).toInt(),
+                    profilePhoto,
+                    friendsList,
+                    runsHistory,
+                    this,
+                    dailyGoalList,
+                    (totalDistance as Long).toDouble(),
+                    (totalActivityTime as Long).toDouble(),
+                    (totalNbOfPaths as Long).toInt()
                 )
             }
         }
@@ -454,14 +500,14 @@ class FireDatabase : Database() {
     /**
      * Helper function to decode the photo from string to bitmap format and return null if the dataSnapShot is null
      * @param photoStr photo encoded
-     * @return the photo in bitmap format, and null if no photo is stored on the databse
+     * @return the photo in bitmap format, and null if no photo is stored on the database
      */
     private fun decodePhoto(photoStr: Any?): Bitmap? {
-        if(photoStr == null){
-            return null
-        }else{
+        return if (photoStr == null) {
+            null
+        } else {
             val tabByte = Base64.getDecoder().decode(photoStr as String)
-            return BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+            BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
         }
     }
 
@@ -470,16 +516,48 @@ class FireDatabase : Database() {
      * @param data the data snapshot containing the user List
      * @return a list containing the userIds of the friends
      */
-    private fun transformFriendsList(data: DataSnapshot?): List<String>{
-        if(data == null){
+    private fun transformFriendsList(data: DataSnapshot?): List<String> {
+        if (data == null) {
             return emptyList()
         }
         val friendListUserIds = ArrayList<String>()
 
-        for(friend in data.children){
+        for (friend in data.children) {
             friendListUserIds.add(friend.key as String)
         }
         return friendListUserIds
+    }
+
+    /**
+     * Helper function to obtain the runs history from the database of the user
+     * @param data the data snapshot containing the history
+     * @return a list containing the history of the runs of the user
+     */
+    private fun transformRunsHistory(data: DataSnapshot?): List<Run> {
+        if (data == null) {
+            return emptyList()
+        }
+        val runsHistory = ArrayList<Run>()
+
+        for (run in data.children) {
+            val points = ArrayList<LatLng>()
+            for (point in run.child("path").child("points").children) {
+                val lat = point.child("latitude").getValue(Double::class.java)
+                val lon = point.child("longitude").getValue(Double::class.java)
+                if (lat != null && lon != null) {
+                    points.add(LatLng(lat, lon))
+                }
+            }
+            val startTime = run.child("startTime").value as? Long
+            val endTime = run.child("endTime").value as? Long
+            if (startTime != null && endTime != null) {
+                runsHistory.add(Run(Path(points), startTime, endTime))
+            } else {
+                android.util.Log.w(FireDatabase::class.java.name, "A point of a run has invalid coordinates => ignoring the point")
+            }
+        }
+
+        return runsHistory
     }
 
     /**
@@ -488,36 +566,45 @@ class FireDatabase : Database() {
      * @param friendUserId userId that we want to add from the friendlist
      * @return a future that indicate if the userId has been correctly added to the friendlist
      */
-    private fun addUserIdToFriendList(currentUserId: String, friendUserId: String): CompletableFuture<Unit>{
+    private fun addUserIdToFriendList(
+        currentUserId: String,
+        friendUserId: String
+    ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
         //create the field for the new friend
         val newFriend = HashMap<String, Boolean>()
         newFriend.put(friendUserId, true)
         //updated the friendlist in the database
-        accessUserAccountFile(currentUserId).child(friendsListFile).updateChildren(newFriend as Map<String, Any>)
+        accessUserAccountFile(currentUserId).child(friendsListFile)
+            .updateChildren(newFriend as Map<String, Any>)
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
     }
+
     /**
      * Helper function to remove a userId "removeUserId" to the friendList of a a user with userId "currentUserId"
      * @param currentUserId userId that belong the friendlist
      * @param removeUserId userId that we want to remove from the friendlist
      * @return a future that indicate if the userId has been correctly added to the friendlist
      */
-    private fun removeUserIdToFriendList(currentUserId: String, removeUserId: String): CompletableFuture<Unit>{
+    private fun removeUserIdToFriendList(
+        currentUserId: String,
+        removeUserId: String
+    ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
         //obtain the previous friendList
         accessUserAccountFile(currentUserId).child(friendsListFile).get()
-            .addOnSuccessListener {previousFriendList ->
-                val newFriendList = previousFriendList.children.filter { (it.key as String) != removeUserId }
+            .addOnSuccessListener { previousFriendList ->
+                val newFriendList =
+                    previousFriendList.children.filter { (it.key as String) != removeUserId }
                 accessUserAccountFile(currentUserId).child(friendsListFile).setValue(newFriendList)
                     .addOnSuccessListener { future.complete(Unit) }
-                    .addOnFailureListener{err -> future.completeExceptionally(err)}
+                    .addOnFailureListener { err -> future.completeExceptionally(err) }
             }
-            .addOnFailureListener {err -> future.completeExceptionally(err) }
+            .addOnFailureListener { err -> future.completeExceptionally(err) }
         return future
     }
 

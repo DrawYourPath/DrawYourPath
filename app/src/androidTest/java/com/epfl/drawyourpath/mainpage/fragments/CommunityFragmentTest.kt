@@ -3,7 +3,6 @@ package com.epfl.drawyourpath.mainpage.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.testing.FragmentScenario
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -18,7 +17,7 @@ import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.community.TournamentModel
 import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
-import com.github.drawyourpath.bootcamp.path.Run
+import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.Matchers.*
 import org.junit.Test

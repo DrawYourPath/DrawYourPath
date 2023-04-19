@@ -1,8 +1,7 @@
 package com.epfl.drawyourpath.community
 
-import com.github.drawyourpath.bootcamp.path.Run
+import com.epfl.drawyourpath.path.Run
 import java.time.LocalDateTime
-import java.util.*
 import kotlin.collections.HashMap
 
 data class TournamentPost(

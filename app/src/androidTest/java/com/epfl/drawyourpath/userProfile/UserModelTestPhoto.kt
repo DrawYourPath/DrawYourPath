@@ -42,6 +42,7 @@ class UserModelTestPhoto {
             nbOfPaths,
             null,
             emptyList(),
+            emptyList(),
             database
         )
         Assert.assertEquals(user.getUserId(), userId)
@@ -72,6 +73,7 @@ class UserModelTestPhoto {
             timeGoal,
             nbOfPaths,
             photoProfile,
+            emptyList(),
             emptyList(),
             database
         )

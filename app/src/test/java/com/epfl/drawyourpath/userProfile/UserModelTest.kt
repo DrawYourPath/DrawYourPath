@@ -3,7 +3,9 @@ package com.epfl.drawyourpath.userProfile
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.database.MockDataBase
-import org.junit.Assert
+import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
+import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -200,7 +202,7 @@ class UserModelTest {
      */
     @Test
     fun createCorrectUser() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -228,7 +230,7 @@ class UserModelTest {
      */
     @Test
     fun setUserNameUnAvailableDoNothing() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -241,7 +243,7 @@ class UserModelTest {
         )
         val databaseBeforeUsernameList = database.usernameToUserId
         val databaseBeforeUserProfiles = database.userIdToUsername
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+        val exception = assertThrows(java.util.concurrent.ExecutionException::class.java) {
             user.setUsername("nathan").get()
         }
         assertEquals(exception.message, "java.lang.Error: The username is not available !")
@@ -256,7 +258,7 @@ class UserModelTest {
      */
     @Test
     fun setUserNameUnChangeDoNothing() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -281,7 +283,7 @@ class UserModelTest {
      */
     @Test
     fun setUserNameAvailable() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -304,7 +306,7 @@ class UserModelTest {
      */
     @Test
     fun setInvalidDistanceGoal() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -321,7 +323,8 @@ class UserModelTest {
         assertEquals("The distance goal can't be equal or less than 0.", exception.message)
         //check the database(compare with boolean to evict the null if condition)
         assertEquals(
-            (database.userIdToUserAccount.get(userId)?.getCurrentDistanceGoal() ?: 0) == distanceGoal, true
+            (database.userIdToUserAccount.get(userId)?.getCurrentDistanceGoal()
+                ?: 0) == distanceGoal, true
         )
     }
 
@@ -330,7 +333,7 @@ class UserModelTest {
      */
     @Test
     fun setValidDistanceGoal() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -355,7 +358,7 @@ class UserModelTest {
      */
     @Test
     fun setInvalidActivityTimeGoal() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -382,7 +385,7 @@ class UserModelTest {
      */
     @Test
     fun setValidActivityTimeGoal() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -407,7 +410,7 @@ class UserModelTest {
      */
     @Test
     fun setInvalidNbOfPathsGoal() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -434,7 +437,7 @@ class UserModelTest {
      */
     @Test
     fun setValidNbOfPathsGoal() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -448,7 +451,10 @@ class UserModelTest {
         user.setCurrentNumberOfPathsGoal(12)
         assertEquals(user.getCurrentNumberOfPathsGoal(), 12)
         //check the database
-        assertEquals(database.userIdToUserAccount.get(userId)?.getCurrentNumberOfPathsGoal() ?: 0, 12)
+        assertEquals(
+            database.userIdToUserAccount.get(userId)?.getCurrentNumberOfPathsGoal() ?: 0,
+            12
+        )
     }
 
     /**
@@ -456,7 +462,7 @@ class UserModelTest {
      */
     @Test
     fun returnCorrectAge() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -469,7 +475,7 @@ class UserModelTest {
         )
         assertEquals(user.getAge(), 23)
 
-        val user2: UserModel = UserModel(
+        val user2 = UserModel(
             auth,
             username,
             firstname,
@@ -484,11 +490,11 @@ class UserModelTest {
     }
 
     /**
-     * This function check that the correct empty firenlist is return with getFriendList function
+     * This function check that the correct empty friendlist is return with getFriendList function
      */
     @Test
     fun emptyFriendListIsGet() {
-        val user: UserModel = UserModel(
+        val user = UserModel(
             auth,
             username,
             firstname,
@@ -507,10 +513,23 @@ class UserModelTest {
      * This function test if the correct friends list is return after initialize it in the constructor
      */
     @Test
-    fun correctFriendsListIsGet(){
-        val expectedFriendsList = listOf<String>("friend1", "friend2")
-        val user = UserModel(userId, auth.getEmail(), username, firstname, surname, dateOfBirth, distanceGoal,
-        timeGoal, nbOfPaths, null, expectedFriendsList, database)
+    fun correctFriendsListIsGet() {
+        val expectedFriendsList = listOf("friend1", "friend2")
+        val user = UserModel(
+            userId,
+            auth.getEmail(),
+            username,
+            firstname,
+            surname,
+            dateOfBirth,
+            distanceGoal,
+            timeGoal,
+            nbOfPaths,
+            null,
+            expectedFriendsList,
+            emptyList(),
+            database
+        )
         assertEquals(user.getFriendList(), expectedFriendsList)
     }
 
@@ -553,7 +572,10 @@ class UserModelTest {
 
         assertEquals(user.getFriendList(), expectedFriendsList)
         //check the database
-        assertEquals(newDataBase.userIdToUserAccount.get(userId)?.getFriendList() ?: listOf("not"),expectedFriendsList)
+        assertEquals(
+            newDataBase.userIdToUserAccount.get(userId)?.getFriendList() ?: listOf("not"),
+            expectedFriendsList
+        )
     }
 
     /**
@@ -562,7 +584,8 @@ class UserModelTest {
     @Test
     fun addFriendOnFriendList() {
         val newDatabase = MockDataBase()
-        val expectedFriendList = listOf<String>(newDatabase.userIdFriend1, newDatabase.userIdFriend2)
+        val expectedFriendList =
+            listOf(newDatabase.userIdFriend1, newDatabase.userIdFriend2)
         //select a user present on the database
         val user = newDatabase.userModelTest
         //check that at the beginning the friends list of the user contains only one user: friend1
@@ -571,32 +594,193 @@ class UserModelTest {
         user.addFriend(newDatabase.userIdFriend2).get()
         assertEquals(user.getFriendList(), expectedFriendList)
         //check the database
-        assertEquals(newDatabase.userIdToUserAccount.get(userId)?.getFriendList() ?: listOf("not"), expectedFriendList)
+        assertEquals(
+            newDatabase.userIdToUserAccount.get(userId)?.getFriendList() ?: listOf("not"),
+            expectedFriendList
+        )
     }
 
     /**
      * Test if add a user with userId not present on the database throw an error
      */
     @Test
-    fun addFriendOnFriendListNotPresentOnDatabse() {
+    fun addFriendOnFriendListNotPresentOnDatabase() {
         val newDatabase = MockDataBase()
         //select a user present on the database
         val user = newDatabase.userModelTest
         //check that at the beginning the friends list of the user contains only one user: friend1
         assertEquals(user.getFriendList(), listOf(newDatabase.userIdFriend1))
         ///add the user with userId "notId" not present on the database
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+        val exception = assertThrows(java.util.concurrent.ExecutionException::class.java) {
             user.addFriend("notId").get()
         }
-        assertEquals("java.lang.Exception: The user with notId is not present on the database.", exception.message)
-        assertEquals(newDatabase.userIdToUserAccount.get(userId)?.getFriendList(), listOf(newDatabase.userIdFriend1))
+        assertEquals(
+            "java.lang.Exception: The user with notId is not present on the database.",
+            exception.message
+        )
+        assertEquals(
+            newDatabase.userIdToUserAccount.get(userId)?.getFriendList(),
+            listOf(newDatabase.userIdFriend1)
+        )
+    }
+
+    /**
+     * Test if the history is empty after using the basic constructor
+     */
+    @Test
+    fun getRunsHistoryReturnsEmptyListWhenBasicConstructorIsUsed() {
+        val user = UserModel(
+            auth,
+            username,
+            firstname,
+            surname,
+            dateOfBirth,
+            distanceGoal,
+            timeGoal,
+            nbOfPaths,
+            database
+        )
+        val history = user.getRunsHistory()
+        assertEquals(history.isEmpty(), true)
+    }
+
+    /**
+     * Test if the correct history is returned by the function getRunsHistory() and the constructor is used
+     */
+    @Test
+    fun getRunsHistoryReturnsHistoryListWhenNormalConstructorIsUsed() {
+        //create history
+        val run1StartTime: Long = 1651673000000
+        val run1 = Run(
+            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0))),
+            run1StartTime,
+            run1StartTime + 1e6.toLong()
+        )
+        val run2StartTime: Long = run1StartTime + 1e7.toLong()
+        val run2 = Run(
+            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0))),
+            run2StartTime,
+            run2StartTime + 2e6.toLong()
+        )
+        val expectedHistory = listOf(run1, run2)
+        //create user
+        val user = UserModel(
+            userId,
+            auth.getEmail(),
+            username,
+            firstname,
+            surname,
+            dateOfBirth,
+            distanceGoal,
+            timeGoal,
+            nbOfPaths,
+            null,
+            emptyList(),
+            expectedHistory,
+            database
+        )
+
+        assertEquals(user.getRunsHistory(), expectedHistory)
+    }
+
+    /**
+     * Test if removing a path not in history throws correct exception
+     */
+    @Test
+    fun removeRunFromHistoryThrowsExceptionIfRunNotInHistory() {
+        val user = UserModel(
+            auth,
+            username,
+            firstname,
+            surname,
+            dateOfBirth,
+            distanceGoal,
+            timeGoal,
+            nbOfPaths,
+            database
+        )
+
+        val exception = assertThrows(Exception::class.java) {
+            user.removeRunFromHistory(database.runTest).get()
+        }
+        assertEquals("java.lang.Exception: This path is not in the history !", exception.message)
+    }
+
+    /**
+     * Test if adding and removing runs from history works and keeps the order
+     */
+    @Test
+    fun addRunToHistoryAndRemoveRunFromHistoryWorkAndKeepOrder() {
+        val newDatabase = MockDataBase()
+        val user = newDatabase.userModelTest
+        //This run starts after the one already stored
+        val newRun1StartTime = database.runTestStartTime + 1e7.toLong()
+        val newRun1 = Run(
+            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
+            newRun1StartTime,
+            newRun1StartTime + 2e6.toLong()
+        )
+        //This run starts before the one already stored
+        val newRun2StartTime = database.runTestStartTime - 1e7.toLong()
+        val newRun2 = Run(
+            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
+            newRun2StartTime,
+            newRun2StartTime + 2e6.toLong()
+        )
+
+        //check that initially, only one run in history
+        var expectedHistory = listOf(newDatabase.runTest)
+        assertEquals(user.getRunsHistory(), expectedHistory)
+
+        //add the runs
+        user.addRunToHistory(newRun1)
+        user.addRunToHistory(newRun2)
+
+
+        //check addition and order
+        expectedHistory = listOf(newRun2, newDatabase.runTest, newRun1)
+        assertEquals(user.getRunsHistory(), expectedHistory)
+
+        //Remove oldest run
+        user.removeRunFromHistory(newRun2)
+
+        //check removal and order
+        expectedHistory = listOf(newDatabase.runTest, newRun1)
+        assertEquals(user.getRunsHistory(), expectedHistory)
+    }
+
+    /**
+     * Test if adding a run with a startTime equal to one of the runs in history replaces it
+     * This is because the key for the runs is the starting time
+     */
+    @Test
+    fun addRunToHistoryReplacesRunWithSameStartTime() {
+        val newDatabase = MockDataBase()
+        val user = newDatabase.userModelTest
+        //This run starts at the same time as the one already stored but is slightly different
+        val newRun = Run(
+            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 5.0))),
+            newDatabase.runTestStartTime,
+            newDatabase.runTestStartTime + 2e6.toLong()
+        )
+
+        //check that initially, only base test run in history
+        var expectedHistory = listOf(newDatabase.runTest)
+        assertEquals(user.getRunsHistory(), expectedHistory)
+
+        //add the run
+        user.addRunToHistory(newRun)
+
+        //check replacement
+        expectedHistory = listOf(newRun)
+        assertEquals(user.getRunsHistory(), expectedHistory)
     }
 
     /**
      * Test that the correct daily goal list is return
      */
     @Test
-    fun getDailyGoalListCorrect(){
+    fun getDailyGoalListCorrect() {
         val database = MockDataBase()
         val user = database.userModelTest
         val obtainedDailyGoalList = user.getDailyGoalList()
@@ -605,44 +789,99 @@ class UserModelTest {
 
         //check the first daily goal
         assertEquals(obtainedDailyGoalList.get(0).date, database.dailyGoalListTest.get(0).date)
-        assertEquals(obtainedDailyGoalList.get(0).distanceInKilometerGoal, database.dailyGoalListTest.get(0).distanceInKilometerGoal, 0.001)
-        assertEquals(obtainedDailyGoalList.get(0).timeInMinutesGoal, database.dailyGoalListTest.get(0).timeInMinutesGoal, 0.001)
-        assertEquals(obtainedDailyGoalList.get(0).nbOfPathsGoal, database.dailyGoalListTest.get(0).nbOfPathsGoal)
-        assertEquals(obtainedDailyGoalList.get(0).distanceInKilometerProgress, database.dailyGoalListTest.get(0).distanceInKilometerProgress, 0.001)
-        assertEquals(obtainedDailyGoalList.get(0).timeInMinutesProgress, database.dailyGoalListTest.get(0).timeInMinutesProgress, 0.001)
-        assertEquals(obtainedDailyGoalList.get(0).nbOfPathsProgress, database.dailyGoalListTest.get(0).nbOfPathsProgress)
+        assertEquals(
+            obtainedDailyGoalList.get(0).distanceInKilometerGoal,
+            database.dailyGoalListTest.get(0).distanceInKilometerGoal,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).timeInMinutesGoal,
+            database.dailyGoalListTest.get(0).timeInMinutesGoal,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).nbOfPathsGoal,
+            database.dailyGoalListTest.get(0).nbOfPathsGoal
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).distanceInKilometerProgress,
+            database.dailyGoalListTest.get(0).distanceInKilometerProgress,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).timeInMinutesProgress,
+            database.dailyGoalListTest.get(0).timeInMinutesProgress,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).nbOfPathsProgress,
+            database.dailyGoalListTest.get(0).nbOfPathsProgress
+        )
     }
 
     /**
      * Test that the daily goal list is correctly updated
      */
     @Test
-    fun addDailyGoalToListOfDailyGoalCorrectly(){
+    fun addDailyGoalToListOfDailyGoalCorrectly() {
         val database = MockDataBase()
         val user = database.userModelTest
-        user.addDailyGoalToListOfDailyGoal(DailyGoal(25.0, 30.0, 2, 20.0, 120.0, 1, LocalDate.of(2010,1,1))).get()
+        user.addDailyGoalToListOfDailyGoal(
+            DailyGoal(
+                25.0,
+                30.0,
+                2,
+                20.0,
+                120.0,
+                1,
+                LocalDate.of(2010, 1, 1)
+            )
+        ).get()
 
         //control the dailyGoal List in the database
-        val obtainedDailyGoalList = database.userIdToUserAccount.get(database.userIdTest)!!.getDailyGoalList()
+        val obtainedDailyGoalList =
+            database.userIdToUserAccount.get(database.userIdTest)!!.getDailyGoalList()
         assertEquals(obtainedDailyGoalList.size, 2)
 
         //check the first daily goal
         assertEquals(obtainedDailyGoalList.get(0).date, database.dailyGoalListTest.get(0).date)
-        assertEquals(obtainedDailyGoalList.get(0).distanceInKilometerGoal, database.dailyGoalListTest.get(0).distanceInKilometerGoal, 0.001)
-        assertEquals(obtainedDailyGoalList.get(0).timeInMinutesGoal, database.dailyGoalListTest.get(0).timeInMinutesGoal, 0.001)
-        assertEquals(obtainedDailyGoalList.get(0).nbOfPathsGoal, database.dailyGoalListTest.get(0).nbOfPathsGoal)
-        assertEquals(obtainedDailyGoalList.get(0).distanceInKilometerProgress, database.dailyGoalListTest.get(0).distanceInKilometerProgress, 0.001)
-        assertEquals(obtainedDailyGoalList.get(0).timeInMinutesProgress, database.dailyGoalListTest.get(0).timeInMinutesProgress, 0.001)
-        assertEquals(obtainedDailyGoalList.get(0).nbOfPathsProgress, database.dailyGoalListTest.get(0).nbOfPathsProgress)
+        assertEquals(
+            obtainedDailyGoalList.get(0).distanceInKilometerGoal,
+            database.dailyGoalListTest.get(0).distanceInKilometerGoal,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).timeInMinutesGoal,
+            database.dailyGoalListTest.get(0).timeInMinutesGoal,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).nbOfPathsGoal,
+            database.dailyGoalListTest.get(0).nbOfPathsGoal
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).distanceInKilometerProgress,
+            database.dailyGoalListTest.get(0).distanceInKilometerProgress,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).timeInMinutesProgress,
+            database.dailyGoalListTest.get(0).timeInMinutesProgress,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalList.get(0).nbOfPathsProgress,
+            database.dailyGoalListTest.get(0).nbOfPathsProgress
+        )
 
         //check the second daily goal
-        assertEquals(obtainedDailyGoalList.get(1).date,LocalDate.of(2010, 1, 1))
+        assertEquals(obtainedDailyGoalList.get(1).date, LocalDate.of(2010, 1, 1))
         assertEquals(obtainedDailyGoalList.get(1).distanceInKilometerGoal, 25.0, 0.001)
         assertEquals(obtainedDailyGoalList.get(1).timeInMinutesGoal, 30.0, 0.001)
         assertEquals(obtainedDailyGoalList.get(1).nbOfPathsGoal, 2)
         assertEquals(obtainedDailyGoalList.get(1).distanceInKilometerProgress, 20.0, 0.001)
         assertEquals(obtainedDailyGoalList.get(1).timeInMinutesProgress, 120.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).nbOfPathsProgress, 1 )
+        assertEquals(obtainedDailyGoalList.get(1).nbOfPathsProgress, 1)
 
         //control the dailyGoal List
         val obtainedDailyGoalListUser = user.getDailyGoalList()
@@ -650,15 +889,37 @@ class UserModelTest {
 
         //check the first daily goal
         assertEquals(obtainedDailyGoalListUser.get(0).date, database.dailyGoalListTest.get(0).date)
-        assertEquals(obtainedDailyGoalListUser.get(0).distanceInKilometerGoal, database.dailyGoalListTest.get(0).distanceInKilometerGoal, 0.001)
-        assertEquals(obtainedDailyGoalListUser.get(0).timeInMinutesGoal, database.dailyGoalListTest.get(0).timeInMinutesGoal, 0.001)
-        assertEquals(obtainedDailyGoalListUser.get(0).nbOfPathsGoal, database.dailyGoalListTest.get(0).nbOfPathsGoal)
-        assertEquals(obtainedDailyGoalListUser.get(0).distanceInKilometerProgress, database.dailyGoalListTest.get(0).distanceInKilometerProgress, 0.001)
-        assertEquals(obtainedDailyGoalListUser.get(0).timeInMinutesProgress, database.dailyGoalListTest.get(0).timeInMinutesProgress, 0.001)
-        assertEquals(obtainedDailyGoalListUser.get(0).nbOfPathsProgress, database.dailyGoalListTest.get(0).nbOfPathsProgress)
+        assertEquals(
+            obtainedDailyGoalListUser.get(0).distanceInKilometerGoal,
+            database.dailyGoalListTest.get(0).distanceInKilometerGoal,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalListUser.get(0).timeInMinutesGoal,
+            database.dailyGoalListTest.get(0).timeInMinutesGoal,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalListUser.get(0).nbOfPathsGoal,
+            database.dailyGoalListTest.get(0).nbOfPathsGoal
+        )
+        assertEquals(
+            obtainedDailyGoalListUser.get(0).distanceInKilometerProgress,
+            database.dailyGoalListTest.get(0).distanceInKilometerProgress,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalListUser.get(0).timeInMinutesProgress,
+            database.dailyGoalListTest.get(0).timeInMinutesProgress,
+            0.001
+        )
+        assertEquals(
+            obtainedDailyGoalListUser.get(0).nbOfPathsProgress,
+            database.dailyGoalListTest.get(0).nbOfPathsProgress
+        )
 
         //check the second daily goal
-        assertEquals(obtainedDailyGoalListUser.get(1).date,LocalDate.of(2010, 1, 1))
+        assertEquals(obtainedDailyGoalListUser.get(1).date, LocalDate.of(2010, 1, 1))
         assertEquals(obtainedDailyGoalListUser.get(1).distanceInKilometerGoal, 25.0, 0.001)
         assertEquals(obtainedDailyGoalListUser.get(1).timeInMinutesGoal, 30.0, 0.001)
         assertEquals(obtainedDailyGoalListUser.get(1).nbOfPathsGoal, 2)
@@ -671,7 +932,7 @@ class UserModelTest {
      * Test if the correct total distance is get
      */
     @Test
-    fun getTotalDistanceCorrectly(){
+    fun getTotalDistanceCorrectly() {
         val database = MockDataBase()
         val user = database.userModelTest
 
@@ -682,7 +943,7 @@ class UserModelTest {
      * Test if the correct total activity time is get
      */
     @Test
-    fun getTotalActivityTimeCorrectly(){
+    fun getTotalActivityTimeCorrectly() {
         val database = MockDataBase()
         val user = database.userModelTest
 
@@ -693,7 +954,7 @@ class UserModelTest {
      * Test if the correct total number of paths is get
      */
     @Test
-    fun getTotalNbOfPathsCorrectly(){
+    fun getTotalNbOfPathsCorrectly() {
         val database = MockDataBase()
         val user = database.userModelTest
 
@@ -704,7 +965,7 @@ class UserModelTest {
      * Test if the achievements are updated correctly in the user model and in the database
      */
     @Test
-    fun updateAchievementsCorrectly(){
+    fun updateAchievementsCorrectly() {
         val database = MockDataBase()
         val user = database.userModelTest
         user.updateAchievements(10.0, 50.0).get()
@@ -712,7 +973,11 @@ class UserModelTest {
         //test the content of the database
         val userAccount = database.userIdToUserAccount.get(database.userIdTest)!!
         assertEquals(userAccount.getTotalDistance(), database.totalDistanceTest + 10.0, 0.001)
-        assertEquals(userAccount.getTotalActivityTime(), database.totalActivityTimeTest + 50.0, 0.001)
+        assertEquals(
+            userAccount.getTotalActivityTime(),
+            database.totalActivityTimeTest + 50.0,
+            0.001
+        )
         assertEquals(userAccount.getTotalNbOfPaths(), database.totalNbOfPathsTest + 1)
 
         //test the content of the userModel

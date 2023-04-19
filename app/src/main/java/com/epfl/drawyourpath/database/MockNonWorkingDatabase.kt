@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.DailyGoal
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.util.concurrent.CompletableFuture
 
@@ -66,6 +67,14 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun addRunToHistory(run: Run): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun removeRunFromHistory(run: Run): CompletableFuture<Unit> {
         return failedFuture()
     }
 
