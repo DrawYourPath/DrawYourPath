@@ -88,37 +88,37 @@ class UserModelCachedTest {
     fun setUsernameWhenNoInternetDoesNotModifyUsername() {
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateUsername(newUser.getUsername()).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        user.updateUsername(newUser.getUsername()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
     }
 
     @Test
     fun setDistanceGoalModifyDistanceGoal() {
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
-        user.updateDistanceGoal(newUser.getDistanceGoal()).get(timeout, TimeUnit.SECONDS)
-        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.getDistanceGoal())
+        user.updateDistanceGoal(newUser.getCurrentDistanceGoal()).get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.getCurrentDistanceGoal())
     }
 
     @Test
     fun setDistanceGoalWhenNoInternetDoesNotModifyDistanceGoal() {
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateDistanceGoal(newUser.getDistanceGoal()).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        user.updateDistanceGoal(newUser.getCurrentDistanceGoal()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
     }
 
     @Test
     fun setActivityTimeGoalModifyActivityTimeGoal() {
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
-        user.updateActivityTimeGoal(newUser.getActivityTime()).get(timeout, TimeUnit.SECONDS)
-        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getActivityTime())
+        user.updateActivityTimeGoal(newUser.getCurrentActivityTime()).get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getCurrentActivityTime())
     }
 
     @Test
     fun setActivityTimeGoalWhenNoInternetDoesNotModifyActivityTimeGoal() {
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateActivityTimeGoal(newUser.getActivityTime()).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        user.updateActivityTimeGoal(newUser.getCurrentActivityTime()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
 
     }
@@ -127,15 +127,15 @@ class UserModelCachedTest {
     fun setNumberOfPathsGoalModifyNumberOfPathsGoal() {
 
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
-        user.updateNumberOfPathsGoal(newUser.getNumberOfPathsGoal()).get(timeout, TimeUnit.SECONDS)
-        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.getNumberOfPathsGoal())
+        user.updateNumberOfPathsGoal(newUser.getCurrentNumberOfPathsGoal()).get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.getCurrentNumberOfPathsGoal())
     }
 
     @Test
     fun setNumberOfPathsGoalWhenNoInternetDoesNotModifyNumberOfPathsGoal() {
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateNumberOfPathsGoal(newUser.getNumberOfPathsGoal()).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        user.updateNumberOfPathsGoal(newUser.getCurrentNumberOfPathsGoal()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
     }
 
@@ -150,7 +150,7 @@ class UserModelCachedTest {
     fun setProfilePhotoWhenNoInternetDoesNotModifyProfilePhoto() {
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateProfilePhoto(newPicture).exceptionally { true }.get(timeout, TimeUnit.SECONDS)
+        user.updateProfilePhoto(newPicture).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertNull(user.getUser().getOrAwaitValue().getProfilePhotoAsBitmap())
     }
 
@@ -165,9 +165,9 @@ class UserModelCachedTest {
         expected: UserModel,
         actual: UserEntity,
         newUsername: String = expected.getUsername(),
-        newDistanceGoal: Double = expected.getDistanceGoal(),
-        newTimeGoal: Double = expected.getActivityTime(),
-        newPathGoal: Int = expected.getNumberOfPathsGoal()
+        newDistanceGoal: Double = expected.getCurrentDistanceGoal(),
+        newTimeGoal: Double = expected.getCurrentActivityTime(),
+        newPathGoal: Int = expected.getCurrentNumberOfPathsGoal()
     ) {
         assertEquals(expected.getUserId(), actual.userId)
         assertEquals(newUsername, actual.username)

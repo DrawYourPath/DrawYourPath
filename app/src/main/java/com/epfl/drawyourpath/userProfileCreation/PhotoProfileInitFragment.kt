@@ -84,9 +84,9 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
         if (photoProfile == null) {
             errorText.text = "* You have forgotten to select a photo !"
             errorText.setTextColor(Color.RED)
-            return CompletableFuture<Boolean>().thenApply { false }
+            return CompletableFuture<Boolean>().thenApplyAsync { false }
         } else {
-            return userCached.updateProfilePhoto(photoProfile!!).thenApply { true }
+            return userCached.updateProfilePhoto(photoProfile!!).thenApplyAsync { true }
         }
     }
 
@@ -150,7 +150,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
         val validateButton: Button =
             view.findViewById(R.id.setPhotoProfile_button_userProfileCreation)
         validateButton.setOnClickListener {
-            isPhotoSelected().thenApply {
+            isPhotoSelected().thenApplyAsync {
                 if (it) {
                     showEndProfileCreationFrag()
                 }
