@@ -241,7 +241,10 @@ class UserModelTest {
         )
         val databaseBeforeUsernameList = database.usernameToUserId
         val databaseBeforeUserProfiles = database.userIdToUsername
-        user.setUsername("nathan")
+        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+            user.setUsername("nathan").get()
+        }
+        assertEquals(exception.message, "java.lang.Error: The username is not available !")
         assertEquals(user.getUsername(), username)
         //control the database
         assertEquals(databaseBeforeUsernameList, database.usernameToUserId)

@@ -67,7 +67,7 @@ abstract class Database {
      * @param username proposed by the user(will be set to the userprofile if it's available)
      * @return the future that indicate if the username have been updated
      */
-    abstract fun updateUsername(username: String): CompletableFuture<Boolean>
+    abstract fun updateUsername(username: String): CompletableFuture<Unit>
 
 
     /**
@@ -77,14 +77,14 @@ abstract class Database {
      * @param username username that the user want to set in the database
      * @return a future that indicate if the user account has been successfully created
      */
-    abstract fun setUsername(username: String): CompletableFuture<Boolean>
+    abstract fun setUsername(username: String): CompletableFuture<Unit>
 
     /**
      * This function is used to initialize the user profile information with UserModel give in parameter
      * @param userModel used for the initialization of the user profile
      * @return a future that indicate if the user profile has been correctly initiate
      */
-    abstract fun initUserProfile(userModel: UserModel): CompletableFuture<Boolean>
+    abstract fun initUserProfile(userModel: UserModel): CompletableFuture<Unit>
 
     /**
      * This function is used to get the user account of the user with userId
@@ -104,28 +104,28 @@ abstract class Database {
      * @param distanceGoal new distance goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean>
+    abstract fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit>
 
     /**
      * This function will set the current daily activity time goal to the database(in minutes) of the user logged
      * @param activityTimeGoal new activity time goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean>
+    abstract fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit>
 
     /**
      * This function will set the current daily number of paths goal to the database(integer) of the user logged
      * @param nbOfPathsGoal new number of paths goal of the user
      * @return a future that indicate if the goal has been correctly set to the database
      */
-    abstract fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean>
+    abstract fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit>
 
     /**
      * This function will set the profilePhoto to the database (Bitmap) of the user logged
      * @param photo that will be set
      * @return a future that indicate if the photo has been correctly set to the database
      */
-    abstract fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>
+    abstract fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit>
 
     /**
      * This function will add a user to the the friends list of the current user with his userId if this user is present on the database

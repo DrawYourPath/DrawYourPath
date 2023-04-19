@@ -200,11 +200,9 @@ class UserModel {
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun setUsername(username: String): CompletableFuture<Boolean>{
+    fun setUsername(username: String): CompletableFuture<Unit>{
         return database.updateUsername(username).thenApply{
-            if(it){
-                this.username=username
-            }
+            this.username=username
             it
         }
     }
@@ -266,12 +264,10 @@ class UserModel {
      * Use this function to modify the daily distance goal of the user
      * @param distanceGoal new daily distance goal
      */
-    fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+    fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
         checkDistanceGoal(distanceGoal)
         return database.setCurrentDistanceGoal(distanceGoal).thenApply {
-            if(it){
-                this.currentDistanceGoal=distanceGoal
-            }
+            this.currentDistanceGoal=distanceGoal
             it
         }
     }
@@ -288,12 +284,10 @@ class UserModel {
      * Use this function to modify the daily activity time goal of the user
      * @param time new daily activity time goal
      */
-    fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+    fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
         checkActivityTimeGoal(activityTimeGoal)
         return database.setCurrentActivityTimeGoal(activityTimeGoal).thenApply {
-            if(it){
-                this.currentActivityTimeGoal=activityTimeGoal
-            }
+            this.currentActivityTimeGoal=activityTimeGoal
             it
         }
     }
@@ -310,12 +304,10 @@ class UserModel {
      * Use this function to modify the daily number of paths goal of the user
      * @param nbOfPaths new daily number of paths goal
      */
-    fun setCurrentNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    fun setCurrentNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
         checkNbOfPathsGoal(nbOfPathsGoal)
         return database.setCurrentNbOfPathsGoal(nbOfPathsGoal).thenApply {
-            if(it){
-                this.currentNbOfPathsGoal=nbOfPathsGoal
-            }
+            this.currentNbOfPathsGoal=nbOfPathsGoal
             it
         }
     }
@@ -380,11 +372,9 @@ class UserModel {
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
      */
-    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>{
+    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit>{
         return database.setProfilePhoto(photo).thenApply {
-            if(it){
-                this.profilePhoto = photo
-            }
+            this.profilePhoto = photo
             it
         }
     }

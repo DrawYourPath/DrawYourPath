@@ -76,8 +76,8 @@ class FireDatabase : Database() {
         return future
     }
 
-    override fun updateUsername(username: String): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun updateUsername(username: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
 
         val userId = getUserId()
         if (userId == null) {
@@ -90,11 +90,7 @@ class FireDatabase : Database() {
                 } else {
                     //update the link username to userId and the username on the userAccount
                     setUsername(username).thenAccept { isSetUsername ->
-                        if (isSetUsername) {
-                            removeUsernameToUidMapping(pastUsername, future)
-                        } else {
-                            future.completeExceptionally(java.lang.Error("Impossible to set this username !"))
-                        }
+                        removeUsernameToUidMapping(pastUsername, future)
                     }
                 }
             }
@@ -102,8 +98,8 @@ class FireDatabase : Database() {
         return future
     }
 
-    override fun setUsername(username: String): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun setUsername(username: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
         //TODO:Add security rules to database
         val userId = getUserId()
         if (userId == null) {
@@ -122,7 +118,7 @@ class FireDatabase : Database() {
                             userAccount.put(usernameFile, username)
                             database.child(usersProfileFileName).child(userId)
                                 .updateChildren(userAccount as Map<String, Any>)
-                                .addOnSuccessListener { future.complete(true) }
+                                .addOnSuccessListener { future.complete(Unit) }
                                 .addOnFailureListener {
                                     future.completeExceptionally(Exception("Impossible to create the user account."))
                                 }
@@ -138,8 +134,8 @@ class FireDatabase : Database() {
         return future
     }
 
-    override fun initUserProfile(userModel: UserModel): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun initUserProfile(userModel: UserModel): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
 
         val userData = HashMap<String, Any>()
         userData.put(emailFile, userModel.getEmailAddress())
@@ -153,9 +149,9 @@ class FireDatabase : Database() {
         updateUserData(userData).thenApply {
             initUserAchievement().thenAccept { isInit ->
                 if(isInit){
-                    future.complete(true)
+                    future.complete(Unit)
                 }
-                future.completeExceptionally(Exception("The user profile was not correctly initiate in the database !"))
+                future.completeExceptionally(Exception("The user profile was not correctly initialized in the database !"))
             }
         }
         return future
@@ -183,19 +179,20 @@ class FireDatabase : Database() {
         }
     }
 
-    override fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+    override fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
         if (distanceGoal <= 0.0) {
-            val future = CompletableFuture<Boolean>()
+            val future = CompletableFuture<Unit>()
             future.completeExceptionally(java.lang.Error("The distance goal can't be less or equal than 0."))
+            return future
         }
         val dataUpdated = HashMap<String, Any>()
         dataUpdated.put(currentDistanceGoalFile, distanceGoal)
         return updateUserData(dataUpdated)
     }
 
-    override fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+    override fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
         if (activityTimeGoal <= 0.0) {
-            val future = CompletableFuture<Boolean>()
+            val future = CompletableFuture<Unit>()
             future.completeExceptionally(java.lang.Error("The activity time goal can't be less or equal than 0."))
             return future
         }
@@ -204,9 +201,9 @@ class FireDatabase : Database() {
         return updateUserData(dataUpdated)
     }
 
-    override fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    override fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
         if (nbOfPathsGoal <= 0) {
-            val future = CompletableFuture<Boolean>()
+            val future = CompletableFuture<Unit>()
             future.completeExceptionally(java.lang.Error("The number of paths goal can't be less or equal than 0."))
             return future
         }
@@ -215,7 +212,7 @@ class FireDatabase : Database() {
         return updateUserData(dataUpdated)
     }
 
-    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
         val dataUpdated = HashMap<String, Any>()
 
         //convert the bitmap to a byte array
@@ -289,7 +286,7 @@ class FireDatabase : Database() {
                 .child(dailyGoal.date.toEpochDay().toString())
                 .updateChildren(dailyGoalData)
                 .addOnSuccessListener { future.complete(Unit) }
-                .addOnFailureListener { it }
+                .addOnFailureListener { future.completeExceptionally(it) }
         }
         return future
     }
@@ -326,7 +323,7 @@ class FireDatabase : Database() {
             } else {
                 accessUserAccountFile(userId).child(achievementsFile).updateChildren(newAchievement)
                     .addOnSuccessListener { future.complete(Unit) }
-                    .addOnFailureListener{ it }
+                    .addOnFailureListener{ future.completeExceptionally(it) }
             }
         }
         return future
@@ -353,14 +350,14 @@ class FireDatabase : Database() {
      * @param data to be updated
      * @return a future to indicated if the data have been correctly updated
      */
-    private fun updateUserData(data: Map<String, Any>): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    private fun updateUserData(data: Map<String, Any>): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
         val userId = getUserId()
         if (userId == null) {
             future.completeExceptionally(java.lang.Error("The userId can't be null !"))
         } else {
             accessUserAccountFile(userId).updateChildren(data)
-                .addOnSuccessListener { future.complete(true) }
+                .addOnSuccessListener { future.complete(Unit) }
                 .addOnFailureListener { future.completeExceptionally(java.lang.Error("Impossible to update the data in the database !")) }
         }
         return future
@@ -379,12 +376,11 @@ class FireDatabase : Database() {
      * Helper function to remove the past link from username->userId
      * @param username that will be removed form the mapping
      * @param future future state before the execution of this function
-     * @return a future that indicate if the username was correctly removed
      */
-    private fun removeUsernameToUidMapping(username: String, future: CompletableFuture<Boolean>) {
+    private fun removeUsernameToUidMapping(username: String, future: CompletableFuture<Unit>) {
         //remove the past username from the link username/userId
         accessUsernameToUserIdFile().child(username).removeValue()
-            .addOnSuccessListener { future.complete(true) }
+            .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener {
                 future.completeExceptionally(
                     java.lang.Error(
@@ -586,7 +582,7 @@ class FireDatabase : Database() {
                     achievementsMap.put(totalNbOfPathsFile, (dataAchievements.child(totalNbOfPathsFile).value as Long).toInt())
                     future.complete(achievementsMap)
                 }
-                .addOnFailureListener { it }
+                .addOnFailureListener { future.completeExceptionally(it) }
         }
         return future
     }

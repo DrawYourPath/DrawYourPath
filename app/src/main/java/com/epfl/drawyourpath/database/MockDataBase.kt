@@ -105,8 +105,9 @@ class MockDataBase : Database() {
         return CompletableFuture.completedFuture(!usernameToUserId.contains(userName))
     }
 
-    override fun updateUsername(username: String): CompletableFuture<Boolean> {
-        return isUsernameAvailable(username).thenApply {
+    override fun updateUsername(username: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        isUsernameAvailable(username).thenApply {
             if (it) {
                 //remove the past username has taken
                 val pastUsername = userIdToUsername.get(userIdTest)
@@ -115,12 +116,16 @@ class MockDataBase : Database() {
                 usernameToUserId.put(username, userIdTest)
                 //edit the userProfile
                 userIdToUsername.put(userIdTest, username)
+                future.complete(Unit)
+            }else{
+                future.completeExceptionally(java.lang.Error("The username is not available !"))
             }
-            it
         }
+        return future
     }
 
-    override fun setUsername(username: String): CompletableFuture<Boolean> {
+    override fun setUsername(username: String): CompletableFuture<Unit> {
+
         return isUsernameAvailable(username).thenApply {
             if (it) {
                 usernameToUserId.put(username, userIdTest)
@@ -130,9 +135,9 @@ class MockDataBase : Database() {
         }
     }
 
-    override fun initUserProfile(userModel: UserModel): CompletableFuture<Boolean> {
+    override fun initUserProfile(userModel: UserModel): CompletableFuture<Unit> {
         userIdToUserAccount.put(userIdTest, userModel)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
@@ -143,8 +148,8 @@ class MockDataBase : Database() {
         return getUserAccount(userIdTest)
     }
 
-    override fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
         if (distanceGoal <= 0.0) {
             future.completeExceptionally(Error("The distance goal can't be less or equal than 0."))
             return future
@@ -154,11 +159,11 @@ class MockDataBase : Database() {
             currentActivityTimeGoalTest, currentNbOfPathsGoalTest, this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
         if (activityTimeGoal <= 0.0) {
             future.completeExceptionally(Error("The activity time goal can't be less or equal than 0."))
             return future
@@ -175,11 +180,11 @@ class MockDataBase : Database() {
             this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
         if (nbOfPathsGoal <= 0) {
             future.completeExceptionally(Error("The number of paths goal can't be less or equal than 0."))
             return future
@@ -196,16 +201,16 @@ class MockDataBase : Database() {
             this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
         val updatedUser = UserModel(
             userIdTest, userAuthTest.getEmail(), usernameTest, firstnameTest, surnameTest,
             dateOfBirthTest, currentDistanceGoalTest, currentActivityTimeGoalTest, currentNbOfPathsGoalTest, photo, friendsListTest, this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
     override fun addUserToFriendsList(userId: String): CompletableFuture<Unit> {

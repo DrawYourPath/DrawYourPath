@@ -17,7 +17,6 @@ class MockDataBaseTestPhoto {
     fun setProfilePhotoCorrectly(){
         val database = MockDataBase()
         val isSet = database.setProfilePhoto(photoProfile).get()
-        Assert.assertEquals(isSet, true)
         Assert.assertEquals(database.userIdToUserAccount.get(userIdTest)?.getProfilePhoto(), photoProfile)
     }
 }

@@ -90,11 +90,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             future.complete(false)
         } else {
             database.setProfilePhoto(photoProfile!!).thenApply {
-                if (it) {
-                    future.complete(true)
-                } else {
-                    future.completeExceptionally(java.lang.Error("Impossible to set the photo in the database !"))
-                }
+                future.complete(true)
             }
         }
         return future
