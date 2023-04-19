@@ -161,11 +161,6 @@ class UserModelCachedTest {
         user.clearCache().get(timeout, TimeUnit.SECONDS)
     }
 
-    @After
-    fun clear() {
-        user.clearCache().get(timeout, TimeUnit.SECONDS)
-    }
-
     private fun assertEqualUser(
         expected: UserModel,
         actual: UserEntity,
