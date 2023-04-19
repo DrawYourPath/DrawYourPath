@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_modify_profile_photo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_a_new_profile_photo"
+        android:textSize="20sp"
+        android:layout_marginStart="10dp" />
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10sp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:justificationMode="inter_word"
+        android:padding="4dp"
+        android:text = "@string/modify_profile_photo_description"
+        android:textIsSelectable="false"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:justificationMode="inter_word"
+        android:padding="4dp"
+        android:text="@string/actual_profile_photo"
+        android:textIsSelectable="false"
+        android:textSize="12dp"
+        android:id="@+id/photo_description_modify_profile_photo"/>
+
+    <ImageView
+        android:id="@+id/photo_modify_profile_photo"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center|bottom"
+        android:scaleType="centerCrop"
+        android:src="@drawable/profile_placholderpng" />
+
+    <Button
+        android:id="@+id/select_photo_modify_profile_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:text="@string/select_a_photo"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/error_modify_profile_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginLeft="40dp"
+        android:textSize="20dp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="@string/cancel"
+            android:id="@+id/cancel_modify_profile_photo"/>
+
+        <Space
+            android:layout_width="40dp"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="@string/validate"
+            android:id="@+id/validate_modify_profile_photo"/>
+
+    </LinearLayout>
+</LinearLayout>
