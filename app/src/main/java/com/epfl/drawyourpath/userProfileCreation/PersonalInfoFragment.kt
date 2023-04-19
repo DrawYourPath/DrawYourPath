@@ -28,7 +28,6 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
     private var firstname: String = ""
     private var surname: String = ""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var database: Database = FireDatabase()
 
         //retrieve the isRunTestValue and userName from the UserNameTestAndSetFragment
         val argsFromLastFrag: Bundle? = arguments
@@ -37,13 +36,6 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
         } else {
             isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
             username = argsFromLastFrag.getString(Database.usernameFile).toString()
-        }
-
-        //select the correct database in function of test scenario
-        database = if (isTest) {
-            MockDataBase()
-        } else {
-            FireDatabase()
         }
 
         //to select a new date in a date picker

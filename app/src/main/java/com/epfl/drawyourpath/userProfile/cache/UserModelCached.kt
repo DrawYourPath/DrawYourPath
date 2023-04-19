@@ -30,14 +30,23 @@ import java.util.concurrent.CompletableFuture
  *
  * @see <a href="https://github.com/DrawYourPath/DrawYourPath/pull/105">more information</a>
  */
-class UserModelCached(application: Application) : AndroidViewModel(application) {
+class UserModelCached(
+    application: Application,
     //database where the user is store online
-    private var database: Database = FireDatabase()
+    private var database: Database,
+    allowMainThread: Boolean
+) : AndroidViewModel(application) {
+
+    /**
+     * default constructor used by AndroidViewModel
+     */
+    constructor(application: Application) : this(application, FireDatabase(), false)
 
     //cached room database for user
     private val cache = Room
         .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
         .fallbackToDestructiveMigration()
+        .also { if (allowMainThread) it.allowMainThreadQueries() }
         .build()
         .userDao()
 
@@ -200,6 +209,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             }
             it
         }
+    }
+
+    /**
+     * This function will clear the room database
+     */
+    fun clearCache() {
+        cache.clear()
     }
 
     private fun checkCurrentUser(checkIfNull: Boolean = true) {
