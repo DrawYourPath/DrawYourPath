@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             replaceFragment<DrawFragment>()
         }
 
+
         setupNotifications()
     }
 
