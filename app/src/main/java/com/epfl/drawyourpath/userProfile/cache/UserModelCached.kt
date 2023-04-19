@@ -31,23 +31,15 @@ import java.util.concurrent.CompletableFuture
  *
  * @see <a href="https://github.com/DrawYourPath/DrawYourPath/pull/105">more information</a>
  */
-class UserModelCached(
-    application: Application,
-    //database where the user is store online
-    private var database: Database,
-    allowMainThread: Boolean
-) : AndroidViewModel(application) {
+class UserModelCached(application: Application) : AndroidViewModel(application) {
 
-    /**
-     * default constructor used by AndroidViewModel
-     */
-    constructor(application: Application) : this(application, FireDatabase(), false)
+    //database where the user is store online
+    private var database: Database = FireDatabase()
 
     //cached room database for user
     private val cache = Room
         .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
         .fallbackToDestructiveMigration()
-        .also { if (allowMainThread) it.allowMainThreadQueries() }
         .build()
         .userDao()
 
@@ -156,6 +148,7 @@ class UserModelCached(
      */
     fun updateDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
         checkCurrentUser()
+        UserModel.checkDistanceGoal(distanceGoal)
         return database.setCurrentDistanceGoal(distanceGoal).thenApplyAsync {
             cache.updateDistanceGoal(currentUserID!!, distanceGoal)
         }
