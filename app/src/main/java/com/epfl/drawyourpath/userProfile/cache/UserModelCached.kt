@@ -13,6 +13,7 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.util.concurrent.CompletableFuture
 
@@ -63,11 +64,10 @@ class UserModelCached(
      * This function will create a new user based on the user model of the app
      * @param userModel the userModel to create the new user
      */
-    fun createNewUser(userModel: UserModel) {
-        CompletableFuture.supplyAsync {
+    fun createNewUser(userModel: UserModel): CompletableFuture<Unit> {
+        setUserId(userModel.getUserId())
+        return CompletableFuture.supplyAsync {
             cache.insert(fromUserModelToUserData(userModel))
-        }.thenAccept {
-            setUserId(userModel.getUserId())
         }
     }
 
@@ -75,9 +75,10 @@ class UserModelCached(
      * set the user to an existing user
      * @param userId the user id of the new current user
      */
-    fun setCurrentUser(userId: String) {
+    fun setCurrentUser(userId: String): CompletableFuture<Unit> {
         checkCurrentUser(false)
-        CompletableFuture.supplyAsync {
+        setUserId(userId)
+        return CompletableFuture.supplyAsync {
             // insert empty user in cache to avoid null user
             cache.insertIfEmpty(UserEntity(userId))
         }.thenComposeAsync {
@@ -85,7 +86,6 @@ class UserModelCached(
         }.thenApplyAsync {
             cache.insert(fromUserModelToUserData(it))
         }
-        setUserId(userId)
     }
 
     /**
@@ -142,7 +142,7 @@ class UserModelCached(
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun setUsername(username: String): CompletableFuture<Boolean> {
+    fun updateUsername(username: String): CompletableFuture<Boolean> {
         checkCurrentUser()
         return database.updateUsername(username).thenApplyAsync {
             if (it) {
@@ -156,7 +156,7 @@ class UserModelCached(
      * Use this function to modify the daily distance goal of the user
      * @param distanceGoal new daily distance goal
      */
-    fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+    fun updateDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
         checkCurrentUser()
         return database.setDistanceGoal(distanceGoal).thenApplyAsync {
             if (it) {
@@ -170,7 +170,7 @@ class UserModelCached(
      * Use this function to modify the daily activity time goal of the user
      * @param activityTimeGoal new daily activity time goal
      */
-    fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+    fun updateActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
         checkCurrentUser()
         UserModel.checkActivityTimeGoal(activityTimeGoal)
         return database.setActivityTimeGoal(activityTimeGoal).thenApplyAsync {
@@ -185,7 +185,7 @@ class UserModelCached(
      * Use this function to modify the daily number of paths goal of the user
      * @param nbOfPathsGoal new daily number of paths goal
      */
-    fun setNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    fun updateNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
         checkCurrentUser()
         UserModel.checkNbOfPathsGoal(nbOfPathsGoal)
         return database.setNbOfPathsGoal(nbOfPathsGoal).thenApplyAsync {
@@ -201,7 +201,7 @@ class UserModelCached(
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
      */
-    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+    fun updateProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
         checkCurrentUser()
         return database.setProfilePhoto(photo).thenApplyAsync {
             if (it) {
@@ -214,12 +214,14 @@ class UserModelCached(
     /**
      * This function will clear the room database
      */
-    fun clearCache() {
-        cache.clear()
+    fun clearCache(): CompletableFuture<Unit> {
+        return CompletableFuture.supplyAsync {
+            cache.clear()
+        }
     }
 
     private fun checkCurrentUser(checkIfNull: Boolean = true) {
-        if (database is MockDataBase) {
+        if (database is MockDataBase || database is MockNonWorkingDatabase) {
             return //already a test
         }
         if ((checkIfNull && currentUserID == null) || currentUserID == MockAuth.MOCK_USER.getUid()) {

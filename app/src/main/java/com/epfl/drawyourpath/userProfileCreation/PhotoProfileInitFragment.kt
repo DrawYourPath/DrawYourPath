@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.util.concurrent.CompletableFuture
@@ -89,7 +88,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             errorText.setTextColor(Color.RED)
             future.complete(false)
         } else {
-            return userCached.setProfilePhoto(photoProfile!!)
+            return userCached.updateProfilePhoto(photoProfile!!)
         }
         return future
     }

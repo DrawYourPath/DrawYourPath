@@ -69,7 +69,11 @@ class MockNonWorkingDatabase : Database() {
     }
 
     private fun <T: Any> failedFuture(): CompletableFuture<T> {
-        return CompletableFuture<T>().exceptionally { throw Error("No Internet Connection") }
+        return CompletableFuture.supplyAsync { throw Error(ERROR_NAME) }
+    }
+
+    companion object {
+        const val ERROR_NAME = "MockError: No Internet Connection"
     }
 
 }

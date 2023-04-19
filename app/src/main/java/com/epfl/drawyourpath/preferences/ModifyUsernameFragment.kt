@@ -64,7 +64,7 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
     private fun validateButtonAction(username: String, errorMessage: TextView) {
         testUsernameAvailability(username, errorMessage).thenComposeAsync { available ->
             if (available) {
-                user.setUsername(username)
+                user.updateUsername(username)
             } else {
                 CompletableFuture.completedFuture(false)
             }
