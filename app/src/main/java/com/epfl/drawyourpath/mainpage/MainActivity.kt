@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.mainpage
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
@@ -13,7 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.mainpage.fragments.*
+import com.epfl.drawyourpath.mainpage.fragments.ChallengeFragment
+import com.epfl.drawyourpath.mainpage.fragments.CommunityFragment
+import com.epfl.drawyourpath.mainpage.fragments.DrawFragment
+import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
+import com.epfl.drawyourpath.mainpage.fragments.HistoryFragment
+import com.epfl.drawyourpath.mainpage.fragments.ProfileFragment
+import com.epfl.drawyourpath.mainpage.fragments.StatsFragment
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
@@ -61,7 +66,8 @@ class MainActivity : AppCompatActivity() {
         if (userId != null) {
             userCached.setCurrentUser(userId)
         } else {
-            Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG)
+                .show()
         }
 
     }
