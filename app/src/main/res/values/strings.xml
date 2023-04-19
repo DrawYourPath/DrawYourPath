@@ -100,4 +100,5 @@
     <string name="username_can_t_be_empty">The username can\'t be empty !</string>
     <string name="username_available">*The username %s is available</string>
     <string name="username_not_vailable_or_previous_one">*The username %s is NOT available or equal to the previous one</string>
+    <string name="toast_test_error_message">Should only appear during Testing, if not then a setCurrentUser is missing</string>
 </resources>

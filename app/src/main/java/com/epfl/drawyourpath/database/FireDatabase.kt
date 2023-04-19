@@ -217,7 +217,7 @@ class FireDatabase : Database() {
 
         //convert the bitmap to a byte array
         val byteArray = ByteArrayOutputStream()
-        photo.compress(Bitmap.CompressFormat.PNG, 100, byteArray)
+        photo.compress(Bitmap.CompressFormat.WEBP, 70, byteArray)
         val imageEncoded: String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
         dataUpdated.put(profilePhotoFile, imageEncoded)
         return updateUserData(dataUpdated)

@@ -7,31 +7,33 @@ import com.epfl.drawyourpath.userProfile.UserModel
 import java.util.concurrent.CompletableFuture
 
 abstract class Database {
-    //name of the different attributes inside the user account
-    val usernameFile: String = "username"
-    val firstnameFile: String = "firstname"
-    val surnameFile: String = "surname"
-    val emailFile: String = "email"
-    val dateOfBirthFile: String = "dateOfBirth"
-    val profilePhotoFile: String = "profilePhoto"
-    val friendsListFile: String = "friendsList"
-    //current daily goal
-    val currentDistanceGoalFile: String = "distanceGoal"
-    val currentActivityTimeGoalFile: String = "activityTimeGoal"
-    val currentNOfPathsGoalFile: String = "nbOfPathsGoal"
-    //daily user goals
-    val dailyGoalsFile: String = "dailyGoals"
-    val expectedDistanceFile: String = "expectedDistance"
-    val expectedActivityTimeFile: String = "expectedActivityTime"
-    val expectedNbOfPathsFile: String = "expectedNbOfPaths"
-    val obtainedDistanceFile: String = "obtainedDistance"
-    val obtainedActivityTimeFile: String = "obtainedActivityTime"
-    val obtainedNbOfPathsFile: String = "obtainedNbOfPaths"
-    //user achievements, will be used later for the trophies
-    val achievementsFile: String = "achievements"
-    val totalDistanceFile: String = "totalDistance"
-    val totalActivityTimeFile: String = "totalActivityTime"
-    val totalNbOfPathsFile: String = "totalNbOfPaths"
+    companion object {
+        //name of the different attributes inside the user account
+        const val usernameFile: String = "username"
+        const val firstnameFile: String = "firstname"
+        const val surnameFile: String = "surname"
+        const val emailFile: String = "email"
+        const val dateOfBirthFile: String = "dateOfBirth"
+        const val profilePhotoFile: String = "profilePhoto"
+        const val friendsListFile: String = "friendsList"
+        //current daily goal
+        const val currentDistanceGoalFile: String = "distanceGoal"
+        const val currentActivityTimeGoalFile: String = "activityTimeGoal"
+        const val currentNOfPathsGoalFile: String = "nbOfPathsGoal"
+        //daily user goals
+        const val dailyGoalsFile: String = "dailyGoals"
+        const val expectedDistanceFile: String = "expectedDistance"
+        const val expectedActivityTimeFile: String = "expectedActivityTime"
+        const val expectedNbOfPathsFile: String = "expectedNbOfPaths"
+        const val obtainedDistanceFile: String = "obtainedDistance"
+        const val obtainedActivityTimeFile: String = "obtainedActivityTime"
+        const val obtainedNbOfPathsFile: String = "obtainedNbOfPaths"
+        //user achievements, will be used later for the trophies
+        const val achievementsFile: String = "achievements"
+        const val totalDistanceFile: String = "totalDistance"
+        const val totalActivityTimeFile: String = "totalActivityTime"
+        const val totalNbOfPathsFile: String = "totalNbOfPaths"
+    }
 
     /**
      * This function is used to know if a certain user is already store in the database

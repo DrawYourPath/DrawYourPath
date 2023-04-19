@@ -52,8 +52,10 @@ class UserModel {
     //user achievements
     //total distance run by the user
     private var totalDistance: Double
+
     //total activity time of the user
     private var totalActivityTime: Double
+
     //total number of paths draw by the user
     private var totalNbOfPaths: Int
 
@@ -74,9 +76,11 @@ class UserModel {
      * @param totalNbOfPaths total number of paths draw by the user since the creation of his profile
      * @throws error if the inputs are incorrect
      */
-    constructor(userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double,
-                activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database, dailyGoalList: List<DailyGoal> = emptyList(),
-                totalDistance: Double = 0.0, totalActivityTime: Double = 0.0, totalNbOfPaths: Int = 0){
+    constructor(
+        userAuth: User, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double,
+        activityTimeGoal: Double, nbOfPathsGoal: Int, database: Database, dailyGoalList: List<DailyGoal> = emptyList(),
+        totalDistance: Double = 0.0, totalActivityTime: Double = 0.0, totalNbOfPaths: Int = 0
+    ) {
         this.database = database
 
         //obtain the userId and the email give by the authentication
@@ -100,13 +104,13 @@ class UserModel {
 
         //test the goals, the goals can't be equal or less than 0
         checkDistanceGoal(distanceGoal)
-        this.currentDistanceGoal=distanceGoal
+        this.currentDistanceGoal = distanceGoal
 
         checkActivityTimeGoal(activityTimeGoal)
-        this.currentActivityTimeGoal=activityTimeGoal
+        this.currentActivityTimeGoal = activityTimeGoal
 
         checkNbOfPathsGoal(nbOfPathsGoal)
-        this.currentNbOfPathsGoal=nbOfPathsGoal
+        this.currentNbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = ArrayList()
         this.profilePhoto = null
@@ -136,14 +140,29 @@ class UserModel {
      * @param totalNbOfPaths total number of paths draw by the user since the creation of his profile
      * @throws error if the inputs are incorrect
      */
-    constructor(userId: String, emailAddress: String, username: String, firstname: String, surname: String, dateOfBirth: LocalDate, distanceGoal: Double,
-                activityTimeGoal: Double, nbOfPathsGoal: Int, profilePhoto: Bitmap?, friendsList: List<String>, database: Database, dailyGoalList: List<DailyGoal> = emptyList(),
-                totalDistance: Double = 0.0, totalActivityTime: Double = 0.0, totalNbOfPaths: Int = 0){
+    constructor(
+        userId: String,
+        emailAddress: String,
+        username: String,
+        firstname: String,
+        surname: String,
+        dateOfBirth: LocalDate,
+        distanceGoal: Double,
+        activityTimeGoal: Double,
+        nbOfPathsGoal: Int,
+        profilePhoto: Bitmap?,
+        friendsList: List<String>,
+        database: Database,
+        dailyGoalList: List<DailyGoal> = emptyList(),
+        totalDistance: Double = 0.0,
+        totalActivityTime: Double = 0.0,
+        totalNbOfPaths: Int = 0
+    ) {
         this.database = database
 
         //obtain the userId and the email give by the authentication
-        this.userId=userId
-        this.emailAddress=emailAddress
+        this.userId = userId
+        this.emailAddress = emailAddress
 
         //obtain the username
         this.username = username
@@ -171,7 +190,7 @@ class UserModel {
         this.currentNbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = friendsList
-        this.profilePhoto =profilePhoto
+        this.profilePhoto = profilePhoto
         this.dailyGoalList = dailyGoalList
 
         //init the user achievements
@@ -200,9 +219,9 @@ class UserModel {
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun setUsername(username: String): CompletableFuture<Unit>{
-        return database.updateUsername(username).thenApply{
-            this.username=username
+    fun setUsername(username: String): CompletableFuture<Unit> {
+        return database.updateUsername(username).thenApply {
+            this.username = username
             it
         }
     }
@@ -267,7 +286,7 @@ class UserModel {
     fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
         checkDistanceGoal(distanceGoal)
         return database.setCurrentDistanceGoal(distanceGoal).thenApply {
-            this.currentDistanceGoal=distanceGoal
+            this.currentDistanceGoal = distanceGoal
             it
         }
     }
@@ -287,7 +306,7 @@ class UserModel {
     fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
         checkActivityTimeGoal(activityTimeGoal)
         return database.setCurrentActivityTimeGoal(activityTimeGoal).thenApply {
-            this.currentActivityTimeGoal=activityTimeGoal
+            this.currentActivityTimeGoal = activityTimeGoal
             it
         }
     }
@@ -307,7 +326,7 @@ class UserModel {
     fun setCurrentNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
         checkNbOfPathsGoal(nbOfPathsGoal)
         return database.setCurrentNbOfPathsGoal(nbOfPathsGoal).thenApply {
-            this.currentNbOfPathsGoal=nbOfPathsGoal
+            this.currentNbOfPathsGoal = nbOfPathsGoal
             it
         }
     }
@@ -363,7 +382,7 @@ class UserModel {
      * This function will  return the profile photo of the user or null if it doesn't exit
      * @return the profile photo if it exist
      */
-    fun getProfilePhoto(): Bitmap?{
+    fun getProfilePhoto(): Bitmap? {
         return profilePhoto
     }
 
@@ -372,7 +391,7 @@ class UserModel {
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
      */
-    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit>{
+    fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
         return database.setProfilePhoto(photo).thenApply {
             this.profilePhoto = photo
             it
@@ -383,7 +402,7 @@ class UserModel {
      * This function will return a list of daily goal that the user have realized
      * @return a list of daily realized by the user
      */
-    fun getDailyGoalList():List<DailyGoal>{
+    fun getDailyGoalList(): List<DailyGoal> {
         return this.dailyGoalList
     }
 
@@ -392,8 +411,8 @@ class UserModel {
      * @param dailyGoal that we want to add to the list of daily goals
      * @return a future that indicate if the daily has been correctly added
      */
-    fun addDailyGoalToListOfDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit>{
-        return this.database.addDailyGoal(dailyGoal).thenApply { isSet->
+    fun addDailyGoalToListOfDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit> {
+        return this.database.addDailyGoal(dailyGoal).thenApply { isSet ->
             val newDailyGoalList = this.dailyGoalList.filter { it.date != dailyGoal.date }.toMutableList()
             newDailyGoalList.add(dailyGoal)
             this.dailyGoalList = newDailyGoalList
@@ -405,7 +424,7 @@ class UserModel {
      * This function will return the total run by the user since the creation of his profile
      * @return the total distance run by the user
      */
-    fun getTotalDistance():Double{
+    fun getTotalDistance(): Double {
         return this.totalDistance
     }
 
@@ -413,7 +432,7 @@ class UserModel {
      * This function will return the total activity time that the user has made since the creation of his profile
      * @return the total activity time of the user
      */
-    fun getTotalActivityTime():Double{
+    fun getTotalActivityTime(): Double {
         return this.totalActivityTime
     }
 
@@ -421,7 +440,7 @@ class UserModel {
      * This function will return the total number of paths draw by the user since the creation of his profile
      * @return the total number of paths draw by the user
      */
-    fun getTotalNbOfPaths():Int{
+    fun getTotalNbOfPaths(): Int {
         return this.totalNbOfPaths
     }
 
@@ -433,7 +452,7 @@ class UserModel {
      * @param activityTimeDrawing time take by the user to realized the drawing
      * @return a future that indicate if the achievements of the user have been correctly updated.
      */
-    fun updateAchievements(distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit>{
+    fun updateAchievements(distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit> {
         return this.database.updateUserAchievements(distanceDrawing, activityTimeDrawing).thenApply { isSet ->
             this.totalDistance += distanceDrawing
             this.totalActivityTime += activityTimeDrawing
@@ -442,72 +461,70 @@ class UserModel {
         }
     }
 
-}
+    companion object {
+        /**
+         * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
+         * @param name to be check
+         * @param variableName to be checked
+         * @throw an error if the format is not correct
+         */
+        fun checkNameFormat(name: String, variableName: String) {
+            if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
+                throw java.lang.Error("Incorrect $variableName")
+            }
+        }
 
-/**
- * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
- * @param name to be check
- * @param variableName to be checked
- * @throw an error if the format is not correct
- */
-private fun checkNameFormat(name: String, variableName: String) {
-    if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
-        throw java.lang.Error("Incorrect " + variableName)
+        /**
+         * Helper function to check if the email address is correct
+         * @param email to be checked
+         * @return true is the email is in the correct format, and false otherwise
+         */
+        fun checkEmail(email: String): Boolean {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        }
+
+        /**
+         * Helper function to check if the date of birth of the user respect the age condition of the app
+         * @param date of the user birth
+         * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
+         */
+        fun checkDateOfBirth(date: LocalDate) {
+            if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))) {
+                throw java.lang.Error("Incorrect date of birth !")
+            }
+        }
+
+        /**
+         * Helper function to check if the distance goal is greater or equal than zero
+         * @param distanceGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkDistanceGoal(distanceGoal: Double) {
+            if (distanceGoal <= 0.0) {
+                throw java.lang.Error("The distance goal can't be equal or less than 0.")
+            }
+        }
+
+        /**
+         * Helper function to check if the activity time goal is greater or equal than zero
+         * @param activityTimeGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkActivityTimeGoal(activityTimeGoal: Double) {
+            if (activityTimeGoal <= 0.0) {
+                throw java.lang.Error("The activity time goal can't be equal or less than 0.")
+            }
+        }
+
+        /**
+         * Helper function to check if the number of paths goal is greater or equal than zero
+         * @param nbOfPathsGoal to be checked
+         * @throw an error if the goal is incorrect
+         */
+        fun checkNbOfPathsGoal(nbOfPathsGoal: Int) {
+            if (nbOfPathsGoal <= 0) {
+                throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
+            }
+        }
     }
 }
-
-/**
- * Helper function to check if the email address is correct
- * @param email to be checked
- * @return true is the email is in the correct format, and false otherwise
- */
-private fun checkEmail(email: String): Boolean {
-    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-}
-
-/**
- * Helper function to check if the date of birth of the user respect the age condition of the app
- * @param date of the user birth
- * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
- */
-private fun checkDateOfBirth(date: LocalDate) {
-    if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))) {
-        throw java.lang.Error("Incorrect date of birth !")
-    }
-}
-
-/**
- * Helper function to check if the distance goal is greater or equal than zero
- * @param distanceGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkDistanceGoal(distanceGoal: Double) {
-    if (distanceGoal <= 0.0) {
-        throw java.lang.Error("The distance goal can't be equal or less than 0.")
-    }
-}
-
-/**
- * Helper function to check if the activity time goal is greater or equal than zero
- * @param activityTimeGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkActivityTimeGoal(activityTimeGoal: Double) {
-    if (activityTimeGoal <= 0.0) {
-        throw java.lang.Error("The activity time goal can't be equal or less than 0.")
-    }
-}
-
-/**
- * Helper function to check if the number of paths goal is greater or equal than zero
- * @param nbOfPathsGoal to be checked
- * @throw an error if the goal is incorrect
- */
-private fun checkNbOfPathsGoal(nbOfPathsGoal: Int) {
-    if (nbOfPathsGoal <= 0) {
-        throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
-    }
-}
-
-
-

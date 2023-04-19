@@ -212,7 +212,6 @@ class PreferencesFragmentTest {
     @Test
     fun correctTransitionCancelButtonModifyProfilePhoto(){
         val scenario = launchFragmentInContainer<PreferencesFragment>(themeResId = R.style.Theme_Bootcamp)
-
         clickOnPreference("Modify Profile Photo")
 
         onView(withId(R.id.cancel_modify_profile_photo)).perform(click())
