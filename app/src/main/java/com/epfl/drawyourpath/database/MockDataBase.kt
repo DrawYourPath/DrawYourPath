@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.database
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserModel
@@ -23,19 +24,37 @@ class MockDataBase : Database() {
     val userAuthTest: User = MockAuth.MOCK_USER
     val userMailTest: String = userAuthTest.getEmail()
     val usernameTest: String = "albert"
-    val distanceGoalTest: Double = 10.0
-    val activityTimeGoalTest: Double = 60.0
-    val nbOfPathsGoalTest: Int = 5
+    val currentDistanceGoalTest: Double = 10.0
+    val currentActivityTimeGoalTest: Double = 60.0
+    val currentNbOfPathsGoalTest: Int = 5
     val firstnameTest = "Hugo"
     val surnameTest = "Hof"
     val takenUsername = "nathan"
     val dateOfBirthTest = LocalDate.of(2000, 2, 20)
     val friendsListTest: List<String>
     val userModelTest: UserModel
+
+    //for the dailyGoals tests
+    val dailyGoalListTest: List<DailyGoal> = listOf(
+        DailyGoal(
+            10.0, 60.0, 5,
+            9.0, 50.0, 4,
+            LocalDate.of(2000, 2, 20)
+        )
+    )
+
+    //for the achievements part test
+    val totalDistanceTest: Double = 10.0
+    val totalActivityTimeTest: Double = 60.0
+    val totalNbOfPathsTest: Int = 5
+
+    //for the friendlist tests
     val userIdFriend1: String = "idFriend1"
     val userIdFriend2: String = "idFriend2"
     val friend1: UserModel
     val friend2: UserModel
+
+    //for the history tests
     val runsHistoryTest: List<Run>
     val runTest: Run
     val runTestStartTime: Long = 1651673000000
@@ -68,13 +87,17 @@ class MockDataBase : Database() {
             firstnameTest,
             surnameTest,
             dateOfBirthTest,
-            distanceGoalTest,
-            activityTimeGoalTest,
-            nbOfPathsGoalTest,
+            currentDistanceGoalTest,
+            currentActivityTimeGoalTest,
+            currentNbOfPathsGoalTest,
             null,
             friendsListTest,
             runsHistoryTest,
-            this
+            this,
+            dailyGoalListTest,
+            totalDistanceTest,
+            totalActivityTimeTest,
+            totalNbOfPathsTest
         )
         friend1 = UserModel(
             userIdFriend1,
@@ -128,8 +151,9 @@ class MockDataBase : Database() {
         return CompletableFuture.completedFuture(!usernameToUserId.contains(userName))
     }
 
-    override fun updateUsername(username: String): CompletableFuture<Boolean> {
-        return isUsernameAvailable(username).thenApply {
+    override fun updateUsername(username: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        isUsernameAvailable(username).thenApply {
             if (it) {
                 //remove the past username has taken
                 val pastUsername = userIdToUsername.get(userIdTest)
@@ -138,24 +162,27 @@ class MockDataBase : Database() {
                 usernameToUserId.put(username, userIdTest)
                 //edit the userProfile
                 userIdToUsername.put(userIdTest, username)
+                future.complete(Unit)
+            } else {
+                future.completeExceptionally(java.lang.Error("The username is not available !"))
             }
-            it
         }
+        return future
     }
 
-    override fun setUsername(username: String): CompletableFuture<Boolean> {
+    override fun setUsername(username: String): CompletableFuture<Unit> {
+
         return isUsernameAvailable(username).thenApply {
             if (it) {
                 usernameToUserId.put(username, userIdTest)
                 userIdToUsername.put(userIdTest, username)
             }
-            it
         }
     }
 
-    override fun initUserProfile(userModel: UserModel): CompletableFuture<Boolean> {
+    override fun initUserProfile(userModel: UserModel): CompletableFuture<Unit> {
         userIdToUserAccount.put(userIdTest, userModel)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
     override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
@@ -166,22 +193,22 @@ class MockDataBase : Database() {
         return getUserAccount(userIdTest)
     }
 
-    override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
         if (distanceGoal <= 0.0) {
             future.completeExceptionally(Error("The distance goal can't be less or equal than 0."))
             return future
         }
         val updatedUser = UserModel(
             userAuthTest, usernameTest, firstnameTest, surnameTest, dateOfBirthTest, distanceGoal,
-            activityTimeGoalTest, nbOfPathsGoalTest, this
+            currentActivityTimeGoalTest, currentNbOfPathsGoalTest, this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
         if (activityTimeGoal <= 0.0) {
             future.completeExceptionally(Error("The activity time goal can't be less or equal than 0."))
             return future
@@ -192,17 +219,17 @@ class MockDataBase : Database() {
             firstnameTest,
             surnameTest,
             dateOfBirthTest,
-            distanceGoalTest,
+            currentDistanceGoalTest,
             activityTimeGoal,
-            nbOfPathsGoalTest,
+            currentNbOfPathsGoalTest,
             this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
+    override fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
         if (nbOfPathsGoal <= 0) {
             future.completeExceptionally(Error("The number of paths goal can't be less or equal than 0."))
             return future
@@ -213,16 +240,16 @@ class MockDataBase : Database() {
             firstnameTest,
             surnameTest,
             dateOfBirthTest,
-            distanceGoalTest,
-            activityTimeGoalTest,
+            currentDistanceGoalTest,
+            currentActivityTimeGoalTest,
             nbOfPathsGoal,
             this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
         val updatedUser = UserModel(
             userIdTest,
             userAuthTest.getEmail(),
@@ -230,16 +257,16 @@ class MockDataBase : Database() {
             firstnameTest,
             surnameTest,
             dateOfBirthTest,
-            distanceGoalTest,
-            activityTimeGoalTest,
-            nbOfPathsGoalTest,
+            currentDistanceGoalTest,
+            currentActivityTimeGoalTest,
+            currentNbOfPathsGoalTest,
             photo,
             friendsListTest,
             runsHistoryTest,
             this
         )
         userIdToUserAccount.put(userIdTest, updatedUser)
-        return CompletableFuture.completedFuture(true)
+        return CompletableFuture.completedFuture(Unit)
     }
 
     override fun addUserToFriendsList(userId: String): CompletableFuture<Unit> {
@@ -264,6 +291,65 @@ class MockDataBase : Database() {
         }
     }
 
+    override fun addDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        getLoggedUserAccount().thenAccept { user ->
+            val newDailyGoalList = user.getDailyGoalList().toMutableList()
+            newDailyGoalList.add(dailyGoal)
+            val newUser = UserModel(
+                user.getUserId(),
+                user.getEmailAddress(),
+                user.getUsername(),
+                user.getFirstname(),
+                user.getSurname(),
+                user.getDateOfBirth(),
+                user.getCurrentDistanceGoal(),
+                user.getCurrentActivityTime(),
+                user.getCurrentNumberOfPathsGoal(),
+                user.getProfilePhoto(),
+                user.getFriendList(),
+                user.getRunsHistory(),
+                this,
+                newDailyGoalList
+            )
+            userIdToUserAccount.put(userIdTest, newUser)
+            future.complete(Unit)
+        }
+        return future
+    }
+
+    override fun updateUserAchievements(
+        distanceDrawing: Double,
+        activityTimeDrawing: Double
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        getLoggedUserAccount().thenAccept { user ->
+            val newUser = UserModel(
+                user.getUserId(),
+                user.getEmailAddress(),
+                user.getUsername(),
+                user.getFirstname(),
+                user.getSurname(),
+                user.getDateOfBirth(),
+                user.getCurrentDistanceGoal(),
+                user.getCurrentActivityTime(),
+                user.getCurrentNumberOfPathsGoal(),
+                user.getProfilePhoto(),
+                user.getFriendList(),
+                user.getRunsHistory(),
+                this,
+                user.getDailyGoalList(),
+                user.getTotalDistance() + distanceDrawing,
+                user.getTotalActivityTime() + activityTimeDrawing,
+                user.getTotalNbOfPaths() + 1
+            )
+            userIdToUserAccount.put(userIdTest, newUser)
+            future.complete(Unit)
+        }
+        return future
+    }
+
+
     /**
      * Helper function to add a userId "friendUserId" to the friendList of a a user with userId "currentUserId"
      * @param currentUserId userId that belong the friendlist
@@ -287,9 +373,9 @@ class MockDataBase : Database() {
                 user.getFirstname(),
                 user.getSurname(),
                 user.getDateOfBirth(),
-                user.getDistanceGoal(),
-                user.getActivityTime(),
-                user.getNumberOfPathsGoal(),
+                user.getCurrentDistanceGoal(),
+                user.getCurrentActivityTime(),
+                user.getCurrentNumberOfPathsGoal(),
                 user.getProfilePhoto(),
                 newFriendList,
                 user.getRunsHistory(),
@@ -325,9 +411,9 @@ class MockDataBase : Database() {
                 user.getFirstname(),
                 user.getSurname(),
                 user.getDateOfBirth(),
-                user.getDistanceGoal(),
-                user.getActivityTime(),
-                user.getNumberOfPathsGoal(),
+                user.getCurrentDistanceGoal(),
+                user.getCurrentActivityTime(),
+                user.getCurrentNumberOfPathsGoal(),
                 user.getProfilePhoto(),
                 newFriendList,
                 user.getRunsHistory(),
@@ -344,7 +430,9 @@ class MockDataBase : Database() {
         //update the history in the database
         getUserAccount(userIdTest).thenAccept { user ->
             //filter and sort on startTime to have the same behavior as Firebase
-            val newHistory = user.getRunsHistory().filter { it.getStartTime() != run.getStartTime() }.toMutableList()
+            val newHistory =
+                user.getRunsHistory().filter { it.getStartTime() != run.getStartTime() }
+                    .toMutableList()
             newHistory.add(run)
             newHistory.sortBy { it.getStartTime() }
             val newUser = UserModel(
@@ -354,9 +442,9 @@ class MockDataBase : Database() {
                 user.getFirstname(),
                 user.getSurname(),
                 user.getDateOfBirth(),
-                user.getDistanceGoal(),
-                user.getActivityTime(),
-                user.getNumberOfPathsGoal(),
+                user.getCurrentDistanceGoal(),
+                user.getCurrentActivityTime(),
+                user.getCurrentNumberOfPathsGoal(),
                 user.getProfilePhoto(),
                 user.getFriendList(),
                 newHistory,
@@ -381,9 +469,9 @@ class MockDataBase : Database() {
                 user.getFirstname(),
                 user.getSurname(),
                 user.getDateOfBirth(),
-                user.getDistanceGoal(),
-                user.getActivityTime(),
-                user.getNumberOfPathsGoal(),
+                user.getCurrentDistanceGoal(),
+                user.getCurrentActivityTime(),
+                user.getCurrentNumberOfPathsGoal(),
                 user.getProfilePhoto(),
                 user.getFriendList(),
                 newHistory,
