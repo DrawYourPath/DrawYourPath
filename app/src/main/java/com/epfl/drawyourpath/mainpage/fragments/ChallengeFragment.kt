@@ -41,7 +41,8 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
             tempUser = arguments?.getSerializable("user") as TemporaryUser
         }
 
-        val dailyGoalAdapter = DailyGoalViewAdapter({user.setDistanceGoal(it)}, {user.setActivityTimeGoal(it)}, {user.setNumberOfPathsGoal(it)})
+        val dailyGoalAdapter =
+            DailyGoalViewAdapter({ user.updateDistanceGoal(it) }, { user.updateActivityTimeGoal(it) }, { user.updateNumberOfPathsGoal(it) })
         user.getTodayDailyGoal().observe(viewLifecycleOwner) {
             dailyGoalAdapter.updateDailyGoal(it)
         }

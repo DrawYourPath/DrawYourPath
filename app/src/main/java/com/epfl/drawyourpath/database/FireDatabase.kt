@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
-import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -14,8 +14,6 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 /**
  * The Firebase contains files:

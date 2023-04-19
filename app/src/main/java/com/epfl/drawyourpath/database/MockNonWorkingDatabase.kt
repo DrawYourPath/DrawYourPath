@@ -1,8 +1,8 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
-import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.util.concurrent.CompletableFuture
 
 /**

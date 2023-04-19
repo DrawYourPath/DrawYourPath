@@ -21,9 +21,9 @@ import java.util.concurrent.CompletableFuture
  * used in a recycler view to display the [DailyGoal]
  */
 class DailyGoalViewAdapter(
-    private val setDistanceGoal: (distance: Double) -> CompletableFuture<Boolean>,
-    private val setTimeGoal: (time: Double) -> CompletableFuture<Boolean>,
-    private val setPathGoal: (path: Int) -> CompletableFuture<Boolean>
+    private val setDistanceGoal: (distance: Double) -> CompletableFuture<Unit>,
+    private val setTimeGoal: (time: Double) -> CompletableFuture<Unit>,
+    private val setPathGoal: (path: Int) -> CompletableFuture<Unit>
 ) :
     RecyclerView.Adapter<DailyGoalViewAdapter.ViewHolder>() {
 

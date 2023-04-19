@@ -2,8 +2,8 @@ package com.epfl.drawyourpath.database
 
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
-import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
