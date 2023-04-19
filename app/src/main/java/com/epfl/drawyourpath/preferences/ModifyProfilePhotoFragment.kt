@@ -135,10 +135,8 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
             errorMessage.text = getString(R.string.error_select_new_profile_photo)
             errorMessage.setTextColor(Color.RED)
         } else {
-            user.updateProfilePhoto(profilePhoto).thenAcceptAsync { isPhotoSet ->
-                if (isPhotoSet) {
-                    returnBackToPreviousFrag()
-                }
+            user.updateProfilePhoto(profilePhoto).thenAcceptAsync {
+                returnBackToPreviousFrag()
             }
         }
     }

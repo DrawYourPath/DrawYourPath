@@ -142,27 +142,22 @@ class UserModelCached(
      * Use this function to modify the username(the username will be modify only if it is available on the database)
      * @param username that we want to set
      */
-    fun updateUsername(username: String): CompletableFuture<Boolean> {
+    fun updateUsername(username: String): CompletableFuture<Unit> {
         checkCurrentUser()
         return database.updateUsername(username).thenApplyAsync {
-            if (it) {
-                cache.updateUsername(currentUserID!!, username)
-            }
-            it
+            cache.updateUsername(currentUserID!!, username)
         }
     }
+
 
     /**
      * Use this function to modify the daily distance goal of the user
      * @param distanceGoal new daily distance goal
      */
-    fun updateDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+    fun updateDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
         checkCurrentUser()
-        return database.setDistanceGoal(distanceGoal).thenApplyAsync {
-            if (it) {
-                cache.updateDistanceGoal(currentUserID!!, distanceGoal)
-            }
-            it
+        return database.setCurrentDistanceGoal(distanceGoal).thenApplyAsync {
+            cache.updateDistanceGoal(currentUserID!!, distanceGoal)
         }
     }
 
@@ -170,14 +165,11 @@ class UserModelCached(
      * Use this function to modify the daily activity time goal of the user
      * @param activityTimeGoal new daily activity time goal
      */
-    fun updateActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+    fun updateActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
         checkCurrentUser()
         UserModel.checkActivityTimeGoal(activityTimeGoal)
-        return database.setActivityTimeGoal(activityTimeGoal).thenApplyAsync {
-            if (it) {
-                cache.updateTimeGoal(currentUserID!!, activityTimeGoal)
-            }
-            it
+        return database.setCurrentActivityTimeGoal(activityTimeGoal).thenApplyAsync {
+            cache.updateTimeGoal(currentUserID!!, activityTimeGoal)
         }
     }
 
@@ -185,14 +177,11 @@ class UserModelCached(
      * Use this function to modify the daily number of paths goal of the user
      * @param nbOfPathsGoal new daily number of paths goal
      */
-    fun updateNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    fun updateNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
         checkCurrentUser()
         UserModel.checkNbOfPathsGoal(nbOfPathsGoal)
-        return database.setNbOfPathsGoal(nbOfPathsGoal).thenApplyAsync {
-            if (it) {
-                cache.updatePathsGoal(currentUserID!!, nbOfPathsGoal)
-            }
-            it
+        return database.setCurrentNbOfPathsGoal(nbOfPathsGoal).thenApplyAsync {
+            cache.updatePathsGoal(currentUserID!!, nbOfPathsGoal)
         }
     }
 
@@ -201,13 +190,10 @@ class UserModelCached(
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
      */
-    fun updateProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+    fun updateProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
         checkCurrentUser()
         return database.setProfilePhoto(photo).thenApplyAsync {
-            if (it) {
-                cache.updatePhoto(currentUserID!!, UserEntity.fromBitmapToByteArray(photo))
-            }
-            it
+            cache.updatePhoto(currentUserID!!, UserEntity.fromBitmapToByteArray(photo))
         }
     }
 
@@ -246,9 +232,9 @@ private fun fromUserModelToUserData(userModel: UserModel): UserEntity {
         userModel.getFirstname(),
         userModel.getSurname(),
         UserEntity.fromLocalDateToLong(userModel.getDateOfBirth()),
-        userModel.getDistanceGoal(),
-        userModel.getActivityTime(),
-        userModel.getNumberOfPathsGoal(),
+        userModel.getCurrentDistanceGoal(),
+        userModel.getCurrentActivityTime(),
+        userModel.getCurrentNumberOfPathsGoal(),
         UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto())
     )
 }

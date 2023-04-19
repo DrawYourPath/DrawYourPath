@@ -80,17 +80,14 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
      * @return a future to indicate if the photo was store in the database
      */
     private fun isPhotoSelected(): CompletableFuture<Boolean> {
-        val future = CompletableFuture<Boolean>()
 
         if (photoProfile == null) {
-
             errorText.text = "* You have forgotten to select a photo !"
             errorText.setTextColor(Color.RED)
-            future.complete(false)
+            return CompletableFuture<Boolean>().thenApply { false }
         } else {
-            return userCached.updateProfilePhoto(photoProfile!!)
+            return userCached.updateProfilePhoto(photoProfile!!).thenApply { true }
         }
-        return future
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.userProfile.UserModel
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -18,16 +19,18 @@ class MockNonWorkingDatabaseTest {
         mock.getUsernameFromUserId("").assertError("")
         mock.getUserIdFromUsername("").assertError("")
         mock.isUsernameAvailable("").assertError(true)
-        mock.updateUsername("").assertError(true)
-        mock.setUsername("").assertError(true)
-        mock.initUserProfile(mockUser).assertError(true)
+        mock.updateUsername("").assertError(Unit)
+        mock.setUsername("").assertError(Unit)
+        mock.initUserProfile(mockUser).assertError(Unit)
         mock.getUserAccount("").assertError(mockUser)
         mock.getLoggedUserAccount().assertError(mockUser)
-        mock.setDistanceGoal(0.0).assertError(true)
-        mock.setActivityTimeGoal(0.0).assertError(true)
-        mock.setNbOfPathsGoal(0).assertError(true)
+        mock.setCurrentDistanceGoal(0.0).assertError(Unit)
+        mock.setCurrentActivityTimeGoal(0.0).assertError(Unit)
+        mock.setCurrentNbOfPathsGoal(0).assertError(Unit)
         mock.addUserToFriendsList("").assertError(Unit)
         mock.removeUserFromFriendlist("").assertError(Unit)
+        mock.addDailyGoal(DailyGoal(0.0, 0.0, 0)).assertError(Unit)
+        mock.updateUserAchievements(0.0,0.0).assertError(Unit)
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {

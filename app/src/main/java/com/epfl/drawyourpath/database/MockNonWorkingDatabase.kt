@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.userProfile.UserModel
 import java.util.concurrent.CompletableFuture
 
@@ -24,15 +25,15 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun updateUsername(username: String): CompletableFuture<Boolean> {
+    override fun updateUsername(username: String): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setUsername(username: String): CompletableFuture<Boolean> {
+    override fun setUsername(username: String): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun initUserProfile(userModel: UserModel): CompletableFuture<Boolean> {
+    override fun initUserProfile(userModel: UserModel): CompletableFuture<Unit> {
         return failedFuture()
     }
 
@@ -44,19 +45,19 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun setDistanceGoal(distanceGoal: Double): CompletableFuture<Boolean> {
+    override fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Boolean> {
+    override fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Boolean> {
+    override fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean> {
+    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
         return failedFuture()
     }
 
@@ -65,6 +66,14 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun addDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun updateUserAchievements(distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit> {
         return failedFuture()
     }
 
