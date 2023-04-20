@@ -81,19 +81,31 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                 ).show()
                             } else {
                                 database.getUserIdFromUsername(query).thenApply { userId ->
-                                    database.getUserAccount(userId).thenApply { userModel ->
-                                        val newFriend = Friend(
-                                            userModel.getUserId(),
-                                            userModel.getUsername(),
-                                            userModel.getProfilePhoto(),
-                                            false
-                                        )
+                                    database.getLoggedUserAccount().thenApply { loggedUserModel ->
+                                        if (userId != loggedUserModel.getUserId()) {
+                                            database.getUserAccount(userId).thenApply { userModel ->
+                                                val newFriend = Friend(
+                                                    userModel.getUserId(),
+                                                    userModel.getUsername(),
+                                                    userModel.getProfilePhoto(),
+                                                    false
+                                                )
 
 
-                                        // Add the new friend to the list and update the UI
-                                        viewModel.addPotentialFriend(newFriend)
+                                                // Add the new friend to the list and update the UI
+                                                viewModel.addPotentialFriend(newFriend)
 
+                                            }
+
+                                        }else{
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "You can't add yourself as a friend.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     }
+
                                 }
                             }
                         }
