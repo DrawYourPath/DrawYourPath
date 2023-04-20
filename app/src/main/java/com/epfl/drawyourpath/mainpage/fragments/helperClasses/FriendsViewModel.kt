@@ -137,7 +137,8 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
 
         val updatedFriendsList = allFriends.map {
             if (it.id == friend.id) {
-                it.copy(isFriend = !isFriend)
+                it.isFriend= !isFriend
+                it
             } else {
                 it
             }

@@ -600,8 +600,13 @@ class FireDatabase : Database() {
         //obtain the previous friendList
         accessUserAccountFile(currentUserId).child(friendsListFile).get()
             .addOnSuccessListener { previousFriendList ->
-                val newFriendList =
-                    previousFriendList.children.filter { (it.key as String) != removeUserId }
+                val newFriendList = HashMap<String, Any>()
+                for(friend in previousFriendList.children) {
+                    val friendStr = friend.key as String
+                    if(friendStr != removeUserId){
+                        newFriendList.put(friendStr, true)
+                    }
+                }
                 accessUserAccountFile(currentUserId).child(friendsListFile).setValue(newFriendList)
                     .addOnSuccessListener { future.complete(Unit) }
                     .addOnFailureListener { err -> future.completeExceptionally(err) }

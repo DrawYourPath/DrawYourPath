@@ -14,7 +14,7 @@ data class Friend(
     val id: String,
     val name: String,
     val profileImage: Bitmap?,
-    val isFriend: Boolean
+    var isFriend: Boolean
 )
 
 
