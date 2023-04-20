@@ -2,6 +2,9 @@ package com.epfl.drawyourpath.mainpage
 
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -9,13 +12,24 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
+<<<<<<< HEAD
 
 import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
+=======
+import com.epfl.drawyourpath.mainpage.fragments.ChallengeFragment
+import com.epfl.drawyourpath.mainpage.fragments.CommunityFragment
+import com.epfl.drawyourpath.mainpage.fragments.DrawFragment
+import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
+import com.epfl.drawyourpath.mainpage.fragments.HistoryFragment
+import com.epfl.drawyourpath.mainpage.fragments.ProfileFragment
+import com.epfl.drawyourpath.mainpage.fragments.StatsFragment
+>>>>>>> origin/main
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -31,9 +45,14 @@ class MainActivity : AppCompatActivity() {
     // The drawer menu displayed when clicking the "head" icon
     private lateinit var drawerLayout: DrawerLayout
 
+    private val userCached: UserModelCached by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //get the user id given by login or register to use it inside this activity and its child fragment
+        setupUser()
 
         //Setup the components of the screen
         setupTopBar()
@@ -54,7 +73,19 @@ class MainActivity : AppCompatActivity() {
             replaceFragment<DrawFragment>()
         }
 
+
         setupNotifications()
+    }
+
+    private fun setupUser() {
+        val userId = intent.getStringExtra(EXTRA_USER_ID)
+        if (userId != null) {
+            userCached.setCurrentUser(userId)
+        } else {
+            Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG)
+                .show()
+        }
+
     }
 
     private fun setupTopBar() {
@@ -65,6 +96,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupProfileButton() {
         val profileImageButton: ImageButton = findViewById(R.id.profile_button)
+        userCached.getUser().observe(this) {
+            profileImageButton.setImageBitmap(it.getProfilePhotoOrDefaultAsBitmap(resources))
+        }
         drawerLayout = findViewById(R.id.drawerLayout)
         //Set a listener to open the drawer menu (we might want it on the right)
         profileImageButton.setOnClickListener {
@@ -74,6 +108,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupDrawerNavigationView() {
         val drawerNavigationView: NavigationView = findViewById(R.id.navigationView)
+        val header = drawerNavigationView.getHeaderView(0)
+        userCached.getUser().observe(this) {
+            header.findViewById<TextView>(R.id.header_username).text = it.username
+            header.findViewById<TextView>(R.id.header_email).text = it.emailAddress
+        }
         //Handle the items in the drawer menu
         drawerNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -85,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 //Display challenge fragment
-                R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>(TemporaryUser.SAMPLE_DATA)
+                R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>()
             }
             drawerLayout.close()
             true
@@ -124,22 +163,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    /**
-     * use this to replace fragment and give a user
-     * Needs to be changed from [TemporaryUser] to a real user class
-     */
-    private inline fun <reified F : Fragment> replaceFragment(user: TemporaryUser) {
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            val bundle = Bundle()
-            bundle.putSerializable("user", user)
-            replace<F>(R.id.fragmentContainerView, args = bundle)
-        }
-    }
-
     private fun setupNotifications() {
         val useMockReminder = intent.getBooleanExtra(USE_MOCK_CHALLENGE_REMINDER, false)
         NotificationsHelper(applicationContext).setupNotifications(useMockReminder)
+    }
+
+    companion object {
+        const val EXTRA_USER_ID = "extra_user_id"
     }
 }
