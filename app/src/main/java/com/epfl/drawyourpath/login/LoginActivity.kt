@@ -155,6 +155,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
 
     private fun openMainMenu() {
         val mainMenuIntent = Intent(this, MainActivity::class.java)
+        mainMenuIntent.putExtra(MainActivity.EXTRA_USER_ID, auth.getUser()?.getUid())
         this.startActivity(mainMenuIntent)
     }
 

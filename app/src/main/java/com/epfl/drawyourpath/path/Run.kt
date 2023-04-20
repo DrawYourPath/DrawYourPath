@@ -1,6 +1,6 @@
-package com.github.drawyourpath.bootcamp.path
+package com.epfl.drawyourpath.path
 
-import com.epfl.drawyourpath.path.Path
+import com.google.firebase.database.Exclude
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -77,6 +77,7 @@ class Run(
     /**
      * Returns the distance of the run (in meters)
      */
+    @Exclude
     fun getDistance(): Double {
         return distance
     }
@@ -85,6 +86,7 @@ class Run(
     /**
      * Returns the duration of the run (in seconds)
      */
+    @Exclude
     fun getDuration(): Long {
         return duration
     }
@@ -99,6 +101,7 @@ class Run(
     /**
      * Returns the date of the run as a string
      */
+    @Exclude
     fun getDate(): String {
         val date = Date(endTime)
         val formatter = SimpleDateFormat("MMM d, yyyy HH:mm", Locale.getDefault())
@@ -115,6 +118,7 @@ class Run(
     /**
      * Returns the average speed of the run (in meters per second)
      */
+    @Exclude
     fun getAverageSpeed(): Double {
         return averageSpeed
     }
@@ -122,6 +126,7 @@ class Run(
     /**
      * Returns the calorie burn of the run
      */
+    @Exclude
     fun getCalories(): Int {
         return calories
     }
@@ -129,9 +134,18 @@ class Run(
     /**
      * Returns the time it took to run 1km (in seconds)
      */
+    @Exclude
     fun getTimeForOneKilometer(): Long {
         return timeForOneKilometer
 
+    }
+
+    /**
+     * Returns the path of the run
+     * DO NOT REMOVE, important for Firebase!
+     */
+    fun getPath(): Path {
+        return path
     }
 
 

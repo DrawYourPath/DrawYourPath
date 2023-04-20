@@ -18,10 +18,15 @@
         app:key="account_category"
         app:title="Account">
 
-        <EditTextPreference
+        <Preference
+            app:fragment="com.epfl.drawyourpath.preferences.ModifyUsernameFragment"
             app:key="modify_username"
-            app:title="Modify username"
-            app:useSimpleSummaryProvider="true" />
+            app:title="Modify username" />
+
+        <Preference
+            app:fragment="com.epfl.drawyourpath.preferences.ModifyProfilePhotoFragment"
+            app:key="modify_profilePhoto"
+            app:title="Modify Profile Photo"/>
 
         <Preference
             app:fragment="com.epfl.drawyourpath.preferences.ModifyPasswordFragment"

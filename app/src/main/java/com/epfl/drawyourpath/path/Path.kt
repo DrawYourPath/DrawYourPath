@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.path
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.firebase.database.Exclude
 import com.google.type.Color
 
 // Define a Path class that represents a runner's path.
@@ -83,6 +84,7 @@ class Path {
     /**
      * function that returns the distance of the path in meters.
      */
+    @Exclude
     fun getDistance(): Double {
         var distance = 0.0
         for (i in 0 until points.size - 1) {
@@ -95,6 +97,7 @@ class Path {
     /**
      * Return a Polyline object representing the path.
      */
+    @Exclude
     fun getPolyline(): PolylineOptions {
 
         // Create a new PolylineOptions object to define the appearance of the polyline.
