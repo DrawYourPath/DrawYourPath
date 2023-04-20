@@ -440,7 +440,7 @@ class ChallengeFragmentTest {
      * this is not best practice but I haven't found another way
      */
     private fun waitForLiveDataToUpdate() {
-        Thread.sleep(100)
+        Thread.sleep(200)
     }
 
     /**
