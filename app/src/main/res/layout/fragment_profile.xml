@@ -35,62 +35,80 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="vertical">
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/TV_username"
-                    android:layout_width="279dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Jean Michel"
-                    android:textAlignment="textStart" />
+                android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/IV_Trophy"
-                        android:layout_width="100dp"
-                        android:layout_height="22dp"
-                        android:layout_weight="1"
-                        tools:srcCompat="@drawable/award" />
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
 
                     <TextView
-                        android:id="@+id/TV_Trophy"
-                        android:layout_width="140dp"
+                        android:id="@+id/TV_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:layout_weight="1"
+                        android:text="Jean Michel"
+                        android:textAlignment="textStart" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="120"
-                        android:textColor="#FFC107" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/IV_Achievements"
-                        android:layout_width="100dp"
-                        android:layout_height="22dp"
-                        android:layout_weight="1"
-                        tools:srcCompat="@drawable/achievements" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/IV_Trophy"
+                            android:layout_width="100dp"
+                            android:layout_height="22dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/award" />
 
-                    <TextView
-                        android:id="@+id/TV_Achievements"
-                        android:layout_width="203dp"
+                        <TextView
+                            android:id="@+id/TV_Trophy"
+                            android:layout_width="140dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="120"
+                            android:textColor="#FFC107" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/IV_Achievements"
+                            android:layout_width="100dp"
+                            android:layout_height="22dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/achievements" />
+
+                        <TextView
+                            android:id="@+id/TV_Achievements"
+                            android:layout_width="203dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="19"
+                            android:textColor="#03a9f4" />
+
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="19"
-                        android:textColor="#03a9f4" />
+                        android:layout_weight="1" />
+
                 </LinearLayout>
 
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                <ImageView
+                    android:id="@+id/IV_QRCode"
+                    android:layout_width="193dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:srcCompat="@mipmap/map_placeholder" />
+
             </LinearLayout>
 
         </LinearLayout>
@@ -236,14 +254,14 @@
                         </LinearLayout>
                     </LinearLayout>
                 </HorizontalScrollView>
-				
 
-                    <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="FRIENDS"
-                        android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/friends"
+                    android:textSize="16sp" />
 
                 <ListView
                     android:id="@+id/LV_Friends"
