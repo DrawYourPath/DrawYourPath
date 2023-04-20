@@ -49,7 +49,7 @@ class ChallengeFragmentTest {
 
         val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentDistanceGoal())
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that distance is correct
         onView(withId(R.id.goals_view))
@@ -74,7 +74,7 @@ class ChallengeFragmentTest {
 
         val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentActivityTime())
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that time is correct
         onView(withId(R.id.goals_view))
@@ -100,7 +100,7 @@ class ChallengeFragmentTest {
         val pathProgressGoal =
             context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.getCurrentNumberOfPathsGoal().toDouble())
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that nb of paths is correct
         onView(withId(R.id.goals_view))
@@ -129,7 +129,7 @@ class ChallengeFragmentTest {
         val distanceProgressGoal =
             context.resources.getString(R.string.progress_over_goal).format(dailyGoal.distanceInKilometerProgress, dailyGoal.distanceInKilometerGoal)
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that distance is correct
         onView(withId(R.id.goals_view))
@@ -158,7 +158,7 @@ class ChallengeFragmentTest {
         val timeProgressGoal =
             context.resources.getString(R.string.progress_over_goal).format(dailyGoal.timeInMinutesProgress, dailyGoal.timeInMinutesGoal)
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that time is correct
         onView(withId(R.id.goals_view))
@@ -188,7 +188,7 @@ class ChallengeFragmentTest {
             context.resources.getString(R.string.progress_over_goal_path)
                 .format(dailyGoal.nbOfPathsProgress.toDouble(), dailyGoal.nbOfPathsGoal.toDouble())
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that nb of paths is correct
         onView(withId(R.id.goals_view))
@@ -224,7 +224,7 @@ class ChallengeFragmentTest {
 
         val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentDistanceGoal())
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
@@ -260,7 +260,7 @@ class ChallengeFragmentTest {
 
         val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentActivityTime())
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
@@ -297,7 +297,7 @@ class ChallengeFragmentTest {
         val pathProgressGoal =
             context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.getCurrentNumberOfPathsGoal().toDouble())
 
-        Thread.sleep(50)
+        waitForLiveDataToUpdate()
 
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
@@ -434,6 +434,13 @@ class ChallengeFragmentTest {
 
         scenario.close()
 
+    }
+
+    /**
+     * this is not best practice but I haven't found another way
+     */
+    private fun waitForLiveDataToUpdate() {
+        Thread.sleep(100)
     }
 
     /**
