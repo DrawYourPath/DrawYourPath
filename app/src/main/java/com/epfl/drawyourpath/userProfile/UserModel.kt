@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.userProfile
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.database.Database
