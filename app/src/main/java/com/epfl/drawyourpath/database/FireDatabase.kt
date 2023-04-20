@@ -408,8 +408,8 @@ class FireDatabase : Database() {
             val nbOfPathsGoal = data.child(currentNOfPathsGoalFile).value
             val friendsListData = data.child(friendsListFile)
             val dailyGoalData = data.child(dailyGoalsFile)
-            val totalDistance = data.child(achievementsFile).child(totalDistanceFile).getValue(Double::class.java)!!
-            val totalActivityTime = data.child(achievementsFile).child(totalActivityTimeFile).getValue(Double::class.java)!!
+            val totalDistance = data.child(achievementsFile).child(totalDistanceFile).getValue(Double::class.java)
+            val totalActivityTime = data.child(achievementsFile).child(totalActivityTimeFile).getValue(Double::class.java)
             val totalNbOfPaths = data.child(achievementsFile).child(totalNbOfPathsFile).value
 
             if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null ||
