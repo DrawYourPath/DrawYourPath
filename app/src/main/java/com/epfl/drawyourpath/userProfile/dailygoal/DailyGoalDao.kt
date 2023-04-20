@@ -16,25 +16,36 @@ interface DailyGoalDao {
     fun getDailyGoalById(userId: String): LiveData<List<DailyGoalEntity>>
 
     /**
-     * TODO
+     * returns the dailyGoal associated to the user and date
+     * @param userId the user id
+     * @param date the date
+     * @return the dailyGoal
      */
     @Query("SELECT * FROM DailyGoal WHERE user_id = :userId AND date = :date")
     fun getDailyGoalByIdAndDate(userId: String, date: Long): DailyGoalEntity
 
     /**
-     * TODO
+     * returns the [GoalAndProgress] of the user
+     * @param userId the user id
+     * @return the goal and total progress of the user
      */
     @Query("SELECT distance_goal, time_goal, paths_goal, total_distance, total_time, total_paths FROM User WHERE id = :userId")
     fun getGoalAndTotalProgress(userId: String): GoalAndProgress
 
     /**
-     * TODO
+     * insert a new dailyGoal inside the room database and will replace if there is a conflict with the id and date
+     * @param dailyGoal the dailyGoal to insert
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(dailyGoal: DailyGoalEntity)
 
     /**
-     * TODO
+     * update the progress of the dailyGoal and total progress of the User
+     * @param userId the user id
+     * @param date the date of the progress
+     * @param distance the distance to add
+     * @param time the time to add
+     * @param paths the number of paths to add
      */
     @Transaction
     fun updateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int) {
@@ -51,13 +62,24 @@ interface DailyGoalDao {
     }
 
     /**
-     * TODO
+     * should not be used: use [updateProgress] instead
+     * set the progress of the daily goal
+     * @param userId the user id
+     * @param date the date
+     * @param distance the distance to set
+     * @param time the time to set
+     * @param paths the number of paths to set
      */
     @Query("UPDATE DailyGoal SET distance_progress = :distance, time_progress = :time, path_progress = :paths WHERE user_id = :userId AND date = :date")
     fun updateProgressDailyGoal(userId: String, date: Long, distance: Double, time: Double, paths: Int)
 
     /**
-     * TODO
+     * should not be used: use [updateProgress] instead
+     * set the total progress of the user
+     * @param userId the user id
+     * @param distance the distance to set
+     * @param time the time to set
+     * @param paths the number of paths to set
      */
     @Query("UPDATE User SET total_distance = :distance, total_time = :time, total_paths = :paths WHERE id = :userId")
     fun updateTotalProgressUser(userId: String, distance: Double, time: Double, paths: Int)
