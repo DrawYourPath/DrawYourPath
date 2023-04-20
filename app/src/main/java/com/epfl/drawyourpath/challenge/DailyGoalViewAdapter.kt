@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.challenge
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,11 +93,20 @@ class DailyGoalViewAdapter(
         notifyItemRangeChanged(0, itemCount)
     }
 
+    /**
+     * close the keyboard
+     * @param view
+     */
     private fun closeKeyboard(view: View) {
         val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    /**
+     * set the edit text to DailyGoal
+     * @param viewHolder the view of where the items are
+     * @param position the position inside the RecyclerView
+     */
     private fun setEditText(viewHolder: ViewHolder, position: GoalPos) {
         viewHolder.editText.setText(getGoalToDouble(dailyGoal, position).toInt().toString())
     }
@@ -113,7 +121,7 @@ class DailyGoalViewAdapter(
         val currentProgress = getProgressToDouble(dailyGoal, position)
         val goal = getGoalToDouble(dailyGoal, position)
 
-        viewHolder.progressText.text = context.getString(R.string.progress_over_goal).format(currentProgress, goal)//TODO int for path
+        viewHolder.progressText.text = getProgressText(position, context).format(currentProgress, goal)
         viewHolder.progressBar.max = goal.toInt()
         viewHolder.progressBar.progress = min(currentProgress.toInt(), goal.toInt())
     }
@@ -121,7 +129,7 @@ class DailyGoalViewAdapter(
     /**
      * get the unit associated with the goal
      * @param pos the position of the goal
-     *
+     * @param context the context of the view (to get the string resource)
      * @return the associated unit
      */
     private fun getGoalUnit(pos: GoalPos, context: Context): String {
@@ -132,6 +140,24 @@ class DailyGoalViewAdapter(
         }
     }
 
+    /**
+     * get the progress text associated with the goal
+     * @param pos the position of the goal
+     * @param context the context of the view (to get the string resource)
+     */
+    private fun getProgressText(pos: GoalPos, context: Context): String {
+        return when (pos) {
+            GoalPos.DISTANCE -> context.getString(R.string.progress_over_goal)
+            GoalPos.TIME -> context.getString(R.string.progress_over_goal)
+            GoalPos.PATH -> context.getString(R.string.progress_over_goal_path)
+        }
+    }
+
+    /**
+     * check that the goal is in the correct format and return null otherwise
+     * @param value the value to check
+     * @return the value in the correct format or null
+     */
     private fun checkGoalDouble(value: String): Double? {
         val intValue = value.toIntOrNull()
 
