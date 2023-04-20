@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUser() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
-        if (userId != null) {
+        if (userId != null) { 
             userCached.setCurrentUser(userId)
         } else {
             Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG)
