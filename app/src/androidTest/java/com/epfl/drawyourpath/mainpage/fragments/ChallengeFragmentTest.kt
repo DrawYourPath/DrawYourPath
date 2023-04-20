@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.mainpage.fragments
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -22,6 +23,7 @@ import com.epfl.drawyourpath.challenge.Trophy
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
@@ -31,6 +33,9 @@ import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 class ChallengeFragmentTest {
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     private var mockUser = MockDataBase().userModelTest
     private val context: Context = ApplicationProvider.getApplicationContext()
@@ -48,8 +53,6 @@ class ChallengeFragmentTest {
         )
 
         val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentDistanceGoal())
-
-        waitForLiveDataToUpdate()
 
         //check that distance is correct
         onView(withId(R.id.goals_view))
@@ -74,8 +77,6 @@ class ChallengeFragmentTest {
 
         val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentActivityTime())
 
-        waitForLiveDataToUpdate()
-
         //check that time is correct
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(1))
@@ -99,8 +100,6 @@ class ChallengeFragmentTest {
 
         val pathProgressGoal =
             context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.getCurrentNumberOfPathsGoal().toDouble())
-
-        waitForLiveDataToUpdate()
 
         //check that nb of paths is correct
         onView(withId(R.id.goals_view))
@@ -129,8 +128,6 @@ class ChallengeFragmentTest {
         val distanceProgressGoal =
             context.resources.getString(R.string.progress_over_goal).format(dailyGoal.distanceInKilometerProgress, dailyGoal.distanceInKilometerGoal)
 
-        waitForLiveDataToUpdate()
-
         //check that distance is correct
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
@@ -157,8 +154,6 @@ class ChallengeFragmentTest {
 
         val timeProgressGoal =
             context.resources.getString(R.string.progress_over_goal).format(dailyGoal.timeInMinutesProgress, dailyGoal.timeInMinutesGoal)
-
-        waitForLiveDataToUpdate()
 
         //check that time is correct
         onView(withId(R.id.goals_view))
@@ -187,8 +182,6 @@ class ChallengeFragmentTest {
         val pathProgressGoal =
             context.resources.getString(R.string.progress_over_goal_path)
                 .format(dailyGoal.nbOfPathsProgress.toDouble(), dailyGoal.nbOfPathsGoal.toDouble())
-
-        waitForLiveDataToUpdate()
 
         //check that nb of paths is correct
         onView(withId(R.id.goals_view))
@@ -224,8 +217,6 @@ class ChallengeFragmentTest {
 
         val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentDistanceGoal())
 
-        waitForLiveDataToUpdate()
-
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
@@ -259,8 +250,6 @@ class ChallengeFragmentTest {
             )
 
         val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentActivityTime())
-
-        waitForLiveDataToUpdate()
 
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
@@ -296,8 +285,6 @@ class ChallengeFragmentTest {
 
         val pathProgressGoal =
             context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.getCurrentNumberOfPathsGoal().toDouble())
-
-        waitForLiveDataToUpdate()
 
         //check that the value is correctly changed
         onView(withId(R.id.goals_view))
@@ -434,13 +421,6 @@ class ChallengeFragmentTest {
 
         scenario.close()
 
-    }
-
-    /**
-     * this is not best practice but I haven't found another way
-     */
-    private fun waitForLiveDataToUpdate() {
-        Thread.sleep(300)
     }
 
     /**

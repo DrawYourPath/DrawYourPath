@@ -41,6 +41,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val roomDatabase = Room
         .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
         .fallbackToDestructiveMigration()
+        .allowMainThreadQueries()
         .build()
 
     // room database user
