@@ -76,6 +76,7 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.5.5"
 
     implementation 'com.google.zxing:core:3.4.1'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 
     //room databse
     def room_version = "2.5.1"
@@ -115,7 +116,7 @@ dependencies {
     testImplementation "androidx.arch.core:core-testing:$arch_version"
     // optional - Test helpers for Lifecycle runtime
     testImplementation "androidx.lifecycle:lifecycle-runtime-testing:$lifecycle_version"
-
+    
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.2.0'
     androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'

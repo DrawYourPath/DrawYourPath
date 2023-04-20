@@ -1,5 +1,8 @@
 package com.epfl.drawyourpath.mainpage
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
@@ -7,6 +10,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -19,11 +24,16 @@ import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
+import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
+import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_KEY
+import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import java.util.concurrent.CompletableFuture
 
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
+const val SCAN_QR_REQ_CODE = 8233
 
 /**
  * Main activity of the application, should be launched after the login activity.
@@ -35,7 +45,9 @@ class MainActivity : AppCompatActivity() {
     // The drawer menu displayed when clicking the "head" icon
     private lateinit var drawerLayout: DrawerLayout
 
-    private val userCached: UserModelCached by viewModels()
+    private var qrScanResult: CompletableFuture<String>? = null
+
+  private val userCached: UserModelCached by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +79,32 @@ class MainActivity : AppCompatActivity() {
         setupNotifications()
     }
 
+    /**
+     * Launches the QR scanner.
+     * @return a future completed when the user scanned something.
+     */
+    fun scanQRCode(): CompletableFuture<String> {
+        val result = CompletableFuture<String>()
+        if (qrScanResult != null) {
+            result.completeExceptionally(Exception("QR scan is still pending."))
+        } else {
+            qrScanResult = result
+
+            // Asks for camera permission if we don't have it.
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(Manifest.permission.CAMERA),
+                    SCAN_QR_REQ_CODE
+                )
+            } else {
+                launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
+            }
+        }
+        return result
+    }
+
     private fun setupUser() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId != null) { 
@@ -75,7 +113,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG)
                 .show()
         }
-
     }
 
     private fun setupTopBar() {
@@ -111,7 +148,6 @@ class MainActivity : AppCompatActivity() {
 
                 //Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
-
 
                 //Display challenge fragment
                 R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>()
@@ -158,6 +194,37 @@ class MainActivity : AppCompatActivity() {
         NotificationsHelper(applicationContext).setupNotifications(useMockReminder)
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == SCAN_QR_REQ_CODE && resultCode == SCANNER_ACTIVITY_RESULT_CODE) {
+            val scannedData = data?.getStringExtra(SCANNER_ACTIVITY_RESULT_KEY)
+            if (qrScanResult != null) {
+                qrScanResult!!.complete(scannedData)
+                qrScanResult = null
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == SCAN_QR_REQ_CODE) {
+            if (grantResults.isNotEmpty()
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
+            } else if (qrScanResult != null) {
+                qrScanResult!!.completeExceptionally(Exception("No camera access"))
+                qrScanResult = null
+            }
+        }
+    }
+    
     companion object {
         const val EXTRA_USER_ID = "extra_user_id"
     }

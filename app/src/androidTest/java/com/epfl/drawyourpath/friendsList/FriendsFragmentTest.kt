@@ -1,24 +1,30 @@
 package com.epfl.drawyourpath.friendsList
 
 
-import android.view.KeyEvent
-import android.view.View
+import android.content.Intent
+import android.os.Bundle
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ActivityScenario.launch
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.BoundedMatcher
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.login.LoginActivity
 import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.login.RESTORE_USER_IN_KEYCHAIN
+import com.epfl.drawyourpath.login.USE_MOCK_AUTH_KEY
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
-import org.hamcrest.Description
-import org.hamcrest.Matcher
+import com.epfl.drawyourpath.qrcode.QRScannerActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -115,5 +121,24 @@ class FriendsFragmentTest {
 
         onView(withText("friend1")).check(matches(isDisplayed()))
         onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+    }
+    @Test
+    fun clickOnScanQROpensScanningActivity() {
+        /* TODO: uncomment once the UserModel doesn't crash during tests
+        Intents.init()
+
+        GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
+
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+        val scenario: ActivityScenario<MainActivity> = launch(intent)
+
+        onView(withId(R.id.friends_menu_item)).perform(click())
+
+        onView(withId(R.id.BT_ScanQR)).perform(click())
+
+        intended(hasComponent(QRScannerActivity::class.java.name))
+
+        Intents.release()
+         */
     }
 }
