@@ -17,13 +17,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.mainpage.fragments.ChallengeFragment
-import com.epfl.drawyourpath.mainpage.fragments.CommunityFragment
-import com.epfl.drawyourpath.mainpage.fragments.DrawFragment
-import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
-import com.epfl.drawyourpath.mainpage.fragments.HistoryFragment
-import com.epfl.drawyourpath.mainpage.fragments.ProfileFragment
-import com.epfl.drawyourpath.mainpage.fragments.StatsFragment
+
+import com.epfl.drawyourpath.challenge.TemporaryUser
+import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.FireDatabase
+import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
@@ -63,6 +61,13 @@ class MainActivity : AppCompatActivity() {
         setupProfileButton()
         setupDrawerNavigationView()
         setupBottomNavigationView()
+
+        // Create an instance of your database
+        val database: Database = FireDatabase()
+
+        // Create an instance of FriendsFragmentFactory and set it as the fragment factory
+        val friendsFragmentFactory = FriendsFragmentFactory(database)
+        supportFragmentManager.fragmentFactory = friendsFragmentFactory
 
         //Display the main fragment when no saved state
         if (savedInstanceState == null) {

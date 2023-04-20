@@ -11,4 +11,6 @@
     <color name="grey">#808080</color>
     <color name="red">#fc3b00</color>
     <color name="blue">#0086fc</color>
+    <color name="add_friend_button_color">#4CAF50</color> <!-- Green -->
+    <color name="unfriend_button_color">#F44336</color> <!-- Red -->
 </resources>

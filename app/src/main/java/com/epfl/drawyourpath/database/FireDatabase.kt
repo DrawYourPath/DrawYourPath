@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.path.Path
@@ -172,6 +173,7 @@ class FireDatabase : Database() {
     }
 
     override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
+        Log.d("Debug", "getLoggedUserAccount called!!!!!!!!!!!!!!!!!!")
         val userId = getUserId()
         return if (userId == null) {
             val future = CompletableFuture<UserModel>()
@@ -598,8 +600,13 @@ class FireDatabase : Database() {
         //obtain the previous friendList
         accessUserAccountFile(currentUserId).child(friendsListFile).get()
             .addOnSuccessListener { previousFriendList ->
-                val newFriendList =
-                    previousFriendList.children.filter { (it.key as String) != removeUserId }
+                val newFriendList = HashMap<String, Any>()
+                for(friend in previousFriendList.children) {
+                    val friendStr = friend.key as String
+                    if(friendStr != removeUserId){
+                        newFriendList.put(friendStr, true)
+                    }
+                }
                 accessUserAccountFile(currentUserId).child(friendsListFile).setValue(newFriendList)
                     .addOnSuccessListener { future.complete(Unit) }
                     .addOnFailureListener { err -> future.completeExceptionally(err) }
