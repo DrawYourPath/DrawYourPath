@@ -37,7 +37,7 @@ interface DailyGoalDao {
      * @param dailyGoal the dailyGoal to insert
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(dailyGoal: DailyGoalEntity)
+    fun insertDailyGoal(dailyGoal: DailyGoalEntity)
 
     /**
      * update the progress of the dailyGoal and total progress of the User
@@ -46,9 +46,10 @@ interface DailyGoalDao {
      * @param distance the distance to add
      * @param time the time to add
      * @param paths the number of paths to add
+     * @return the new daily goal
      */
     @Transaction
-    fun updateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int) {
+    fun updateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int): DailyGoalEntity {
         val progress = getGoalAndTotalProgress(userId)
         updateTotalProgressUser(userId, progress.totalDistance + distance, progress.totalActivityTime + time, progress.totalNbOfPaths + paths)
         val dailyGoal = getDailyGoalByIdAndDate(userId, date)
@@ -59,6 +60,7 @@ interface DailyGoalDao {
             dailyGoal.timeInMinutesProgress + time,
             dailyGoal.nbOfPathsProgress + paths
         )
+        return getDailyGoalByIdAndDate(userId, date)
     }
 
     /**
@@ -89,11 +91,13 @@ interface DailyGoalDao {
      * @param userId the id of the user
      * @param date the date of the daily goal
      * @param distanceGoal the new distance goal of the user
+     * @return the new daily goal
      */
     @Transaction
-    fun updateDistanceGoal(userId: String, date: Long, distanceGoal: Double) {
+    fun updateDistanceGoal(userId: String, date: Long, distanceGoal: Double): DailyGoalEntity {
         updateDistanceGoalUser(userId, distanceGoal)
         updateDistanceGoalDailyGoal(userId, date, distanceGoal)
+        return getDailyGoalByIdAndDate(userId, date)
     }
 
     /**
@@ -120,11 +124,13 @@ interface DailyGoalDao {
      * @param userId the id of the user
      * @param date the date of the daily goal
      * @param timeGoal the new time goal of the user
+     * @return the new daily goal
      */
     @Transaction
-    fun updateTimeGoal(userId: String, date: Long, timeGoal: Double) {
+    fun updateTimeGoal(userId: String, date: Long, timeGoal: Double): DailyGoalEntity {
         updateTimeGoalUser(userId, timeGoal)
         updateTimeGoalDailyGoal(userId, date, timeGoal)
+        return getDailyGoalByIdAndDate(userId, date)
     }
 
     /**
@@ -151,11 +157,13 @@ interface DailyGoalDao {
      * @param userId the id of the user
      * @param date the date of the daily goal
      * @param pathsGoal the new number of paths goal of the user
+     * @return the new daily goal
      */
     @Transaction
-    fun updatePathsGoal(userId: String, date: Long, pathsGoal: Int) {
+    fun updatePathsGoal(userId: String, date: Long, pathsGoal: Int): DailyGoalEntity {
         updatePathsGoalUser(userId, pathsGoal)
         updatePathsGoalDailyGoal(userId, date, pathsGoal)
+        return getDailyGoalByIdAndDate(userId, date)
     }
 
     /**

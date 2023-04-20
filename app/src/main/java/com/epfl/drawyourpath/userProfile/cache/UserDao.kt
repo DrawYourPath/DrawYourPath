@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
 
 @Dao
 interface UserDao {
@@ -14,19 +15,32 @@ interface UserDao {
     @Query("SELECT * FROM User WHERE id = :id")
     fun getUserById(id: String): LiveData<UserEntity>
 
+    @Transaction
+    fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>) {
+        insertUser(user)
+        insertAllDailyGoal(dailyGoals)
+    }
+
     /**
      * insert a new user inside the room database and will replace if there is a conflict with the id
      * @param user the user to insert
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(user: UserEntity)
+    fun insertUser(user: UserEntity)
 
     /**
      * insert a new user inside the room database and abort if it already exist inside the room database
      * @param user the user to insert
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIfEmpty(user: UserEntity)
+    fun insertUserIfEmpty(user: UserEntity)
+
+    /**
+     * insert a new dailyGoal inside the room database and will replace if there is a conflict with the id and date
+     * @param dailyGoal the dailyGoal to insert
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllDailyGoal(dailyGoal: List<DailyGoalEntity>)
 
     /**
      * update the user with new data
