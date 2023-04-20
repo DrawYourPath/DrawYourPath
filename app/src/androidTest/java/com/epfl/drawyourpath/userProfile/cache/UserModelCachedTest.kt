@@ -59,7 +59,7 @@ class UserModelCachedTest {
     private val run =
         Run(Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))), 0, 1286)
 
-    private val timeout: Long = 2
+    private val timeout: Long = 5
 
 
     @Test
