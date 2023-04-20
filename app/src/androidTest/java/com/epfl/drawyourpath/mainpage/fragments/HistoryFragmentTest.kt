@@ -11,11 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-<<<<<<< HEAD
-import com.github.drawyourpath.path.RunsAdapter
-=======
 import com.epfl.drawyourpath.path.RunsAdapter
->>>>>>> main
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Test
