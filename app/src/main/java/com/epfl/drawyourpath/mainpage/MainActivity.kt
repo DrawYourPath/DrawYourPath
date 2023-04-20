@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(
                     this, arrayOf(Manifest.permission.CAMERA),
                     SCAN_QR_REQ_CODE
-                ) 
+                )
             } else {
                 launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
             }
