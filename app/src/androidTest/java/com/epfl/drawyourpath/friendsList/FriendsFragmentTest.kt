@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
 import org.hamcrest.Description
@@ -34,28 +35,35 @@ class FriendsFragmentTest {
 
 
 
-
+    //this test is commented out because I cant figure out how to type text in the search view
     /*@Test
     fun searchFriendsDisplaysFilteredResults() {
-        // Launch the FriendsFragment.
-        launchFragmentInContainer<FriendsFragment>(themeResId = R.style.Theme_Bootcamp)
-
-        var searchText = "John Doe"
+        val database = MockDataBase()
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            FriendsFragment(database)
+        }
         Thread.sleep(1000)
+        var searchText = "John Doe"
+
         onView(withId(R.id.friends_search_bar)).perform(click())
+        Thread.sleep(1000)
+
         onView(withId(R.id.friends_search_bar))
             .check(matches(isDisplayed()))
-        onView(withId(R.id.friends_search_bar))
-            .perform(typeText("John Doe"), pressKey(KeyEvent.KEYCODE_ENTER))
+        onView(withId(R.id.friends_search_bar)).perform(typeText("friend1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+        //onView(withId(R.id.friends_search_bar))
+          //  .perform(typeText(), pressKey(KeyEvent.KEYCODE_ENTER))
 
 
 
 
 
         // Check if the filtered result is displayed.
-        onView(withText("John Doe")).check(matches(isDisplayed()))
-    }
-    */
+        onView(withText("friend1")).check(matches(isDisplayed()))
+    }*/
+
+
+
 
 
 
@@ -63,10 +71,49 @@ class FriendsFragmentTest {
 
     @Test
     fun correctListOfFriendsIsDisplayed() {
-        launchFragmentInContainer<FriendsFragment>(themeResId = R.style.Theme_Bootcamp)
+        val database = MockDataBase()
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            FriendsFragment(database)
+        }
 
-        onView(withText("John Doe")).check(matches(isDisplayed()))
-        onView(withText("Jane Smith")).check(matches(isDisplayed()))
+        onView(withText("friend1")).check(matches(isDisplayed()))
 
+    }
+
+    @Test
+    fun clickUnfriendButtonAndCheckIfFriend1HasAddFriendButton() {
+        val database = MockDataBase()
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            FriendsFragment(database)
+        }
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.add_friend_button)).perform(click())
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun clickFriendButtonAndCheckIfFriend1HasUnfriendButton() {
+        val database = MockDataBase()
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            FriendsFragment(database)
+        }
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.add_friend_button)).perform(click())
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.add_friend_button)).perform(click())
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
     }
 }
