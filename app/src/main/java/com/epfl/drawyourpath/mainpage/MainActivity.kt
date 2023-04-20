@@ -68,8 +68,7 @@ class MainActivity : AppCompatActivity() {
         val result = CompletableFuture<String>()
         if (qrScanResult != null) {
             result.completeExceptionally(Exception("QR scan is still pending."))
-        }
-        else {
+        } else {
             qrScanResult = result
 
             // Asks for camera permission if we don't have it.
