@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -15,9 +14,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
+import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.Friend
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
@@ -38,17 +37,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Initialize the ViewModel
-        /* uncomment later
-        val userModel: UserModel  // Get the UserModel instance from your app. TODO
-        val factory = FriendsViewModelFactory(userModel)
-        viewModel = ViewModelProvider(this, factory).get(FriendsViewModel::class.java)
-        */
-
-        view.findViewById<Button>(R.id.BT_ScanQR).setOnClickListener { onScanQRClicked() }
-
-        viewModel = ViewModelProvider(this).get(FriendsViewModel::class.java)
 
         val database: Database = this.database
 
@@ -168,5 +156,4 @@ class FriendsFragmentFactory(private val database: Database) : FragmentFactory()
             else -> super.instantiate(classLoader, className)
         }
     }
-
 }
