@@ -5,13 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.github.drawyourpath.path.RunsAdapter
+import com.epfl.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 
 
@@ -55,8 +54,8 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
         val point4 = LatLng(0.05, 0.0)
         val points2 = listOf(point3, point4)
         val path2 = Path(points2)
-        val startTime2 = System.currentTimeMillis()
-        val endTime2 = startTime + 10
+        val startTime2 = System.currentTimeMillis() + 1000000
+        val endTime2 = startTime2 + 10
         val run2 = Run(path2, startTime2, endTime2)
         runs.add(run2)
 

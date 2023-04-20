@@ -13,6 +13,7 @@ import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.TournamentViewAdapter
 
 /**
  * Fragment used to display different challenge about the user :

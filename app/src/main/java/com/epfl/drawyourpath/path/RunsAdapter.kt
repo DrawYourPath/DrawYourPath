@@ -1,4 +1,4 @@
-package com.github.drawyourpath.path
+package com.epfl.drawyourpath.path
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.path.Run
 
 /**
  * This class is the adapter for the RecyclerView that displays the list of runs.

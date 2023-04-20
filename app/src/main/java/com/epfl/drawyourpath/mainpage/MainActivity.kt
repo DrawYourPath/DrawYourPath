@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.mainpage
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
@@ -13,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
@@ -47,6 +48,13 @@ class MainActivity : AppCompatActivity() {
         setupDrawerNavigationView()
         setupBottomNavigationView()
 
+        // Create an instance of your database
+        val database: Database = FireDatabase()
+
+        // Create an instance of FriendsFragmentFactory and set it as the fragment factory
+        val friendsFragmentFactory = FriendsFragmentFactory(database)
+        supportFragmentManager.fragmentFactory = friendsFragmentFactory
+
         //Display the main fragment when no saved state
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.draw_menu_item
@@ -62,7 +70,8 @@ class MainActivity : AppCompatActivity() {
         if (userId != null) {
             userCached.setCurrentUser(userId)
         } else {
-            Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG)
+                .show()
         }
 
     }

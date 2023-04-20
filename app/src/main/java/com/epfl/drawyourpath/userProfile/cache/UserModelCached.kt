@@ -283,7 +283,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         }
         return DailyGoal(entity)
     }
-
 }
 
 /**
