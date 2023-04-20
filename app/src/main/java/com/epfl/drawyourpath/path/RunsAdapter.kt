@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.epfl.Utils.drawyourpath.Utils.getStaticMapUrl
 import com.epfl.drawyourpath.R
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * This class is the adapter for the RecyclerView that displays the list of runs.
@@ -22,6 +25,20 @@ class RunsAdapter(private val runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val run = runs[position]
+
+
+        val runCoordinates:List<LatLng> = run.getPath().getPoints() // Get the coordinates for this specific run
+        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk";
+
+        val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey);
+
+        // Load the image using Glide
+        Glide.with(holder.itemView.context)
+            .load(staticMapUrl)
+            .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
+            .into(holder.mapImageView)
+
+
 
         // Set the data to the view items in the layout
         //holder.mapImageView.setImageResource(run.mapImage)
