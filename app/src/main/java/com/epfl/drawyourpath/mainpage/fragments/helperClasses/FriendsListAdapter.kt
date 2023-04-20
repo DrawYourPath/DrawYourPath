@@ -18,7 +18,11 @@ data class Friend(
 )
 
 
-// This adapter is responsible for displaying the list of friends in a RecyclerView.
+/**
+ * This adapter is responsible for displaying the list of friends in a RecyclerView.
+ * The Friend parameter corresponds to the user that will be displayed in the friend list
+ * The Boolean parameter corresponds to wether that user is currently a friend or not
+ */
 class FriendsListAdapter(private val onAddOrRemoveFriendClicked: (Friend, Boolean) -> Unit) :
     RecyclerView.Adapter<FriendsListAdapter.FriendViewHolder>() {
 
