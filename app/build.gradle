@@ -25,6 +25,12 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+            }
+        }
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -66,11 +72,12 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
 
+    def espresso_version = "3.5.0-alpha07"
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     //espresso version at 3.5.0-alpha04 because of a bug
     //see https://github.com/android/android-test/issues/1642
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha04'
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.0-alpha04")
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:$espresso_version")
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
     implementation "androidx.fragment:fragment-ktx:1.5.5"
@@ -129,10 +136,10 @@ dependencies {
     testImplementation 'org.mockito:mockito-android:3.12.4'
 
     //to have access to the PickerActions method
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:$espresso_version")
     testImplementation("org.hamcrest:hamcrest:2.2")
 
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.0-alpha04'
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
 
     debugImplementation 'androidx.test:monitor:1.6.1'
     debugImplementation 'androidx.fragment:fragment-testing:1.5.6'

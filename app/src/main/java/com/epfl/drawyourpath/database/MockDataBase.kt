@@ -3,10 +3,10 @@ package com.epfl.drawyourpath.database
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
-import com.epfl.drawyourpath.challenge.DailyGoal
+import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture

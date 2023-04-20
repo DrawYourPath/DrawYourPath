@@ -17,8 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-
-import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*

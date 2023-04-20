@@ -1,10 +1,9 @@
 package com.epfl.drawyourpath.userProfile
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.epfl.drawyourpath.authentication.User
-import com.epfl.drawyourpath.challenge.DailyGoal
 import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.path.Run
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit

@@ -2,7 +2,7 @@ package com.epfl.drawyourpath.database
 
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
-import com.epfl.drawyourpath.challenge.DailyGoal
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserModel
@@ -509,8 +509,8 @@ class MockDataBaseTest {
             0.001
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).timeInMinutesGoal,
-            database.dailyGoalListTest.get(0).timeInMinutesGoal,
+            obtainedDailyGoalList.get(0).activityTimeInMinutesGoal,
+            database.dailyGoalListTest.get(0).activityTimeInMinutesGoal,
             0.001
         )
         assertEquals(
@@ -523,8 +523,8 @@ class MockDataBaseTest {
             0.001
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).timeInMinutesProgress,
-            database.dailyGoalListTest.get(0).timeInMinutesProgress,
+            obtainedDailyGoalList.get(0).activityTimeInMinutesProgress,
+            database.dailyGoalListTest.get(0).activityTimeInMinutesProgress,
             0.001
         )
         assertEquals(
@@ -535,10 +535,10 @@ class MockDataBaseTest {
         //check the second daily goal
         assertEquals(obtainedDailyGoalList.get(1).date, LocalDate.of(2010, 1, 1))
         assertEquals(obtainedDailyGoalList.get(1).distanceInKilometerGoal, 25.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).timeInMinutesGoal, 30.0, 0.001)
+        assertEquals(obtainedDailyGoalList.get(1).activityTimeInMinutesGoal, 30.0, 0.001)
         assertEquals(obtainedDailyGoalList.get(1).nbOfPathsGoal, 2)
         assertEquals(obtainedDailyGoalList.get(1).distanceInKilometerProgress, 20.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).timeInMinutesProgress, 120.0, 0.001)
+        assertEquals(obtainedDailyGoalList.get(1).activityTimeInMinutesProgress, 120.0, 0.001)
         assertEquals(obtainedDailyGoalList.get(1).nbOfPathsProgress, 1)
     }
 
