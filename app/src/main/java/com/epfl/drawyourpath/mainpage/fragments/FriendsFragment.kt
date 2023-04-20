@@ -49,7 +49,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
         // Initialize the ViewModel
         val userAccountFuture = database.getLoggedUserAccount()
-        Log.w("Debug", "View is created!!!!!!!!!!!!!!")
 
         userAccountFuture.thenApply { userModel ->
 
@@ -72,9 +71,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (query != null && query.isNotBlank()) {
-                        Log.d("Debug", "Submitting query!!!")
                         database.isUsernameAvailable(query).thenApply { isAvailable ->
-                            Log.d("Debug", "fount if username is available! ")
 
                             if (isAvailable == true) {
                                 Toast.makeText(
@@ -82,13 +79,9 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                     "Username not found.",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                Log.d("Debug", "username not found! ")
                             } else {
-                                Log.d("Debug", "fount that username is available! ")
                                 database.getUserIdFromUsername(query).thenApply { userId ->
-                                    Log.d("Debug", "Got user ID! ")
                                     database.getUserAccount(userId).thenApply { userModel ->
-                                        Log.d("Debug", "Got user account! ")
                                         val newFriend = Friend(
                                             userModel.getUserId(),
                                             userModel.getUsername(),
@@ -96,7 +89,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                             false
                                         )
 
-                                        Log.d("Debug", "Added user to list! ")
 
                                         // Add the new friend to the list and update the UI
                                         viewModel.addPotentialFriend(newFriend)
@@ -119,7 +111,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
             })
         }.exceptionally { exception ->
-            Log.d("Debug", "exceptionally called")
             // Handle any exceptions that occurred during the CompletableFuture execution
             Log.e(TAG, "Error while getting UserAccount: ", exception)
             null

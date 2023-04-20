@@ -37,7 +37,6 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
 
 
     private fun loadFriends() {
-        Log.w("Debug", "Load friends!!!!!!!!!!!!!!")
         // Get the friend list from the UserModel
         val friendsList = userModel.getFriendList()
         val database: Database = this.database
@@ -50,7 +49,6 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
 
         // Iterate through each userId in friendsList
         for (userId in friendsList) {
-            Log.w("Debug", "Got Username from database!!!!!!!!!!!!!!")
             // Get the username CompletableFuture
             val usernameFuture = database.getUsernameFromUserId(userId)
 
@@ -83,7 +81,6 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
                             }
                         } else {
                             // Handle the exception (e.g., log the error, show a message to the user, etc.)
-                            Log.w("Debug", "Error getting username from database!!!!!!!!!!!!!!")
                         }
                     }
 
@@ -120,17 +117,17 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
         if (isFriend) {
             userModel.removeFriend(friend.id).whenComplete() { result, exception ->
                 if (exception != null) {
-                    Log.w("Debug", "Error removing friend!!!!!!!!!!!!!!")
+                    Log.w("Debug", "Error removing friend!")
                 } else {
-                    Log.w("Debug", "Friend removed!!!!!!!!!!!!!!")
+                    Log.w("Debug", "Friend removed!")
                 }
             }
         } else {
             userModel.addFriend(friend.id).whenComplete() { result, exception ->
                 if (exception != null) {
-                    Log.w("Debug", "Error adding friend!!!!!!!!!!!!!!")
+                    Log.w("Debug", "Error adding friend!")
                 } else {
-                    Log.w("Debug", "Friend added!!!!!!!!!!!!!!")
+                    Log.w("Debug", "Friend added!")
                 }
             }
         }
