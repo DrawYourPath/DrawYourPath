@@ -35,18 +35,18 @@ class FriendsFragmentTest {
 
 
 
-
+    //this test is commented out because I cant figure out how to type text in the search view
     /*@Test
     fun searchFriendsDisplaysFilteredResults() {
         val database = MockDataBase()
         val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
             FriendsFragment(database)
         }
-
+        Thread.sleep(1000)
         var searchText = "John Doe"
-        //Thread.sleep(1000)
-        //onView(withId(R.id.friends_search_bar)).perform(click())
 
+        onView(withId(R.id.friends_search_bar)).perform(click())
+        Thread.sleep(1000)
 
         onView(withId(R.id.friends_search_bar))
             .check(matches(isDisplayed()))
@@ -60,8 +60,8 @@ class FriendsFragmentTest {
 
         // Check if the filtered result is displayed.
         onView(withText("friend1")).check(matches(isDisplayed()))
-    }
-    */
+    }*/
+
 
 
 
@@ -78,5 +78,42 @@ class FriendsFragmentTest {
 
         onView(withText("friend1")).check(matches(isDisplayed()))
 
+    }
+
+    @Test
+    fun clickUnfriendButtonAndCheckIfFriend1HasAddFriendButton() {
+        val database = MockDataBase()
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            FriendsFragment(database)
+        }
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.add_friend_button)).perform(click())
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun clickFriendButtonAndCheckIfFriend1HasUnfriendButton() {
+        val database = MockDataBase()
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            FriendsFragment(database)
+        }
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.add_friend_button)).perform(click())
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.add_friend_button)).perform(click())
+
+        onView(withText("friend1")).check(matches(isDisplayed()))
+        onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
     }
 }

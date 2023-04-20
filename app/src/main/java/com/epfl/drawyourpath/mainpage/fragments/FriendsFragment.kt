@@ -68,10 +68,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
             // Set up the search functionality
             val searchView: SearchView = view.findViewById(R.id.friends_search_bar)
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                /*(override fun onQueryTextSubmit(query: String?): Boolean {
-                    viewModel.search(query ?: "")
-                    return true
-                }*/
+
 
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (query != null && query.isNotBlank()) {
