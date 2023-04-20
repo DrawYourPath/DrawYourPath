@@ -33,6 +33,8 @@ class ProfileFragmentTest {
         textViewHasSubstring(R.id.TV_TotalKilometers, " KM")
         textViewHasSubstring(R.id.TV_GoalsReached, " Goals")
 
+        onView(withId(R.id.IV_QRCode)).check(matches(isDisplayed()))
+
         onView(withId(R.id.LV_Friends)).check(matches(isDisplayed()))
     }
 

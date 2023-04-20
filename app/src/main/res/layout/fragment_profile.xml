@@ -261,6 +261,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="FRIENDS"
+                    android:text="@string/friends"
                     android:textSize="16sp" />
 
                 <ListView
