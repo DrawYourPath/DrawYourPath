@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.path
 
-import com.github.drawyourpath.bootcamp.path.Run
 import com.google.android.gms.maps.model.LatLng
 import junit.framework.TestCase.assertEquals
 import org.junit.Test

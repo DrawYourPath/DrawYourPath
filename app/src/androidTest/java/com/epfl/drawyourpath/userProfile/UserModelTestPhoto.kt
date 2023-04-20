@@ -41,6 +41,8 @@ class UserModelTestPhoto {
             timeGoal,
             nbOfPaths,
             null,
+            emptyList(),
+            emptyList(),
             database
         )
         Assert.assertEquals(user.getUserId(), userId)
@@ -49,9 +51,9 @@ class UserModelTestPhoto {
         Assert.assertEquals(user.getFirstname(), firstname)
         Assert.assertEquals(user.getSurname(), surname)
         Assert.assertEquals(user.getDateOfBirth(), dateOfBirth)
-        Assert.assertEquals(user.getDistanceGoal(), distanceGoal, 0.00001)
-        Assert.assertEquals(user.getActivityTime(), timeGoal, 0.00001)
-        Assert.assertEquals(user.getNumberOfPathsGoal(), nbOfPaths)
+        Assert.assertEquals(user.getCurrentDistanceGoal(), distanceGoal, 0.00001)
+        Assert.assertEquals(user.getCurrentActivityTime(), timeGoal, 0.00001)
+        Assert.assertEquals(user.getCurrentNumberOfPathsGoal(), nbOfPaths)
         Assert.assertEquals(user.getProfilePhoto(), null)
     }
 
@@ -71,6 +73,8 @@ class UserModelTestPhoto {
             timeGoal,
             nbOfPaths,
             photoProfile,
+            emptyList(),
+            emptyList(),
             database
         )
         Assert.assertEquals(user.getUserId(), userId)
@@ -79,9 +83,9 @@ class UserModelTestPhoto {
         Assert.assertEquals(user.getFirstname(), firstname)
         Assert.assertEquals(user.getSurname(), surname)
         Assert.assertEquals(user.getDateOfBirth(), dateOfBirth)
-        Assert.assertEquals(user.getDistanceGoal(), distanceGoal, 0.00001)
-        Assert.assertEquals(user.getActivityTime(), timeGoal, 0.00001)
-        Assert.assertEquals(user.getNumberOfPathsGoal(), nbOfPaths)
+        Assert.assertEquals(user.getCurrentDistanceGoal(), distanceGoal, 0.00001)
+        Assert.assertEquals(user.getCurrentActivityTime(), timeGoal, 0.00001)
+        Assert.assertEquals(user.getCurrentNumberOfPathsGoal(), nbOfPaths)
         Assert.assertEquals(user.getProfilePhoto(), photoProfile)
     }
 

@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.*
 import com.epfl.drawyourpath.path.Path
-import com.github.drawyourpath.bootcamp.path.Run
+import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.navigation.NavigationView
 import java.time.LocalDateTime

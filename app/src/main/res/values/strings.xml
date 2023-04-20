@@ -91,6 +91,7 @@
     <string name="tournament_creation_end_date_error">* Ending time and date should be at least 1 day from starting day and time</string>
     <string name="tournament_creation_visibility_error">* One visibility option should be checked</string>
     <string name="create_new_tournament">Create new tournament</string>
+    <string name="friends">FRIENDS</string>
     <string name="choose_a_new_profile_photo">Choose a new profile photo :</string>
     <string name="modify_profile_photo_description">You can choose a new profile photo and click on VALIDATE to set it. If you want to keep your past profile photo, click on CANCEL.</string>
     <string name="actual_profile_photo">Actual profile photo :</string>
@@ -104,4 +105,5 @@
     <string name="updatepassword_unknown_error">Unknown error</string>
     <string name="updatepassword_success">Password updated</string>
     <string name="updatepassword_user_not_signed">Not signed in</string>
+    <string name="toast_test_error_message">Should only appear during Testing, if not then a setCurrentUser is missing</string>
 </resources>
