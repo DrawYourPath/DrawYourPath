@@ -137,7 +137,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                 // TODO: Add friend from ID "it"
                 if (it == null) {
                     Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
-                }
+                } 
                 else {
                     Toast.makeText(mainActivity, "Scanned $it", Toast.LENGTH_LONG).show()
                 }
