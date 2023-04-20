@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.dailygoal
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.epfl.drawyourpath.userProfile.cache.GoalAndProgress
 
 @Dao
 interface DailyGoalDao {
@@ -17,11 +18,49 @@ interface DailyGoalDao {
     /**
      * TODO
      */
+    @Query("SELECT * FROM DailyGoal WHERE user_id = :userId AND date = :date")
+    fun getDailyGoalByIdAndDate(userId: String, date: Long): DailyGoalEntity
+
+    /**
+     * TODO
+     */
+    @Query("SELECT distance_goal, time_goal, paths_goal, total_distance, total_time, total_paths FROM User WHERE id = :userId")
+    fun getGoalAndTotalProgress(userId: String): GoalAndProgress
+
+    /**
+     * TODO
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(dailyGoal: DailyGoalEntity)
 
-    //TODO
-    //fun addProgress()
+    /**
+     * TODO
+     */
+    @Transaction
+    fun updateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int) {
+        val progress = getGoalAndTotalProgress(userId)
+        updateTotalProgressUser(userId, progress.totalDistance + distance, progress.totalActivityTime + time, progress.totalNbOfPaths + paths)
+        val dailyGoal = getDailyGoalByIdAndDate(userId, date)
+        updateProgressDailyGoal(
+            userId,
+            date,
+            dailyGoal.distanceInKilometerProgress + distance,
+            dailyGoal.timeInMinutesProgress + time,
+            dailyGoal.nbOfPathsProgress + paths
+        )
+    }
+
+    /**
+     * TODO
+     */
+    @Query("UPDATE DailyGoal SET distance_progress = :distance, time_progress = :time, path_progress = :paths WHERE user_id = :userId AND date = :date")
+    fun updateProgressDailyGoal(userId: String, date: Long, distance: Double, time: Double, paths: Int)
+
+    /**
+     * TODO
+     */
+    @Query("UPDATE User SET total_distance = :distance, total_time = :time, total_paths = :paths WHERE id = :userId")
+    fun updateTotalProgressUser(userId: String, distance: Double, time: Double, paths: Int)
 
     /**
      * set a new distance goal to DailyGoal and User with the corresponding id and date
@@ -30,7 +69,6 @@ interface DailyGoalDao {
      * @param distanceGoal the new distance goal of the user
      */
     @Transaction
-    @Query("UPDATE User SET distance_goal = :distanceGoal WHERE id = :id")
     fun updateDistanceGoal(userId: String, date: Long, distanceGoal: Double) {
         updateDistanceGoalUser(userId, distanceGoal)
         updateDistanceGoalDailyGoal(userId, date, distanceGoal)

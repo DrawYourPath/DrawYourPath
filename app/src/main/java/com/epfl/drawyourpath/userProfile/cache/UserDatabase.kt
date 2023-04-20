@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalDao
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
 
-@Database(entities = [UserEntity::class, DailyGoalEntity::class], version = 2)
+@Database(entities = [UserEntity::class, DailyGoalEntity::class], version = 3)
 abstract class UserDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 

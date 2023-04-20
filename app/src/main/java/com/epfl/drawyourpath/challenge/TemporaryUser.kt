@@ -19,25 +19,6 @@ data class TemporaryUser(
     private val trophies: EnumMap<Trophy, LocalDate> = EnumMap(Trophy::class.java)
 ) : java.io.Serializable {
 
-
-    /**
-     * get Today's Daily Goal or create a new one if there is no Daily Goals for today
-     *
-     * @return DailyGoal representing today's Daily Goal
-     */
-    fun getTodayDailyGoal(): DailyGoal {
-        if (dailyGoals.isEmpty()) {
-            dailyGoals.addFirst(DEFAULT_DAILY_GOAL)
-            return dailyGoals.first
-        }
-        if (dailyGoals.first.date == LocalDate.now()) {
-            return dailyGoals.first
-        }
-        val newDailyGoal = dailyGoals.first.createNewGoalFromThis()
-        dailyGoals.addFirst(newDailyGoal)
-        return newDailyGoal
-    }
-
     /**
      * function to call when a trophy is earned
      * it will add the trophy along with the current date

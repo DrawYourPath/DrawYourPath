@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.github.drawyourpath.bootcamp.path.Run
+import com.epfl.drawyourpath.path.Run
 
 /**
  * This class is the adapter for the RecyclerView that displays the list of runs.

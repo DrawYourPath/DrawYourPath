@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import androidx.room.Room
@@ -12,6 +11,7 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
@@ -61,7 +61,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     // dailyGoal
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
         dailyGoalCache.getDailyGoalById(user.userId).map {
-            getTodayDailyGoal(user.distanceGoal, user.activityTimeGoal, user.nbOfPathsGoal, it.firstOrNull())
+            getTodayDailyGoal(user.goalAndProgress, it.firstOrNull())
         }
     }
 
@@ -203,6 +203,19 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
+     * update the goal progress from a run
+     * @param run the run to add
+     */
+    fun updateGoalProgress(run: Run): CompletableFuture<Unit> {//TODO fix this database reset progress in daily goal when come back
+        checkCurrentUser()
+        val distanceInKilometer: Double = run.getDistance() / 1000.0
+        val timeInMinute: Double = run.getDuration() / 60.0
+        return database.updateUserAchievements(distanceInKilometer, timeInMinute).thenApplyAsync {
+            dailyGoalCache.updateProgress(currentUserID!!, LocalDate.now().toEpochDay(), distanceInKilometer, timeInMinute, 1)
+        }
+    }
+
+    /**
      * This function will set the photo as the profile photo of the user
      * @param photo that we want to set
      * @return a completable future that indicate if the photo was correctly stored
@@ -239,17 +252,17 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      *
      * @return DailyGoal representing today's Daily Goal
      */
-    private fun getTodayDailyGoal(distanceGoal: Double, timeGoal: Double, pathGoal: Int, entity: DailyGoalEntity?): DailyGoal {
+    private fun getTodayDailyGoal(goalAndProgress: GoalAndProgress, entity: DailyGoalEntity?): DailyGoal {
         if (entity == null || LocalDate.ofEpochDay(entity.date) != LocalDate.now()) {
-            val dailyGoal = DailyGoal(distanceGoal, timeGoal, pathGoal)
-            CompletableFuture.supplyAsync {
-                database.addDailyGoal(dailyGoal).thenApplyAsync {
-                    dailyGoalCache.insert(dailyGoal.toDailyGoalEntity(currentUserID!!))
-                }
+            val dailyGoal = DailyGoal(goalAndProgress.distanceGoal, goalAndProgress.activityTimeGoal, goalAndProgress.nbOfPathsGoal)
+            database.addDailyGoal(dailyGoal).thenApplyAsync {
+                dailyGoalCache.insert(dailyGoal.toDailyGoalEntity(currentUserID!!))
             }
             return dailyGoal
         }
-        return DailyGoal(entity)
+        val dailyGoal = DailyGoal(entity)
+        database.addDailyGoal(dailyGoal)
+        return dailyGoal
     }
 
 }
@@ -267,9 +280,7 @@ private fun fromUserModelToUserData(userModel: UserModel): UserEntity {
         userModel.getFirstname(),
         userModel.getSurname(),
         UserEntity.fromLocalDateToLong(userModel.getDateOfBirth()),
-        userModel.getCurrentDistanceGoal(),
-        userModel.getCurrentActivityTime(),
-        userModel.getCurrentNumberOfPathsGoal(),
+        GoalAndProgress(userModel),
         UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto())
     )
 }

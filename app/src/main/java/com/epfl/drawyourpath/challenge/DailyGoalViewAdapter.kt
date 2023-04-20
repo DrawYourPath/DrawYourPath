@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.challenge
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,15 +62,18 @@ class DailyGoalViewAdapter(
 
         val goalPos = GoalPos.values()[viewHolder.adapterPosition]
 
-        viewHolder.text.text = getGoalUnit(goalPos)
-        viewHolder.editText.setText(getGoalToDouble(dailyGoal, goalPos).toInt().toString())
+        viewHolder.text.text = getGoalUnit(goalPos, viewHolder.view.context)
+        setEditText(viewHolder, goalPos)
 
-        displayGoal(viewHolder, goalPos)
+        displayGoal(viewHolder, goalPos, viewHolder.view.context)
 
         viewHolder.editText.setOnEditorActionListener { text, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                //TODO add checks like if empty or if same as before
-                updateGoal(text.text.toString(), goalPos)
+                val goal = checkGoalDouble(text.text.toString())
+                setEditText(viewHolder, goalPos)
+                if (goal != null && goal != getGoalToDouble(dailyGoal, goalPos)) {
+                    updateGoal(goal, goalPos)
+                }
                 closeKeyboard(viewHolder.view)
                 true
             } else {
@@ -95,17 +99,21 @@ class DailyGoalViewAdapter(
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    private fun setEditText(viewHolder: ViewHolder, position: GoalPos) {
+        viewHolder.editText.setText(getGoalToDouble(dailyGoal, position).toInt().toString())
+    }
+
     /**
      * display the goal to the view
      *
      * @param viewHolder the view of where the items are
      * @param position the position inside the RecyclerView
      */
-    private fun displayGoal(viewHolder: ViewHolder, position: GoalPos) {
+    private fun displayGoal(viewHolder: ViewHolder, position: GoalPos, context: Context) {
         val currentProgress = getProgressToDouble(dailyGoal, position)
         val goal = getGoalToDouble(dailyGoal, position)
 
-        viewHolder.progressText.text = "$currentProgress/$goal"
+        viewHolder.progressText.text = context.getString(R.string.progress_over_goal).format(currentProgress, goal)//TODO int for path
         viewHolder.progressBar.max = goal.toInt()
         viewHolder.progressBar.progress = min(currentProgress.toInt(), goal.toInt())
     }
@@ -116,12 +124,21 @@ class DailyGoalViewAdapter(
      *
      * @return the associated unit
      */
-    private fun getGoalUnit(pos: GoalPos): String {
+    private fun getGoalUnit(pos: GoalPos, context: Context): String {
         return when (pos) {
-            GoalPos.DISTANCE -> "kilometers"
-            GoalPos.TIME -> "minutes"
-            GoalPos.PATH -> "paths"
+            GoalPos.DISTANCE -> context.getString(R.string.kilometers)
+            GoalPos.TIME -> context.getString(R.string.minutes)
+            GoalPos.PATH -> context.getString(R.string.paths)
         }
+    }
+
+    private fun checkGoalDouble(value: String): Double? {
+        val intValue = value.toIntOrNull()
+
+        if ((intValue == null) || (intValue <= 0)) {
+            return null
+        }
+        return intValue.toDouble()
     }
 
     /**
@@ -130,16 +147,11 @@ class DailyGoalViewAdapter(
      * @param value the value
      * @param pos the position of the goal
      */
-    private fun updateGoal(value: String, pos: GoalPos) {
-        val doubleValue = value.toDoubleOrNull()
-
-        if ((doubleValue == null) || (doubleValue <= 0)) {
-            return
-        }
+    private fun updateGoal(value: Double, pos: GoalPos) {
         when (pos) {
-            GoalPos.DISTANCE -> setDistanceGoal(doubleValue)
-            GoalPos.TIME -> setTimeGoal(doubleValue)
-            GoalPos.PATH -> setPathGoal(doubleValue.toInt())
+            GoalPos.DISTANCE -> setDistanceGoal(value)
+            GoalPos.TIME -> setTimeGoal(value)
+            GoalPos.PATH -> setPathGoal(value.toInt())
         }
     }
 

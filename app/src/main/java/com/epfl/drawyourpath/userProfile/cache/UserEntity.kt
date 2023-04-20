@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.core.graphics.drawable.toBitmap
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.epfl.drawyourpath.R
@@ -50,22 +51,10 @@ data class UserEntity(
     val dateOfBirth: Long = 0L,
 
     /**
-     * the distance goal of the user
+     * the current goals and total progress done by the user
      */
-    @ColumnInfo(name = "distance_goal")
-    val distanceGoal: Double = 0.0,
-
-    /**
-     * the activity time goal of the user
-     */
-    @ColumnInfo(name = "time_goal")
-    val activityTimeGoal: Double = 0.0,
-
-    /**
-     * the number of paths goal of the user
-     */
-    @ColumnInfo(name = "paths_goal")
-    val nbOfPathsGoal: Int = 0,
+    @Embedded
+    val goalAndProgress: GoalAndProgress = GoalAndProgress(),
 
     /**
      * the profile photo of the user (can be null)

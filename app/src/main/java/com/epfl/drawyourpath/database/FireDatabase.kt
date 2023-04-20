@@ -408,8 +408,8 @@ class FireDatabase : Database() {
             val nbOfPathsGoal = data.child(currentNOfPathsGoalFile).value
             val friendsListData = data.child(friendsListFile)
             val dailyGoalData = data.child(dailyGoalsFile)
-            val totalDistance = data.child(achievementsFile).child(totalDistanceFile).value
-            val totalActivityTime = data.child(achievementsFile).child(totalActivityTimeFile).value
+            val totalDistance = data.child(achievementsFile).child(totalDistanceFile).getValue(Double::class.java)!!
+            val totalActivityTime = data.child(achievementsFile).child(totalActivityTimeFile).getValue(Double::class.java)!!
             val totalNbOfPaths = data.child(achievementsFile).child(totalNbOfPathsFile).value
 
             if (firstname == null || surname == null || dateOfBirth == null || distanceGoal == null || activityTimeGoal == null ||
@@ -441,8 +441,8 @@ class FireDatabase : Database() {
                         friendsList,
                         this,
                         dailyGoalList,
-                        (totalDistance as Long).toDouble(),
-                        (totalActivityTime as Long).toDouble(),
+                        totalDistance,
+                        totalActivityTime,
                         (totalNbOfPaths as Long).toInt()
                 )
             }
@@ -547,12 +547,12 @@ class FireDatabase : Database() {
         val dailyGoalList = ArrayList<DailyGoal>()
 
         for(dailyGoal in data.children){
-            val date: LocalDate = LocalDate.ofEpochDay(dailyGoal.key as Long)
-            val expectedDistance: Double = (dailyGoal.child(expectedDistanceFile).value as Long).toDouble()
-            val expectedActivityTime: Double = (dailyGoal.child(expectedActivityTimeFile).value as Long).toDouble()
+            val date: LocalDate = LocalDate.ofEpochDay(dailyGoal.key!!.toLong())
+            val expectedDistance: Double = (dailyGoal.child(expectedDistanceFile).getValue(Double::class.java)!!)
+            val expectedActivityTime: Double = (dailyGoal.child(expectedActivityTimeFile).getValue(Double::class.java)!!)
             val expectedNbOfPaths: Int = (dailyGoal.child(expectedNbOfPathsFile).value as Long).toInt()
-            val obtainedDistance: Double = (dailyGoal.child(obtainedDistanceFile).value as Long).toDouble()
-            val obtainedActivityTime: Double = (dailyGoal.child(obtainedActivityTimeFile).value as Long).toDouble()
+            val obtainedDistance: Double = (dailyGoal.child(obtainedDistanceFile).getValue(Double::class.java)!!)
+            val obtainedActivityTime: Double = (dailyGoal.child(obtainedActivityTimeFile).getValue(Double::class.java)!!)
             val obtainedNbOfPaths: Int = (dailyGoal.child(obtainedNbOfPathsFile).value as Long).toInt()
 
             dailyGoalList.add(DailyGoal(expectedDistance, expectedActivityTime, expectedNbOfPaths, obtainedDistance,
@@ -575,8 +575,8 @@ class FireDatabase : Database() {
             accessUserAccountFile(userId).child(achievementsFile).get()
                 .addOnSuccessListener { dataAchievements->
                     val achievementsMap = HashMap<String, Any>()
-                    achievementsMap.put(totalDistanceFile, (dataAchievements.child(totalDistanceFile).value as Long).toDouble())
-                    achievementsMap.put(totalActivityTimeFile, (dataAchievements.child(totalActivityTimeFile).value as Long).toDouble())
+                    achievementsMap.put(totalDistanceFile, (dataAchievements.child(totalDistanceFile).getValue(Double::class.java)!!))
+                    achievementsMap.put(totalActivityTimeFile, (dataAchievements.child(totalActivityTimeFile).getValue(Double::class.java)!!))
                     achievementsMap.put(totalNbOfPathsFile, (dataAchievements.child(totalNbOfPathsFile).value as Long).toInt())
                     future.complete(achievementsMap)
                 }
