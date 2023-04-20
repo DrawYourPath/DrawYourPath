@@ -30,22 +30,22 @@ class ModifyPasswordFragment : Fragment(R.layout.fragment_modify_password) {
      */
     private fun onChangePasswordButtonPressed() {
         if (!repeatPasswordMatches()) {
-            showResult("Confirmation password doesn't match")
+            showResult(getString(R.string.updatepassword_confirmation_not_matching))
             return
         }
 
         val user = auth.getUser()
         if (user == null) {
-            showResult("Not signed in.")
+            showResult(getString(R.string.updatepassword_user_not_signed))
             return
         }
 
         user.updatePassword(getNewPassword())
             .thenApply {
-                showResult("Password updated.")
+                showResult(getString(R.string.updatepassword_success))
             }
             .exceptionally {
-                showResult(it.localizedMessage ?: "Unknown error.")
+                showResult(it.localizedMessage ?: getString(R.string.updatepassword_unknown_error))
             }
     }
 

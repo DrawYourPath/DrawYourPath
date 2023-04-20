@@ -48,7 +48,7 @@ class SettingsFragmentTest {
     }
 
     @Test
-    fun userCantUpdatePasswordWhenNotSigned() {
+    fun shouldShowErrorWhenUserNotSignedIn() {
         val scenario = launchFragmentInContainer<ModifyPasswordFragment>(bundleOf(
             Pair(USE_MOCK_AUTH, true)
         ))
@@ -58,7 +58,7 @@ class SettingsFragmentTest {
     }
 
     @Test
-    fun emptyPasswordFailsToUpdate() {
+    fun emptyPasswordFailsToUpdateWithError() {
         val scenario = launchFragmentInContainer<ModifyPasswordFragment>(bundleOf(
             Pair(USE_MOCK_AUTH, true),
             Pair(MOCK_FORCE_SIGNED, true)
@@ -69,7 +69,7 @@ class SettingsFragmentTest {
     }
 
     @Test
-    fun mismatchingPasswordFailsToUpdate() {
+    fun mismatchingPasswordFailsToUpdateWithError() {
         val scenario = launchFragmentInContainer<ModifyPasswordFragment>(bundleOf(
             Pair(USE_MOCK_AUTH, true),
             Pair(MOCK_FORCE_SIGNED, true)
@@ -83,7 +83,7 @@ class SettingsFragmentTest {
     }
 
     @Test
-    fun validPasswordPassesUpdate() {
+    fun validPasswordShowsSuccessMessage() {
         val scenario = launchFragmentInContainer<ModifyPasswordFragment>(bundleOf(
             Pair(USE_MOCK_AUTH, true),
             Pair(MOCK_FORCE_SIGNED, true)
