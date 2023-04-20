@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -39,6 +40,8 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         super.onViewCreated(view, savedInstanceState)
 
         val database: Database = this.database
+
+        view.findViewById<Button>(R.id.BT_ScanQR).setOnClickListener { onScanQRClicked() }
 
         // Set up the RecyclerView with an empty adapter initially
         val recyclerView: RecyclerView = view.findViewById(R.id.friends_list)
@@ -137,7 +140,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                 // TODO: Add friend from ID "it"
                 if (it == null) {
                     Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
-                } 
+                }
                 else {
                     Toast.makeText(mainActivity, "Scanned $it", Toast.LENGTH_LONG).show()
                 }
