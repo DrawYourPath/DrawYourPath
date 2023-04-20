@@ -13,7 +13,7 @@ interface UserDao {
      * @return [LiveData] of [UserEntity]
      */
     @Query("SELECT * FROM User WHERE id = :id")
-    fun getUserById(id: String): LiveData<UserEntity>
+    fun getUserById(id: String): LiveData<UserEntity?>
 
     @Transaction
     fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>) {

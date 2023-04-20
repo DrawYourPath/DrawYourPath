@@ -56,7 +56,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val _currentUserID = MutableLiveData<String>()
 
     // user
-    private val user: LiveData<UserEntity> = _currentUserID.switchMap { userCache.getUserById(it) }
+    private val user: LiveData<UserEntity> = _currentUserID.switchMap { userCache.getUserById(it)}.map { user -> user?: UserEntity("userID") }
 
     // dailyGoal
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
