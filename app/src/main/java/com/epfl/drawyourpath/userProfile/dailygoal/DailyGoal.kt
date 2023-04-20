@@ -13,7 +13,7 @@ data class DailyGoal(
     var timeInMinutesProgress: Double = 0.0,
     var nbOfPathsProgress: Int = 0,
     val date: LocalDate = LocalDate.now()
-) : java.io.Serializable {
+) {
 
     /**
      * create a new Empty DailyGoal based on the current one
@@ -49,6 +49,10 @@ data class DailyGoal(
             timeInMinutesProgress,
             nbOfPathsProgress
         )
+    }
+
+    companion object {
+        val TEST_SAMPLE = DailyGoal(23.0, 86.0, 2, 17.6543, 39.01247, 1)
     }
 
 }

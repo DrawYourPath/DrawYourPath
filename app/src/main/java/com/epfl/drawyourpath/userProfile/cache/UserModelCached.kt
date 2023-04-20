@@ -72,7 +72,16 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun createNewUser(userModel: UserModel): CompletableFuture<Unit> {
         setUserId(userModel.getUserId())
         return CompletableFuture.supplyAsync {
-            userCache.insertUser(fromUserModelToUserData(userModel))
+            userCache.insertAll(
+                fromUserModelToUserData(userModel),
+                listOf(
+                    DailyGoal(
+                        userModel.getCurrentDistanceGoal(),
+                        userModel.getCurrentActivityTime(),
+                        userModel.getCurrentNumberOfPathsGoal()
+                    ).toDailyGoalEntity(userModel.getUserId())
+                )
+            )
         }
     }
 
@@ -88,7 +97,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             userCache.insertUserIfEmpty(UserEntity(userId))
         }.thenComposeAsync {
             database.getUserAccount(userId)
-        }.thenApplyAsync {userModel ->
+        }.thenApplyAsync { userModel ->
             userCache.insertAll(fromUserModelToUserData(userModel), userModel.getDailyGoalList().map { it.toDailyGoalEntity(userId) })
         }
     }

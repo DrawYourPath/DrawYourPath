@@ -7,7 +7,11 @@ import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
+import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -49,12 +53,23 @@ class UserModelCachedTest {
         mockDataBase
     )
 
+    private val dailyGoal =
+        DailyGoal(testUserModel.getCurrentDistanceGoal(), testUserModel.getCurrentActivityTime(), testUserModel.getCurrentNumberOfPathsGoal())
+
+    private val run =
+        Run(Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))), 0, 1286)
+
     private val timeout: Long = 2
 
 
     @Test
     fun getCorrectUserFromGetter() {
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
+    }
+
+    @Test
+    fun getCorrectDailyGoalFromGetter() {
+        assertEquals(dailyGoal, user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -92,6 +107,7 @@ class UserModelCachedTest {
     fun setDistanceGoalModifyDistanceGoal() {
         user.updateDistanceGoal(newUser.getCurrentDistanceGoal()).get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.getCurrentDistanceGoal())
+        assertEquals(dailyGoal.copy(distanceInKilometerGoal = newUser.getCurrentDistanceGoal()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -99,12 +115,14 @@ class UserModelCachedTest {
         user.setDatabase(MockNonWorkingDatabase())
         user.updateDistanceGoal(newUser.getCurrentDistanceGoal()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
+        assertEquals(dailyGoal, user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
     fun setActivityTimeGoalModifyActivityTimeGoal() {
         user.updateActivityTimeGoal(newUser.getCurrentActivityTime()).get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getCurrentActivityTime())
+        assertEquals(dailyGoal.copy(timeInMinutesGoal = newUser.getCurrentActivityTime()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -112,13 +130,14 @@ class UserModelCachedTest {
         user.setDatabase(MockNonWorkingDatabase())
         user.updateActivityTimeGoal(newUser.getCurrentActivityTime()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-
+        assertEquals(dailyGoal, user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
     fun setNumberOfPathsGoalModifyNumberOfPathsGoal() {
         user.updateNumberOfPathsGoal(newUser.getCurrentNumberOfPathsGoal()).get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.getCurrentNumberOfPathsGoal())
+        assertEquals(dailyGoal.copy(nbOfPathsGoal = newUser.getCurrentNumberOfPathsGoal()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -126,6 +145,33 @@ class UserModelCachedTest {
         user.setDatabase(MockNonWorkingDatabase())
         user.updateNumberOfPathsGoal(newUser.getCurrentNumberOfPathsGoal()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
+        assertEquals(dailyGoal, user.getTodayDailyGoal().getOrAwaitValue())
+    }
+
+    @Test
+    fun setNewProgressModifyProgress() {
+        user.updateGoalProgress(run).get(timeout, TimeUnit.SECONDS)
+        val distance = run.getDistance() / 1000.0
+        val time = run.getDuration() / 60.0
+        assertEqualUser(
+            testUserModel,
+            user.getUser().getOrAwaitValue(),
+            addDistanceProgress = distance,
+            addTimeProgress = time,
+            addPathProgress = 1
+        )
+        assertEquals(
+            dailyGoal.copy(distanceInKilometerProgress = distance, timeInMinutesProgress = time, nbOfPathsProgress = 1),
+            user.getTodayDailyGoal().getOrAwaitValue()
+        )
+    }
+
+    @Test
+    fun setNewProgressWhenNoInternetDoesNotModifyProgress() {
+        user.setDatabase(MockNonWorkingDatabase())
+        user.updateGoalProgress(run).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
+        assertEquals(dailyGoal, user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -155,7 +201,10 @@ class UserModelCachedTest {
         newUsername: String = expected.getUsername(),
         newDistanceGoal: Double = expected.getCurrentDistanceGoal(),
         newTimeGoal: Double = expected.getCurrentActivityTime(),
-        newPathGoal: Int = expected.getCurrentNumberOfPathsGoal()
+        newPathGoal: Int = expected.getCurrentNumberOfPathsGoal(),
+        addDistanceProgress: Double = 0.0,
+        addTimeProgress: Double = 0.0,
+        addPathProgress: Int = 0
     ) {
         assertEquals(expected.getUserId(), actual.userId)
         assertEquals(newUsername, actual.username)
@@ -163,9 +212,12 @@ class UserModelCachedTest {
         assertEquals(expected.getFirstname(), actual.firstname)
         assertEquals(expected.getSurname(), actual.surname)
         assertEquals(expected.getDateOfBirth(), actual.getDateOfBirthAsLocalDate())
-        assertEquals(newDistanceGoal, actual.distanceGoal, 0.0)
-        assertEquals(newTimeGoal, actual.activityTimeGoal, 0.0)
-        assertEquals(newPathGoal, actual.nbOfPathsGoal)
+        assertEquals(newDistanceGoal, actual.goalAndProgress.distanceGoal, 0.0)
+        assertEquals(newTimeGoal, actual.goalAndProgress.activityTimeGoal, 0.0)
+        assertEquals(newPathGoal, actual.goalAndProgress.nbOfPathsGoal)
+        assertEquals(expected.getTotalDistance() + addDistanceProgress, actual.goalAndProgress.totalDistance, 0.001)
+        assertEquals(expected.getTotalActivityTime() + addTimeProgress, actual.goalAndProgress.totalActivityTime, 0.001)
+        assertEquals(expected.getTotalNbOfPaths() + addPathProgress, actual.goalAndProgress.totalNbOfPaths)
         assertEquals(expected.getProfilePhoto(), actual.getProfilePhotoAsBitmap())
     }
 

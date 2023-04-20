@@ -50,41 +50,33 @@ interface DailyGoalDao {
      */
     @Transaction
     fun updateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int): DailyGoalEntity {
-        val progress = getGoalAndTotalProgress(userId)
-        updateTotalProgressUser(userId, progress.totalDistance + distance, progress.totalActivityTime + time, progress.totalNbOfPaths + paths)
-        val dailyGoal = getDailyGoalByIdAndDate(userId, date)
-        updateProgressDailyGoal(
-            userId,
-            date,
-            dailyGoal.distanceInKilometerProgress + distance,
-            dailyGoal.timeInMinutesProgress + time,
-            dailyGoal.nbOfPathsProgress + paths
-        )
+        addTotalProgressUser(userId, distance, time, paths)
+        insertIfDailyGoalUpdateFailed(userId, date, addProgressDailyGoal(userId, date, distance, time, paths), distance, time, paths)
         return getDailyGoalByIdAndDate(userId, date)
     }
 
     /**
      * should not be used: use [updateProgress] instead
-     * set the progress of the daily goal
+     * add the progress of the daily goal
      * @param userId the user id
      * @param date the date
      * @param distance the distance to set
      * @param time the time to set
      * @param paths the number of paths to set
      */
-    @Query("UPDATE DailyGoal SET distance_progress = :distance, time_progress = :time, path_progress = :paths WHERE user_id = :userId AND date = :date")
-    fun updateProgressDailyGoal(userId: String, date: Long, distance: Double, time: Double, paths: Int)
+    @Query("UPDATE DailyGoal SET distance_progress = distance_progress + :distance, time_progress = time_progress + :time, path_progress = path_progress + :paths WHERE user_id = :userId AND date = :date")
+    fun addProgressDailyGoal(userId: String, date: Long, distance: Double, time: Double, paths: Int): Int
 
     /**
      * should not be used: use [updateProgress] instead
-     * set the total progress of the user
+     * add the total progress of the user
      * @param userId the user id
      * @param distance the distance to set
      * @param time the time to set
      * @param paths the number of paths to set
      */
-    @Query("UPDATE User SET total_distance = :distance, total_time = :time, total_paths = :paths WHERE id = :userId")
-    fun updateTotalProgressUser(userId: String, distance: Double, time: Double, paths: Int)
+    @Query("UPDATE User SET total_distance = total_distance + :distance, total_time = total_time + :time, total_paths = total_paths + :paths WHERE id = :userId")
+    fun addTotalProgressUser(userId: String, distance: Double, time: Double, paths: Int)
 
     /**
      * set a new distance goal to DailyGoal and User with the corresponding id and date
@@ -96,7 +88,7 @@ interface DailyGoalDao {
     @Transaction
     fun updateDistanceGoal(userId: String, date: Long, distanceGoal: Double): DailyGoalEntity {
         updateDistanceGoalUser(userId, distanceGoal)
-        updateDistanceGoalDailyGoal(userId, date, distanceGoal)
+        insertIfDailyGoalUpdateFailed(userId, date, updateDistanceGoalDailyGoal(userId, date, distanceGoal))
         return getDailyGoalByIdAndDate(userId, date)
     }
 
@@ -108,7 +100,7 @@ interface DailyGoalDao {
      * @param distanceGoal the new distance goal of the user
      */
     @Query("UPDATE DailyGoal SET distance_goal = :distanceGoal WHERE user_id = :userId AND date = :date")
-    fun updateDistanceGoalDailyGoal(userId: String, date: Long, distanceGoal: Double)
+    fun updateDistanceGoalDailyGoal(userId: String, date: Long, distanceGoal: Double): Int
 
     /**
      * should not be used: use [updateDistanceGoal] instead
@@ -129,7 +121,7 @@ interface DailyGoalDao {
     @Transaction
     fun updateTimeGoal(userId: String, date: Long, timeGoal: Double): DailyGoalEntity {
         updateTimeGoalUser(userId, timeGoal)
-        updateTimeGoalDailyGoal(userId, date, timeGoal)
+        insertIfDailyGoalUpdateFailed(userId, date, updateTimeGoalDailyGoal(userId, date, timeGoal))
         return getDailyGoalByIdAndDate(userId, date)
     }
 
@@ -141,7 +133,7 @@ interface DailyGoalDao {
      * @param timeGoal the new time goal of the user
      */
     @Query("UPDATE DailyGoal SET time_goal = :timeGoal WHERE user_id = :userId AND date = :date")
-    fun updateTimeGoalDailyGoal(userId: String, date: Long, timeGoal: Double)
+    fun updateTimeGoalDailyGoal(userId: String, date: Long, timeGoal: Double): Int
 
     /**
      * should not be used: use [updateTimeGoal] instead
@@ -162,7 +154,7 @@ interface DailyGoalDao {
     @Transaction
     fun updatePathsGoal(userId: String, date: Long, pathsGoal: Int): DailyGoalEntity {
         updatePathsGoalUser(userId, pathsGoal)
-        updatePathsGoalDailyGoal(userId, date, pathsGoal)
+        insertIfDailyGoalUpdateFailed(userId, date, updatePathsGoalDailyGoal(userId, date, pathsGoal))
         return getDailyGoalByIdAndDate(userId, date)
     }
 
@@ -174,7 +166,7 @@ interface DailyGoalDao {
      * @param pathsGoal the new number of paths goal of the user
      */
     @Query("UPDATE DailyGoal SET path_goal = :pathsGoal WHERE user_id = :userId AND date = :date")
-    fun updatePathsGoalDailyGoal(userId: String, date: Long, pathsGoal: Int)
+    fun updatePathsGoalDailyGoal(userId: String, date: Long, pathsGoal: Int): Int
 
     /**
      * should not be used: use [updatePathsGoal] instead
@@ -197,5 +189,32 @@ interface DailyGoalDao {
      */
     @Query("DELETE FROM DailyGoal")
     fun clear()
+
+    /**
+     * create a new DailyGoal if the update was unsuccessful (no DailyGoal at the specified day)
+     * @param userId the user id
+     * @param date the date
+     * @param updated the number of rows updated
+     * @param distance the progress distance to add
+     * @param time the time progress to add
+     * @param paths the paths progress to add
+     */
+    private fun insertIfDailyGoalUpdateFailed(userId: String, date: Long, updated: Int, distance: Double = 0.0, time: Double = 0.0, paths: Int = 0) {
+        if (updated == 0) {
+            val goalAndProgress = getGoalAndTotalProgress(userId)
+            insertDailyGoal(
+                DailyGoalEntity(
+                    userId,
+                    date,
+                    goalAndProgress.distanceGoal,
+                    goalAndProgress.activityTimeGoal,
+                    goalAndProgress.nbOfPathsGoal,
+                    distance,
+                    time,
+                    paths
+                )
+            )
+        }
+    }
 
 }
