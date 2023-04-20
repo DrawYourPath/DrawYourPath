@@ -130,11 +130,7 @@ abstract class Database {
      * @param photo that will be set
      * @return a future that indicate if the photo has been correctly set to the database
      */
-<<<<<<< HEAD
-    abstract fun setProfilePhoto(photo: Bitmap): CompletableFuture<Boolean>
-=======
     abstract fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit>
->>>>>>> origin/main
 
     /**
      * This function will add a user to the the friends list of the current user with his userId if this user is present on the database
@@ -151,8 +147,6 @@ abstract class Database {
      * @return a future that indicate if the user has been correctly removed to the current user friends list
      */
     abstract fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit>
-<<<<<<< HEAD
-=======
 
     /**
      * This function will add a run to the history of runs, using its starting time as a key
@@ -185,5 +179,4 @@ abstract class Database {
      * @return a future that indicate if the achievements of the user have been correctly updated.
      */
     abstract fun updateUserAchievements(distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit>
->>>>>>> origin/main
 }

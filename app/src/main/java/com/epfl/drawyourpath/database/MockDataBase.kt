@@ -33,10 +33,6 @@ class MockDataBase : Database() {
     val dateOfBirthTest = LocalDate.of(2000, 2, 20)
     val friendsListTest: List<String>
     val userModelTest: UserModel
-    val userIdFriend1: String = "idFriend1"
-    val userIdFriend2: String = "idFriend2"
-    val friend1: UserModel
-    val friend2: UserModel
 
     //for the dailyGoals tests
     val dailyGoalListTest: List<DailyGoal> = listOf(
@@ -391,6 +387,7 @@ class MockDataBase : Database() {
 
         return future
     }
+
     /**
      * Helper function to remove a userId "removeUserId" to the friendList of a a user with userId "currentUserId"
      * @param currentUserId userId that belong the friendlist
@@ -487,4 +484,3 @@ class MockDataBase : Database() {
 
     }
 }
-
