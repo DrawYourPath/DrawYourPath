@@ -12,18 +12,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.authentication.Auth
-import com.epfl.drawyourpath.authentication.FirebaseAuth
-import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.authentication.*
 import com.epfl.drawyourpath.mainpage.MainActivity
 
 import com.epfl.drawyourpath.userProfileCreation.UserProfileCreationActivity
-
-const val USE_MOCK_AUTH_KEY = "useMockAuth"
-const val MOCK_AUTH_FAIL = "useMockAuthFailing"
-const val RESTORE_USER_IN_KEYCHAIN = "restoreUserInKeychain"
-const val ENABLE_ONETAP_SIGNIN = "enableOneTapSignIn"
 
 const val LOG_LOGIN_KEY = "DYP_Login"
 
@@ -70,15 +62,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
             intent.getBooleanExtra(RESTORE_USER_IN_KEYCHAIN, restoreUserFromKeychain)
 
         // Creates the auth object depending on the mock data in the intent.
-        val useMockAuthProvider = intent.getBooleanExtra(USE_MOCK_AUTH_KEY, false)
-        auth = when (useMockAuthProvider) {
-            true -> MockAuth(
-                failing = intent.getBooleanExtra(MOCK_AUTH_FAIL, false),
-                userInKeyChain = restoreUserFromKeychain,
-                withOneTapSignIn = useOneTapSignIn
-            )
-            false -> FirebaseAuth()
-        }
+        auth = createAuth(intent.extras, false, restoreUserFromKeychain)
 
         auth.onActivityCreate(this, savedInstanceState)
 

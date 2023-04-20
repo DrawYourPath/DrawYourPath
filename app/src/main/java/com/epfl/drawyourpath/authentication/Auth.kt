@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import java.util.concurrent.CompletableFuture
 
 /**
  * A user object with basic authentication data.
@@ -15,6 +16,7 @@ interface User {
     fun getPhotoUrl(): Uri?
     fun getUid(): String
     fun isAnonymous(): Boolean
+    fun updatePassword(password: String): CompletableFuture<Void>
 }
 
 typealias AuthCallback = (user: User?, error: Exception?) -> Unit

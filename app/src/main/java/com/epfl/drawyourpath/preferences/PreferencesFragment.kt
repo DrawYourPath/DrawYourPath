@@ -5,8 +5,8 @@ import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.authentication.ENABLE_ONETAP_SIGNIN
 import com.epfl.drawyourpath.authentication.FirebaseAuth
-import com.epfl.drawyourpath.login.ENABLE_ONETAP_SIGNIN
 import com.epfl.drawyourpath.login.LoginActivity
 
 class PreferencesFragment : PreferenceFragmentCompat() {

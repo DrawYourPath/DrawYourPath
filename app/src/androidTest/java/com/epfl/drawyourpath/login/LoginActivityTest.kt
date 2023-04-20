@@ -22,6 +22,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.authentication.*
 import com.epfl.drawyourpath.mainpage.MainActivity
 import org.junit.Assert.*
 import org.junit.Test
@@ -55,7 +56,7 @@ class LoginActivityTest {
         Intents.init()
 
         val intent = Intent(getApplicationContext(), LoginActivity::class.java)
-        intent.putExtra(USE_MOCK_AUTH_KEY, useMock)
+        intent.putExtra(USE_MOCK_AUTH, useMock)
         intent.putExtra(MOCK_AUTH_FAIL, failingMock)
         intent.putExtra(RESTORE_USER_IN_KEYCHAIN, userInKeychain)
         intent.putExtra(ENABLE_ONETAP_SIGNIN, withOneTap)

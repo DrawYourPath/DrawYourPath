@@ -8,9 +8,9 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.login.ENABLE_ONETAP_SIGNIN
+import com.epfl.drawyourpath.authentication.ENABLE_ONETAP_SIGNIN
+import com.epfl.drawyourpath.authentication.RESTORE_USER_IN_KEYCHAIN
 import com.epfl.drawyourpath.login.LoginActivity
-import com.epfl.drawyourpath.login.RESTORE_USER_IN_KEYCHAIN
 import com.epfl.drawyourpath.mainpage.USE_MOCK_CHALLENGE_REMINDER
 import com.epfl.drawyourpath.notifications.RemindersManager.Companion.CHALLENGES_REMINDER_ID
 import com.epfl.drawyourpath.notifications.RemindersManager.Companion.ERROR_REMINDER_ID

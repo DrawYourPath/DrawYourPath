@@ -55,8 +55,8 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
         val point4 = LatLng(0.05, 0.0)
         val points2 = listOf(point3, point4)
         val path2 = Path(points2)
-        val startTime2 = System.currentTimeMillis() + 1000000
-        val endTime2 = startTime2 + 10
+        val startTime2 = System.currentTimeMillis()
+        val endTime2 = startTime + 1000
         val run2 = Run(path2, startTime2, endTime2)
         runs.add(run2)
 

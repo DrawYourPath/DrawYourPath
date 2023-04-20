@@ -4,11 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import java.util.concurrent.CompletableFuture
 
 class MockAuth(
     private val failing: Boolean = false,
     userInKeyChain: Boolean = false,
     private val withOneTapSignIn: Boolean = false,
+    private val forceSigned: Boolean = false,
 ) : Auth {
     companion object {
         val MOCK_USER = object : User {
@@ -36,11 +38,20 @@ class MockAuth(
 
                 return false
             }
+
+             override fun updatePassword(password: String): CompletableFuture<Void> {
+                 if (password.isEmpty() || password.length < 5) {
+                     val res = CompletableFuture<Void>()
+                     res.completeExceptionally(Exception("Password is empty"))
+                     return res
+                 }
+                 return CompletableFuture.completedFuture(null)
+             }
         }
     }
 
 
-    private var isLogged = userInKeyChain
+    private var isLogged = userInKeyChain || forceSigned
 
     private fun mockLogin(callback: AuthCallback) {
         //Timer().schedule(1500){
