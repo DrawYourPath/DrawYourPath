@@ -87,15 +87,18 @@ class MainActivity : AppCompatActivity() {
 
             // Asks for camera permission if we don't have it.
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),
-                    SCAN_QR_REQ_CODE)
-            }
-            else {
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(Manifest.permission.CAMERA),
+                    SCAN_QR_REQ_CODE
+                )
+            } else {
                 launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
             }
         }
         return result
+    }
 
     private fun setupUser() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
