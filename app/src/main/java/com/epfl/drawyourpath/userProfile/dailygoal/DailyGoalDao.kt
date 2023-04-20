@@ -2,7 +2,7 @@ package com.epfl.drawyourpath.userProfile.dailygoal
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.epfl.drawyourpath.userProfile.cache.GoalAndProgress
+import com.epfl.drawyourpath.userProfile.cache.GoalAndAchievements
 
 @Dao
 interface DailyGoalDao {
@@ -25,12 +25,12 @@ interface DailyGoalDao {
     fun getDailyGoalByIdAndDate(userId: String, date: Long): DailyGoalEntity
 
     /**
-     * returns the [GoalAndProgress] of the user
+     * returns the [GoalAndAchievements] of the user
      * @param userId the user id
      * @return the goal and total progress of the user
      */
     @Query("SELECT distance_goal, time_goal, paths_goal, total_distance, total_time, total_paths FROM User WHERE id = :userId")
-    fun getGoalAndTotalProgress(userId: String): GoalAndProgress
+    fun getGoalAndTotalProgress(userId: String): GoalAndAchievements
 
     /**
      * insert a new dailyGoal inside the room database and will replace if there is a conflict with the id and date

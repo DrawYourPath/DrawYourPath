@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.userProfile.dailygoal
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.epfl.drawyourpath.userProfile.cache.UserEntity
@@ -23,7 +22,7 @@ data class DailyGoalEntity(
     val distanceInKilometerGoal: Double,
 
     @ColumnInfo(name = "time_goal")
-    val timeInMinutesGoal: Double,
+    val activityTimeInMinutesGoal: Double,
 
     @ColumnInfo(name = "path_goal")
     val nbOfPathsGoal: Int,
@@ -32,7 +31,7 @@ data class DailyGoalEntity(
     val distanceInKilometerProgress: Double = 0.0,
 
     @ColumnInfo(name = "time_progress")
-    val timeInMinutesProgress: Double = 0.0,
+    val activityTimeInMinutesProgress: Double = 0.0,
 
     @ColumnInfo(name = "path_progress")
     val nbOfPathsProgress: Int = 0,

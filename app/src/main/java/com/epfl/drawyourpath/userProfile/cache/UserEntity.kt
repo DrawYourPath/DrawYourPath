@@ -54,7 +54,7 @@ data class UserEntity(
      * the current goals and total progress done by the user
      */
     @Embedded
-    val goalAndProgress: GoalAndProgress = GoalAndProgress(),
+    val goalAndAchievements: GoalAndAchievements = GoalAndAchievements(),
 
     /**
      * the profile photo of the user (can be null)

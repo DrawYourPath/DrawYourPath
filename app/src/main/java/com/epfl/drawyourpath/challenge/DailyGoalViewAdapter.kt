@@ -20,9 +20,9 @@ import java.util.concurrent.CompletableFuture
  * used in a recycler view to display the [DailyGoal]
  */
 class DailyGoalViewAdapter(
-    private val setDistanceGoal: (distance: Double) -> CompletableFuture<Unit>,
-    private val setTimeGoal: (time: Double) -> CompletableFuture<Unit>,
-    private val setPathGoal: (path: Int) -> CompletableFuture<Unit>
+    private val updateDistanceGoal: (distance: Double) -> CompletableFuture<Unit>,
+    private val updateTimeGoal: (time: Double) -> CompletableFuture<Unit>,
+    private val updatePathGoal: (path: Int) -> CompletableFuture<Unit>
 ) :
     RecyclerView.Adapter<DailyGoalViewAdapter.ViewHolder>() {
 
@@ -66,9 +66,9 @@ class DailyGoalViewAdapter(
 
         displayGoal(viewHolder, goalPos, viewHolder.view.context)
 
-        viewHolder.editText.setOnEditorActionListener { text, actionId, _ ->
+        viewHolder.editText.setOnEditorActionListener { textView, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val goal = checkGoalDouble(text.text.toString())
+                val goal = checkGoalDouble(textView.text.toString())
                 setEditText(viewHolder, goalPos)
                 if (goal != null && goal != getGoalToDouble(dailyGoal, goalPos)) {
                     updateGoal(goal, goalPos)
@@ -116,6 +116,7 @@ class DailyGoalViewAdapter(
      *
      * @param viewHolder the view of where the items are
      * @param position the position inside the RecyclerView
+     * @param context the context of the view (to get the string resource)
      */
     private fun displayGoal(viewHolder: ViewHolder, position: GoalPos, context: Context) {
         val currentProgress = getProgressToDouble(dailyGoal, position)
@@ -175,9 +176,9 @@ class DailyGoalViewAdapter(
      */
     private fun updateGoal(value: Double, pos: GoalPos) {
         when (pos) {
-            GoalPos.DISTANCE -> setDistanceGoal(value)
-            GoalPos.TIME -> setTimeGoal(value)
-            GoalPos.PATH -> setPathGoal(value.toInt())
+            GoalPos.DISTANCE -> updateDistanceGoal(value)
+            GoalPos.TIME -> updateTimeGoal(value)
+            GoalPos.PATH -> updatePathGoal(value.toInt())
         }
     }
 
@@ -191,7 +192,7 @@ class DailyGoalViewAdapter(
     private fun getGoalToDouble(goal: DailyGoal, pos: GoalPos): Double {
         return when (pos) {
             GoalPos.DISTANCE -> goal.distanceInKilometerGoal
-            GoalPos.TIME -> goal.timeInMinutesGoal
+            GoalPos.TIME -> goal.activityTimeInMinutesGoal
             GoalPos.PATH -> goal.nbOfPathsGoal.toDouble()
         }
     }
@@ -206,7 +207,7 @@ class DailyGoalViewAdapter(
     private fun getProgressToDouble(goal: DailyGoal, pos: GoalPos): Double {
         return when (pos) {
             GoalPos.DISTANCE -> goal.distanceInKilometerProgress
-            GoalPos.TIME -> goal.timeInMinutesProgress
+            GoalPos.TIME -> goal.activityTimeInMinutesProgress
             GoalPos.PATH -> goal.nbOfPathsProgress.toDouble()
         }
     }

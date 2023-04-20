@@ -3,7 +3,7 @@ package com.epfl.drawyourpath.userProfile.cache
 import androidx.room.ColumnInfo
 import com.epfl.drawyourpath.userProfile.UserModel
 
-data class GoalAndProgress(
+data class GoalAndAchievements(
     /**
      * the distance goal of the user
      */
@@ -41,7 +41,7 @@ data class GoalAndProgress(
     val totalNbOfPaths: Int = 0,
 ) {
     /**
-     * construct a [GoalAndProgress] from a [UserModel]
+     * construct a [GoalAndAchievements] from a [UserModel]
      */
     constructor(userModel: UserModel): this(
         userModel.getCurrentDistanceGoal(),

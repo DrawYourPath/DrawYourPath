@@ -123,7 +123,7 @@ class UserModelCachedTest {
     fun setActivityTimeGoalModifyActivityTimeGoal() {
         user.updateActivityTimeGoal(newUser.getCurrentActivityTime()).get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getCurrentActivityTime())
-        assertEquals(dailyGoal.copy(timeInMinutesGoal = newUser.getCurrentActivityTime()), user.getTodayDailyGoal().getOrAwaitValue())
+        assertEquals(dailyGoal.copy(activityTimeInMinutesGoal = newUser.getCurrentActivityTime()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -162,7 +162,7 @@ class UserModelCachedTest {
             addPathProgress = 1
         )
         assertEquals(
-            dailyGoal.copy(distanceInKilometerProgress = distance, timeInMinutesProgress = time, nbOfPathsProgress = 1),
+            dailyGoal.copy(distanceInKilometerProgress = distance, activityTimeInMinutesProgress = time, nbOfPathsProgress = 1),
             user.getTodayDailyGoal().getOrAwaitValue()
         )
     }
@@ -213,12 +213,12 @@ class UserModelCachedTest {
         assertEquals(expected.getFirstname(), actual.firstname)
         assertEquals(expected.getSurname(), actual.surname)
         assertEquals(expected.getDateOfBirth(), actual.getDateOfBirthAsLocalDate())
-        assertEquals(newDistanceGoal, actual.goalAndProgress.distanceGoal, 0.0)
-        assertEquals(newTimeGoal, actual.goalAndProgress.activityTimeGoal, 0.0)
-        assertEquals(newPathGoal, actual.goalAndProgress.nbOfPathsGoal)
-        assertEquals(expected.getTotalDistance() + addDistanceProgress, actual.goalAndProgress.totalDistance, 0.001)
-        assertEquals(expected.getTotalActivityTime() + addTimeProgress, actual.goalAndProgress.totalActivityTime, 0.001)
-        assertEquals(expected.getTotalNbOfPaths() + addPathProgress, actual.goalAndProgress.totalNbOfPaths)
+        assertEquals(newDistanceGoal, actual.goalAndAchievements.distanceGoal, 0.0)
+        assertEquals(newTimeGoal, actual.goalAndAchievements.activityTimeGoal, 0.0)
+        assertEquals(newPathGoal, actual.goalAndAchievements.nbOfPathsGoal)
+        assertEquals(expected.getTotalDistance() + addDistanceProgress, actual.goalAndAchievements.totalDistance, 0.001)
+        assertEquals(expected.getTotalActivityTime() + addTimeProgress, actual.goalAndAchievements.totalActivityTime, 0.001)
+        assertEquals(expected.getTotalNbOfPaths() + addPathProgress, actual.goalAndAchievements.totalNbOfPaths)
         assertEquals(expected.getProfilePhoto(), actual.getProfilePhotoAsBitmap())
     }
 

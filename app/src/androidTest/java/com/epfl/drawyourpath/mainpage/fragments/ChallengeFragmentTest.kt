@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.arch.core.executor.testing.CountingTaskExecutorRule
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -48,6 +47,7 @@ class ChallengeFragmentTest {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
+        Thread.sleep(250)
     }
 
     /**
@@ -170,7 +170,7 @@ class ChallengeFragmentTest {
         )
 
         val timeProgressGoal =
-            context.resources.getString(R.string.progress_over_goal).format(dailyGoal.timeInMinutesProgress, dailyGoal.timeInMinutesGoal)
+            context.resources.getString(R.string.progress_over_goal).format(dailyGoal.activityTimeInMinutesProgress, dailyGoal.activityTimeInMinutesGoal)
 
         waitUntilAllThreadAreDone()
 
@@ -178,7 +178,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(1))
             .check(matches(hasDescendant(withText(timeProgressGoal))))
-            .check(matches(hasDescendant(withText(dailyGoal.timeInMinutesGoal.toInt().toString()))))
+            .check(matches(hasDescendant(withText(dailyGoal.activityTimeInMinutesGoal.toInt().toString()))))
             .check(matches(hasDescendant(withText(R.string.minutes))))
 
         scenario.close()

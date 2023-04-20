@@ -620,10 +620,10 @@ class FireDatabase : Database() {
     private fun transformDailyGoalToData(dailyGoal: DailyGoal): HashMap<String, Any>{
         val dailyGoalData = HashMap<String, Any>()
         dailyGoalData.put(expectedDistanceFile, dailyGoal.distanceInKilometerGoal)
-        dailyGoalData.put(expectedActivityTimeFile, dailyGoal.timeInMinutesGoal)
+        dailyGoalData.put(expectedActivityTimeFile, dailyGoal.activityTimeInMinutesGoal)
         dailyGoalData.put(expectedNbOfPathsFile, dailyGoal.nbOfPathsGoal)
         dailyGoalData.put(obtainedDistanceFile, dailyGoal.distanceInKilometerProgress)
-        dailyGoalData.put(obtainedActivityTimeFile, dailyGoal.timeInMinutesProgress)
+        dailyGoalData.put(obtainedActivityTimeFile, dailyGoal.activityTimeInMinutesProgress)
         dailyGoalData.put(obtainedNbOfPathsFile, dailyGoal.nbOfPathsProgress)
 
         return dailyGoalData

@@ -61,7 +61,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     // dailyGoal
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
         dailyGoalCache.getDailyGoalById(user.userId).map {
-            getTodayDailyGoal(user.goalAndProgress, it.firstOrNull())
+            getTodayDailyGoal(user.goalAndAchievements, it.firstOrNull())
         }
     }
 
@@ -273,9 +273,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      *
      * @return DailyGoal representing today's Daily Goal
      */
-    private fun getTodayDailyGoal(goalAndProgress: GoalAndProgress, entity: DailyGoalEntity?): DailyGoal {
+    private fun getTodayDailyGoal(goalAndAchievements: GoalAndAchievements, entity: DailyGoalEntity?): DailyGoal {
         if (entity == null || LocalDate.ofEpochDay(entity.date) != LocalDate.now()) {
-            val dailyGoal = DailyGoal(goalAndProgress.distanceGoal, goalAndProgress.activityTimeGoal, goalAndProgress.nbOfPathsGoal)
+            val dailyGoal = DailyGoal(goalAndAchievements.distanceGoal, goalAndAchievements.activityTimeGoal, goalAndAchievements.nbOfPathsGoal)
             database.addDailyGoal(dailyGoal).thenApplyAsync {
                 dailyGoalCache.insertDailyGoal(dailyGoal.toDailyGoalEntity(currentUserID!!))
             }
@@ -298,7 +298,7 @@ private fun fromUserModelToUserData(userModel: UserModel): UserEntity {
         userModel.getFirstname(),
         userModel.getSurname(),
         UserEntity.fromLocalDateToLong(userModel.getDateOfBirth()),
-        GoalAndProgress(userModel),
+        GoalAndAchievements(userModel),
         UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto())
     )
 }
