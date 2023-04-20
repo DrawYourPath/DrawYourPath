@@ -29,6 +29,9 @@ class RunsAdapter(private val runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
 
         val runCoordinates:List<LatLng> = run.getPath().getPoints() // Get the coordinates for this specific run
         val apiKey = "AIzaSyDtCKpslh3NHncCP6chypN5CAVXbPkxPLQ"; // Replace with your Google Maps API key
+        /*NOTE Cristian's google maps api key:AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk
+        as the project's google maps api key is not working replace it with the one above if you want to test the app
+        but please revert it after because there are only a limited amount of free api calls*/
         val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey);
 
         // Load the image using Glide
