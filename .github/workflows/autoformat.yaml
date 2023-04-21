@@ -1,0 +1,32 @@
+name: Code Auto Format
+run-name: Code Format by ${{ github.actor }}
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    
+    permissions:
+        pull-requests: write
+        issues: write
+        repository-projects: write
+        contents: write
+        packages: write
+      
+    steps:
+      - uses: actions/checkout@v3
+      - name: Code Format
+        
+        env:
+          GITHUB_TOKEN: ${{ secrets.FORMATTER_TOKEN }}
+        run: |
+          java -jar ./programs/ktlint.jar -F ./app/**.kt || true
+          if git diff-index --quiet HEAD --; then
+              echo "Code formatting matched"
+          else
+              git config --global user.email "bot@drawyourpath.ch"
+              git config --global user.name "DrawYourPathBot"
+              git branch
+              git add .
+              git commit -m "action: auto-formatting"
+              git push
+          fi
