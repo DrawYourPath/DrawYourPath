@@ -6,8 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-      issues: write
-      pull-requests: write
+        pull-requests: write
+        issues: write
+        repository-projects: write
       
     steps:
       - uses: actions/checkout@v3
