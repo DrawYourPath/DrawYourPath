@@ -1,10 +1,12 @@
-name: GitHub Actions Demo
+name: Code Auto Format
 run-name: Code Format by ${{ github.actor }}
 on: [push]
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
+      - run: ls .
+      - uses: actions/checkout@v3
       - run: ls .
       - name: Code Format
         run: |
