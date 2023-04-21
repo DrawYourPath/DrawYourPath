@@ -14,6 +14,7 @@ jobs:
           else
               git config --global user.email "bot@drawyourpath.ch"
               git config --global user.name "DrawYourPathBot"
+              git remote set-url origin https://x-access-token:${{ secrets.FORMATTER_TOKEN }}@github.com/$GITHUB_REPOSITORY
               git add .
               git commit -m "action: auto-formatting"
               git push
