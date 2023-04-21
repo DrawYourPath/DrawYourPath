@@ -5,10 +5,8 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: ls .
       - uses: actions/checkout@v3
-      - run: ls .
       - name: Code Format
         run: |
-          java -jar ./programs/ktlint.jar -F app/src/*.kt
+          java -jar ./programs/ktlint.jar -F ./app/**.kt
       - run: echo "Code formatted status ${{ job.status }}."
