@@ -7,6 +7,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Code Format
+        env:
+          GITHUB_TOKEN: ${{ secrets.FORMATTER_TOKEN }}
         run: |
           java -jar ./programs/ktlint.jar -F ./app/**.kt || true
           if git diff-index --quiet HEAD --; then
@@ -14,7 +16,6 @@ jobs:
           else
               git config --global user.email "bot@drawyourpath.ch"
               git config --global user.name "DrawYourPathBot"
-              git remote set-url origin https://x-access-token:${{ secrets.FORMATTER_TOKEN }}@github.com/${{ github.repository }}
               git add .
               git commit -m "action: auto-formatting"
               git push
