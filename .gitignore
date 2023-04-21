@@ -23,3 +23,6 @@ bin/
 hs_err_pid*
 replay_pid*
 *.hprof
+
+# JS
+node_modules/
