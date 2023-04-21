@@ -23,7 +23,6 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
-
 @RunWith(JUnit4::class)
 class UserModelCachedTest {
 
@@ -51,7 +50,7 @@ class UserModelCachedTest {
         null,
         listOf(),
         listOf(),
-        mockDataBase
+        mockDataBase,
     )
 
     private val dailyGoal =
@@ -61,7 +60,6 @@ class UserModelCachedTest {
         Run(Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))), 0, 1286)
 
     private val timeout: Long = 5
-
 
     @Test
     fun getCorrectUserFromGetter() {
@@ -77,17 +75,17 @@ class UserModelCachedTest {
     fun createNewUserIsInCache() {
         // create a new user
         user.createNewUser(newUser).get(timeout, TimeUnit.SECONDS)
-        //check if new user is correct
+        // check if new user is correct
         assertEqualUser(newUser, user.getUser().getOrAwaitValue())
         // set to another user to evict new user from livedata
         user.setCurrentUser(testUserModel.getUserId()).get(timeout, TimeUnit.SECONDS)
-        //check that it is the correct user
+        // check that it is the correct user
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         // set non working database
         user.setDatabase(MockNonWorkingDatabase())
         // set current user to new user fom cache
         user.setCurrentUser(newUser.getUserId()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
-        //check the user in the cache
+        // check the user in the cache
         assertEqualUser(newUser, user.getUser().getOrAwaitValue())
     }
 
@@ -159,11 +157,11 @@ class UserModelCachedTest {
             user.getUser().getOrAwaitValue(),
             addDistanceProgress = distance,
             addTimeProgress = time,
-            addPathProgress = 1
+            addPathProgress = 1,
         )
         assertEquals(
             dailyGoal.copy(distanceInKilometerProgress = distance, activityTimeInMinutesProgress = time, nbOfPathsProgress = 1),
-            user.getTodayDailyGoal().getOrAwaitValue()
+            user.getTodayDailyGoal().getOrAwaitValue(),
         )
     }
 
@@ -188,7 +186,6 @@ class UserModelCachedTest {
         assertNull(user.getUser().getOrAwaitValue().getProfilePhotoAsBitmap())
     }
 
-
     @Before
     fun setup() {
         user.setDatabase(mockDataBase)
@@ -205,7 +202,7 @@ class UserModelCachedTest {
         newPathGoal: Int = expected.getCurrentNumberOfPathsGoal(),
         addDistanceProgress: Double = 0.0,
         addTimeProgress: Double = 0.0,
-        addPathProgress: Int = 0
+        addPathProgress: Int = 0,
     ) {
         assertEquals(expected.getUserId(), actual.userId)
         assertEquals(newUsername, actual.username)
@@ -227,7 +224,7 @@ class UserModelCachedTest {
      */
     private fun <T> LiveData<T>.getOrAwaitValue(
         time: Long = timeout,
-        timeUnit: TimeUnit = TimeUnit.SECONDS
+        timeUnit: TimeUnit = TimeUnit.SECONDS,
     ): T {
         var data: T? = null
         val latch = CountDownLatch(1)
@@ -237,7 +234,6 @@ class UserModelCachedTest {
                 latch.countDown()
                 this@getOrAwaitValue.removeObserver(this)
             }
-
         }
 
         this.observeForever(observer)
@@ -250,5 +246,4 @@ class UserModelCachedTest {
         @Suppress("UNCHECKED_CAST")
         return data as T
     }
-
 }

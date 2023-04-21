@@ -43,12 +43,12 @@ data class GoalAndAchievements(
     /**
      * construct a [GoalAndAchievements] from a [UserModel]
      */
-    constructor(userModel: UserModel): this(
+    constructor(userModel: UserModel) : this(
         userModel.getCurrentDistanceGoal(),
         userModel.getCurrentActivityTime(),
         userModel.getCurrentNumberOfPathsGoal(),
         userModel.getTotalDistance(),
         userModel.getTotalActivityTime(),
-        userModel.getTotalNbOfPaths()
+        userModel.getTotalNbOfPaths(),
     )
 }

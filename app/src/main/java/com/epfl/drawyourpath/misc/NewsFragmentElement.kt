@@ -7,11 +7,12 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 
-class NewsFragmentElement(private val title: String,
-                          private val description: String,
-                          private val action1: NewsAction?,
-                          private val action2: NewsAction?
-                          ) : Fragment(R.layout.fragment_news_element) {
+class NewsFragmentElement(
+    private val title: String,
+    private val description: String,
+    private val action1: NewsAction?,
+    private val action2: NewsAction?,
+) : Fragment(R.layout.fragment_news_element) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,8 +57,7 @@ class NewsFragmentElement(private val title: String,
         requireView().findViewById<Button>(button).let {
             if (action == null) {
                 it.visibility = View.INVISIBLE
-            }
-            else {
+            } else {
                 it.setOnClickListener {
                     action.onClick()
                 }

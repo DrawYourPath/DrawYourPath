@@ -4,10 +4,10 @@ import android.content.Context
 
 interface RemindersManager {
     companion object {
-        //Key for reminder intents' extras
+        // Key for reminder intents' extras
         const val REMINDER_KEY = "Reminder"
 
-        //Reminder Ids for time-based notifications
+        // Reminder Ids for time-based notifications
         const val ERROR_REMINDER_ID = -1
         const val CHALLENGES_REMINDER_ID = 0
     }

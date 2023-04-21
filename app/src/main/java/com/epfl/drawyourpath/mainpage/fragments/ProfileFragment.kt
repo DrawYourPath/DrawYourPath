@@ -11,7 +11,6 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.TrophyDialog
 import com.epfl.drawyourpath.qrcode.generateQR
 
-
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -23,8 +22,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         view.findViewById<TextView>(R.id.TV_Trophy).setOnClickListener { onTrophyClicked() }
 
         // TODO: Pull data from user model.
-        populateFriendList(listOf(
-            "Miguel", "Jean Radiateur", "XxDenisXX", "CrazyRunnerDu18", "Alphonso9", "SCRUM Masseur"))
+        populateFriendList(
+            listOf(
+                "Miguel",
+                "Jean Radiateur",
+                "XxDenisXX",
+                "CrazyRunnerDu18",
+                "Alphonso9",
+                "SCRUM Masseur",
+            ),
+        )
         setStreak(44)
         setTotalKilometer(120)
         setShapesDrawn(15)
@@ -47,8 +54,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun populateFriendList(friends: List<String>) {
         val friendsList = view?.findViewById<ListView>(R.id.LV_Friends)
 
-        friendsList?.adapter = ArrayAdapter(requireActivity().applicationContext,
-            android.R.layout.simple_list_item_1, friends)
+        friendsList?.adapter = ArrayAdapter(
+            requireActivity().applicationContext,
+            android.R.layout.simple_list_item_1,
+            friends,
+        )
     }
 
     private fun setStreak(streak: Int) {

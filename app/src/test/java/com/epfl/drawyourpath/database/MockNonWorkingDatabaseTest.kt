@@ -37,5 +37,4 @@ class MockNonWorkingDatabaseTest {
             ret
         }.get(2, TimeUnit.SECONDS)
     }
-
 }

@@ -20,19 +20,18 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
     private val user: UserModelCached by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        //retrieve the value from the welcome activity to know if we are running testes
+        // retrieve the value from the welcome activity to know if we are running testes
         val isRunTest: Bundle? = arguments
         if (isRunTest != null) {
             isTest = isRunTest.getBoolean("isRunningTestForDataBase")
         }
 
-        //select the correct database in function of test scenario
+        // select the correct database in function of test scenario
         if (isTest) {
             user.setDatabase(MockDataBase())
         }
 
-        //retrieve the different elements of the UI
+        // retrieve the different elements of the UI
         val testUserNameButton: Button =
             view.findViewById(R.id.test_availability_modify_username)
         val inputUserName: EditText =
@@ -45,12 +44,12 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
             testUsernameAvailability(inputUserName.text.toString(), errorMessageText)
         }
 
-        //set the username if it is correct when clicking on the validate button and return back to the preferences if it is updated
+        // set the username if it is correct when clicking on the validate button and return back to the preferences if it is updated
         validateButton.setOnClickListener {
             validateButtonAction(inputUserName.text.toString(), errorMessageText)
         }
 
-        //return back to preferences if click on cancel button without modifying the username
+        // return back to preferences if click on cancel button without modifying the username
         cancelButton.setOnClickListener {
             returnBackToPreviousFrag()
         }
@@ -71,7 +70,6 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
         }
     }
 
-
     /**
      * Helper function to return back to the previous fragment
      */
@@ -88,7 +86,7 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
      */
     private fun testUsernameAvailability(
         username: String,
-        errorMessage: TextView
+        errorMessage: TextView,
     ): CompletableFuture<Boolean> {
         if (username == "") {
             errorMessage.text = getString(R.string.username_can_t_be_empty)
@@ -97,8 +95,11 @@ class ModifyUsernameFragment : Fragment(R.layout.fragment_modify_username) {
         }
 
         return user.isUsernameAvailable(username).thenApply { available ->
-            errorMessage.text = if (available) getString(R.string.username_available).format(username)
-            else getString(R.string.username_not_vailable_or_previous_one).format(username)
+            errorMessage.text = if (available) {
+                getString(R.string.username_available).format(username)
+            } else {
+                getString(R.string.username_not_vailable_or_previous_one).format(username)
+            }
             errorMessage.setTextColor(if (available) Color.GREEN else Color.RED)
             available
         }

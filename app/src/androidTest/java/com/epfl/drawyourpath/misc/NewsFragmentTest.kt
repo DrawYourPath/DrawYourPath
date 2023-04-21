@@ -17,8 +17,8 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class NewsFragmentTest {
 
-    private var leftButtonClicked = false;
-    private var rightButtonClicked = false;
+    private var leftButtonClicked = false
+    private var rightButtonClicked = false
 
     private val news1 = News(
         "Michel completed a drawing",
@@ -26,7 +26,8 @@ class NewsFragmentTest {
         null,
         NewsAction("SEND CONGRATS") { ->
             rightButtonClicked = !rightButtonClicked
-        })
+        },
+    )
 
     private val news2 = News(
         "New trophy unlocked",
@@ -36,7 +37,8 @@ class NewsFragmentTest {
         },
         NewsAction("TO TROPHIES") { ->
             rightButtonClicked = !rightButtonClicked
-        })
+        },
+    )
 
     private val news3 = News(
         "TheRunner32 completed a drawing",
@@ -44,12 +46,15 @@ class NewsFragmentTest {
         NewsAction("SEND CONGRATS") { ->
             leftButtonClicked = !leftButtonClicked
         },
-        null)
+        null,
+    )
 
     private val news4 = News(
         "TheRunner32 completed a drawing",
         "Michel completed the drawing \"cat\" in 1 hour.",
-        null, null)
+        null,
+        null,
+    )
 
     private lateinit var scenario: FragmentScenario<NewsFragment>
 
@@ -63,7 +68,6 @@ class NewsFragmentTest {
 
     @Test
     fun addedNewsAppearsInFeedWithSpecifiedData() {
-
         scenario.onFragment {
             it.addNews(news2)
         }
@@ -110,7 +114,6 @@ class NewsFragmentTest {
         assertEquals(rightButtonClicked, false)
 
         onView(withId(R.id.BT_Action2)).perform(click())
-
 
         assertEquals(leftButtonClicked, true)
         assertEquals(rightButtonClicked, true)

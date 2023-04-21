@@ -43,7 +43,7 @@ class UserModelTestPhoto {
             null,
             emptyList(),
             emptyList(),
-            database
+            database,
         )
         Assert.assertEquals(user.getUserId(), userId)
         Assert.assertEquals(user.getUsername(), username)
@@ -75,7 +75,7 @@ class UserModelTestPhoto {
             photoProfile,
             emptyList(),
             emptyList(),
-            database
+            database,
         )
         Assert.assertEquals(user.getUserId(), userId)
         Assert.assertEquals(user.getUsername(), username)
@@ -103,14 +103,14 @@ class UserModelTestPhoto {
             distanceGoal,
             timeGoal,
             nbOfPaths,
-            database
+            database,
         )
         user.setProfilePhoto(photoProfile)
         Assert.assertEquals(user.getProfilePhoto(), photoProfile)
-        //check the database
+        // check the database
         Assert.assertEquals(
             database.userIdToUserAccount.get(userId)?.getProfilePhoto() ?: 0,
-            photoProfile
+            photoProfile,
         )
     }
 }

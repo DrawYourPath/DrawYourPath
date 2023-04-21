@@ -28,7 +28,7 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.distanceGoalError_text_userProfileCreation))
             .check(matches(withText("* This field can't be empty !")))
 
@@ -46,7 +46,7 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.timeGoalError_text_userProfileCreation))
             .check(matches(withText("* This field can't be empty !")))
 
@@ -64,7 +64,7 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.nbOfPathsGoalError_text_userProfileCreation))
             .check(matches(withText("* This field can't be empty !")))
 
@@ -79,13 +79,13 @@ class UserGoalsInitFragmentTest {
     @Test
     fun errorPrintedWhithIncorrectDistanceGoal() {
         var t = goToProfilePhotoInitFragment()
-        //incorrect double
+        // incorrect double
         Espresso.onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10.0"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.distanceGoalError_text_userProfileCreation))
             .check(matches(withText("* This field can be only composed of integer number.")))
 
@@ -100,13 +100,13 @@ class UserGoalsInitFragmentTest {
     @Test
     fun errorPrintedWhithIncorrectTimeGoal() {
         var t = goToProfilePhotoInitFragment()
-        //incorrect double
+        // incorrect double
         Espresso.onView(withId(R.id.input_timeGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10.0"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.timeGoalError_text_userProfileCreation))
             .check(matches(withText("* This field can be only composed of integer number.")))
 
@@ -121,13 +121,13 @@ class UserGoalsInitFragmentTest {
     @Test
     fun errorPrintedWhithIncorrectNbOfPathsGoal() {
         var t = goToProfilePhotoInitFragment()
-        //incorrect double
+        // incorrect double
         Espresso.onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
             .perform(ViewActions.typeText("10.0"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.nbOfPathsGoalError_text_userProfileCreation))
             .check(matches(withText("* This field can be only composed of integer number.")))
 
@@ -149,7 +149,7 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.distanceGoalError_text_userProfileCreation))
             .check(matches(withText("")))
 
@@ -171,7 +171,7 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.timeGoalError_text_userProfileCreation))
             .check(matches(withText("")))
 
@@ -193,7 +193,7 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.nbOfPathsGoalError_text_userProfileCreation))
             .check(matches(withText("")))
 
@@ -220,7 +220,7 @@ class UserGoalsInitFragmentTest {
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is show after clicking on VALIDATE button
         Espresso.onView(withId(R.id.photoProfileInitFragment))
             .check(matches(isDisplayed()))
 
@@ -228,13 +228,12 @@ class UserGoalsInitFragmentTest {
     }
 }
 
-
 /**
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
 private fun goToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreationActivity> {
-    //pass in test mode to used the Mockdatabase instead of the Firebase
+    // pass in test mode to used the Mockdatabase instead of the Firebase
     var intent =
         Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)
     intent.putExtra("isRunningTestForDataBase", true)

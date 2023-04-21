@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.login
 
-
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -34,7 +33,7 @@ class RegisterActions : LoginActivityFragment(R.layout.fragment_register_actions
         registerWithEmailButton.setOnClickListener {
             getLoginActivity<RegisterActivityListener>().registerWithEmailAndPassword(
                 emailInput.text.toString(),
-                passwordInput.text.toString()
+                passwordInput.text.toString(),
             )
         }
 

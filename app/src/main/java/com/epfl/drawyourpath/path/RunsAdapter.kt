@@ -26,11 +26,10 @@ class RunsAdapter(private val runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val run = runs[position]
 
+        val runCoordinates: List<LatLng> = run.getPath().getPoints() // Get the coordinates for this specific run
+        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
 
-        val runCoordinates:List<LatLng> = run.getPath().getPoints() // Get the coordinates for this specific run
-        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk";
-
-        val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey);
+        val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey)
 
         // Load the image using Glide
         Glide.with(holder.itemView.context)
@@ -38,10 +37,8 @@ class RunsAdapter(private val runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
             .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
             .into(holder.mapImageView)
 
-
-
         // Set the data to the view items in the layout
-        //holder.mapImageView.setImageResource(run.mapImage)
+        // holder.mapImageView.setImageResource(run.mapImage)
         holder.dateTextView.text = run.getDate()
         holder.distanceTextView.text =
             "Distance: ${String.format("%.2f", run.getDistance() / 1000)} Km"

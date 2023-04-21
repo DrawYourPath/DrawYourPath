@@ -65,16 +65,13 @@ class PathTest {
         assertEquals(2, path.size())
     }
 
-
     @Test
     fun getDistanceReturnsTheDistanceBetweenAddedPoints() {
         val path = Path()
         path.addPoint(LatLng(0.0, 0.0))
         path.addPoint(LatLng(0.0, 1.0))
         assertEquals(111319.9, path.getDistance(), 500.0)
-
     }
-
 
     @Test
     fun getPolylineReturnsAPolylineOptionsObject() {
@@ -87,5 +84,4 @@ class PathTest {
         assertTrue(polyline is PolylineOptions)
         assertEquals(listOf(point1, point2), polyline.points)
     }
-
 }

@@ -16,22 +16,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.Friend
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
-import com.epfl.drawyourpath.userProfile.UserModel
 
 class FriendsFragment(private val database: Database) : Fragment(R.layout.fragment_friends) {
     private lateinit var viewModel: FriendsViewModel
     private lateinit var friendsListAdapter: FriendsListAdapter
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_friends, container, false)
     }
@@ -72,7 +70,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
             val searchView: SearchView = view.findViewById(R.id.friends_search_bar)
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
-
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (query != null && query.isNotBlank()) {
                         database.isUsernameAvailable(query).thenApply { isAvailable ->
@@ -81,7 +78,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                 Toast.makeText(
                                     requireContext(),
                                     "Username not found.",
-                                    Toast.LENGTH_SHORT
+                                    Toast.LENGTH_SHORT,
                                 ).show()
                             } else {
                                 database.getUserIdFromUsername(query).thenApply { userId ->
@@ -92,28 +89,23 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                                     userModel.getUserId(),
                                                     userModel.getUsername(),
                                                     userModel.getProfilePhoto(),
-                                                    false
+                                                    false,
                                                 )
-
 
                                                 // Add the new friend to the list and update the UI
                                                 viewModel.addPotentialFriend(newFriend)
-
                                             }
-
-                                        }else{
+                                        } else {
                                             Toast.makeText(
                                                 requireContext(),
                                                 "You can't add yourself as a friend.",
-                                                Toast.LENGTH_SHORT
+                                                Toast.LENGTH_SHORT,
                                             ).show()
                                         }
                                     }
-
                                 }
                             }
                         }
-
                     }
                     return true
                 }
@@ -122,9 +114,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                     viewModel.search(newText ?: "")
                     return true
                 }
-
-
-
             })
         }.exceptionally { exception ->
             // Handle any exceptions that occurred during the CompletableFuture execution
@@ -140,8 +129,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                 // TODO: Add friend from ID "it"
                 if (it == null) {
                     Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
-                }
-                else {
+                } else {
                     Toast.makeText(mainActivity, "Scanned $it", Toast.LENGTH_LONG).show()
                 }
             }
@@ -150,7 +138,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
             }
     }
 }
-
 
 class FriendsFragmentFactory(private val database: Database) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {

@@ -9,7 +9,7 @@ import java.time.LocalDate
 @Entity(
     tableName = "DailyGoal",
     primaryKeys = ["user_id", "date"],
-    foreignKeys = [ForeignKey(entity = UserEntity::class, parentColumns = ["id"], childColumns = ["user_id"], onDelete = ForeignKey.CASCADE)]
+    foreignKeys = [ForeignKey(entity = UserEntity::class, parentColumns = ["id"], childColumns = ["user_id"], onDelete = ForeignKey.CASCADE)],
 )
 data class DailyGoalEntity(
 
@@ -36,7 +36,7 @@ data class DailyGoalEntity(
     @ColumnInfo(name = "path_progress")
     val nbOfPathsProgress: Int = 0,
 
-    ) {
+) {
 
     /**
      * get the date of the DailyGoal

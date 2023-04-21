@@ -34,7 +34,7 @@ import java.util.concurrent.CompletableFuture
  */
 class UserModelCached(application: Application) : AndroidViewModel(application) {
 
-    //database where the user is store online
+    // database where the user is store online
     private var database: Database = FireDatabase()
 
     // room database
@@ -56,7 +56,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val _currentUserID = MutableLiveData<String>()
 
     // user
-    private val user: LiveData<UserEntity> = _currentUserID.switchMap { userCache.getUserById(it)}.map { user -> user?: UserEntity("userID") }
+    private val user: LiveData<UserEntity> = _currentUserID.switchMap { userCache.getUserById(it) }.map { user -> user ?: UserEntity("userID") }
 
     // dailyGoal
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
@@ -78,9 +78,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                     DailyGoal(
                         userModel.getCurrentDistanceGoal(),
                         userModel.getCurrentActivityTime(),
-                        userModel.getCurrentNumberOfPathsGoal()
-                    ).toDailyGoalEntity(userModel.getUserId())
-                )
+                        userModel.getCurrentNumberOfPathsGoal(),
+                    ).toDailyGoalEntity(userModel.getUserId()),
+                ),
             )
         }
     }
@@ -173,7 +173,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         }
     }
 
-
     /**
      * Use this function to modify the daily distance goal of the user
      * @param distanceGoal new daily distance goal
@@ -259,7 +258,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     private fun checkCurrentUser(checkIfNull: Boolean = true) {
         if (database is MockDataBase || database is MockNonWorkingDatabase) {
-            return //already a test
+            return // already a test
         }
         if ((checkIfNull && currentUserID == null) || currentUserID == MockAuth.MOCK_USER.getUid()) {
             // if current user null then it is a test
@@ -299,6 +298,6 @@ private fun fromUserModelToUserData(userModel: UserModel): UserEntity {
         userModel.getSurname(),
         UserEntity.fromLocalDateToLong(userModel.getDateOfBirth()),
         GoalAndAchievements(userModel),
-        UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto())
+        UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto()),
     )
 }

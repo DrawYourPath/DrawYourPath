@@ -18,7 +18,7 @@ import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
 class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_photo) {
-    //for the test
+    // for the test
     private val photoProfileTest: Bitmap = Bitmap.createBitmap(8, 5, Bitmap.Config.RGB_565)
 
     private var isTest: Boolean = false
@@ -33,24 +33,23 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
 
     private var photoInitiate: Boolean = false
 
-    //new profile photo (=null if no photo selected)
+    // new profile photo (=null if no photo selected)
     private var newProfilePhoto: Bitmap? = null
 
     private val user: UserModelCached by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        //retrieve the value from the welcome activity to know if we are running testes
+        // retrieve the value from the welcome activity to know if we are running testes
         val isRunTest: Bundle? = arguments
         if (isRunTest != null) {
             isTest = isRunTest.getBoolean("isRunningTestForDataBase")
         }
 
-        //select the correct database in function of test scenario
+        // select the correct database in function of test scenario
         if (isTest) {
             user.setDatabase(MockDataBase())
         }
-        //retrieve the different elements of the UI
+        // retrieve the different elements of the UI
         photoDescription = view.findViewById(R.id.photo_description_modify_profile_photo)
         errorText = view.findViewById(R.id.error_modify_profile_photo)
         photoPreview = view.findViewById(R.id.photo_modify_profile_photo)
@@ -63,15 +62,15 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
             photoInitiate = true
         }
 
-        //create the photo picker
+        // create the photo picker
         createSelectPhotoButton(selectPhotoButton, isTest)
 
-        //return back to preferences if click on cancel button without modifying the username
+        // return back to preferences if click on cancel button without modifying the username
         cancelButton.setOnClickListener {
             returnBackToPreviousFrag()
         }
 
-        //set the new profile photo(print an error if no new photo have been selected) and go back to the previous fragment
+        // set the new profile photo(print an error if no new photo have been selected) and go back to the previous fragment
         validateButton.setOnClickListener {
             validateButtonAction(newProfilePhoto, errorText)
         }
@@ -108,7 +107,7 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
      */
     private fun createSelectPhotoButton(selectButton: Button, isTest: Boolean) {
         selectButton.setOnClickListener {
-            //remove the error, since a photo has been selected
+            // remove the error, since a photo has been selected
             errorText.text = ""
             photoDescription.text = getString(R.string.new_profile_photo_selected)
             if (!isTest) {
@@ -116,7 +115,7 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
                     Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
                 startActivityForResult(photoPicker, requestCodeFrag)
             } else {
-                //affect a simple image in test scenario
+                // affect a simple image in test scenario
                 newProfilePhoto = photoProfileTest
                 photoPreview.setImageBitmap(photoProfileTest)
                 photoPreview.tag = photoProfileTest.byteCount

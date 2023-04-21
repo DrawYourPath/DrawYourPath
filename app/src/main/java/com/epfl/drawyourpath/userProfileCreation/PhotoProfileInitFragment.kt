@@ -20,8 +20,8 @@ import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.util.concurrent.CompletableFuture
 
 class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) {
-    //for the test
-    private val photoProfileTest : Bitmap = Bitmap.createBitmap(14,14, Bitmap.Config.RGB_565)
+    // for the test
+    private val photoProfileTest: Bitmap = Bitmap.createBitmap(14, 14, Bitmap.Config.RGB_565)
 
     private var isTest: Boolean = false
     private var username: String = ""
@@ -35,8 +35,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
     val userCached: UserModelCached by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        //retrieve the isRunTestValue and userName from the PersonalInfoFragment
+        // retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag == null) {
             isTest = false
@@ -45,7 +44,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             username = argsFromLastFrag.getString(Database.usernameFile).toString()
         }
 
-        //select the correct database in function of test scenario
+        // select the correct database in function of test scenario
         if (isTest) {
             userCached.setDatabase(MockDataBase())
         }
@@ -70,7 +69,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
                     ImageDecoder.createSource(requireActivity().contentResolver, imageURI)
                 photoProfile = ImageDecoder.decodeBitmap(sourceURI)
                 imageView.setImageBitmap(photoProfile)
-                //remove the error, since a photo has been selected
+                // remove the error, since a photo has been selected
                 errorText.text = ""
             }
         }
@@ -81,7 +80,6 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
      * @return a future to indicate if the photo was store in the database
      */
     private fun isPhotoSelected(): CompletableFuture<Boolean> {
-
         if (photoProfile == null) {
             errorText.text = "* You have forgotten to select a photo !"
             errorText.setTextColor(Color.RED)
@@ -99,13 +97,13 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             val fragManagement =
                 requireActivity().supportFragmentManager.beginTransaction()
             val dataToEndProfileCreationFrag: Bundle = Bundle()
-            //data to transmit to the UserGoalsInitFragment(username)
+            // data to transmit to the UserGoalsInitFragment(username)
             dataToEndProfileCreationFrag.putString(Database.usernameFile, username)
             val endProfileCreationFrag = EndProfileCreationFragment()
             endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
             fragManagement.replace(
                 R.id.userGoalInitFragment,
-                endProfileCreationFrag
+                endProfileCreationFrag,
             )
                 .commit()
         }
@@ -119,12 +117,12 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
     private fun createSelectPhotoButton(view: View, isTest: Boolean) {
         val selectPhotoButton: Button = view.findViewById(R.id.selectPhotoInitPhotoFrag)
         selectPhotoButton.setOnClickListener {
-            if(!isTest){
+            if (!isTest) {
                 val photoPicker =
                     Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
                 startActivityForResult(photoPicker, requestCodeFrag)
-            }else{
-                //affect a simple image in test scenario
+            } else {
+                // affect a simple image in test scenario
                 photoProfile = photoProfileTest
             }
         }
@@ -135,7 +133,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
      * @param view where the button is located
      */
     private fun createSkipButton(view: View) {
-        //if we click on the skip button we simply pass the end profile creation fragment
+        // if we click on the skip button we simply pass the end profile creation fragment
         val skipButton: Button = view.findViewById(R.id.skipPhotoProfile_button_userProfileCreation)
         skipButton.setOnClickListener {
             showEndProfileCreationFrag()
@@ -147,7 +145,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
      * @param view where the button is located
      */
     private fun createValidateButton(view: View) {
-        //if we click on the validate button we store the photo and ass the end profile creation fragment
+        // if we click on the validate button we store the photo and ass the end profile creation fragment
         val validateButton: Button =
             view.findViewById(R.id.setPhotoProfile_button_userProfileCreation)
         validateButton.setOnClickListener {
@@ -159,4 +157,3 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
         }
     }
 }
-

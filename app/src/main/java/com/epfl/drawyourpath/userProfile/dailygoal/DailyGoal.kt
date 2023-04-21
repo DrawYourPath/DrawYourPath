@@ -12,7 +12,7 @@ data class DailyGoal(
     var distanceInKilometerProgress: Double = 0.0,
     var activityTimeInMinutesProgress: Double = 0.0,
     var nbOfPathsProgress: Int = 0,
-    val date: LocalDate = LocalDate.now()
+    val date: LocalDate = LocalDate.now(),
 ) {
 
     /**
@@ -35,7 +35,7 @@ data class DailyGoal(
         entity.distanceInKilometerProgress,
         entity.activityTimeInMinutesProgress,
         entity.nbOfPathsProgress,
-        entity.getDateAsLocalDate()
+        entity.getDateAsLocalDate(),
     )
 
     fun toDailyGoalEntity(userId: String): DailyGoalEntity {
@@ -47,12 +47,11 @@ data class DailyGoal(
             nbOfPathsGoal,
             distanceInKilometerProgress,
             activityTimeInMinutesProgress,
-            nbOfPathsProgress
+            nbOfPathsProgress,
         )
     }
 
     companion object {
         val TEST_SAMPLE = DailyGoal(23.0, 86.0, 2, 17.6543, 39.01247, 1)
     }
-
 }
