@@ -5,7 +5,7 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: ls ./programs/
+      - run: ls .
       - name: Code Format
         run: |
           java -jar ./programs/ktlint.jar -F app/src/*.kt
