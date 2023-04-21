@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.mainpage.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -27,15 +26,10 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 
 class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
-    private val KEY_CAMERA_POSITION = "camera_position"
-    private val KEY_LOCATION = "location"
-    private val DEFAULT_ZOOM = 15F
-    private val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
-
     private var map: GoogleMap? = null
     private var cameraPosition: CameraPosition? = null
 
-    private lateinit var placesClient: PlacesClient
+//    private lateinit var placesClient: PlacesClient
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -53,7 +47,7 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
         }
 
         Places.initialize(this.requireActivity().applicationContext, getString(R.string.google_api_key))
-        placesClient = Places.createClient(this.requireContext())
+//        placesClient = Places.createClient(this.requireContext())
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
 
@@ -136,15 +130,14 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
                         // Set the map's camera position to the current location of the device.
                         lastKnownLocation = task.result
                         if (lastKnownLocation != null) {
-                            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                LatLng(lastKnownLocation!!.latitude,
-                                    lastKnownLocation!!.longitude), DEFAULT_ZOOM))
+                            val coordinates = LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
+                            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, DEFAULT_ZOOM))
+                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates,DEFAULT_ZOOM))
                         }
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.")
                         Log.e(TAG, "Exception: %s", task.exception)
-                        map?.moveCamera(CameraUpdateFactory
-                            .newLatLngZoom(defaultLocation, DEFAULT_ZOOM))
+                        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM))
                         map?.uiSettings?.isMyLocationButtonEnabled = false
                     }
                 }
@@ -160,5 +153,14 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
             outState.putParcelable(KEY_LOCATION, lastKnownLocation)
         }
         super.onSaveInstanceState(outState)
+    }
+
+    companion object {
+        private val TAG = DrawFragment::class.java.simpleName
+        private const val DEFAULT_ZOOM = 15F
+        private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
+
+        private const val KEY_CAMERA_POSITION = "camera_position"
+        private const val KEY_LOCATION = "location"
     }
 }
