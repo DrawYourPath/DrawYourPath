@@ -4,6 +4,11 @@ on: [push]
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
+    
+    permissions:
+      issues: write
+      pull-requests: write
+      
     steps:
       - uses: actions/checkout@v3
       - name: Code Format
