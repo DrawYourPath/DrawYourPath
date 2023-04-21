@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import java.lang.Integer.min
 
-
 /**
  * used in a recycler view to display the [DailyGoal]
  */
@@ -47,7 +46,6 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
         val goalPos = GoalPos.values()[viewHolder.adapterPosition]
 
         viewHolder.text.text = getGoalUnit(goalPos)
@@ -67,7 +65,6 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
         })
 
         displayGoal(viewHolder, goalPos)
-
     }
 
     // Return the size of the dataset (invoked by the layout manager)
@@ -152,7 +149,6 @@ class DailyGoalViewAdapter(private val dailyGoal: DailyGoal) :
     }
 
     private enum class GoalPos {
-        DISTANCE, TIME, PATH;
+        DISTANCE, TIME, PATH
     }
-
 }

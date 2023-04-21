@@ -17,8 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-
-import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
@@ -47,16 +45,16 @@ class MainActivity : AppCompatActivity() {
 
     private var qrScanResult: CompletableFuture<String>? = null
 
-  private val userCached: UserModelCached by viewModels()
+    private val userCached: UserModelCached by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //get the user id given by login or register to use it inside this activity and its child fragment
+        // get the user id given by login or register to use it inside this activity and its child fragment
         setupUser()
 
-        //Setup the components of the screen
+        // Setup the components of the screen
         setupTopBar()
         setupProfileButton()
         setupDrawerNavigationView()
@@ -69,12 +67,11 @@ class MainActivity : AppCompatActivity() {
         val friendsFragmentFactory = FriendsFragmentFactory(database)
         supportFragmentManager.fragmentFactory = friendsFragmentFactory
 
-        //Display the main fragment when no saved state
+        // Display the main fragment when no saved state
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.draw_menu_item
             replaceFragment<DrawFragment>()
         }
-
 
         setupNotifications()
     }
@@ -95,8 +92,9 @@ class MainActivity : AppCompatActivity() {
                 != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.CAMERA),
-                    SCAN_QR_REQ_CODE
+                    this,
+                    arrayOf(Manifest.permission.CAMERA),
+                    SCAN_QR_REQ_CODE,
                 )
             } else {
                 launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
@@ -117,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupTopBar() {
         val topAppBar: Toolbar = findViewById(R.id.topAppBar)
-        //Make this toolbar behave like the main action bar
+        // Make this toolbar behave like the main action bar
         setSupportActionBar(topAppBar)
     }
 
@@ -127,7 +125,7 @@ class MainActivity : AppCompatActivity() {
             profileImageButton.setImageBitmap(it.getProfilePhotoOrDefaultAsBitmap(resources))
         }
         drawerLayout = findViewById(R.id.drawerLayout)
-        //Set a listener to open the drawer menu (we might want it on the right)
+        // Set a listener to open the drawer menu (we might want it on the right)
         profileImageButton.setOnClickListener {
             drawerLayout.open()
         }
@@ -140,16 +138,16 @@ class MainActivity : AppCompatActivity() {
             header.findViewById<TextView>(R.id.header_username).text = it.username
             header.findViewById<TextView>(R.id.header_email).text = it.emailAddress
         }
-        //Handle the items in the drawer menu
+        // Handle the items in the drawer menu
         drawerNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                //Display profile fragment
+                // Display profile fragment
                 R.id.profile_menu_item -> replaceFragment<ProfileFragment>()
 
-                //Display stats fragment
+                // Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
 
-                //Display challenge fragment
+                // Display challenge fragment
                 R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>()
             }
             drawerLayout.close()
@@ -210,13 +208,14 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == SCAN_QR_REQ_CODE) {
-            if (grantResults.isNotEmpty()
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+            ) {
                 launchFriendQRScanner(this, SCAN_QR_REQ_CODE)
             } else if (qrScanResult != null) {
                 qrScanResult!!.completeExceptionally(Exception("No camera access"))
@@ -224,7 +223,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     companion object {
         const val EXTRA_USER_ID = "extra_user_id"
     }

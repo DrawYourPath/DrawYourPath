@@ -24,7 +24,7 @@ class UserNameTestAndSetFragmentTest {
      * when the user name was already taken by another user.
      */
     fun usernameUnAvailableIsPrintUnAvailable() {
-        //pass in test mode to used the Mockdatabase instead of the Firebase
+        // pass in test mode to used the Mockdatabase instead of the Firebase
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
@@ -33,7 +33,7 @@ class UserNameTestAndSetFragmentTest {
         closeSoftKeyboard()
         onView(withId(R.id.testUserName_button_userProfileCreation)).perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("*The username albert is NOT available !")))
 
         t.close()
@@ -46,14 +46,14 @@ class UserNameTestAndSetFragmentTest {
      */
     @Test
     fun usernameUnAvailableIsPrintIncorrectWhenWeChooseAnEmptyUsername() {
-        //pass in test mode to used the Mockdatabase instead of the Firebase
+        // pass in test mode to used the Mockdatabase instead of the Firebase
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
         onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
         onView(withId(R.id.testUserName_button_userProfileCreation)).perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("The username can't be empty !")))
         t.close()
     }
@@ -65,7 +65,7 @@ class UserNameTestAndSetFragmentTest {
      */
     @Test
     fun usernameCorrectIsPrintCorrect() {
-        //pass in test mode to used the Mockdatabase instead of the Firebase
+        // pass in test mode to used the Mockdatabase instead of the Firebase
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
@@ -74,7 +74,7 @@ class UserNameTestAndSetFragmentTest {
         closeSoftKeyboard()
         onView(withId(R.id.testUserName_button_userProfileCreation)).perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("*The username hugo is available !")))
         t.close()
     }
@@ -85,7 +85,7 @@ class UserNameTestAndSetFragmentTest {
      */
     @Test
     fun validateAnUnAvailableUserNameShowMessage() {
-        //pass in test mode to used the Mockdatabase instead of the Firebase
+        // pass in test mode to used the Mockdatabase instead of the Firebase
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
@@ -94,7 +94,7 @@ class UserNameTestAndSetFragmentTest {
         closeSoftKeyboard()
         onView(withId(R.id.setUserName_button_userProfileCreation)).perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("*The username albert is NOT available !")))
         t.close()
     }
@@ -105,14 +105,14 @@ class UserNameTestAndSetFragmentTest {
      */
     @Test
     fun validateAnEmptyUserNameShowMessage() {
-        //pass in test mode to used the Mockdatabase instead of the Firebase
+        // pass in test mode to used the Mockdatabase instead of the Firebase
         var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
         onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
         onView(withId(R.id.setUserName_button_userProfileCreation)).perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("The username can't be empty !")))
         t.close()
     }
@@ -123,10 +123,10 @@ class UserNameTestAndSetFragmentTest {
      */
     @Test
     fun correctTransition() {
-        //pass in test mode to used the Mockdatabase instead of the Firebase
+        // pass in test mode to used the Mockdatabase instead of the Firebase
         var intent = Intent(
             getApplicationContext(),
-            UserProfileCreationActivity::class.java
+            UserProfileCreationActivity::class.java,
         )
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
@@ -138,11 +138,10 @@ class UserNameTestAndSetFragmentTest {
         onView(withId(R.id.setUserName_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is show after clicking on VALIDATE button
         onView(withId(R.id.personalInfoFragment))
             .check(matches(ViewMatchers.isDisplayed()))
 
         t.close()
     }
-
 }

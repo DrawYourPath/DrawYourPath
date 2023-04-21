@@ -17,7 +17,6 @@ import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.mainpage.MainActivity
-
 import com.epfl.drawyourpath.userProfileCreation.UserProfileCreationActivity
 
 const val USE_MOCK_AUTH_KEY = "useMockAuth"
@@ -41,7 +40,9 @@ abstract class LoginActivityFragment(@LayoutRes layout: Int) : Fragment(layout) 
  * Class used to display an authentication UI to the user and perform the auth
  * operations through the Auth object.
  */
-class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivityListener,
+class LoginActivity :
+    AppCompatActivity(R.layout.activity_login),
+    RegisterActivityListener,
     LoginActivityListener {
     private val viewModel: LoginViewModel by viewModels()
 
@@ -56,7 +57,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     // log the user in.
     // Can be controlled with RESTORE_USER_IN_KEYCHAIN in the intent.
     private var restoreUserFromKeychain: Boolean = true
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
             true -> MockAuth(
                 failing = intent.getBooleanExtra(MOCK_AUTH_FAIL, false),
                 userInKeyChain = restoreUserFromKeychain,
-                withOneTapSignIn = useOneTapSignIn
+                withOneTapSignIn = useOneTapSignIn,
             )
             false -> FirebaseAuth()
         }
@@ -88,10 +88,8 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
             }
         }
 
-
         // When the user changed. i.e. signed out or signed in.
         auth.onAuthStateChanged { _, _ ->
-
         }
 
         showRegisterUI()
@@ -140,10 +138,9 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         switchFragment<RegisterActions>()
     }
 
-
     private inline fun <reified T : LoginActivityFragment> switchFragment() {
         supportFragmentManager.commit {
-            //setCustomAnimations(R.anim.slide_in, R.anim.slide_out)
+            // setCustomAnimations(R.anim.slide_in, R.anim.slide_out)
             replace<T>(R.id.fragment_container_view)
         }
     }

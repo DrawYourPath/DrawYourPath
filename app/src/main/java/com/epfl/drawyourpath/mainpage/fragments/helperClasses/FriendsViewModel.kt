@@ -4,20 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.userProfile.UserModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
 
 class FriendsViewModel(private val userModel: UserModel, private val database: Database) : ViewModel() {
 
-
-
-    //empty list of Friend
+    // empty list of Friend
     var allFriends = listOf<Friend>()
 
     // _friendsList is a MutableLiveData, which is a private mutable version of the LiveData.
@@ -29,12 +21,7 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
 
         // Load friends asynchronously
         loadFriends()
-
-
-
-
     }
-
 
     private fun loadFriends() {
         // Get the friend list from the UserModel
@@ -52,7 +39,6 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
             // Get the username CompletableFuture
             val usernameFuture = database.getUsernameFromUserId(userId)
 
-
             // When the CompletableFuture completes, update the list of friends
             usernameFuture.whenComplete { username, exception ->
                 if (exception == null) {
@@ -64,8 +50,8 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
                                     userId,
                                     username,
                                     userAccount.getProfilePhoto(),
-                                    true
-                                )
+                                    true,
+                                ),
                             )
 
                             // Increment the friendsLoaded counter
@@ -83,17 +69,14 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
                             // Handle the exception (e.g., log the error, show a message to the user, etc.)
                         }
                     }
-
                 }
             }
         }
     }
 
-
     // friendsList is a LiveData that the UI will observe for changes.
     // It is exposed to the UI to prevent modification from outside the ViewModel.
     val friendsList: LiveData<List<Friend>> = _friendsList
-
 
     /**
      * The search() function filters the friends list based on the search query.
@@ -134,7 +117,7 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
 
         val updatedFriendsList = allFriends.map {
             if (it.id == friend.id) {
-                it.isFriend= !isFriend
+                it.isFriend = !isFriend
                 it
             } else {
                 it

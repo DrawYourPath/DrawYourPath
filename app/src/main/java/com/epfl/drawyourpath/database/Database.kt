@@ -1,15 +1,14 @@
 package com.epfl.drawyourpath.database
 
-
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.DailyGoal
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.userProfile.UserModel
 import java.util.concurrent.CompletableFuture
 
 abstract class Database {
     companion object {
-        //name of the different attributes inside the user account
+        // name of the different attributes inside the user account
         const val usernameFile: String = "username"
         const val firstnameFile: String = "firstname"
         const val surnameFile: String = "surname"
@@ -17,11 +16,13 @@ abstract class Database {
         const val dateOfBirthFile: String = "dateOfBirth"
         const val profilePhotoFile: String = "profilePhoto"
         const val friendsListFile: String = "friendsList"
-        //current daily goal
+
+        // current daily goal
         const val currentDistanceGoalFile: String = "distanceGoal"
         const val currentActivityTimeGoalFile: String = "activityTimeGoal"
         const val currentNOfPathsGoalFile: String = "nbOfPathsGoal"
-        //daily user goals
+
+        // daily user goals
         const val dailyGoalsFile: String = "dailyGoals"
         const val expectedDistanceFile: String = "expectedDistance"
         const val expectedActivityTimeFile: String = "expectedActivityTime"
@@ -29,12 +30,14 @@ abstract class Database {
         const val obtainedDistanceFile: String = "obtainedDistance"
         const val obtainedActivityTimeFile: String = "obtainedActivityTime"
         const val obtainedNbOfPathsFile: String = "obtainedNbOfPaths"
-        //user achievements, will be used later for the trophies
+
+        // user achievements, will be used later for the trophies
         const val achievementsFile: String = "achievements"
         const val totalDistanceFile: String = "totalDistance"
         const val totalActivityTimeFile: String = "totalActivityTime"
         const val totalNbOfPathsFile: String = "totalNbOfPaths"
-        //run history
+
+        // run history
         const val runsHistoryFile: String = "runsHistory"
     }
 
@@ -73,7 +76,6 @@ abstract class Database {
      * @return the future that indicate if the username have been updated
      */
     abstract fun updateUsername(username: String): CompletableFuture<Unit>
-
 
     /**
      * This function will add the username to the database as link to the userId of the user authenticate on the app
@@ -168,7 +170,7 @@ abstract class Database {
      * @param dailyGaol that we want to add in the database
      * @return a future that indicate if the daily Goal have been correctly added to the database
      */
-    abstract  fun addDailyGoal(dailyGoal: DailyGoal):CompletableFuture<Unit>
+    abstract fun addDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit>
 
     /**
      * Function used to update on the database the user achievements(total distance, total activity time and total nb of paths draw by the user)

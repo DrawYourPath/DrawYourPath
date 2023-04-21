@@ -1,8 +1,6 @@
 package com.epfl.drawyourpath.database
 
-import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.DailyGoal
-import com.epfl.drawyourpath.userProfile.UserModel
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.concurrent.CompletableFuture
@@ -30,7 +28,7 @@ class MockNonWorkingDatabaseTest {
         mock.addUserToFriendsList("").assertError(Unit)
         mock.removeUserFromFriendlist("").assertError(Unit)
         mock.addDailyGoal(DailyGoal(0.0, 0.0, 0)).assertError(Unit)
-        mock.updateUserAchievements(0.0,0.0).assertError(Unit)
+        mock.updateUserAchievements(0.0, 0.0).assertError(Unit)
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {
@@ -39,5 +37,4 @@ class MockNonWorkingDatabaseTest {
             ret
         }.get(2, TimeUnit.SECONDS)
     }
-
 }

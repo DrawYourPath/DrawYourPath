@@ -20,12 +20,10 @@ class Path {
         this.points.addAll(points)
     }
 
-
     /**
      * private mutable list to store the path as a collection of points.
      */
     private val points = mutableListOf<LatLng>()
-
 
     /**
      * Add a point to the path's list of points(at the end of the list).
@@ -34,14 +32,12 @@ class Path {
         points.add(point)
     }
 
-
     /**
      * Return an immutable list of the path's points.
      */
     fun getPoints(): List<LatLng> {
         return points.toList()
     }
-
 
     /**
      * Clear the path's list of points.
@@ -50,14 +46,12 @@ class Path {
         points.clear()
     }
 
-
     /**
      * Return the number of points in the path.
      */
     fun size(): Int {
         return points.size
     }
-
 
     /**
      * helper function to calculate distance between two points(in meters)
@@ -73,13 +67,11 @@ class Path {
         val Da = (lat2 - lat1) * Math.PI / 180
         val Dl = (lon2 - lon1) * Math.PI / 180
         val a = Math.sin(Da / 2) * Math.sin(Da / 2) +
-                Math.cos(a1) * Math.cos(a2) *
-                Math.sin(Dl / 2) * Math.sin(Dl / 2)
+            Math.cos(a1) * Math.cos(a2) *
+            Math.sin(Dl / 2) * Math.sin(Dl / 2)
         val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
         return r * c
-
     }
-
 
     /**
      * function that returns the distance of the path in meters.
@@ -93,18 +85,15 @@ class Path {
         return distance
     }
 
-
     /**
      * Return a Polyline object representing the path.
      */
     @Exclude
     fun getPolyline(): PolylineOptions {
-
         // Create a new PolylineOptions object to define the appearance of the polyline.
         val polylineOptions = PolylineOptions()
         polylineOptions.color(Color.BLUE_FIELD_NUMBER)
         polylineOptions.width(10f)
-
 
         // Loop through the list of points and add them to the PolylineOptions object.
         for (point in points) {
@@ -114,6 +103,4 @@ class Path {
         // Add the polyline to the map and return it.
         return polylineOptions
     }
-
-
 }

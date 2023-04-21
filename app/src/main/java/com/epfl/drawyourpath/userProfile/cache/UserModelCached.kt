@@ -33,10 +33,10 @@ import java.util.concurrent.CompletableFuture
  */
 class UserModelCached(application: Application) : AndroidViewModel(application) {
 
-    //database where the user is store online
+    // database where the user is store online
     private var database: Database = FireDatabase()
 
-    //cached room database for user
+    // cached room database for user
     private val cache = Room
         .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
         .fallbackToDestructiveMigration()
@@ -141,7 +141,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         }
     }
 
-
     /**
      * Use this function to modify the daily distance goal of the user
      * @param distanceGoal new daily distance goal
@@ -201,7 +200,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     private fun checkCurrentUser(checkIfNull: Boolean = true) {
         if (database is MockDataBase || database is MockNonWorkingDatabase) {
-            return //already a test
+            return // already a test
         }
         if ((checkIfNull && currentUserID == null) || currentUserID == MockAuth.MOCK_USER.getUid()) {
             // if current user null then it is a test
@@ -209,7 +208,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             Toast.makeText(getApplication(), R.string.toast_test_error_message, Toast.LENGTH_LONG).show()
         }
     }
-
 }
 
 /**
@@ -228,6 +226,6 @@ private fun fromUserModelToUserData(userModel: UserModel): UserEntity {
         userModel.getCurrentDistanceGoal(),
         userModel.getCurrentActivityTime(),
         userModel.getCurrentNumberOfPathsGoal(),
-        UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto())
+        UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto()),
     )
 }

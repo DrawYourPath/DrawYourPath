@@ -58,7 +58,6 @@ class FirebaseAuth : Auth {
             }
         }
 
-
         /**
          * Gets the currently logged in user if any or null otherwise.
          * @return the currently logged in user if any or null otherwise.
@@ -67,7 +66,6 @@ class FirebaseAuth : Auth {
             return convertUser(FirebaseAuth.getInstance().currentUser)
         }
     }
-
 
     // Callback fired when an intent with sign-in result is received.
     private var currCallback: AuthCallback? = null
@@ -93,12 +91,10 @@ class FirebaseAuth : Auth {
     }
 
     override fun loginWithGoogle(activity: Activity, callback: AuthCallback) {
-
         // If an intent is still pending, we fails the sign in attemp.
         if (!setCurrCallback(callback)) {
             return
         }
-
 
         // Creates the intent to launch the Google Sign-In flow.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -114,7 +110,6 @@ class FirebaseAuth : Auth {
     }
 
     override fun loginWithEmail(email: String, password: String, callback: AuthCallback) {
-
         try {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
@@ -167,7 +162,6 @@ class FirebaseAuth : Auth {
         loginWithGoogle(activity, callback)
     }
 
-
     private var authStateListener: FirebaseAuth.AuthStateListener? = null
 
     override fun onAuthStateChanged(callback: AuthCallback) {
@@ -191,7 +185,6 @@ class FirebaseAuth : Auth {
     }
 
     override fun launchOneTapGoogleSignIn(activity: Activity, callback: AuthCallback) {
-
         // If an intent is still pending, we fails the sign in attemp.
         if (!setCurrCallback(callback)) {
             return
@@ -201,8 +194,13 @@ class FirebaseAuth : Auth {
             .addOnSuccessListener(activity) { result ->
                 try {
                     activity.startIntentSenderForResult(
-                        result.pendingIntent.intentSender, REQ_ONE_TAP,
-                        null, 0, 0, 0, null
+                        result.pendingIntent.intentSender,
+                        REQ_ONE_TAP,
+                        null,
+                        0,
+                        0,
+                        0,
+                        null,
                     )
                 } catch (e: IntentSender.SendIntentException) {
                     consumeCurrCallback(null, e)
@@ -227,14 +225,14 @@ class FirebaseAuth : Auth {
             .setPasswordRequestOptions(
                 BeginSignInRequest.PasswordRequestOptions.builder()
                     .setSupported(true)
-                    .build()
+                    .build(),
             )
             .setGoogleIdTokenRequestOptions(
                 BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                     .setSupported(true)
                     .setServerClientId(activity.getString(R.string.server_client_id))
                     .setFilterByAuthorizedAccounts(true)
-                    .build()
+                    .build(),
             )
             .setAutoSelectEnabled(true)
             .build()
@@ -271,9 +269,8 @@ class FirebaseAuth : Auth {
         activity: Activity,
         requestCode: Int,
         resultCode: Int,
-        data: Intent?
+        data: Intent?,
     ) {
-
         // Handles responses from launched intents.
         // Note that intents from other requests might be received and should be discarded.
         when (requestCode) {
@@ -281,7 +278,6 @@ class FirebaseAuth : Auth {
             REQ_ONE_TAP -> onOneTapSignInResult(activity, data)
         }
     }
-
 
     /**
      * Signs in against the Firebase backend with an Auth Token received from

@@ -71,7 +71,7 @@ data class UserEntity(
      * the profile photo of the user (can be null)
      */
     @ColumnInfo(name = "photo", typeAffinity = ColumnInfo.BLOB)
-    val profilePhoto: ByteArray? = null
+    val profilePhoto: ByteArray? = null,
 ) {
 
     /**
@@ -153,5 +153,4 @@ data class UserEntity(
     override fun hashCode(): Int {
         return userId.hashCode()
     }
-
 }

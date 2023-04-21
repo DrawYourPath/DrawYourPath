@@ -24,7 +24,7 @@ class RunsAdapter(private val runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         val run = runs[position]
 
         // Set the data to the view items in the layout
-        //holder.mapImageView.setImageResource(run.mapImage)
+        // holder.mapImageView.setImageResource(run.mapImage)
         holder.dateTextView.text = run.getDate()
         holder.distanceTextView.text =
             "Distance: ${String.format("%.2f", run.getDistance() / 1000)} Km"

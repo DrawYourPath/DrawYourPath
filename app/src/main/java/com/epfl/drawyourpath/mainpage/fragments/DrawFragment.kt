@@ -1,9 +1,7 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,9 +26,9 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
         map.addMarker(
             MarkerOptions()
                 .position(coordinates)
-                .title("EPFL")
+                .title("EPFL"),
         )
         map.moveCamera(CameraUpdateFactory.newLatLng(coordinates))
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates,15F))
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 15F))
     }
 }

@@ -12,7 +12,7 @@ data class DailyGoal(
     var distanceInKilometerProgress: Double = 0.0,
     var timeInMinutesProgress: Double = 0.0,
     var nbOfPathsProgress: Int = 0,
-    val date: LocalDate = LocalDate.now()
+    val date: LocalDate = LocalDate.now(),
 ) : java.io.Serializable {
 
     /**
@@ -23,5 +23,4 @@ data class DailyGoal(
     fun createNewGoalFromThis(): DailyGoal {
         return DailyGoal(this.distanceInKilometerGoal, this.timeInMinutesGoal, this.nbOfPathsGoal)
     }
-
 }

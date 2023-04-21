@@ -1,11 +1,9 @@
 package com.epfl.drawyourpath.challenge
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
 import com.epfl.drawyourpath.R
@@ -14,7 +12,7 @@ class TrophyDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout to use as dialog or embedded fragment
         return inflater.inflate(R.layout.modal_trophy, container, false)

@@ -14,9 +14,8 @@ data class Friend(
     val id: String,
     val name: String,
     val profileImage: Bitmap?,
-    var isFriend: Boolean
+    var isFriend: Boolean,
 )
-
 
 /**
  * This adapter is responsible for displaying the list of friends in a RecyclerView.

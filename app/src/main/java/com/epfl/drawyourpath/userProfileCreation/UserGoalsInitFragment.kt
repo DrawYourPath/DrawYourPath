@@ -27,7 +27,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
     private var surname: String = ""
     private var dateOfBirth: Long = 0
 
-    //all this goals are per days
+    // all this goals are per days
     private var timeGoal: Int = 0
     private var distanceGoal: Int = 0
     private var nunberOfPathGoal: Int = 0
@@ -35,8 +35,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
     private val userCached: UserModelCached by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        //retrieve the isRunTestValue and userName from the PersonalInfoFragment
+        // retrieve the isRunTestValue and userName from the PersonalInfoFragment
         val argsFromLastFrag: Bundle? = arguments
         if (argsFromLastFrag == null) {
             isTest = false
@@ -48,7 +47,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
             dateOfBirth = argsFromLastFrag.getLong(Database.dateOfBirthFile)
         }
 
-        //select the correct database in function of test scenario
+        // select the correct database in function of test scenario
         val database: Database = if (isTest) {
             userCached.setDatabase(MockDataBase())
             MockDataBase()
@@ -56,7 +55,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
             FireDatabase()
         }
 
-        //all the goals inputs
+        // all the goals inputs
         val inputTimeGoal: EditText =
             view.findViewById(R.id.input_timeGoal_text_UserProfileCreation)
         val inputDistanceGoal: EditText =
@@ -64,18 +63,18 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
         val inputNbOfPathsGoal: EditText =
             view.findViewById(R.id.input_nbOfPathsGoal_text_UserProfileCreation)
 
-        //all the texts where the potentials errors will be print
+        // all the texts where the potentials errors will be print
         val errorTextTime: TextView = view.findViewById(R.id.timeGoalError_text_userProfileCreation)
         val errorTextDistance: TextView =
             view.findViewById(R.id.distanceGoalError_text_userProfileCreation)
         val errorTextNbOfPaths: TextView =
             view.findViewById(R.id.nbOfPathsGoalError_text_userProfileCreation)
 
-        //if all the data goals are correct that than set this data to the database associate to the username and show the next fragment,
-        //when click on the validate button
+        // if all the data goals are correct that than set this data to the database associate to the username and show the next fragment,
+        // when click on the validate button
         val validateButton: Button = view.findViewById(R.id.setUserGoals_button_userProfileCreation)
         validateButton.setOnClickListener {
-            //check all the inputs
+            // check all the inputs
 
             val timeStr = inputTimeGoal.text.toString()
             val test1 = isNumberCorrect(timeStr, errorTextTime)
@@ -97,12 +96,12 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
 
             if (test1 && test2 && test3) {
                 var userLog = FirebaseAuth.getUser()
-                if(isTest){
+                if (isTest) {
                     userLog = MockAuth.MOCK_USER
                 }
-                if(userLog == null) {
+                if (userLog == null) {
                     this.startActivity(Intent(activity, LoginActivity::class.java))
-                }else {
+                } else {
                     userCached.setDatabase(database)
                     val user = UserModel(
                         userLog,
@@ -113,7 +112,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                         distanceGoal.toDouble(),
                         timeGoal.toDouble(),
                         nunberOfPathGoal,
-                        database
+                        database,
                     )
                     userCached.createNewUser(user)
                     database.initUserProfile(user).thenAccept {
@@ -121,14 +120,14 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                             val fragManagement =
                                 requireActivity().supportFragmentManager.beginTransaction()
                             val dataToPhotoProfileInitFrag: Bundle = Bundle()
-                            //data to transmit to the PhotoProfileInitFragment(username+ isRunningTestForDatabase)
+                            // data to transmit to the PhotoProfileInitFragment(username+ isRunningTestForDatabase)
                             dataToPhotoProfileInitFrag.putBoolean("isRunningTestForDataBase", isTest)
                             dataToPhotoProfileInitFrag.putString(Database.usernameFile, username)
                             val photoProfileFrag = PhotoProfileInitFragment()
                             photoProfileFrag.arguments = dataToPhotoProfileInitFrag
                             fragManagement.replace(
                                 R.id.userGoalInitFragment,
-                                photoProfileFrag
+                                photoProfileFrag,
                             )
                                 .commit()
                         }
@@ -147,7 +146,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
  * @return true if the number is considered to be correct, false otherwise
  */
 private fun isNumberCorrect(inputNumber: String, outputErrorText: TextView): Boolean {
-    //check if the input is empty
+    // check if the input is empty
     if (inputNumber == "") {
         outputErrorText.text = "* This field can't be empty !"
         outputErrorText.setTextColor(Color.RED)
@@ -159,8 +158,7 @@ private fun isNumberCorrect(inputNumber: String, outputErrorText: TextView): Boo
         return false
     }
 
-
-    //if no error, print anything
+    // if no error, print anything
     outputErrorText.text = ""
 
     return true

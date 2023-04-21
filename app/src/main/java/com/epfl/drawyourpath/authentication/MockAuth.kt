@@ -33,23 +33,21 @@ class MockAuth(
             }
 
             override fun isAnonymous(): Boolean {
-
                 return false
             }
         }
     }
 
-
     private var isLogged = userInKeyChain
 
     private fun mockLogin(callback: AuthCallback) {
-        //Timer().schedule(1500){
+        // Timer().schedule(1500){
         isLogged = !failing
         when (failing) {
             true -> callback(null, Exception("Mock failing"))
             false -> callback(MOCK_USER, null)
         }
-        //}
+        // }
     }
 
     override fun getUser(): User? {
@@ -83,11 +81,10 @@ class MockAuth(
     }
 
     override fun clearListener() {
-
     }
 
     override fun launchOneTapGoogleSignIn(activity: Activity, callback: AuthCallback) {
-        //mockLogin(callback)
+        // mockLogin(callback)
         if (withOneTapSignIn) {
             mockLogin(callback)
         } else {
@@ -100,14 +97,13 @@ class MockAuth(
     }
 
     override fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?) {
-
     }
 
     override fun onActivityResult(
         activity: Activity,
         requestCode: Int,
         resultCode: Int,
-        data: Intent?
+        data: Intent?,
     ) {
     }
 }

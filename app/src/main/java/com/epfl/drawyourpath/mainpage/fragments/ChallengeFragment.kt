@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.*
-import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.challenge.TournamentViewAdapter
+import com.epfl.drawyourpath.community.Tournament
 import java.util.*
 
 /**
@@ -33,7 +33,7 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         tempUser.addTrophy(Trophy.TENKM)
 
         if (arguments?.getSerializable("user") != null) {
-            //getSerializable(key: String?) deprecated but alternative requires API level 33
+            // getSerializable(key: String?) deprecated but alternative requires API level 33
             tempUser = arguments?.getSerializable("user") as TemporaryUser
         }
 
@@ -46,5 +46,4 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         trophiesView.layoutManager = GridLayoutManager(context, 3)
         trophiesView.adapter = TrophyViewAdapter(tempUser.getTrophies())
     }
-
 }

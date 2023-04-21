@@ -21,7 +21,7 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var database: Database = FireDatabase()
 
-        //retrieve the value from the welcome activity to know if we are running testes
+        // retrieve the value from the welcome activity to know if we are running testes
         val isRunTest: Bundle? = arguments
         if (isRunTest == null) {
             isTest = false
@@ -29,7 +29,7 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
             isTest = isRunTest.getBoolean("isRunningTestForDataBase")
         }
 
-        //select the correct database in function of test scenario
+        // select the correct database in function of test scenario
         if (isTest) {
             database = MockDataBase()
         }
@@ -47,7 +47,7 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
         val setUserNameButton: Button =
             view.findViewById(R.id.setUserName_button_userProfileCreation)
         setUserNameButton.setOnClickListener {
-            //try to set the userName to the database
+            // try to set the userName to the database
             val usernameStr = inputUserName.text.toString()
             val testUsername = usernameAvaibility(database, usernameStr, showTestResult)
             testUsername.thenAccept {
@@ -64,12 +64,12 @@ class UserNameTestAndSetFragment : Fragment(R.layout.fragment_user_name_test_and
  * @param username that we have set into the database
  * @param isTest to know if we are in a test scenario
  */
-private fun showPersonalInfoFragment(previousActivity: FragmentActivity?, database: Database, username: String, isTest: Boolean){
+private fun showPersonalInfoFragment(previousActivity: FragmentActivity?, database: Database, username: String, isTest: Boolean) {
     if (previousActivity != null) {
-        database.setUsername(username).thenAccept{
+        database.setUsername(username).thenAccept {
             val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
             val dataToPersoInfoFrag: Bundle = Bundle()
-            //data to transmit to the PersonalInfoFragment(isTest + username)
+            // data to transmit to the PersonalInfoFragment(isTest + username)
             dataToPersoInfoFrag.putBoolean("isRunningTestForDataBase", isTest)
             dataToPersoInfoFrag.putString("username", username)
             val persoInfoFrag = PersonalInfoFragment()
@@ -90,7 +90,7 @@ private fun showPersonalInfoFragment(previousActivity: FragmentActivity?, databa
 private fun usernameAvaibility(
     database: Database,
     username: String,
-    outputMessage: TextView
+    outputMessage: TextView,
 ): CompletableFuture<Boolean> {
     if (username == "") {
         outputMessage.text = buildString { append("The username can't be empty !") }
@@ -99,7 +99,7 @@ private fun usernameAvaibility(
     }
     val future = database.isUsernameAvailable(username)
 
-    //since the orTimeout require an API level 33(we are in min API level 28), we can't use it
+    // since the orTimeout require an API level 33(we are in min API level 28), we can't use it
     val durationFuture = future.thenApply {
         outputMessage.text = buildString {
             append("*The username ")

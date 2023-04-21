@@ -27,9 +27,9 @@ class EndProfileCreationFragmentTest : Fragment() {
         val username = "hugo"
         val correctMessage =
             "We are happy to welcome you, " + username + " in the DrawYourPath app." +
-                    " Please click on the BEGIN NOW button to discover the app !"
+                " Please click on the BEGIN NOW button to discover the app !"
 
-        //test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is show after clicking on VALIDATE button
         Espresso.onView(withId(R.id.endProfileCreation_text_userProfileCreation))
             .check(ViewAssertions.matches(withText(correctMessage)))
 
@@ -37,13 +37,12 @@ class EndProfileCreationFragmentTest : Fragment() {
     }
 }
 
-
 /**
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
 private fun goToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreationActivity> {
-    //pass in test mode to used the Mockdatabase instead of the Firebase
+    // pass in test mode to used the Mockdatabase instead of the Firebase
     var intent =
         Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)
     intent.putExtra("isRunningTestForDataBase", true)

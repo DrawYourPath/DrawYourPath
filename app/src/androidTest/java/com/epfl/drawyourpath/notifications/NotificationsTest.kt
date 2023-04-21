@@ -41,16 +41,16 @@ class NotificationsTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        //Check that no alarm is scheduled
+        // Check that no alarm is scheduled
         assertTrue(alarmManager.nextAlarmClock == null)
 
         val intent = Intent(
             context,
-            MainActivity::class.java
+            MainActivity::class.java,
         )
         val scenario: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
 
-        //Check that an alarm is scheduled
+        // Check that an alarm is scheduled
         assertTrue(alarmManager.nextAlarmClock != null)
 
         scenario.close()
@@ -60,35 +60,35 @@ class NotificationsTest {
     fun challengeReminderNotificationIsDisplayedWhenAlarmIsTriggered() {
         val context = ApplicationProvider.getApplicationContext<Context>()
 
-        //Launch the intent with mock alarm, so will trigger notification "instantly"
+        // Launch the intent with mock alarm, so will trigger notification "instantly"
         val intent = Intent(
             context,
-            MainActivity::class.java
+            MainActivity::class.java,
         )
         intent.putExtra(USE_MOCK_CHALLENGE_REMINDER, true)
         val scenario: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
 
         uiDevice.pressHome()
         uiDevice.openNotification()
-        //If no timeout, a notification has arrived
+        // If no timeout, a notification has arrived
         uiDevice.wait(
             Until.hasObject(By.textStartsWith(context.resources.getString(R.string.app_name))),
-            30000
+            30000,
         )
 
-        //Check that the title is the expected one
+        // Check that the title is the expected one
         val expectedTitle =
             context.resources.getString(R.string.challenges_reminder)
         val title = uiDevice.findObject(By.text(expectedTitle))
         assertEquals(expectedTitle, title.text)
 
-        //Check that the text is the expected one
+        // Check that the text is the expected one
         val expectedText =
             context.resources.getString(R.string.challenge_reminder_notification_text)
         val text = uiDevice.findObject(By.textStartsWith(expectedText))
         assertTrue(text.text.startsWith(expectedText))
 
-        //Close notifications
+        // Close notifications
         uiDevice.pressBack()
         scenario.close()
     }
@@ -101,20 +101,19 @@ class NotificationsTest {
         manager.sendChallengesReminderNotification(context, false)
 
         uiDevice.openNotification()
-        //If no timeout, a notification has arrived
+        // If no timeout, a notification has arrived
         uiDevice.wait(
             Until.hasObject(By.textStartsWith(context.resources.getString(R.string.app_name))),
-            30000
+            30000,
         )
 
-        //Click on expected notification
+        // Click on expected notification
         val expectedTitle =
             context.resources.getString(R.string.challenges_reminder)
         val title = uiDevice.findObject(By.text(expectedTitle))
         title.click()
 
-        //Check that the login page is displayed
+        // Check that the login page is displayed
         onView(withId(R.id.TXT_Title)).check(matches(isDisplayed()))
-
     }
 }

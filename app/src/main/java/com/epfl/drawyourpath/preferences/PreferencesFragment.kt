@@ -21,7 +21,6 @@ class PreferencesFragment : PreferenceFragmentCompat() {
     private fun setupDisconnect() {
         // Adds the listener to log out and return to the login screen
         findPreference<Preference>("disconnect")?.setOnPreferenceClickListener {
-
             FirebaseAuth().signOut()
             val intent = Intent(this.context, LoginActivity::class.java)
 
@@ -33,9 +32,5 @@ class PreferencesFragment : PreferenceFragmentCompat() {
         }
     }
 
-    //TODO: handle other preferences
+    // TODO: handle other preferences
 }
-
-
-
-

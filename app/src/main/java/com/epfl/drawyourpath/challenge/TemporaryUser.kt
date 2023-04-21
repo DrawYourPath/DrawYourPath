@@ -15,9 +15,8 @@ import java.util.*
 data class TemporaryUser(
     private val dailyGoals: LinkedList<DailyGoal> = LinkedList(),
     val tournaments: List<Tournament> = listOf(),
-    private val trophies: EnumMap<Trophy, LocalDate> = EnumMap(Trophy::class.java)
+    private val trophies: EnumMap<Trophy, LocalDate> = EnumMap(Trophy::class.java),
 ) : java.io.Serializable {
-
 
     /**
      * get Today's Daily Goal or create a new one if there is no Daily Goals for today
@@ -58,7 +57,6 @@ data class TemporaryUser(
         return trophies.toList().filter { it.second != null }
     }
 
-
     companion object {
         /**
          * The default daily goal that will be used if no daily goals are set
@@ -75,28 +73,28 @@ data class TemporaryUser(
                     "test",
                     "test",
                     LocalDateTime.now().plusDays(3L),
-                    LocalDateTime.now().plusDays(4L)
+                    LocalDateTime.now().plusDays(4L),
                 ),
                 Tournament(
                     "2nd test",
                     "test",
                     LocalDateTime.now().minusDays(1L),
-                    LocalDateTime.now().plusDays(1L)
+                    LocalDateTime.now().plusDays(1L),
                 ),
                 Tournament(
                     "test3",
                     "test3",
                     LocalDateTime.now().minusDays(3L),
-                    LocalDateTime.now().minusDays(2L)
+                    LocalDateTime.now().minusDays(2L),
                 ),
                 Tournament(
                     "4th test",
                     "test",
                     LocalDateTime.now(),
-                    LocalDateTime.now().plusDays(3L)
-                )
+                    LocalDateTime.now().plusDays(3L),
+                ),
             ),
-            createTrophies()
+            createTrophies(),
         )
 
         private fun createTrophies(): EnumMap<Trophy, LocalDate> {

@@ -32,7 +32,7 @@ class MockDataBaseTest {
         distanceGoalTest,
         activityTimeGoalTest,
         nbOfPathsGoalTest,
-        MockDataBase()
+        MockDataBase(),
     )
 
     /**
@@ -181,26 +181,28 @@ class MockDataBaseTest {
                 12.0,
                 30.0,
                 2,
-                database
-            )
+                database,
+            ),
         ).get()
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getUsername(), usernameTest)
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getEmailAddress(),
-            userAuthTest.getEmail()
+            userAuthTest.getEmail(),
         )
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getUserId(), userIdTest)
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFirstname(), "hugo")
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getSurname(), "nathan")
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getDateOfBirth(),
-            LocalDate.of(2000, 1, 1)
+            LocalDate.of(2000, 1, 1),
         )
         assertEquals(
-            database.userIdToUserAccount.get(userIdTest)?.getCurrentDistanceGoal()?.toInt(), 12
+            database.userIdToUserAccount.get(userIdTest)?.getCurrentDistanceGoal()?.toInt(),
+            12,
         )
         assertEquals(
-            database.userIdToUserAccount.get(userIdTest)?.getCurrentActivityTime()?.toInt(), 30
+            database.userIdToUserAccount.get(userIdTest)?.getCurrentActivityTime()?.toInt(),
+            30,
         )
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getCurrentNumberOfPathsGoal(), 2)
     }
@@ -252,11 +254,11 @@ class MockDataBaseTest {
         }
         assertEquals(
             "java.lang.Error: The distance goal can't be less or equal than 0.",
-            exception.message
+            exception.message,
         )
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getCurrentDistanceGoal()?.toInt(),
-            distanceGoalTest.toInt()
+            distanceGoalTest.toInt(),
         )
     }
 
@@ -268,7 +270,8 @@ class MockDataBaseTest {
         val database = MockDataBase()
         database.setCurrentDistanceGoal(13.0).get()
         assertEquals(
-            database.userIdToUserAccount.get(userIdTest)?.getCurrentDistanceGoal()?.toInt(), 13
+            database.userIdToUserAccount.get(userIdTest)?.getCurrentDistanceGoal()?.toInt(),
+            13,
         )
     }
 
@@ -283,11 +286,11 @@ class MockDataBaseTest {
         }
         assertEquals(
             "java.lang.Error: The activity time goal can't be less or equal than 0.",
-            exception.message
+            exception.message,
         )
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getCurrentActivityTime()?.toInt(),
-            activityTimeGoalTest.toInt()
+            activityTimeGoalTest.toInt(),
         )
     }
 
@@ -299,7 +302,8 @@ class MockDataBaseTest {
         val database = MockDataBase()
         database.setCurrentActivityTimeGoal(45.0).get()
         assertEquals(
-            database.userIdToUserAccount.get(userIdTest)?.getCurrentActivityTime()?.toInt(), 45
+            database.userIdToUserAccount.get(userIdTest)?.getCurrentActivityTime()?.toInt(),
+            45,
         )
     }
 
@@ -314,11 +318,11 @@ class MockDataBaseTest {
         }
         assertEquals(
             "java.lang.Error: The number of paths goal can't be less or equal than 0.",
-            exception.message
+            exception.message,
         )
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getCurrentNumberOfPathsGoal(),
-            nbOfPathsGoalTest
+            nbOfPathsGoalTest,
         )
     }
 
@@ -343,11 +347,11 @@ class MockDataBaseTest {
         }
         assertEquals(
             "java.lang.Exception: The user with faultId is not present on the database.",
-            exception.message
+            exception.message,
         )
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getFriendList(),
-            database.friendsListTest
+            database.friendsListTest,
         )
     }
 
@@ -364,7 +368,7 @@ class MockDataBaseTest {
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFriendList(), expectedList)
         assertEquals(
             database.userIdToUserAccount.get(database.userIdFriend2)?.getFriendList(),
-            listOf(database.userIdTest)
+            listOf(database.userIdTest),
         )
     }
 
@@ -375,19 +379,19 @@ class MockDataBaseTest {
     fun removeValidUserToFriendsList() {
         val database = MockDataBase()
         database.addUserToFriendsList(database.userIdFriend2).get()
-        //test if the user has been correctly added
+        // test if the user has been correctly added
         val expectedList = database.friendsListTest.toMutableList()
         expectedList.add(database.userIdFriend2)
         assertEquals(database.userIdToUserAccount.get(userIdTest)?.getFriendList(), expectedList)
-        //test if the same user has been correctly removed
+        // test if the same user has been correctly removed
         database.removeUserFromFriendlist(database.userIdFriend2).get()
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getFriendList(),
-            database.friendsListTest
+            database.friendsListTest,
         )
         assertEquals(
             database.userIdToUserAccount.get(database.userIdFriend2)?.getFriendList(),
-            emptyList<String>()
+            emptyList<String>(),
         )
     }
 
@@ -398,12 +402,12 @@ class MockDataBaseTest {
     fun addingAndRemovingRunsWorksAndKeepsOrder() {
         val database = MockDataBase()
 
-        //Add a run with starting after the one in database
+        // Add a run with starting after the one in database
         val newRun1StartTime = database.runTestStartTime + 1e7.toLong()
         val newRun1 = Run(
             Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
             newRun1StartTime,
-            newRun1StartTime + 2e6.toLong()
+            newRun1StartTime + 2e6.toLong(),
         )
         database.addRunToHistory(newRun1).get()
 
@@ -412,15 +416,15 @@ class MockDataBaseTest {
 
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getRunsHistory(),
-            expectedHistory
+            expectedHistory,
         )
 
-        //Add a run with starting time before the one in database
+        // Add a run with starting time before the one in database
         val newRun2StartTime = database.runTestStartTime - 1e7.toLong()
         val newRun2 = Run(
             Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
             newRun2StartTime,
-            newRun2StartTime + 2e6.toLong()
+            newRun2StartTime + 2e6.toLong(),
         )
         database.addRunToHistory(newRun2).get()
 
@@ -428,17 +432,17 @@ class MockDataBaseTest {
 
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getRunsHistory(),
-            expectedHistory
+            expectedHistory,
         )
 
-        //Remove original run
+        // Remove original run
         database.removeRunFromHistory(database.runTest)
 
         val expectedHistoryAfterRemove = listOf(newRun2, newRun1)
 
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getRunsHistory(),
-            expectedHistoryAfterRemove
+            expectedHistoryAfterRemove,
         )
     }
 
@@ -452,7 +456,7 @@ class MockDataBaseTest {
         val newRun = Run(
             Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
             database.runTestStartTime,
-            database.runTestStartTime + 2e6.toLong()
+            database.runTestStartTime + 2e6.toLong(),
         )
         database.addRunToHistory(newRun)
 
@@ -460,7 +464,7 @@ class MockDataBaseTest {
 
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getRunsHistory(),
-            expectedHistory
+            expectedHistory,
         )
     }
 
@@ -474,7 +478,7 @@ class MockDataBaseTest {
         val nonExistingRun = Run(
             Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
             nonExistingStartingTime,
-            nonExistingStartingTime + 2e6.toLong()
+            nonExistingStartingTime + 2e6.toLong(),
         )
         database.removeRunFromHistory(nonExistingRun)
 
@@ -482,10 +486,9 @@ class MockDataBaseTest {
 
         assertEquals(
             database.userIdToUserAccount.get(userIdTest)?.getRunsHistory(),
-            expectedHistory
+            expectedHistory,
         )
     }
-
 
     /**
      * Test if adding a dailyGoal in the database is correctly made
@@ -496,43 +499,43 @@ class MockDataBaseTest {
         database.addDailyGoal(DailyGoal(25.0, 30.0, 2, 20.0, 120.0, 1, LocalDate.of(2010, 1, 1)))
             .get()
 
-        //control the dailyGoal List
+        // control the dailyGoal List
         val obtainedDailyGoalList =
             database.userIdToUserAccount.get(database.userIdTest)!!.getDailyGoalList()
         assertEquals(obtainedDailyGoalList.size, 2)
 
-        //check the first daily goal
+        // check the first daily goal
         assertEquals(obtainedDailyGoalList.get(0).date, database.dailyGoalListTest.get(0).date)
         assertEquals(
             obtainedDailyGoalList.get(0).distanceInKilometerGoal,
             database.dailyGoalListTest.get(0).distanceInKilometerGoal,
-            0.001
+            0.001,
         )
         assertEquals(
             obtainedDailyGoalList.get(0).timeInMinutesGoal,
             database.dailyGoalListTest.get(0).timeInMinutesGoal,
-            0.001
+            0.001,
         )
         assertEquals(
             obtainedDailyGoalList.get(0).nbOfPathsGoal,
-            database.dailyGoalListTest.get(0).nbOfPathsGoal
+            database.dailyGoalListTest.get(0).nbOfPathsGoal,
         )
         assertEquals(
             obtainedDailyGoalList.get(0).distanceInKilometerProgress,
             database.dailyGoalListTest.get(0).distanceInKilometerProgress,
-            0.001
+            0.001,
         )
         assertEquals(
             obtainedDailyGoalList.get(0).timeInMinutesProgress,
             database.dailyGoalListTest.get(0).timeInMinutesProgress,
-            0.001
+            0.001,
         )
         assertEquals(
             obtainedDailyGoalList.get(0).nbOfPathsProgress,
-            database.dailyGoalListTest.get(0).nbOfPathsProgress
+            database.dailyGoalListTest.get(0).nbOfPathsProgress,
         )
 
-        //check the second daily goal
+        // check the second daily goal
         assertEquals(obtainedDailyGoalList.get(1).date, LocalDate.of(2010, 1, 1))
         assertEquals(obtainedDailyGoalList.get(1).distanceInKilometerGoal, 25.0, 0.001)
         assertEquals(obtainedDailyGoalList.get(1).timeInMinutesGoal, 30.0, 0.001)
@@ -555,7 +558,7 @@ class MockDataBaseTest {
         assertEquals(
             userAccount.getTotalActivityTime(),
             database.totalActivityTimeTest + 50.0,
-            0.001
+            0.001,
         )
         assertEquals(userAccount.getTotalNbOfPaths(), database.totalNbOfPathsTest + 1)
     }
