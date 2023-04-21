@@ -9,6 +9,8 @@ jobs:
         pull-requests: write
         issues: write
         repository-projects: write
+        contents: write
+        packages: write
       
     steps:
       - uses: actions/checkout@v3
