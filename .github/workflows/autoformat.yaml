@@ -1,6 +1,9 @@
 name: Code Auto Format
 run-name: Code Format by ${{ github.actor }}
 on: [push]
+#  push:
+#    branches:
+#      - main
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -13,11 +16,18 @@ jobs:
         packages: write
       
     steps:
-      - uses: actions/checkout@v3
-      - name: Code Format
+      - uses: tibdex/github-app-token@v1
+      id: get_installation_token
+      with: 
+        app_id: ${{ secrets.FORMATTER_APP_ID }}
+        installation_id: ${{ secrets.FORMATTER_INSTALL_ID }}
+        private_key: ${{ secrets.PRIVATE_KEY }}
         
-        env:
-          GITHUB_TOKEN: ${{ secrets.FORMATTER_TOKEN }}
+      - uses: actions/checkout@v3
+        with:
+            token: ${{ steps.get_installation_token.outputs.token }}
+      
+      - name: Code Format
         run: |
           java -jar ./programs/ktlint.jar -F ./app/**.kt || true
           if git diff-index --quiet HEAD --; then
@@ -25,7 +35,6 @@ jobs:
           else
               git config --global user.email "bot@drawyourpath.ch"
               git config --global user.name "DrawYourPathBot"
-              git branch
               git add .
               git commit -m "action: auto-formatting"
               git push
