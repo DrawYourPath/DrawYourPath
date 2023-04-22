@@ -24,7 +24,16 @@ data class TemporaryUser(
     fun addTrophy(trophy: Trophy) {
         if (trophies[trophy] == null) {
             trophies[trophy] = LocalDate.now()
+			
+			
         }
+		
+		
+		
+		
+		
+		
+		
     }
 
     /**
