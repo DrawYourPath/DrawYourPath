@@ -15,14 +15,13 @@ import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.lang.Integer.min
 import java.util.concurrent.CompletableFuture
 
-
 /**
  * used in a recycler view to display the [DailyGoal]
  */
 class DailyGoalViewAdapter(
     private val updateDistanceGoal: (distance: Double) -> CompletableFuture<Unit>,
     private val updateTimeGoal: (time: Double) -> CompletableFuture<Unit>,
-    private val updatePathGoal: (path: Int) -> CompletableFuture<Unit>
+    private val updatePathGoal: (path: Int) -> CompletableFuture<Unit>,
 ) :
     RecyclerView.Adapter<DailyGoalViewAdapter.ViewHolder>() {
 
@@ -58,7 +57,6 @@ class DailyGoalViewAdapter(
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
         val goalPos = GoalPos.values()[viewHolder.adapterPosition]
 
         viewHolder.text.text = getGoalUnit(goalPos, viewHolder.view.context)
@@ -213,7 +211,6 @@ class DailyGoalViewAdapter(
     }
 
     private enum class GoalPos {
-        DISTANCE, TIME, PATH;
+        DISTANCE, TIME, PATH
     }
-
 }

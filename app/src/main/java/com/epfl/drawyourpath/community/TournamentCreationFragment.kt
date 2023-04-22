@@ -27,7 +27,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     private lateinit var endDate: TextView
     private lateinit var endTime: TextView
 
-    //TODO add visibility to tournament
+    // TODO add visibility to tournament
     private lateinit var visibility: RadioGroup
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,7 +46,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         createDateAndTime(endDate, endTime)
 
         createCreateButton(view)
-
     }
 
     /**
@@ -57,7 +56,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         createButton.setOnClickListener {
             val newTournament = checkTournamentConstraints(view)
             if (newTournament != null) {
-                //TODO add tournament
+                // TODO add tournament
                 replaceFragment<CommunityFragment>()
             }
         }
@@ -83,23 +82,23 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
 
         var error = false
 
-        //check title
+        // check title
         error = error or checkConstraint(tournamentTitle.isBlank(), getString(R.string.tournament_creation_title_error), titleError)
-        //check description
+        // check description
         error = error or checkConstraint(tournamentDescription.isBlank(), getString(R.string.tournament_creation_description_error), descriptionError)
-        //check start date and time
+        // check start date and time
         error = error or checkConstraint(
             tournamentStartDate < LocalDateTime.now().plus(MIN_START_TIME_INTERVAL),
             getString(R.string.tournament_creation_start_date_error),
-            startDateError
+            startDateError,
         )
-        //check end date and time
+        // check end date and time
         error = error or checkConstraint(
             tournamentEndDate < tournamentStartDate.plus(MIN_END_TIME_INTERVAL),
             getString(R.string.tournament_creation_end_date_error),
-            endDateError
+            endDateError,
         )
-        //check visibility
+        // check visibility
         error = error or checkConstraint(tournamentVisibility == -1, getString(R.string.tournament_creation_visibility_error), visibilityError)
 
         if (error) {
@@ -111,7 +110,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             tournamentDescription.toString(),
             tournamentStartDate,
             tournamentEndDate,
-            visibility = getVisibility(view.findViewById(tournamentVisibility))
+            visibility = getVisibility(view.findViewById(tournamentVisibility)),
         )
     }
 
@@ -202,7 +201,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         }
     }
 
-
     /**
      * create the back button
      */
@@ -212,7 +210,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             replaceFragment<CommunityFragment>()
         }
     }
-
 
     /**
      * replace this fragment by another one
@@ -273,7 +270,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
                 append("%02d".format(time.minute))
             }
         }
-
     }
 
     /**
@@ -287,7 +283,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            //create a new instance of date picker
+            // create a new instance of date picker
 
             val date = getDate(text)
             return DatePickerDialog(
@@ -295,7 +291,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
                 this,
                 date.year,
                 date.monthValue - 1,
-                date.dayOfMonth
+                date.dayOfMonth,
             )
         }
 
@@ -315,7 +311,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            //create a new instance of time picker
+            // create a new instance of time picker
 
             val time = getTime(text)
             return TimePickerDialog(
@@ -323,7 +319,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
                 this,
                 time.hour,
                 time.minute,
-                true
+                true,
             )
         }
 
@@ -331,5 +327,4 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             setTime(LocalTime.of(hourOfDay, minute), text)
         }
     }
-
 }

@@ -211,10 +211,9 @@ interface DailyGoalDao {
                     goalAndProgress.nbOfPathsGoal,
                     distance,
                     time,
-                    paths
-                )
+                    paths,
+                ),
             )
         }
     }
-
 }

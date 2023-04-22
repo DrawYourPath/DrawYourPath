@@ -13,14 +13,14 @@ import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 
-
 class HistoryFragment : Fragment(R.layout.fragment_history) {
 
     private lateinit var runsAdapter: RunsAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
         val runsRecyclerView = view.findViewById<RecyclerView>(R.id.runsRecyclerView)
@@ -38,7 +38,6 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
      * Replace this with your own function to get the list of runs.
      */
     private fun getRunsData(): List<Run> {
-
         val runs = mutableListOf<Run>()
 
         val point1 = LatLng(0.0, 0.0)
@@ -61,5 +60,4 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
 
         return runs
     }
-
 }

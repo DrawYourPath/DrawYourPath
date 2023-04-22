@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.Auth
-import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.createAuth
 
 class ModifyPasswordFragment : Fragment(R.layout.fragment_modify_password) {
@@ -70,5 +69,4 @@ class ModifyPasswordFragment : Fragment(R.layout.fragment_modify_password) {
     private fun showResult(text: String) {
         Toast.makeText(activity, text, Toast.LENGTH_LONG).show()
     }
-
 }

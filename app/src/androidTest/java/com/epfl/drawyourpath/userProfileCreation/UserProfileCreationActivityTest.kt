@@ -19,24 +19,23 @@ class UserProfileCreationActivityTest {
      */
     @Test
     fun correctTransition() {
-        //pass in test mode to used the Mockdatabase instead of the Firebase
+        // pass in test mode to used the Mockdatabase instead of the Firebase
         var intent = Intent(
             ApplicationProvider.getApplicationContext(),
-            UserProfileCreationActivity::class.java
+            UserProfileCreationActivity::class.java,
         )
         intent.putExtra("isRunningTestForDataBase", true)
         var t: ActivityScenario<UserProfileCreationActivity> = ActivityScenario.launch(intent)
         Espresso.onView(ViewMatchers.withId(R.id.start_profile_creation_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is show after clicking on VALIDATE button
         Espresso.onView(ViewMatchers.withId(R.id.userName_frame)).check(
             ViewAssertions.matches(
-                ViewMatchers.isDisplayed()
-            )
+                ViewMatchers.isDisplayed(),
+            ),
         )
 
         t.close()
     }
-
 }

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import java.time.LocalDate
 
-
 /**
  * used in a recycler view to display the [Trophy]
  */
@@ -45,7 +44,6 @@ class TrophyViewAdapter(private val trophies: List<Pair<Trophy, LocalDate>>) :
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
         viewHolder.text.text = trophies[position].first.trophyName
         viewHolder.dateText.text = "Acquired ${trophies[position].second}"
         try {
@@ -55,10 +53,8 @@ class TrophyViewAdapter(private val trophies: List<Pair<Trophy, LocalDate>>) :
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 
     // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = trophies.count()
-
 }

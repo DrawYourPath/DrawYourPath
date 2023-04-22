@@ -1,9 +1,9 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
-import com.epfl.drawyourpath.path.Run
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -86,12 +86,11 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    private fun <T: Any> failedFuture(): CompletableFuture<T> {
+    private fun <T : Any> failedFuture(): CompletableFuture<T> {
         return CompletableFuture.supplyAsync { throw Error(ERROR_NAME) }
     }
 
     companion object {
         const val ERROR_NAME = "MockError: No Internet Connection"
     }
-
 }

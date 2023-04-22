@@ -1,47 +1,27 @@
 package com.epfl.drawyourpath.friendsList
 
-
-import android.content.Intent
-import android.os.Bundle
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ActivityScenario.launch
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.login.LoginActivity
 import com.epfl.drawyourpath.database.MockDataBase
-import com.epfl.drawyourpath.login.RESTORE_USER_IN_KEYCHAIN
-import com.epfl.drawyourpath.login.USE_MOCK_AUTH_KEY
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
-import com.epfl.drawyourpath.qrcode.QRScannerActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
-
-
 class FriendsFragmentTest {
 
     @get:Rule
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
-
-
-
-    //this test is commented out because I cant figure out how to type text in the search view
+    // this test is commented out because I cant figure out how to type text in the search view
     /*@Test
     fun searchFriendsDisplaysFilteredResults() {
         val database = MockDataBase()
@@ -68,13 +48,6 @@ class FriendsFragmentTest {
         onView(withText("friend1")).check(matches(isDisplayed()))
     }*/
 
-
-
-
-
-
-
-
     @Test
     fun correctListOfFriendsIsDisplayed() {
         val database = MockDataBase()
@@ -83,7 +56,6 @@ class FriendsFragmentTest {
         }
 
         onView(withText("friend1")).check(matches(isDisplayed()))
-
     }
 
     @Test
@@ -122,6 +94,7 @@ class FriendsFragmentTest {
         onView(withText("friend1")).check(matches(isDisplayed()))
         onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
     }
+
     @Test
     fun clickOnScanQROpensScanningActivity() {
         /* TODO: uncomment once the UserModel doesn't crash during tests

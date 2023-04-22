@@ -2,13 +2,10 @@ package com.epfl.drawyourpath.mainpage.fragments
 
 import android.view.WindowManager
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Root
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
@@ -19,26 +16,24 @@ import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 class ToastMatcher : TypeSafeMatcher<Root>() {
 
     override fun describeTo(description: org.hamcrest.Description?) {
-        description?.appendText("is toast");
+        description?.appendText("is toast")
     }
 
     override fun matchesSafely(root: Root): Boolean {
-        val type = root.windowLayoutParams.get().type;
+        val type = root.windowLayoutParams.get().type
         if ((type == WindowManager.LayoutParams.TYPE_TOAST)) {
-            val windowToken = root .decorView.windowToken;
-            val appToken = root .decorView.applicationWindowToken;
+            val windowToken = root.decorView.windowToken
+            val appToken = root.decorView.applicationWindowToken
             if (windowToken == appToken) {
-                return true;
+                return true
             }
         }
-        return false;
+        return false
     }
 }
-
 
 @RunWith(AndroidJUnit4::class)
 class SettingsFragmentTest {
@@ -49,9 +44,11 @@ class SettingsFragmentTest {
 
     @Test
     fun shouldShowErrorWhenUserNotSignedIn() {
-        val scenario = launchFragmentInContainer<ModifyPasswordFragment>(bundleOf(
-            Pair(USE_MOCK_AUTH, true)
-        ))
+        val scenario = launchFragmentInContainer<ModifyPasswordFragment>(
+            bundleOf(
+                Pair(USE_MOCK_AUTH, true),
+            ),
+        )
 
         onView(withId(R.id.BT_Apply)).perform(click())
         toastHasText("Not signed in.")
@@ -59,10 +56,12 @@ class SettingsFragmentTest {
 
     @Test
     fun emptyPasswordFailsToUpdateWithError() {
-        val scenario = launchFragmentInContainer<ModifyPasswordFragment>(bundleOf(
-            Pair(USE_MOCK_AUTH, true),
-            Pair(MOCK_FORCE_SIGNED, true)
-        ))
+        val scenario = launchFragmentInContainer<ModifyPasswordFragment>(
+            bundleOf(
+                Pair(USE_MOCK_AUTH, true),
+                Pair(MOCK_FORCE_SIGNED, true),
+            ),
+        )
 
         onView(withId(R.id.BT_Apply)).perform(click())
         toastHasText("Password is empty")
@@ -70,29 +69,41 @@ class SettingsFragmentTest {
 
     @Test
     fun mismatchingPasswordFailsToUpdateWithError() {
-        val scenario = launchFragmentInContainer<ModifyPasswordFragment>(bundleOf(
-            Pair(USE_MOCK_AUTH, true),
-            Pair(MOCK_FORCE_SIGNED, true)
-        ))
+        val scenario = launchFragmentInContainer<ModifyPasswordFragment>(
+            bundleOf(
+                Pair(USE_MOCK_AUTH, true),
+                Pair(MOCK_FORCE_SIGNED, true),
+            ),
+        )
 
-        onView(withId(R.id.ET_Password)).perform(clearText(),
-            typeText("NewP4ss\\/\\/0rd"))
-        onView(withId(R.id.ET_PasswordRepeat)).perform(clearText(),
-            typeText("NewP3ss\\/\\/0rdfoobar"))
+        onView(withId(R.id.ET_Password)).perform(
+            clearText(),
+            typeText("NewP4ss\\/\\/0rd"),
+        )
+        onView(withId(R.id.ET_PasswordRepeat)).perform(
+            clearText(),
+            typeText("NewP3ss\\/\\/0rdfoobar"),
+        )
         toastHasText("Passwords don't match")
     }
 
     @Test
     fun validPasswordShowsSuccessMessage() {
-        val scenario = launchFragmentInContainer<ModifyPasswordFragment>(bundleOf(
-            Pair(USE_MOCK_AUTH, true),
-            Pair(MOCK_FORCE_SIGNED, true)
-        ))
+        val scenario = launchFragmentInContainer<ModifyPasswordFragment>(
+            bundleOf(
+                Pair(USE_MOCK_AUTH, true),
+                Pair(MOCK_FORCE_SIGNED, true),
+            ),
+        )
 
-        onView(withId(R.id.ET_Password)).perform(clearText(),
-            typeText("NewP4ss\\/\\/0rd"))
-        onView(withId(R.id.ET_PasswordRepeat)).perform(clearText(),
-            typeText("NewP4ss\\/\\/0rd"))
+        onView(withId(R.id.ET_Password)).perform(
+            clearText(),
+            typeText("NewP4ss\\/\\/0rd"),
+        )
+        onView(withId(R.id.ET_PasswordRepeat)).perform(
+            clearText(),
+            typeText("NewP4ss\\/\\/0rd"),
+        )
         toastHasText("Passwords updated")
     }
 }

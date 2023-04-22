@@ -4,7 +4,6 @@ import com.google.firebase.database.Exclude
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 /**
  * A class representing a run taken by a user.
  * The run includes information such as the path taken, distance, duration, timestamp,
@@ -12,12 +11,11 @@ import java.util.*
  * Various methods are included to calculate and retrieve this information.
  */
 class Run(
-    //val user: User,             //TODO add later
-    private val path: Path,       //represents the path taken by the user
-    private val startTime: Long,  //the timestamps of the run
-    private val endTime: Long
+    // val user: User,             //TODO add later
+    private val path: Path, // represents the path taken by the user
+    private val startTime: Long, // the timestamps of the run
+    private val endTime: Long,
 ) {
-
 
     init {
         if (endTime <= startTime) {
@@ -30,44 +28,39 @@ class Run(
         calculateCalorieBurn()
     }
 
-
-    //the distance of the run (in meters)
+    // the distance of the run (in meters)
     private var distance: Double = 0.0
 
-    //the duration of the run (in seconds)
+    // the duration of the run (in seconds)
     private var duration: Long = 0L
 
-    //the average speed of the run (in meters per second)
+    // the average speed of the run (in meters per second)
     private var averageSpeed: Double = 0.0
 
-    //the calorie burn of the run
+    // the calorie burn of the run
     private var calories: Int = 0
 
-    //time it took to run 1km (in seconds)
+    // time it took to run 1km (in seconds)
     private var timeForOneKilometer: Long = 0L
-
 
     private fun calculateTimeForOneKilometer() {
         timeForOneKilometer = (averageSpeed * 1000).toLong()
     }
 
-
     private fun calculateAverageSpeed() {
         averageSpeed = distance / duration
-
     }
 
     private fun calculateDuration() {
         duration = endTime - startTime
     }
 
-
     /**
      * Calculates the calorie burn of the run based on the characteristics of the user.(not yes implemented)
      */
     fun calculateCalorieBurn() {
         calories = distance.toInt()
-        //TODO implement later based on the characteristics of the user
+        // TODO implement later based on the characteristics of the user
     }
 
     private fun calculateDistance() {
@@ -81,7 +74,6 @@ class Run(
     fun getDistance(): Double {
         return distance
     }
-
 
     /**
      * Returns the duration of the run (in seconds)
@@ -137,7 +129,6 @@ class Run(
     @Exclude
     fun getTimeForOneKilometer(): Long {
         return timeForOneKilometer
-
     }
 
     /**
@@ -147,6 +138,4 @@ class Run(
     fun getPath(): Path {
         return path
     }
-
-
 }

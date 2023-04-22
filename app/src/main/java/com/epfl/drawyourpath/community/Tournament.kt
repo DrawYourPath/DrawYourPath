@@ -14,8 +14,8 @@ data class Tournament(
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
     var posts: List<TournamentPost> = mutableListOf(),
-    var visibility: Visibility = Visibility.PUBLIC
-    //val result: List<User>?
+    var visibility: Visibility = Visibility.PUBLIC,
+    // val result: List<User>?
 ) : java.io.Serializable {
 
     /**
@@ -70,6 +70,4 @@ data class Tournament(
     enum class Visibility {
         FRIENDS_ONLY, PUBLIC
     }
-
-
 }

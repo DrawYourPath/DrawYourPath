@@ -3,65 +3,64 @@ package com.epfl.drawyourpath.userProfile
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 
 class UserModel {
-    //the userId of the user
+    // the userId of the user
     private val userId: String
 
-    //the userName is chosen by the user and can be modify
+    // the userName is chosen by the user and can be modify
     private var username: String
 
-    //the email is given at the beginning by the authentication part and can be modify
+    // the email is given at the beginning by the authentication part and can be modify
     private var emailAddress: String
 
-    //the firstname can't be modify after initialization
+    // the firstname can't be modify after initialization
     private val firstname: String
 
-    //the surname can't be modify after initialization
+    // the surname can't be modify after initialization
     private val surname: String
 
-    //the date of birth can't be modify after initialization
+    // the date of birth can't be modify after initialization
     private val dateOfBirth: LocalDate
 
-    //the distance goal is initialize at the profile creation and can be modify
+    // the distance goal is initialize at the profile creation and can be modify
     private var currentDistanceGoal: Double
 
-    //the activity time goal is initialize at the profile creation and can be modify
+    // the activity time goal is initialize at the profile creation and can be modify
     private var currentActivityTimeGoal: Double
 
-    //the number of path goal is initialize at the profile creation and can be modify
+    // the number of path goal is initialize at the profile creation and can be modify
     private var currentNbOfPathsGoal: Int
 
-    //list of daily goals realized by the user
+    // list of daily goals realized by the user
     private var dailyGoalList: List<DailyGoal>
 
-    //database where the user is store online
+    // database where the user is store online
     private var database: Database
 
-    //friend list
-    private var friendsList: List<String> //a list of userId
+    // friend list
+    private var friendsList: List<String> // a list of userId
 
-    //profile photo, can be null if the user don't want to
+    // profile photo, can be null if the user don't want to
     private var profilePhoto: Bitmap? = null
 
-    //runs history
+    // runs history
     private var runsHistory: List<Run>
 
-    //user achievements
-    //total distance run by the user
+    // user achievements
+    // total distance run by the user
     private var totalDistance: Double
 
-    //total activity time of the user
+    // total activity time of the user
     private var totalActivityTime: Double
 
-    //total number of paths draw by the user
+    // total number of paths draw by the user
     private var totalNbOfPaths: Int
-
 
     /**
      * This constructor will create a new user based on the user model of the app (constructor at the the profile creation)
@@ -92,30 +91,30 @@ class UserModel {
         dailyGoalList: List<DailyGoal> = emptyList(),
         totalDistance: Double = 0.0,
         totalActivityTime: Double = 0.0,
-        totalNbOfPaths: Int = 0
+        totalNbOfPaths: Int = 0,
     ) {
         this.database = database
 
-        //obtain the userId and the email give by the authentication
+        // obtain the userId and the email give by the authentication
         this.userId = userAuth.getUid()
         this.emailAddress = userAuth.getEmail()
 
-        //obtain the username
+        // obtain the username
         this.username = username
 
-        //check the format of the firstname
+        // check the format of the firstname
         checkNameFormat(firstname, "firstname")
         this.firstname = firstname
 
-        //check the format of the surname
+        // check the format of the surname
         checkNameFormat(surname, "surname")
         this.surname = surname
 
-        //check that the birth date respect the age condition of the app(10<=age<=100)
+        // check that the birth date respect the age condition of the app(10<=age<=100)
         checkDateOfBirth(dateOfBirth)
         this.dateOfBirth = dateOfBirth
 
-        //test the goals, the goals can't be equal or less than 0
+        // test the goals, the goals can't be equal or less than 0
         checkDistanceGoal(distanceGoal)
         this.currentDistanceGoal = distanceGoal
 
@@ -130,7 +129,7 @@ class UserModel {
         this.runsHistory = ArrayList()
         this.dailyGoalList = dailyGoalList
 
-        //init the user achievements
+        // init the user achievements
         this.totalDistance = totalDistance
         this.totalActivityTime = totalActivityTime
         this.totalNbOfPaths = totalNbOfPaths
@@ -172,30 +171,30 @@ class UserModel {
         dailyGoalList: List<DailyGoal> = emptyList(),
         totalDistance: Double = 0.0,
         totalActivityTime: Double = 0.0,
-        totalNbOfPaths: Int = 0
+        totalNbOfPaths: Int = 0,
     ) {
         this.database = database
 
-        //obtain the userId and the email give by the authentication
+        // obtain the userId and the email give by the authentication
         this.userId = userId
         this.emailAddress = emailAddress
 
-        //obtain the username
+        // obtain the username
         this.username = username
 
-        //check the format of the firstname
+        // check the format of the firstname
         checkNameFormat(firstname, "firstname")
         this.firstname = firstname
 
-        //check the format of the surname
+        // check the format of the surname
         checkNameFormat(surname, "surname")
         this.surname = surname
 
-        //check that the birth date respect the age condition of the app(10<=age<=100)
+        // check that the birth date respect the age condition of the app(10<=age<=100)
         checkDateOfBirth(dateOfBirth)
         this.dateOfBirth = dateOfBirth
 
-        //test the goals, the goals can't be equal or less than 0
+        // test the goals, the goals can't be equal or less than 0
         checkDistanceGoal(distanceGoal)
         this.currentDistanceGoal = distanceGoal
 
@@ -210,7 +209,7 @@ class UserModel {
         this.runsHistory = runsHistory
         this.dailyGoalList = dailyGoalList
 
-        //init the user achievements
+        // init the user achievements
         this.totalDistance = totalDistance
         this.totalActivityTime = totalActivityTime
         this.totalNbOfPaths = totalNbOfPaths
@@ -508,7 +507,7 @@ class UserModel {
      */
     fun updateAchievements(
         distanceDrawing: Double,
-        activityTimeDrawing: Double
+        activityTimeDrawing: Double,
     ): CompletableFuture<Unit> {
         return this.database.updateUserAchievements(distanceDrawing, activityTimeDrawing)
             .thenApply { isSet ->
@@ -547,8 +546,10 @@ class UserModel {
          * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
          */
         fun checkDateOfBirth(date: LocalDate) {
-            if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now()
-                    .plusYears(-100))
+            if (!(
+                    date < LocalDate.now().plusYears(-10) && date > LocalDate.now()
+                        .plusYears(-100)
+                    )
             ) {
                 throw java.lang.Error("Incorrect date of birth !")
             }

@@ -12,7 +12,7 @@ import java.util.*
  */
 data class TemporaryUser(
     val tournaments: List<Tournament> = listOf(),
-    private val trophies: EnumMap<Trophy, LocalDate> = EnumMap(Trophy::class.java)
+    private val trophies: EnumMap<Trophy, LocalDate> = EnumMap(Trophy::class.java),
 ) : java.io.Serializable {
 
     /**
@@ -35,5 +35,4 @@ data class TemporaryUser(
     fun getTrophies(): List<Pair<Trophy, LocalDate>> {
         return trophies.toList().filter { it.second != null }
     }
-
 }

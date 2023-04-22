@@ -35,32 +35,30 @@ class MockAuth(
             }
 
             override fun isAnonymous(): Boolean {
-
                 return false
             }
 
-             override fun updatePassword(password: String): CompletableFuture<Void> {
-                 if (password.isEmpty() || password.length < 5) {
-                     val res = CompletableFuture<Void>()
-                     res.completeExceptionally(Exception("Password is empty"))
-                     return res
-                 }
-                 return CompletableFuture.completedFuture(null)
-             }
+            override fun updatePassword(password: String): CompletableFuture<Void> {
+                if (password.isEmpty() || password.length < 5) {
+                    val res = CompletableFuture<Void>()
+                    res.completeExceptionally(Exception("Password is empty"))
+                    return res
+                }
+                return CompletableFuture.completedFuture(null)
+            }
         }
     }
-
 
     private var isLogged = userInKeyChain || forceSigned
 
     private fun mockLogin(callback: AuthCallback) {
-        //Timer().schedule(1500){
+        // Timer().schedule(1500){
         isLogged = !failing
         when (failing) {
             true -> callback(null, Exception("Mock failing"))
             false -> callback(MOCK_USER, null)
         }
-        //}
+        // }
     }
 
     override fun getUser(): User? {
@@ -94,11 +92,10 @@ class MockAuth(
     }
 
     override fun clearListener() {
-
     }
 
     override fun launchOneTapGoogleSignIn(activity: Activity, callback: AuthCallback) {
-        //mockLogin(callback)
+        // mockLogin(callback)
         if (withOneTapSignIn) {
             mockLogin(callback)
         } else {
@@ -111,14 +108,13 @@ class MockAuth(
     }
 
     override fun onActivityCreate(activity: Activity, savedInstanceState: Bundle?) {
-
     }
 
     override fun onActivityResult(
         activity: Activity,
         requestCode: Int,
         resultCode: Int,
-        data: Intent?
+        data: Intent?,
     ) {
     }
 }
