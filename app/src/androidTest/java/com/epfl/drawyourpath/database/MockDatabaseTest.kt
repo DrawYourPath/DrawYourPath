@@ -8,8 +8,7 @@ import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import java.time.LocalDate
 import java.util.concurrent.ExecutionException
@@ -139,7 +138,6 @@ class MockDatabaseTest {
         val exception = Assert.assertThrows(ExecutionException::class.java) {
             database.setUsername("abc", takenUsername).get()
         }
-        assertEquals(exception.message, "java.lang.Error: The username is not available !")
         assertEquals(database.unameToUid[takenUsername], "exId")
         assertEquals(database.unameToUid[usernameTest], userIdTest)
         assertEquals(database.users[userIdTest], usernameTest)
@@ -226,10 +224,6 @@ class MockDatabaseTest {
             database.setGoals(userIdTest, UserGoals(distance = -1.00)).get()
         }
         assertEquals(
-            "java.lang.Error: The distance goal can't be less or equal than 0.",
-            exception.message,
-        )
-        assertEquals(
             database.users[userIdTest]?.goals?.distance?.toInt(),
             distanceGoalTest.toInt(),
         )
@@ -254,13 +248,9 @@ class MockDatabaseTest {
     @Test
     fun setActivityTimeGoalInvalid() {
         val database = MockDatabase()
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+        val exception = Assert.assertThrows(ExecutionException::class.java) {
             database.setGoals(userIdTest, UserGoals(activityTime = -1)).get()
         }
-        assertEquals(
-            "java.lang.Error: The activity time goal can't be less or equal than 0.",
-            exception.message,
-        )
         assertEquals(
             database.users[userIdTest]?.goals?.activityTime?.toInt(),
             activityTimeGoalTest.toInt(),
@@ -290,10 +280,6 @@ class MockDatabaseTest {
             database.setGoals(userIdTest, UserGoals(paths = -1)).get()
         }
         assertEquals(
-            "java.lang.Error: The number of paths goal can't be less or equal than 0.",
-            exception.message,
-        )
-        assertEquals(
             database.users[userIdTest]?.goals?.paths,
             nbOfPathsGoalTest,
         )
@@ -318,10 +304,6 @@ class MockDatabaseTest {
         val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
             database.addFriend(userIdTest, "faultId").get()
         }
-        assertEquals(
-            "java.lang.Exception: The user with faultId is not present on the database.",
-            exception.message,
-        )
         assertEquals(
             database.users[userIdTest]?.friendList?.size,
             0

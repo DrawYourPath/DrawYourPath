@@ -41,10 +41,7 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // retrieve the value from the welcome activity to know if we are running testes
-        val isRunTest: Bundle? = arguments
-        if (isRunTest != null) {
-            isTest = isRunTest.getBoolean(PROFILE_TEST_KEY)
-        }
+        isTest = arguments?.getBoolean(PROFILE_TEST_KEY) ?: false
 
         // select the correct database in function of test scenario
         if (isTest) {
@@ -67,16 +64,13 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
         createSelectPhotoButton(selectPhotoButton, isTest)
 
         // return back to preferences if click on cancel button without modifying the username
-        cancelButton.setOnClickListener {
-            returnBackToPreviousFrag()
-        }
+        cancelButton.setOnClickListener { returnBackToPreviousFrag() }
 
         // set the new profile photo(print an error if no new photo have been selected) and go back to the previous fragment
-        validateButton.setOnClickListener {
-            validateButtonAction(newProfilePhoto, errorText)
-        }
+        validateButton.setOnClickListener { validateButtonAction(newProfilePhoto, errorText) }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == requestCodeFrag) {

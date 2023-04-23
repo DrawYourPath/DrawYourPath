@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.userProfile
 import android.graphics.Bitmap
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.authentication.FirebaseAuth
+import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
@@ -73,8 +74,8 @@ class UserModel {
         this.database = FirebaseDatabase()
 
         // obtain the userId and the email give by the authentication
-        this.userId = FirebaseAuth.getUser()!!.getUid()
-        this.emailAddress = "userAuth.getEmail()"
+        this.userId = FirebaseAuth.getUser()?.getUid() ?: MockAuth(forceSigned = true).getUser()!!.getUid()
+        this.emailAddress = userData.email ?: "userAuth.getEmail()"
 
         // obtain the username
         this.username = userData.username ?: "Anonymous"

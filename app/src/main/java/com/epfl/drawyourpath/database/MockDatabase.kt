@@ -187,13 +187,13 @@ class MockDatabase : Database() {
         Log.i("MOCK DB", text)
     }
 
-    private fun <T> userDoesntExist(): CompletableFuture<T> {
-        return Utils.failedFuture(Error("This user doesn't exist"))
+    private fun <T> userDoesntExist(userId: String? = null): CompletableFuture<T> {
+        return Utils.failedFuture(Error("This user doesn't exist $userId"))
     }
 
     val unameToUid = MOCK_USERS.associate { it.username to it.userId }.toMutableMap()
 
-    val users = HashMap<String, UserData>()
+    val users = MOCK_USERS.associateBy { it.userId }.toMutableMap()
 
     override fun isUserInDatabase(userId: String): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(unameToUid.containsValue(userId))
@@ -279,7 +279,8 @@ class MockDatabase : Database() {
 
     override fun setGoals(userId: String, goals: UserGoals): CompletableFuture<Unit> {
         if (!users.contains(userId)) {
-            return userDoesntExist()
+            Log.e("DYP", users.toString())
+            return userDoesntExist(userId)
         }
 
         if (goals.distance != null && goals.distance <= 0.0) {
