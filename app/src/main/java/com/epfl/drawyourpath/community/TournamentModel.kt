@@ -48,5 +48,4 @@ class TournamentModel : java.io.Serializable {
     }
 
     data class SampleTournamentModel(val weekly: Tournament, val your: List<Tournament>, val discover: List<Tournament>) : java.io.Serializable
-
 }

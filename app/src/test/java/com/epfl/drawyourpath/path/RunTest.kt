@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.path
 
-import com.github.drawyourpath.bootcamp.path.Run
 import com.google.android.gms.maps.model.LatLng
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
@@ -59,7 +58,6 @@ class RunTest {
         val endTime = 3000L
         val run = Run(path, startTime, endTime)
 
-
         assertEquals(path.getDistance() / 3000, run.getAverageSpeed(), 0.1)
     }
 
@@ -77,7 +75,7 @@ class RunTest {
         assertEquals(
             (path.getDistance() / 3000) * 1000,
             run.getTimeForOneKilometer().toDouble(),
-            1.0
+            1.0,
         )
     }
 }

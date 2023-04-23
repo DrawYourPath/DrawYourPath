@@ -10,8 +10,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
-import com.github.drawyourpath.bootcamp.path.Run
-import com.github.drawyourpath.path.RunsAdapter
+import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Test
@@ -59,8 +59,6 @@ class HistoryFragmentTest {
             recyclerView.layoutManager = LinearLayoutManager(fragment.requireContext())
 
             // wait for recyclerView to finish layout
-
-
         }
 
         // verify that the runs are displayed in the recyclerView
@@ -75,10 +73,10 @@ class HistoryFragmentTest {
                     "Distance: ${
                         String.format(
                             "%.2f",
-                            run.getDistance() / 1000
+                            run.getDistance() / 1000,
                         )
-                    } Km"
-                )
+                    } Km",
+                ),
             ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             Espresso.onView(ViewMatchers.withText("Time taken: ${run.getDuration()} minutes"))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -89,13 +87,11 @@ class HistoryFragmentTest {
                     "Speed: ${
                         String.format(
                             "%.2f",
-                            run.getAverageSpeed()
+                            run.getAverageSpeed(),
                         )
-                    } m/s"
-                )
+                    } m/s",
+                ),
             ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         }
     }
-
-
 }

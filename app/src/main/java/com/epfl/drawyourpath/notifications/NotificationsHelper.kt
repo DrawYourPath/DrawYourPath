@@ -22,7 +22,7 @@ class NotificationsHelper(private val context: Context) {
     fun setupNotifications(useMockRemindersManager: Boolean) {
         setupNotificationsChannels()
 
-        //Starts the daily challenge reminders notifications
+        // Starts the daily challenge reminders notifications
         val remindersManager = if (useMockRemindersManager) {
             MockRemindersManager
         } else {
@@ -33,17 +33,17 @@ class NotificationsHelper(private val context: Context) {
     }
 
     private fun setupNotificationsChannels() {
-        //Setup challenges reminder channel:
+        // Setup challenges reminder channel:
         setupChannel(
             context.resources.getString(R.string.channel_challenges_reminder_id),
             context.resources.getString(R.string.challenges_reminder),
             context.resources.getString(R.string.channel_challenges_reminder_desc),
-            IMPORTANCE_DEFAULT
+            IMPORTANCE_DEFAULT,
         )
-        //Can setup other channels if needed (like social/friends, tournaments,...)
+        // Can setup other channels if needed (like social/friends, tournaments,...)
     }
 
-    //Easy-to-use function to create notifications channels
+    // Easy-to-use function to create notifications channels
     private fun setupChannel(id: String, name: String, descriptionText: String, importance: Int) {
         val channel = NotificationChannel(id, name, importance).apply {
             description = descriptionText

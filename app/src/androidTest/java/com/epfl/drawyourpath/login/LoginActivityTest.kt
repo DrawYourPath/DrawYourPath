@@ -4,9 +4,7 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-
 import androidx.test.espresso.Espresso
-
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -17,11 +15,10 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.authentication.*
 import com.epfl.drawyourpath.mainpage.MainActivity
 import org.junit.Assert.*
 import org.junit.Test
@@ -30,7 +27,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class LoginActivityTest {
 
-
     @Test
     fun loginViewModelWithNoCallbackFailsSilently() {
         val viewModel = LoginViewModel()
@@ -38,7 +34,6 @@ class LoginActivityTest {
         viewModel.showLoginUI()
         viewModel.showRegisterUI()
     }
-
 
     private fun buttonHasText(id: Int, text: String) {
         // @see: https://github.com/android/android-test/issues/1642
@@ -50,16 +45,15 @@ class LoginActivityTest {
         userInKeychain: Boolean = false,
 
         withOneTap: Boolean = false,
-        useMock: Boolean = true
+        useMock: Boolean = true,
     ): ActivityScenario<LoginActivity> {
         Intents.init()
 
         val intent = Intent(getApplicationContext(), LoginActivity::class.java)
-        intent.putExtra(USE_MOCK_AUTH_KEY, useMock)
+        intent.putExtra(USE_MOCK_AUTH, useMock)
         intent.putExtra(MOCK_AUTH_FAIL, failingMock)
         intent.putExtra(RESTORE_USER_IN_KEYCHAIN, userInKeychain)
         intent.putExtra(ENABLE_ONETAP_SIGNIN, withOneTap)
-
 
         return launch(intent)
     }
@@ -95,7 +89,6 @@ class LoginActivityTest {
 
     @Test
     fun validUserInKeychainLaunchesMainMenuAutomatically() {
-
         var scenario = launchLoginActivity(failingMock = false, userInKeychain = true)
 
         intended(hasComponent(MainActivity::class.java.name))
@@ -105,7 +98,6 @@ class LoginActivityTest {
         scenario.close()
 
         scenario = launchLoginActivity(failingMock = true, userInKeychain = true)
-
 
         intended(hasComponent(MainActivity::class.java.name))
 
@@ -119,7 +111,7 @@ class LoginActivityTest {
         val scenario = launchLoginActivity(
             failingMock = false,
             userInKeychain = false,
-            withOneTap = true
+            withOneTap = true,
         )
 
         intended(hasComponent(MainActivity::class.java.name))
@@ -134,7 +126,7 @@ class LoginActivityTest {
         val scenario = launchLoginActivity(
             failingMock = true,
             userInKeychain = false,
-            withOneTap = true
+            withOneTap = true,
         )
 
         onView(withId(R.id.BT_RegisterGoogle)).check(matches(isDisplayed()))
@@ -159,9 +151,7 @@ class LoginActivityTest {
     }
 
     @Test
-
     fun failedLoginWithGoogleDoesntRedirectToMainMenu() {
-
         val scenario = launchLoginActivity(true)
 
         onView(withId(R.id.BT_Login)).perform(ViewActions.click())
@@ -174,7 +164,6 @@ class LoginActivityTest {
         scenario.close()
     }
 
-
     @Test
     fun registerWithGoogleRedirectsToAccountRegistration() {
         val scenario = launchLoginActivity()
@@ -182,13 +171,12 @@ class LoginActivityTest {
         onView(withId(R.id.BT_RegisterGoogle)).perform(ViewActions.click())
 
         // TODO: waiting for branch 23-user-profile-creation to be merged
-        //intended(hasComponent(XXXXXXX::class.java.name))
+        // intended(hasComponent(XXXXXXX::class.java.name))
 
         Intents.release()
 
         scenario.close()
     }
-
 
     @Test
     fun failedRegisterWithGoogleDoesntRedirectToAccountRegistration() {
@@ -203,7 +191,6 @@ class LoginActivityTest {
         scenario.close()
     }
 
-
     @Test
     fun registerWithEmailRedirectsToAccountRegistration() {
         val scenario = launchLoginActivity()
@@ -211,13 +198,12 @@ class LoginActivityTest {
         onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
 
         // TODO: waiting for branch 23-user-profile-creation to be merged
-        //intended(hasComponent(XXXXXXX::class.java.name))
+        // intended(hasComponent(XXXXXXX::class.java.name))
 
         Intents.release()
 
         scenario.close()
     }
-
 
     @Test
     fun failedRegisterWithEmailDoesntRedirectToAccountRegistration() {
@@ -226,7 +212,7 @@ class LoginActivityTest {
         onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
 
         // The remember password window breaks everything.
-        //onView(withId(R.id.BT_RegisterEmail)).check(matches(isDisplayed()))
+        // onView(withId(R.id.BT_RegisterEmail)).check(matches(isDisplayed()))
 
         Intents.release()
 
@@ -268,7 +254,7 @@ class LoginActivityTest {
         onView(withId(R.id.BT_RegisterAnonymous)).perform(ViewActions.click())
 
         // TODO: waiting for branch 23-user-profile-creation to be merged
-        //intended(hasComponent(XXXXXXX::class.java.name))
+        // intended(hasComponent(XXXXXXX::class.java.name))
 
         Intents.release()
 

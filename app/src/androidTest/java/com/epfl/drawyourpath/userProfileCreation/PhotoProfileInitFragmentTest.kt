@@ -31,7 +31,7 @@ class PhotoProfileInitFragmentTest : Fragment() {
         onView(withId(R.id.skipPhotoProfile_button_userProfileCreation))
             .perform(click())
 
-        //test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is show after clicking on VALIDATE button
         onView(withId(R.id.endProfileCreationFragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
@@ -50,7 +50,7 @@ class PhotoProfileInitFragmentTest : Fragment() {
         onView(withId(R.id.setPhotoProfile_button_userProfileCreation))
             .perform(click())
 
-        //test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is show after clicking on VALIDATE button
         onView(withId(R.id.endProfileCreationFragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
@@ -67,11 +67,11 @@ class PhotoProfileInitFragmentTest : Fragment() {
         onView(withId(R.id.selectPhotoInitPhotoFrag))
             .perform(click())
 
-        //test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is show after clicking on VALIDATE button
         onView(withId(R.id.photoProfile_error_text))
             .check(ViewAssertions.matches(ViewMatchers.withText("")))
 
-        //test that the image is displayed
+        // test that the image is displayed
         onView(withId(R.id.imagePhotoProfileInitFrag))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
@@ -89,26 +89,24 @@ class PhotoProfileInitFragmentTest : Fragment() {
         onView(withId(R.id.setPhotoProfile_button_userProfileCreation))
             .perform(click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         onView(withId(R.id.photoProfile_error_text))
             .check(ViewAssertions.matches(ViewMatchers.withText("* You have forgotten to select a photo !")))
 
-        //test that the image is displayed
+        // test that the image is displayed
         onView(withId(R.id.imagePhotoProfileInitFrag))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
         t.close()
     }
-
 }
-
 
 /**
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
 private fun goToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreationActivity> {
-    //pass in test mode to used the Mockdatabase instead of the Firebase
+    // pass in test mode to used the Mockdatabase instead of the Firebase
     var intent =
         Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)
     intent.putExtra("isRunningTestForDataBase", true)

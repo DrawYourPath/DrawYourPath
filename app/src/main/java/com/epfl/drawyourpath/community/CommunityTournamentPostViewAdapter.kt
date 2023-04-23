@@ -10,13 +10,12 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 
-
 /**
  * used in a recycler view to display the [TournamentPost]
  */
 class CommunityTournamentPostViewAdapter(
     private val tournamentPosts: List<Pair<Tournament, TournamentPost>>,
-    private val showTournamentName: Boolean
+    private val showTournamentName: Boolean,
 ) :
     RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
 
@@ -63,7 +62,7 @@ class CommunityTournamentPostViewAdapter(
             viewHolder.tournamentName.visibility = View.GONE
         }
 
-        //TODO change image(run) path of the post
+        // TODO change image(run) path of the post
 
         viewHolder.userName.text = post.user
 
@@ -87,8 +86,6 @@ class CommunityTournamentPostViewAdapter(
 
             viewHolder.voteCount.text = post.getVotes().toString()
         }
-
-
     }
 
     // Return the size of the dataset (invoked by the layout manager)
@@ -108,5 +105,4 @@ class CommunityTournamentPostViewAdapter(
         wrappedDrawable = DrawableCompat.wrap(holder.downvote.drawable)
         DrawableCompat.setTint(wrappedDrawable, view.resources.getColor(downvoteColor, null))
     }
-
 }

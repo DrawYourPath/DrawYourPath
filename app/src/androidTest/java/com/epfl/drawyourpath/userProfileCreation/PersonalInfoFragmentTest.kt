@@ -23,13 +23,13 @@ class PersonalInfoFragmentTest {
      */
     @Test
     fun errorPrintedWhithEmptyFirstname() {
-        //pass in test mode to used the Mockdatabase instead of the Firebase
+        // pass in test mode to used the Mockdatabase instead of the Firebase
         var t = goToPersonalInfoFragment()
 
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.firstnameError_text_userProfileCreation))
             .check(matches(withText("* This field can't be empty !")))
 
@@ -47,7 +47,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.surnameError_text_userProfileCreation))
             .check(matches(withText("* This field can't be empty !")))
 
@@ -68,7 +68,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.firstnameError_text_userProfileCreation))
             .check(matches(withText("* This field is in an incorrect format ! It must be composed of letters or character '-'")))
 
@@ -89,7 +89,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.surnameError_text_userProfileCreation))
             .check(matches(withText("* This field is in an incorrect format ! It must be composed of letters or character '-'")))
 
@@ -110,7 +110,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.firstnameError_text_userProfileCreation))
             .check(matches(withText("")))
 
@@ -131,7 +131,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.surnameError_text_userProfileCreation))
             .check(matches(withText("")))
 
@@ -145,14 +145,14 @@ class PersonalInfoFragmentTest {
     fun correctInitialDateShow() {
         var t = goToPersonalInfoFragment()
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.showDate_text_userProfileCreation))
             .check(matches(withText("dd/mm/yyyy")))
 
         t.close()
     }
 
-    //REMOVE THIS COMMAND TO TEST THE DATE LOCALLY BECAUSE CI DON'T HAVE A DATE PICKER
+    // REMOVE THIS COMMAND TO TEST THE DATE LOCALLY BECAUSE CI DON'T HAVE A DATE PICKER
 
     /**
      * Test if the correct date is show to the user after a date has been selected by the user
@@ -169,10 +169,9 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(android.R.id.button1))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.showDate_text_userProfileCreation))
             .check(matches(withText("20/2/2000")))
-
 
         t.close()
     }
@@ -188,7 +187,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct
+        // test if the text printed is correct
         Espresso.onView(withId(R.id.dateError_text_userProfileCreation))
             .check(matches(withText("* You forgot to indicate your birth date")))
 
@@ -213,7 +212,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct when the user is too young
+        // test if the text printed is correct when the user is too young
         Espresso.onView(withId(R.id.dateError_text_userProfileCreation))
             .check(matches(withText("* Your birthdate is impossible at this date")))
 
@@ -226,7 +225,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct when the user is too old
+        // test if the text printed is correct when the user is too old
         Espresso.onView(withId(R.id.dateError_text_userProfileCreation))
             .check(matches(withText("* Your birthdate is impossible at this date")))
         t.close()
@@ -247,13 +246,12 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(android.R.id.button1))
             .perform(ViewActions.click())
 
-        //test if the text printed is correct when the user is too young
+        // test if the text printed is correct when the user is too young
         Espresso.onView(withId(R.id.dateError_text_userProfileCreation))
             .check(matches(withText("")))
 
         t.close()
     }
-
 
     /**
      * Test that we pass to the next correct fragment after we click on the validate button if the data
@@ -278,7 +276,7 @@ class PersonalInfoFragmentTest {
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        //test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is show after clicking on VALIDATE button
         Espresso.onView(withId(R.id.userGoalInitFragment))
             .check(matches(isDisplayed()))
 
@@ -286,13 +284,12 @@ class PersonalInfoFragmentTest {
     }
 }
 
-
 /**
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
 private fun goToPersonalInfoFragment(): ActivityScenario<UserProfileCreationActivity> {
-    //pass in test mode to used the Mockdatabase instead of the Firebase
+    // pass in test mode to used the Mockdatabase instead of the Firebase
     var intent =
         Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)
     intent.putExtra("isRunningTestForDataBase", true)

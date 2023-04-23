@@ -1,23 +1,28 @@
 package com.epfl.drawyourpath.mainpage.fragments.helperClasses
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 
 data class Friend(
-    val id: Int,
+    val id: String,
     val name: String,
-    val profileImage: Int, // Use a drawable resource ID for simplicity. TODO probably change to a bitmap later
-    val isFriend: Boolean
+    val profileImage: Bitmap?,
+    var isFriend: Boolean,
 )
 
-
-// This adapter is responsible for displaying the list of friends in a RecyclerView.
-class FriendsListAdapter(private val onAddFriendClicked: (Friend) -> Unit) :
+/**
+ * This adapter is responsible for displaying the list of friends in a RecyclerView.
+ * The Friend parameter corresponds to the user that will be displayed in the friend list
+ * The Boolean parameter corresponds to weather that user is currently a friend or not
+ */
+class FriendsListAdapter(private val onAddOrRemoveFriendClicked: (Friend, Boolean) -> Unit) :
     RecyclerView.Adapter<FriendsListAdapter.FriendViewHolder>() {
 
     // This is the list of friends that the adapter will display.
@@ -34,19 +39,24 @@ class FriendsListAdapter(private val onAddFriendClicked: (Friend) -> Unit) :
          */
         fun bind(friend: Friend) {
             name.text = friend.name
-            profileImage.setImageResource(friend.profileImage)
-
-
-            addFriendButton.setOnClickListener {
-                onAddFriendClicked(friend)
+            if (friend.profileImage != null) {
+                profileImage.setImageBitmap(friend.profileImage)
+            } else {
+                profileImage.setImageResource(R.drawable.ic_profile_placeholder)
             }
 
             if (friend.isFriend) {
-                addFriendButton.text = "Friend"
-                addFriendButton.isEnabled = false
+                addFriendButton.text = "Unfriend"
+                addFriendButton.backgroundTintList = ContextCompat.getColorStateList(itemView.context, R.color.unfriend_button_color)
+                addFriendButton.setOnClickListener {
+                    onAddOrRemoveFriendClicked(friend, true)
+                }
             } else {
                 addFriendButton.text = "Add Friend"
-                addFriendButton.isEnabled = true
+                addFriendButton.backgroundTintList = ContextCompat.getColorStateList(itemView.context, R.color.add_friend_button_color)
+                addFriendButton.setOnClickListener {
+                    onAddOrRemoveFriendClicked(friend, false)
+                }
             }
         }
     }

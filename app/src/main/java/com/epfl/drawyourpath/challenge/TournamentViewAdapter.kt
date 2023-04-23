@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.Tournament
 
-
 /**
  * used in a recycler view to display the [Tournament]
  */
@@ -49,5 +48,4 @@ class TournamentViewAdapter(private val tournaments: List<Tournament>) :
 
     // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = tournaments.count()
-
 }

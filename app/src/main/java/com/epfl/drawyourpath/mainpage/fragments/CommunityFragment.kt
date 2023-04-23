@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.*
 import com.epfl.drawyourpath.path.Path
-import com.github.drawyourpath.bootcamp.path.Run
+import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.navigation.NavigationView
 import java.time.LocalDateTime
@@ -85,7 +85,6 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         tournamentPostsView.layoutManager = LinearLayoutManager(context)
         tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
     }
-
 
     /**
      * create the sort button which will sort the posts
@@ -189,7 +188,6 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         return tournament.posts.map { p -> Pair(tournament, p) }
     }
 
-
     /**
      * get all the posts from all tournaments
      *
@@ -224,8 +222,8 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         }
     }
 
-    //TODO replace by real tournaments
-    //everything from here are samples
+    // TODO replace by real tournaments
+    // everything from here are samples
 
     /**
      * sample tournaments
@@ -236,7 +234,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             TournamentPost("Michel", sampleRun(), 158),
             TournamentPost("MrPrefect", sampleRun(), 666),
             TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0)
+            TournamentPost("Invalid Username", sampleRun(), 0),
         )
 
         return Tournament(
@@ -244,7 +242,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             "draw a star path",
             LocalDateTime.now().plusDays(3L),
             LocalDateTime.now().plusDays(4L),
-            posts
+            posts,
         )
     }
 
@@ -257,14 +255,14 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             TournamentPost("Michel", sampleRun(), 158),
             TournamentPost("MrPrefect", sampleRun(), 666),
             TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0)
+            TournamentPost("Invalid Username", sampleRun(), 0),
         )
         val posts1 = mutableListOf(
             TournamentPost("xD c moi", sampleRun(), 35),
             TournamentPost("Jaqueline", sampleRun(), 356),
             TournamentPost("Diabolos", sampleRun(), 666),
             TournamentPost("me", sampleRun(), -563),
-            TournamentPost("IDK", sampleRun(), 0)
+            TournamentPost("IDK", sampleRun(), 0),
         )
         return mutableListOf(
             Tournament(
@@ -272,15 +270,15 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
                 "draw whatever you want",
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
-                posts1
+                posts1,
             ),
             Tournament(
                 "time square",
                 "draw a square",
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
-                posts
-            )
+                posts,
+            ),
         )
     }
 
@@ -293,14 +291,14 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             TournamentPost("Michel", sampleRun(), 158),
             TournamentPost("MrPrefect", sampleRun(), 666),
             TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0)
+            TournamentPost("Invalid Username", sampleRun(), 0),
         )
         val posts1 = mutableListOf(
             TournamentPost("SpaceMan", sampleRun(), 35),
             TournamentPost("NASA", sampleRun(), 124),
             TournamentPost("Diabolos", sampleRun(), 666),
             TournamentPost("Alien", sampleRun(), -3),
-            TournamentPost("IDK", sampleRun(), 0)
+            TournamentPost("IDK", sampleRun(), 0),
         )
         return mutableListOf(
             Tournament(
@@ -308,15 +306,15 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
                 "draw the earth",
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
-                posts1
+                posts1,
             ),
             Tournament(
                 "to the moon",
                 "draw the moon",
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
-                posts
-            )
+                posts,
+            ),
         )
     }
 

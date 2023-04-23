@@ -6,11 +6,11 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.database.MockDataBase
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-
 
 @RunWith(JUnit4::class)
 class MainActivityTest {
@@ -56,7 +56,16 @@ class MainActivityTest {
         // Check fragment is settings
         // see https://stackoverflow.com/questions/45172505/testing-android-preferencefragment-with-espresso
         onView(withId(androidx.preference.R.id.recycler_view)).check(matches(isDisplayed()))
+    }
 
+    @Test
+    fun usernameAndEmailAreCorrectInDrawerMenu() {
+        // go to drawer menu
+        onView(withId(R.id.profile_button)).perform(click())
+
+        // check username and email are correct
+        onView(withId(R.id.header_username)).check(matches(withText(MockDataBase().usernameTest)))
+        onView(withId(R.id.header_email)).check(matches(withText(MockDataBase().userAuthTest.getEmail())))
     }
 
     @Test
@@ -75,15 +84,11 @@ class MainActivityTest {
         // Check fragment is stats
         onView(withId(R.id.fragment_stats)).check(matches(isDisplayed()))
 
-
         // Go to challenge
         onView(withId(R.id.profile_button)).perform(click())
         onView(withId(R.id.challenge_menu_item)).perform(click())
 
         // Check fragment is challenge
         onView(withId(R.id.fragment_challenge)).check(matches(isDisplayed()))
-
     }
-
-
 }

@@ -12,18 +12,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.authentication.Auth
-import com.epfl.drawyourpath.authentication.FirebaseAuth
-import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.authentication.*
 import com.epfl.drawyourpath.mainpage.MainActivity
-
 import com.epfl.drawyourpath.userProfileCreation.UserProfileCreationActivity
-
-const val USE_MOCK_AUTH_KEY = "useMockAuth"
-const val MOCK_AUTH_FAIL = "useMockAuthFailing"
-const val RESTORE_USER_IN_KEYCHAIN = "restoreUserInKeychain"
-const val ENABLE_ONETAP_SIGNIN = "enableOneTapSignIn"
 
 const val LOG_LOGIN_KEY = "DYP_Login"
 
@@ -41,10 +32,11 @@ abstract class LoginActivityFragment(@LayoutRes layout: Int) : Fragment(layout) 
  * Class used to display an authentication UI to the user and perform the auth
  * operations through the Auth object.
  */
-class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivityListener,
+class LoginActivity :
+    AppCompatActivity(R.layout.activity_login),
+    RegisterActivityListener,
     LoginActivityListener {
     private val viewModel: LoginViewModel by viewModels()
-
 
     // The auth object used to authenticate the user.
     private lateinit var auth: Auth
@@ -58,7 +50,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
     // Can be controlled with RESTORE_USER_IN_KEYCHAIN in the intent.
     private var restoreUserFromKeychain: Boolean = true
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -70,15 +61,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
             intent.getBooleanExtra(RESTORE_USER_IN_KEYCHAIN, restoreUserFromKeychain)
 
         // Creates the auth object depending on the mock data in the intent.
-        val useMockAuthProvider = intent.getBooleanExtra(USE_MOCK_AUTH_KEY, false)
-        auth = when (useMockAuthProvider) {
-            true -> MockAuth(
-                failing = intent.getBooleanExtra(MOCK_AUTH_FAIL, false),
-                userInKeyChain = restoreUserFromKeychain,
-                withOneTapSignIn = useOneTapSignIn
-            )
-            false -> FirebaseAuth()
-        }
+        auth = createAuth(intent.extras, false, restoreUserFromKeychain)
 
         auth.onActivityCreate(this, savedInstanceState)
 
@@ -89,10 +72,8 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
             }
         }
 
-
         // When the user changed. i.e. signed out or signed in.
         auth.onAuthStateChanged { _, _ ->
-
         }
 
         showRegisterUI()
@@ -141,10 +122,9 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
         switchFragment<RegisterActions>()
     }
 
-
     private inline fun <reified T : LoginActivityFragment> switchFragment() {
         supportFragmentManager.commit {
-            //setCustomAnimations(R.anim.slide_in, R.anim.slide_out)
+            // setCustomAnimations(R.anim.slide_in, R.anim.slide_out)
             replace<T>(R.id.fragment_container_view)
         }
     }
@@ -156,6 +136,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), RegisterActivi
 
     private fun openMainMenu() {
         val mainMenuIntent = Intent(this, MainActivity::class.java)
+        mainMenuIntent.putExtra(MainActivity.EXTRA_USER_ID, auth.getUser()?.getUid())
         this.startActivity(mainMenuIntent)
     }
 

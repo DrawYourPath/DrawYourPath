@@ -8,9 +8,9 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.login.ENABLE_ONETAP_SIGNIN
+import com.epfl.drawyourpath.authentication.ENABLE_ONETAP_SIGNIN
+import com.epfl.drawyourpath.authentication.RESTORE_USER_IN_KEYCHAIN
 import com.epfl.drawyourpath.login.LoginActivity
-import com.epfl.drawyourpath.login.RESTORE_USER_IN_KEYCHAIN
 import com.epfl.drawyourpath.mainpage.USE_MOCK_CHALLENGE_REMINDER
 import com.epfl.drawyourpath.notifications.RemindersManager.Companion.CHALLENGES_REMINDER_ID
 import com.epfl.drawyourpath.notifications.RemindersManager.Companion.ERROR_REMINDER_ID
@@ -27,20 +27,19 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val notificationManager = ContextCompat.getSystemService(
             context,
-            NotificationManager::class.java
+            NotificationManager::class.java,
         ) as NotificationManager
 
         val disableAutoReconnection = intent.getBooleanExtra(USE_MOCK_CHALLENGE_REMINDER, false)
 
-        //Identify which notification to send, the intent is the one setup in the ReminderManager
+        // Identify which notification to send, the intent is the one setup in the ReminderManager
         when (intent.getIntExtra(REMINDER_KEY, ERROR_REMINDER_ID)) {
             CHALLENGES_REMINDER_ID ->
                 notificationManager.sendChallengesReminderNotification(
                     context,
-                    !disableAutoReconnection
+                    !disableAutoReconnection,
                 )
         }
-
     }
 }
 
@@ -50,7 +49,8 @@ class AlarmReceiver : BroadcastReceiver() {
  * @param enableAutoReconnection: set to true to allow immediate connection after clicking on notification
  */
 fun NotificationManager.sendChallengesReminderNotification(
-    applicationContext: Context, enableAutoReconnection: Boolean
+    applicationContext: Context,
+    enableAutoReconnection: Boolean,
 ) {
     // Intent to be launched when clicking on the notification
     val contentIntent = Intent(applicationContext, LoginActivity::class.java)
@@ -61,7 +61,7 @@ fun NotificationManager.sendChallengesReminderNotification(
         applicationContext,
         CHALLENGES_REMINDER_ID,
         contentIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 
     // Build the notification
@@ -73,20 +73,19 @@ fun NotificationManager.sendChallengesReminderNotification(
 
 private fun createChallengesReminderNotification(
     applicationContext: Context,
-    pendingIntent: PendingIntent
+    pendingIntent: PendingIntent,
 ): NotificationCompat.Builder {
     return NotificationCompat.Builder(
         applicationContext,
-        applicationContext.resources.getString(R.string.channel_challenges_reminder_id)
+        applicationContext.resources.getString(R.string.channel_challenges_reminder_id),
     )
         .setContentTitle(applicationContext.resources.getString(R.string.challenges_reminder))
         .setContentText(applicationContext.resources.getString(R.string.challenge_reminder_notification_text))
         .setSmallIcon(R.drawable.ic_draw_path)
         .setStyle(
             NotificationCompat.BigTextStyle()
-                .bigText(applicationContext.resources.getString(R.string.challenge_reminder_notification_text))
+                .bigText(applicationContext.resources.getString(R.string.challenge_reminder_notification_text)),
         )
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
 }
-

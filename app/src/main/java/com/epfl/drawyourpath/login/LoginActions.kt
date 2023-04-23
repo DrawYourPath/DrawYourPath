@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.login
 
-
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -22,7 +21,6 @@ class LoginActions : LoginActivityFragment(R.layout.fragment_login_actions) {
 
         val loginWithGoogleButton = view.findViewById<Button>(R.id.BT_LoginGoogle)
         loginWithGoogleButton.setOnClickListener {
-
             getLoginActivity<LoginActivityListener>().loginWithGoogle()
         }
 
@@ -30,7 +28,7 @@ class LoginActions : LoginActivityFragment(R.layout.fragment_login_actions) {
         loginWithEmailButton.setOnClickListener {
             getLoginActivity<LoginActivityListener>().loginWithEmailAndPassword(
                 view.findViewById<EditText>(R.id.ET_Email).text.toString(),
-                view.findViewById<EditText>(R.id.ET_Password).text.toString()
+                view.findViewById<EditText>(R.id.ET_Password).text.toString(),
             )
         }
     }
