@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -78,8 +79,9 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
 
     private fun createDatabase(isTest: Boolean): Database {
         return if (isTest) {
-            userCached.setDatabase(MockDatabase())
-            MockDatabase()
+            val db = MockDatabase()
+            userCached.setDatabase(db)
+            db
         } else {
             FirebaseDatabase()
         }
@@ -149,19 +151,25 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
 
             userCached.createNewUser(usermodel)
 
-            database.createUser(user.getUid(), UserData(
-                username = username,
-                firstname = firstname,
-                birthDate = dateOfBirth,
-                goals = UserGoals(
-                    distance = distanceGoal.toDouble(),
-                    activityTime = timeGoal.toLong(),
-                    paths = numberOfPathGoal.toLong(),
+            database.createUser(
+                if (!isTest) user.getUid() else "testidnew",
+                UserData(
+                    username = username,
+                    firstname = firstname,
+                    birthDate = dateOfBirth,
+                    goals = UserGoals(
+                        distance = distanceGoal.toDouble(),
+                        activityTime = timeGoal.toLong(),
+                        paths = numberOfPathGoal.toLong(),
+                    )
                 )
-            )).thenAccept {
+            ).thenAccept {
                 if (activity != null) {
                     launchNextFragment()
                 }
+            }.exceptionally {
+                Toast.makeText(context, "Error: ${it.localizedMessage}", Toast.LENGTH_SHORT).show()
+                null
             }
         }
     }
@@ -172,11 +180,8 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
 
         val photoProfileFrag = PhotoProfileInitFragment()
         photoProfileFrag.arguments = bundleOf(
-            // TODO: extract the key.
             PROFILE_TEST_KEY to isTest,
-
-            // TODO: Don't use database key in a unrelated context.
-            // PROFILE_USERNAME_KEY to username,
+            PROFILE_USERNAME_KEY to username,
         )
 
         fragManagement.replace(

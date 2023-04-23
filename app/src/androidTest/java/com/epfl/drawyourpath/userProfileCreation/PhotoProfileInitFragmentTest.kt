@@ -129,15 +129,15 @@ private fun manualGoToProfilePhotoInitFragment(): ActivityScenario<UserProfileCr
     onView(withId(R.id.start_profile_creation_button_userProfileCreation))
         .perform(click())
     onView(withId(R.id.input_userName_text_UserProfileCreation))
-        .perform(replaceText("h"))
+        .perform(replaceText("hohohoho00"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.setUserName_button_userProfileCreation))
         .perform(click())
     onView(withId(R.id.input_firstname_text_UserProfileCreation))
-        .perform(replaceText("H"))
+        .perform(replaceText("Hohohhoohohho"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.input_surname_text_UserProfileCreation))
-        .perform(replaceText("H"))
+        .perform(replaceText("Hhoohooohho"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.selectDate_button_userProfileCreation))
         .perform(click())
@@ -158,5 +158,6 @@ private fun manualGoToProfilePhotoInitFragment(): ActivityScenario<UserProfileCr
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.setUserGoals_button_userProfileCreation))
         .perform(click())
+
     return t
 }

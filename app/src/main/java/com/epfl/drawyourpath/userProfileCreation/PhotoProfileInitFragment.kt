@@ -7,10 +7,12 @@ import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
@@ -84,7 +86,8 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             errorText.setTextColor(Color.RED)
             return CompletableFuture<Boolean>().thenApplyAsync { false }
         } else {
-            return userCached.updateProfilePhoto(photoProfile!!).thenApplyAsync { true }
+            return userCached.updateProfilePhoto(photoProfile!!)
+                .thenApplyAsync { true }
         }
     }
 
@@ -105,6 +108,9 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
                 endProfileCreationFrag,
             )
                 .commit()
+        }
+        else {
+            Log.e("DYP", "Failed to show end profile fragment: activity is null")
         }
     }
 
@@ -152,6 +158,11 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
                 if (it) {
                     showEndProfileCreationFrag()
                 }
+                else {
+                    Toast.makeText(context, "Failed to update photo.", Toast.LENGTH_SHORT).show()
+                }
+            }.exceptionally {
+                Log.e("DYP", "Failed to set photo: ${it.message}")
             }
         }
     }
