@@ -43,7 +43,8 @@ class MockDatabase : Database() {
                 expectedDistance = 10.0,
                 time = 10.0,
             )
-        )
+        ),
+        friendList = listOf("0", "1")
     )
 
     val MOCK_USERS = listOf<UserData>(

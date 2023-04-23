@@ -47,7 +47,8 @@ class PreferencesFragmentTest {
      */
     @Test
     fun clickingOnModifyUsernameDisplaysModifyUsernameFragment() {
-        val scenario = launchFragmentInContainer<PreferencesFragment>(themeResId = R.style.Theme_Bootcamp)
+        val scenario =
+            launchFragmentInContainer<PreferencesFragment>(themeResId = R.style.Theme_Bootcamp)
 
         clickOnPreference("Modify username")
 
@@ -65,17 +66,23 @@ class PreferencesFragmentTest {
     @Test
     fun usernameUnAvailableIsPrintUnAvailableModifyUsername() {
         // pass in test mode to used the Mockdatabase instead of the Firebase
+        val takenUsername = "hugo"
         val bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
-        onView(withId(R.id.input_username_modify_username)).perform(replaceText("albert"))
+        onView(withId(R.id.input_username_modify_username)).perform(replaceText(takenUsername))
         closeSoftKeyboard()
         onView(withId(R.id.test_availability_modify_username)).perform(click())
 
         // test if the text printed is correct
         val targetContext: Context = ApplicationProvider.getApplicationContext()
-        val text: String = targetContext.resources.getString(R.string.username_not_vailable_or_previous_one).format("albert")
+        val text: String =
+            targetContext.resources.getString(R.string.username_not_vailable_or_previous_one)
+                .format(takenUsername)
         onView(withId(R.id.error_text_modify_username)).check(matches(withText(text)))
 
         scenario.close()
@@ -91,7 +98,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         onView(withId(R.id.test_availability_modify_username)).perform(click())
 
@@ -111,15 +121,19 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
-        onView(withId(R.id.input_username_modify_username)).perform(replaceText("hugo"))
+        onView(withId(R.id.input_username_modify_username)).perform(replaceText("albert"))
         closeSoftKeyboard()
         onView(withId(R.id.test_availability_modify_username)).perform(click())
 
         // test if the text printed is correct
         val targetContext: Context = ApplicationProvider.getApplicationContext()
-        val text: String = targetContext.resources.getString(R.string.username_available).format("hugo")
+        val text: String =
+            targetContext.resources.getString(R.string.username_available).format("albert")
         onView(withId(R.id.error_text_modify_username)).check(matches(withText(text)))
 
         scenario.close()
@@ -134,14 +148,19 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
-        onView(withId(R.id.input_username_modify_username)).perform(replaceText("albert"))
+        onView(withId(R.id.input_username_modify_username)).perform(replaceText("hugo"))
         onView(withId(R.id.validate_modify_username)).perform(click())
 
         // test if the text printed is correct
         val targetContext: Context = ApplicationProvider.getApplicationContext()
-        val text: String = targetContext.resources.getString(R.string.username_not_vailable_or_previous_one).format("albert")
+        val text: String =
+            targetContext.resources.getString(R.string.username_not_vailable_or_previous_one)
+                .format("hugo")
         onView(withId(R.id.error_text_modify_username)).check(matches(withText(text)))
 
         scenario.close()
@@ -156,7 +175,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         onView(withId(R.id.validate_modify_username)).perform(click())
 
@@ -175,7 +197,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<PreferencesFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<PreferencesFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         clickOnPreference("Modify username")
 
@@ -196,7 +221,8 @@ class PreferencesFragmentTest {
      */
     @Test
     fun clickingOnModifyProfilePhotoShowModifyProfilePhotoFragment() {
-        val scenario = launchFragmentInContainer<PreferencesFragment>(themeResId = R.style.Theme_Bootcamp)
+        val scenario =
+            launchFragmentInContainer<PreferencesFragment>(themeResId = R.style.Theme_Bootcamp)
 
         clickOnPreference("Modify Profile Photo")
 
@@ -211,7 +237,8 @@ class PreferencesFragmentTest {
      */
     @Test
     fun correctTransitionCancelButtonModifyProfilePhoto() {
-        val scenario = launchFragmentInContainer<PreferencesFragment>(themeResId = R.style.Theme_Bootcamp)
+        val scenario =
+            launchFragmentInContainer<PreferencesFragment>(themeResId = R.style.Theme_Bootcamp)
         clickOnPreference("Modify Profile Photo")
 
         onView(withId(R.id.cancel_modify_profile_photo)).perform(click())
@@ -232,7 +259,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         onView(withId(R.id.photo_description_modify_profile_photo)).check(matches(withText(R.string.actual_profile_photo)))
 
@@ -247,7 +277,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         onView(withId(R.id.photo_modify_profile_photo)).check(matches(withTagValue(equalTo(R.drawable.profile_placholderpng))))
 
@@ -262,11 +295,22 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         onView(withId(R.id.select_photo_modify_profile_photo)).perform(click())
 
-        onView(withId(R.id.photo_modify_profile_photo)).check(matches(withTagValue(equalTo(photoSelectedInPicker.byteCount))))
+        onView(withId(R.id.photo_modify_profile_photo)).check(
+            matches(
+                withTagValue(
+                    equalTo(
+                        photoSelectedInPicker.byteCount
+                    )
+                )
+            )
+        )
 
         scenario.close()
     }
@@ -279,7 +323,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         onView(withId(R.id.select_photo_modify_profile_photo)).perform(click())
 
@@ -298,7 +345,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         onView(withId(R.id.validate_modify_profile_photo))
             .perform(click())
@@ -319,7 +369,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         onView(withId(R.id.validate_modify_profile_photo))
             .perform(click())
@@ -339,7 +392,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         // test if the text printed is correct
         onView(withId(R.id.error_modify_profile_photo)).check(matches(withText("")))
@@ -357,7 +413,10 @@ class PreferencesFragmentTest {
         // pass in test mode to used the Mockdatabase instead of the Firebase
         val bundle: Bundle = Bundle()
         bundle.putBoolean(PROFILE_TEST_KEY, true)
-        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(fragmentArgs = bundle, themeResId = R.style.Theme_Bootcamp)
+        val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
+            fragmentArgs = bundle,
+            themeResId = R.style.Theme_Bootcamp
+        )
 
         // validate to display an error message
         onView(withId(R.id.validate_modify_profile_photo)).perform(click())

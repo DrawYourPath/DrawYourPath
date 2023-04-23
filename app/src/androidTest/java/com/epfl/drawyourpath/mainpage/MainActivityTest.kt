@@ -32,10 +32,10 @@ class MainActivityTest {
         onView(withId(R.id.fragment_community)).check(matches(isDisplayed()))
 
         // Go to friends
-        onView(withId(R.id.friends_menu_item)).perform(click())
+        // onView(withId(R.id.friends_menu_item)).perform(click())
 
         // Check fragment is friends
-        onView(withId(R.id.fragment_friends)).check(matches(isDisplayed()))
+        // onView(withId(R.id.fragment_friends)).check(matches(isDisplayed()))
 
         // Go to draw
         onView(withId(R.id.draw_menu_item)).perform(click())

@@ -16,7 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.FirebaseAuth
+import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.login.LoginActivity
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.MainActivity
@@ -26,9 +29,12 @@ import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
 import com.epfl.drawyourpath.userProfile.UserModel
 
+// TODO: Refactor this file
+
 class FriendsFragment(private val database: Database) : Fragment(R.layout.fragment_friends) {
     private lateinit var viewModel: FriendsViewModel
     private lateinit var friendsListAdapter: FriendsListAdapter
+    private lateinit var user: User
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,14 +59,21 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         }
         recyclerView.adapter = friendsListAdapter
 
-        val currentUser = FirebaseAuth.getUser()
+        val currentUser =
+            if (database is MockDatabase)
+                MockAuth(forceSigned = true).getUser()
+            else
+                FirebaseAuth.getUser()
+
         if (currentUser == null) {
             launchLoginActivity(requireActivity())
             return
         }
+        user = currentUser
 
+        // TODO: Migrate away from UserModel and refactor
         // Initialize the ViewModel
-        val userAccountFuture = database.getUserData(currentUser.getUid())
+        val userAccountFuture = database.getUserData(user.getUid())
 
         userAccountFuture.thenApply { userdata ->
 
@@ -144,15 +157,18 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         val mainActivity = requireActivity() as MainActivity
         mainActivity.scanQRCode()
             .thenApply {
-                // TODO: Add friend from ID "it"
                 if (it == null) {
                     Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(mainActivity, "Scanned $it", Toast.LENGTH_LONG).show()
+                }
+                else {
+                    database.addFriend(user.getUid(), it).thenAccept {
+                        Toast.makeText(mainActivity, "Friend added", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             .exceptionally {
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+                null
             }
     }
 }
