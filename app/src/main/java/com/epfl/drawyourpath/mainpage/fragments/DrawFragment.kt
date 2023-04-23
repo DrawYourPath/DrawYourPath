@@ -17,19 +17,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
-import com.google.android.libraries.places.api.net.PlacesClient
 
 class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
 
     private var map: GoogleMap? = null
     private var lastKnownLocation: Location? = null
-    private var currentZoom = DEFAULT_ZOOM
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var locationPermissionGranted = false
 
@@ -39,9 +33,7 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
         }
-
         Places.initialize(this.requireActivity().applicationContext, getString(R.string.google_api_key))
-
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
 
         val mapFragment = childFragmentManager
@@ -51,18 +43,22 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         this.map = map
+        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
         getLocationPermission()
         updateLocationUI()
         getDeviceLocation()
     }
 
     private fun getLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this.requireActivity().applicationContext,
+        if (ContextCompat.checkSelfPermission(
+                this.requireActivity().applicationContext,
                 Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
             locationPermissionGranted = true
         } else {
-            ActivityCompat.requestPermissions(this.requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            ActivityCompat.requestPermissions(
+                this.requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
         }
     }
@@ -73,7 +69,6 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
         locationPermissionGranted = false
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -109,18 +104,17 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
     private fun getDeviceLocation() {
         try {
             if (locationPermissionGranted) {
-                // request location updates
+                // Request the location periodically
                 val locationRequest = LocationRequest.create()
-                    .setInterval(5000)
-                    .setFastestInterval(2000)
+                    .setInterval(LOCATION_REQUEST_INTERVAL)
+                    .setFastestInterval(LOCATION_REQUEST_MIN_INTERVAL)
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
                 fusedLocationProviderClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult?) {
                         if (locationResult != null) {
                             for (location in locationResult.locations) {
-                                val coordinates = LatLng(location.latitude, location.longitude)
-                                map?.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, currentZoom))
+                                map?.animateCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
                             }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.")
@@ -146,6 +140,8 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
         private val TAG = DrawFragment::class.java.simpleName
         private val DEFAULT_LOCATION = LatLng(46.5185, 6.56177)
         private const val DEFAULT_ZOOM = 18F
+        private const val LOCATION_REQUEST_INTERVAL = 10000L
+        private const val LOCATION_REQUEST_MIN_INTERVAL = 5000L
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
         private const val KEY_LOCATION = "location"
     }
