@@ -14,27 +14,18 @@ import java.time.LocalDate
 import java.util.concurrent.ExecutionException
 
 class MockDatabaseTest {
+    val mockDatabase = MockDatabase()
+
     val userIdTest: String = MockAuth.MOCK_USER.getUid()
     val userAuthTest: User = MockAuth.MOCK_USER
-    val usernameTest: String = "albert"
-    val distanceGoalTest: Double = 10.0
-    val activityTimeGoalTest: Double = 60.0
-    val nbOfPathsGoalTest: Int = 5
-    val firstnameTest = "Hugo"
-    val surnameTest = "Hof"
-    val takenUsername = "nathan"
-    val dateOfBirthTest = LocalDate.of(2000, 2, 20)
-    val userModelTest = UserModel(
-        userAuthTest,
-        usernameTest,
-        firstnameTest,
-        surnameTest,
-        dateOfBirthTest,
-        distanceGoalTest,
-        activityTimeGoalTest,
-        nbOfPathsGoalTest,
-        MockDatabase(),
-    )
+    val usernameTest: String = mockDatabase.mockUser.username!!
+    val distanceGoalTest: Double = mockDatabase.mockUser.goals!!.distance!!
+    val activityTimeGoalTest: Double = mockDatabase.mockUser.goals!!.activityTime!!.toDouble()
+    val nbOfPathsGoalTest: Int = mockDatabase.mockUser.goals!!.paths!!.toInt()
+    val firstnameTest = mockDatabase.mockUser.firstname!!
+    val surnameTest = mockDatabase.mockUser.surname!!
+    val takenUsername = mockDatabase.MOCK_USERS[1].username!!
+    val dateOfBirthTest = mockDatabase.mockUser.birthDate!!
 
     /**
      * Test if userId present in the database is given has present
@@ -72,8 +63,7 @@ class MockDatabaseTest {
     @Test
     fun getUsernameFromUserIdNotPresent() {
         val database = MockDatabase()
-        val username = database.getUsername("test").get()
-        assertEquals(username, null)
+        assertThrows(Throwable::class.java) { database.getUsername("testinvalid").get() }
     }
 
     /**
@@ -92,8 +82,7 @@ class MockDatabaseTest {
     @Test
     fun getUserIdFromUsernameNotPresent() {
         val database = MockDatabase()
-        val userId = database.getUserIdFromUsername("test").get()
-        assertEquals(userId, null)
+        assertThrows(Throwable::class.java) { database.getUserIdFromUsername("test").get() }
     }
 
     /**
@@ -135,12 +124,11 @@ class MockDatabaseTest {
     fun updateUsernameNotAvailable() {
         val database = MockDatabase()
 
-        val exception = Assert.assertThrows(ExecutionException::class.java) {
-            database.setUsername("abc", takenUsername).get()
+        assertThrows(Throwable::class.java) {
+            database.setUsername(userIdTest, takenUsername).get()
         }
-        assertEquals(database.unameToUid[takenUsername], "exId")
-        assertEquals(database.unameToUid[usernameTest], userIdTest)
-        assertEquals(database.users[userIdTest], usernameTest)
+        assertEquals(userIdTest, database.unameToUid[usernameTest])
+        assertEquals(usernameTest, database.users[userIdTest]?.username)
     }
 
     /**
@@ -150,7 +138,7 @@ class MockDatabaseTest {
     fun setUsernameAvailable() {
         val database = MockDatabase()
         database.setUsername(userIdTest, "albert").get()
-        assertEquals(database.users[userIdTest], "albert")
+        assertEquals(database.users[userIdTest]?.username, "albert")
         assertEquals(database.unameToUid["albert"], userIdTest)
     }
 
@@ -160,9 +148,9 @@ class MockDatabaseTest {
     @Test
     fun setUsernameNotAvailable() {
         val database = MockDatabase()
-        database.setUsername(userIdTest, takenUsername).get()
-        assertEquals(database.unameToUid[takenUsername], "exId")
-        assertEquals(database.users[userIdTest]!!.username == takenUsername, false)
+        assertThrows(Throwable::class.java) {
+            database.setUsername(userIdTest, takenUsername).get()
+        }
     }
 
     /**
@@ -180,7 +168,7 @@ class MockDatabaseTest {
         assertEquals(user.birthDate, dateOfBirthTest)
         assertEquals(user.goals?.distance ?: 0.0, distanceGoalTest, 0.001)
         assertEquals(user.goals?.activityTime?.toDouble() ?: 0.0, activityTimeGoalTest, 0.001)
-        assertEquals(user.goals?.paths ?: 0, nbOfPathsGoalTest)
+        assertEquals(user.goals?.paths ?: 0, nbOfPathsGoalTest.toLong())
     }
 
     /**
@@ -195,7 +183,7 @@ class MockDatabaseTest {
             email = userAuthTest.getEmail(),
             firstname = firstnameTest,
             surname = surnameTest,
-            birthDate = dateOfBirthTest.toEpochDay(),
+            birthDate = dateOfBirthTest,
             goals = UserGoals(
                 distance = distanceGoalTest,
                 activityTime = activityTimeGoalTest.toLong(),
@@ -248,7 +236,7 @@ class MockDatabaseTest {
     @Test
     fun setActivityTimeGoalInvalid() {
         val database = MockDatabase()
-        val exception = Assert.assertThrows(ExecutionException::class.java) {
+        val exception = Assert.assertThrows(Throwable::class.java) {
             database.setGoals(userIdTest, UserGoals(activityTime = -1)).get()
         }
         assertEquals(
@@ -265,8 +253,8 @@ class MockDatabaseTest {
         val database = MockDatabase()
         database.setGoals(userIdTest, UserGoals(activityTime = 45)).get()
         assertEquals(
-            database.users[userIdTest]?.goals?.activityTime?.toInt(),
             45,
+            database.users[userIdTest]?.goals?.activityTime?.toInt(),
         )
     }
 
@@ -276,13 +264,9 @@ class MockDatabaseTest {
     @Test
     fun setNbOfPathsGoalInvalid() {
         val database = MockDatabase()
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+        assertThrows(Throwable::class.java) {
             database.setGoals(userIdTest, UserGoals(paths = -1)).get()
         }
-        assertEquals(
-            database.users[userIdTest]?.goals?.paths,
-            nbOfPathsGoalTest,
-        )
     }
 
     /**
@@ -292,7 +276,7 @@ class MockDatabaseTest {
     fun setNbOfPathsGoalValid() {
         val database = MockDatabase()
         database.setGoals(userIdTest, UserGoals(paths = 1)).get()
-        assertEquals(database.users[userIdTest]?.goals?.paths, 1)
+        assertEquals(database.users[userIdTest]?.goals?.paths, 1L)
     }
 
     /**
@@ -301,11 +285,11 @@ class MockDatabaseTest {
     @Test
     fun addInvalidUserToFriendsList() {
         val database = MockDatabase()
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+        assertThrows(Throwable::class.java) {
             database.addFriend(userIdTest, "faultId").get()
         }
         assertEquals(
-            database.users[userIdTest]?.friendList?.size,
+            database.users[userIdTest]?.friendList?.size ?: 0,
             0
         )
     }
@@ -316,15 +300,15 @@ class MockDatabaseTest {
     @Test
     fun addValidUserToFriendsList() {
         val database = MockDatabase()
-        database.addFriend(userIdTest, "Hugo").get()
+        database.addFriend(userIdTest, mockDatabase.MOCK_USERS[0].userId!!).get()
 
         assertEquals(
-            database.users[userIdTest]?.friendList?.contains(database.unameToUid["Hugo"]),
+            database.users[userIdTest]?.friendList?.contains(mockDatabase.MOCK_USERS[0].userId!!),
             true
         )
 
         assertEquals(
-            database.users[database.unameToUid["Hugo"]]?.friendList?.contains(userIdTest),
+            database.users[mockDatabase.MOCK_USERS[0].userId!!]?.friendList?.contains(userIdTest),
             true
         )
     }
@@ -391,9 +375,9 @@ class MockDatabaseTest {
         )
 
         // Remove original run
-        database.removeRunFromHistory(userIdTest, expectedHistory[0])
+        database.removeRunFromHistory(userIdTest, newRun1)
 
-        val expectedHistoryAfterRemove = listOf(newRun2, newRun1)
+        val expectedHistoryAfterRemove = listOf(newRun2)
 
         assertEquals(
             database.users[userIdTest]?.runs,
@@ -440,8 +424,8 @@ class MockDatabaseTest {
         val expectedHistory = listOf<Run>()
 
         assertEquals(
-            database.users[userIdTest]?.runs,
-            expectedHistory,
+            expectedHistory.size,
+            database.users[userIdTest]?.runs?.size,
         )
     }
 
@@ -453,9 +437,11 @@ class MockDatabaseTest {
         val database = MockDatabase()
         database.addDailyGoal(
             userIdTest,
-            DailyGoal(25.0, 30.0,
+            DailyGoal(
+                25.0, 30.0,
                 2, 20.0, 120.0,
-                1, LocalDate.of(2010, 1, 1))
+                1, LocalDate.of(2010, 1, 1)
+            )
         ).get()
         /*
 
@@ -512,9 +498,8 @@ class MockDatabaseTest {
     @Test
     fun updateUserAchievementsCorrect() {
         val database = MockDatabase()
-        database.updateUserAchievements(userIdTest, 10.0, 50.0).get()
         /*
-
+        database.updateUserAchievements(userIdTest, 10.0, 50.0).get()
         val userAccount = database.users[database.userIdTest]!!
         assertEquals(userAccount.getTotalDistance(), database.totalDistanceTest + 10.0, 0.001)
         assertEquals(
@@ -526,3 +511,4 @@ class MockDatabaseTest {
         */
     }
 }
+

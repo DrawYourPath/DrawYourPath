@@ -27,11 +27,11 @@ class MockDatabase : Database() {
         firstname = "testfirstnamemock",
         picture = "1234567890",
         runs = listOf(
-            Run(
+            /*Run(
                 startTime = 10,
                 endTime = 20,
                 path = Path()
-            )
+            )*/
         ),
         dailyGoals = listOf(
             DailyGoal(
@@ -255,14 +255,11 @@ class MockDatabase : Database() {
 
         val current = users[userId]!!
 
-        users[userId] = UserData(
-            birthDate = userData.birthDate ?: current.birthDate,
-            picture = userData.picture ?: current.picture,
-            surname = userData.surname ?: current.surname,
-            firstname = userData.firstname ?: current.firstname,
+        users[userId] = current.copy(
             goals = UserGoals(
                 distance = userData.goals?.distance ?: current.goals?.distance,
                 paths = userData.goals?.paths ?: current.goals?.paths,
+                activityTime = userData.goals?.activityTime ?: current.goals?.activityTime,
             )
         )
 
@@ -289,6 +286,10 @@ class MockDatabase : Database() {
 
         if (goals.paths != null && goals.paths <= 0) {
             return Utils.failedFuture(Exception("Path must be greater than 0."))
+        }
+
+        if (goals.activityTime != null && goals.activityTime <= 0) {
+            return Utils.failedFuture(Exception("Activity Time must be greater than 0."))
         }
 
         return setUserData(userId, UserData(goals = goals))
@@ -345,7 +346,9 @@ class MockDatabase : Database() {
         val current = users[userId]!!
 
         users[userId] = current.copy(
-            runs = (current.runs ?: emptyList()) + run
+            runs = ((current.runs ?: emptyList()) + run).sortedBy {
+                it.getStartTime()
+            }
         )
 
         return CompletableFuture.completedFuture(Unit)

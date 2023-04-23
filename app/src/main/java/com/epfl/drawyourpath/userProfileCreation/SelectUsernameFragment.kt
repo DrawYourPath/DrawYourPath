@@ -26,52 +26,48 @@ class SelectUsernameFragment : Fragment(R.layout.fragment_user_name_test_and_set
     private lateinit var auth: Auth
 
     private lateinit var outputView: TextView
+    private lateinit var inputUserName: EditText;
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // retrieve the value from the welcome activity to know if we are running testes
-        isTest = when (arguments) {
-            null -> false
-            else -> requireArguments().getBoolean(PROFILE_TEST_KEY)
-        }
+        isTest = arguments?.getBoolean(PROFILE_TEST_KEY) ?: false
 
         setupEnv(isTest)
 
         // select the correct database in function of test scenario
         val testUserNameButton: Button =
             view.findViewById(R.id.testUserName_button_userProfileCreation)
-        val inputUserName: EditText =
-            view.findViewById(R.id.input_userName_text_UserProfileCreation)
+        inputUserName = view.findViewById(R.id.input_userName_text_UserProfileCreation)
 
         outputView = view.findViewById(R.id.testUserName_text_userProfileCreation)
 
-        testUserNameButton.setOnClickListener {
-            checkAvailability(inputUserName.text.toString())
-        }
+        testUserNameButton.setOnClickListener { checkAvailability(inputUserName.text.toString()) }
 
-        val setUserNameButton: Button =
-            view.findViewById(R.id.setUserName_button_userProfileCreation)
-        setUserNameButton.setOnClickListener {
-            // try to set the userName to the database
-            val usernameStr = inputUserName.text.toString()
+        val setUserNameButton =
+            view.findViewById<Button>(R.id.setUserName_button_userProfileCreation)
+        setUserNameButton.setOnClickListener { onSetUsernameButtonClicked() }
+    }
 
-            Log.i("DYP", "Checking availability of username $usernameStr")
+    private fun onSetUsernameButtonClicked() {
+        // try to set the userName to the database
+        val usernameStr = inputUserName.text.toString()
 
-            checkAvailability(usernameStr).thenAccept {
-                if (it) {
-                    showPersonalInfoFragment(usernameStr)
-                    Log.i("DYP", "Username $usernameStr is available")
-                }
-                else {
-                    Log.e("DYP", "Username $usernameStr is taken")
-                }
-            }.exceptionally {
-                Log.e("DYP", "Failed to check username: ${it.message}" )
-                it.printStackTrace()
-                setErrorMessage("${it.message}")
-                null
+        Log.i("DYP", "Checking availability of username $usernameStr")
+
+        checkAvailability(usernameStr).thenAccept {
+            if (it) {
+                showPersonalInfoFragment(usernameStr)
+                Log.i("DYP", "Username $usernameStr is available")
+            } else {
+                Log.e("DYP", "Username $usernameStr is taken")
             }
+        }.exceptionally {
+            Log.e("DYP", "Failed to check username: ${it.message}")
+            it.printStackTrace()
+            setErrorMessage("${it.message}")
+            null
         }
     }
 
@@ -163,8 +159,7 @@ class SelectUsernameFragment : Fragment(R.layout.fragment_user_name_test_and_set
                 setErrorMessage(it.message ?: "Unknown error")
                 null
             }
-        }
-        else {
+        } else {
             Log.e("DYP", "Can't move to next fragment as activity is null.")
         }
     }
