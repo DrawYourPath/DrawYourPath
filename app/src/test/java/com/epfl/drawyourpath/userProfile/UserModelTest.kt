@@ -11,6 +11,10 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.time.LocalDate
 
+
+// TODO: As we are going to remove this class, tests aren't necessary
+/*
+
 class UserModelTest {
     private val userId = "aUyFLWgYxmoELRUr3jWYie61jbKO"
     private val username = "albert"
@@ -985,3 +989,5 @@ class UserModelTest {
         assertEquals(user.getTotalNbOfPaths(), database.totalNbOfPathsTest + 1)
     }
 }
+
+ */
