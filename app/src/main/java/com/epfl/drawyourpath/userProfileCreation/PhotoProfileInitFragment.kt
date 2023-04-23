@@ -108,8 +108,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
                 endProfileCreationFrag,
             )
                 .commit()
-        }
-        else {
+        } else {
             Log.e("DYP", "Failed to show end profile fragment: activity is null")
         }
     }
@@ -157,8 +156,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             isPhotoSelected().thenApplyAsync {
                 if (it) {
                     showEndProfileCreationFrag()
-                }
-                else {
+                } else {
                     Toast.makeText(context, "Failed to update photo.", Toast.LENGTH_SHORT).show()
                 }
             }.exceptionally {

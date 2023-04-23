@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.database
 
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
-import com.firebase.ui.auth.data.model.User
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.concurrent.CompletableFuture
@@ -25,7 +24,7 @@ class MockNonWorkingDatabaseTest {
         mock.addFriend("", "").assertError(Unit)
         mock.removeFriend("", "").assertError(Unit)
         mock.addDailyGoal("", DailyGoal(0.0, 0.0, 0)).assertError(Unit)
-        mock.updateUserAchievements("",0.0, 0.0).assertError(Unit)
+        mock.updateUserAchievements("", 0.0, 0.0).assertError(Unit)
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {

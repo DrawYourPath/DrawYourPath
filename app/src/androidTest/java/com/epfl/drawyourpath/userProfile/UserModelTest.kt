@@ -1,17 +1,5 @@
 package com.epfl.drawyourpath.userProfile
 
-import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.database.MockDatabase
-import com.epfl.drawyourpath.path.Path
-import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
-import com.google.android.gms.maps.model.LatLng
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
-import org.junit.Test
-import java.time.LocalDate
-
-
 // TODO: As we are going to remove this class, tests aren't necessary
 /*
 

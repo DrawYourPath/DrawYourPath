@@ -161,8 +161,8 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                         distance = distanceGoal.toDouble(),
                         activityTime = timeGoal.toLong(),
                         paths = numberOfPathGoal.toLong(),
-                    )
-                )
+                    ),
+                ),
             ).thenAccept {
                 if (activity != null) {
                     launchNextFragment()
@@ -217,4 +217,3 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
         return true
     }
 }
-

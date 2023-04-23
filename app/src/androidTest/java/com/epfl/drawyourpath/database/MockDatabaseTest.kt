@@ -4,7 +4,6 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert
@@ -188,7 +187,7 @@ class MockDatabaseTest {
                 distance = distanceGoalTest,
                 activityTime = activityTimeGoalTest.toLong(),
                 paths = nbOfPathsGoalTest.toLong(),
-            )
+            ),
         )
         val user = database.getUserData(userIdTest).get()
         assertEquals(user.userId, userIdTest)
@@ -292,7 +291,7 @@ class MockDatabaseTest {
         }
         assertEquals(
             database.users[userIdTest]?.friendList?.size ?: 0,
-            friendCount
+            friendCount,
         )
     }
 
@@ -306,12 +305,12 @@ class MockDatabaseTest {
 
         assertEquals(
             database.users[userIdTest]?.friendList?.contains(mockDatabase.MOCK_USERS[0].userId!!),
-            true
+            true,
         )
 
         assertEquals(
             database.users[mockDatabase.MOCK_USERS[0].userId!!]?.friendList?.contains(userIdTest),
-            true
+            true,
         )
     }
 
@@ -442,10 +441,14 @@ class MockDatabaseTest {
         database.addDailyGoal(
             userIdTest,
             DailyGoal(
-                25.0, 30.0,
-                2, 20.0, 120.0,
-                1, LocalDate.of(2010, 1, 1)
-            )
+                25.0,
+                30.0,
+                2,
+                20.0,
+                120.0,
+                1,
+                LocalDate.of(2010, 1, 1),
+            ),
         ).get()
         /*
 
@@ -515,4 +518,3 @@ class MockDatabaseTest {
         */
     }
 }
-

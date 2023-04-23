@@ -98,7 +98,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         }.thenApplyAsync { userModel ->
             userCache.insertAll(
                 fromUserModelToUserData(UserModel(userModel)),
-                UserModel(userModel).getDailyGoalList().map { it.toDailyGoalEntity(userId) })
+                UserModel(userModel).getDailyGoalList().map { it.toDailyGoalEntity(userId) },
+            )
         }
     }
 
@@ -185,11 +186,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 dailyGoalCache.updateDistanceGoal(
                     currentUserID!!,
                     LocalDate.now().toEpochDay(),
-                    distanceGoal
+                    distanceGoal,
                 )
             }.thenComposeAsync {
-            database.addDailyGoal(currentUserID!!, DailyGoal(it))
-        }
+                database.addDailyGoal(currentUserID!!, DailyGoal(it))
+            }
     }
 
     /**
@@ -201,12 +202,12 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         UserModel.checkActivityTimeGoal(activityTimeGoal)
         return database.setGoals(
             currentUserID!!,
-            UserGoals(activityTime = activityTimeGoal.toLong())
+            UserGoals(activityTime = activityTimeGoal.toLong()),
         ).thenApplyAsync {
             dailyGoalCache.updateTimeGoal(
                 currentUserID!!,
                 LocalDate.now().toEpochDay(),
-                activityTimeGoal
+                activityTimeGoal,
             )
         }.thenComposeAsync {
             database.addDailyGoal(currentUserID!!, DailyGoal(it))
@@ -224,7 +225,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             dailyGoalCache.updatePathsGoal(
                 currentUserID!!,
                 LocalDate.now().toEpochDay(),
-                nbOfPathsGoal
+                nbOfPathsGoal,
             )
         }.thenComposeAsync {
             database.addDailyGoal(currentUserID!!, DailyGoal(it))
@@ -246,7 +247,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 date,
                 distanceInKilometer,
                 timeInMinute,
-                1
+                1,
             )
         }.thenComposeAsync {
             database.addDailyGoal(currentUserID!!, DailyGoal(it))
@@ -297,13 +298,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     private fun getTodayDailyGoal(
         goalAndAchievements: GoalAndAchievements,
-        entity: DailyGoalEntity?
+        entity: DailyGoalEntity?,
     ): DailyGoal {
         if (entity == null || LocalDate.ofEpochDay(entity.date) != LocalDate.now()) {
             val dailyGoal = DailyGoal(
                 goalAndAchievements.distanceGoal,
                 goalAndAchievements.activityTimeGoal,
-                goalAndAchievements.nbOfPathsGoal
+                goalAndAchievements.nbOfPathsGoal,
             )
             database.addDailyGoal(currentUserID!!, dailyGoal).thenApplyAsync {
                 dailyGoalCache.insertDailyGoal(dailyGoal.toDailyGoalEntity(currentUserID!!))

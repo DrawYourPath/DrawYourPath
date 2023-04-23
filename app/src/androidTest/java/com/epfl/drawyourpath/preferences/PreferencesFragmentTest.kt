@@ -71,7 +71,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.input_username_modify_username)).perform(replaceText(takenUsername))
@@ -100,7 +100,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.test_availability_modify_username)).perform(click())
@@ -123,7 +123,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.input_username_modify_username)).perform(replaceText("albert"))
@@ -150,7 +150,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.input_username_modify_username)).perform(replaceText("hugo"))
@@ -177,7 +177,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyUsernameFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.validate_modify_username)).perform(click())
@@ -199,7 +199,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<PreferencesFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         clickOnPreference("Modify username")
@@ -261,7 +261,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.photo_description_modify_profile_photo)).check(matches(withText(R.string.actual_profile_photo)))
@@ -279,7 +279,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.photo_modify_profile_photo)).check(matches(withTagValue(equalTo(R.drawable.profile_placholderpng))))
@@ -297,7 +297,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.select_photo_modify_profile_photo)).perform(click())
@@ -306,10 +306,10 @@ class PreferencesFragmentTest {
             matches(
                 withTagValue(
                     equalTo(
-                        photoSelectedInPicker.byteCount
-                    )
-                )
-            )
+                        photoSelectedInPicker.byteCount,
+                    ),
+                ),
+            ),
         )
 
         scenario.close()
@@ -325,7 +325,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.select_photo_modify_profile_photo)).perform(click())
@@ -347,7 +347,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.validate_modify_profile_photo))
@@ -371,7 +371,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.validate_modify_profile_photo))
@@ -394,7 +394,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // test if the text printed is correct
@@ -415,7 +415,7 @@ class PreferencesFragmentTest {
         bundle.putBoolean(PROFILE_TEST_KEY, true)
         val scenario = launchFragmentInContainer<ModifyProfilePhotoFragment>(
             fragmentArgs = bundle,
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // validate to display an error message

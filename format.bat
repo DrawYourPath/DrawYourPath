@@ -1,0 +1,1 @@
+java -jar ./programs/ktlint.jar -F ./app/**.kt || true

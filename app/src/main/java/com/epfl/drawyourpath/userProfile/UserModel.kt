@@ -15,7 +15,6 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 
-
 @Deprecated("This class is deprecated and shouldn't be user anymore.")
 class UserModel {
     // the userId of the user

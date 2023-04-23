@@ -42,9 +42,9 @@ class MockDatabase : Database() {
                 date = LocalDate.now(),
                 expectedDistance = 10.0,
                 time = 10.0,
-            )
+            ),
         ),
-        friendList = listOf("0", "1")
+        friendList = listOf("0", "1"),
     )
 
     val MOCK_USERS = listOf<UserData>(
@@ -65,8 +65,8 @@ class MockDatabase : Database() {
                 Run(
                     startTime = 10,
                     endTime = 20,
-                    path = Path()
-                )
+                    path = Path(),
+                ),
             ),
             dailyGoals = listOf(
                 DailyGoal(
@@ -77,8 +77,8 @@ class MockDatabase : Database() {
                     date = LocalDate.now(),
                     expectedDistance = 10.0,
                     time = 10.0,
-                )
-            )
+                ),
+            ),
         ),
         UserData(
             userId = "1",
@@ -97,8 +97,8 @@ class MockDatabase : Database() {
                 Run(
                     startTime = 10,
                     endTime = 20,
-                    path = Path()
-                )
+                    path = Path(),
+                ),
             ),
             dailyGoals = listOf(
                 DailyGoal(
@@ -109,8 +109,8 @@ class MockDatabase : Database() {
                     date = LocalDate.now(),
                     expectedDistance = 10.0,
                     time = 10.0,
-                )
-            )
+                ),
+            ),
         ),
         UserData(
             userId = "10",
@@ -129,8 +129,8 @@ class MockDatabase : Database() {
                 Run(
                     startTime = 10,
                     endTime = 20,
-                    path = Path()
-                )
+                    path = Path(),
+                ),
             ),
             dailyGoals = listOf(
                 DailyGoal(
@@ -141,8 +141,8 @@ class MockDatabase : Database() {
                     date = LocalDate.now(),
                     expectedDistance = 10.0,
                     time = 10.0,
-                )
-            )
+                ),
+            ),
         ),
 
         UserData(
@@ -162,8 +162,8 @@ class MockDatabase : Database() {
                 Run(
                     startTime = 10,
                     endTime = 20,
-                    path = Path()
-                )
+                    path = Path(),
+                ),
             ),
             dailyGoals = listOf(
                 DailyGoal(
@@ -174,10 +174,10 @@ class MockDatabase : Database() {
                     date = LocalDate.now(),
                     expectedDistance = 10.0,
                     time = 10.0,
-                )
-            )
+                ),
+            ),
         ),
-        mockUser
+        mockUser,
     )
 
     init {
@@ -261,7 +261,7 @@ class MockDatabase : Database() {
                 distance = userData.goals?.distance ?: current.goals?.distance,
                 paths = userData.goals?.paths ?: current.goals?.paths,
                 activityTime = userData.goals?.activityTime ?: current.goals?.activityTime,
-            )
+            ),
         )
 
         return CompletableFuture.completedFuture(Unit)
@@ -307,7 +307,7 @@ class MockDatabase : Database() {
     private fun addFriendToUser(user: String, target: String) {
         val current = users[user]!!
         users[user] = current.copy(
-            friendList = listOf(target) + (current.friendList ?: emptyList())
+            friendList = listOf(target) + (current.friendList ?: emptyList()),
         )
     }
 
@@ -326,10 +326,9 @@ class MockDatabase : Database() {
         if (current != null) {
             users[user] = current.copy(
                 friendList = (current.friendList ?: emptyList()).stream().filter { it != target }
-                    .toList()
+                    .toList(),
             )
         }
-
     }
 
     override fun removeFriend(userId: String, targetFriend: String): CompletableFuture<Unit> {
@@ -349,7 +348,7 @@ class MockDatabase : Database() {
         users[userId] = current.copy(
             runs = ((current.runs ?: emptyList()) + run).sortedBy {
                 it.getStartTime()
-            }
+            },
         )
 
         return CompletableFuture.completedFuture(Unit)
@@ -364,7 +363,7 @@ class MockDatabase : Database() {
 
         users[userId] = current.copy(
             runs = (current.runs ?: emptyList()).stream()
-                .filter { it.getStartTime() != run.getStartTime() }.toList()
+                .filter { it.getStartTime() != run.getStartTime() }.toList(),
         )
 
         return CompletableFuture.completedFuture(Unit)
@@ -378,7 +377,7 @@ class MockDatabase : Database() {
         val current = users[userId]!!
 
         users[userId] = current.copy(
-            dailyGoals = (current.dailyGoals ?: emptyList()) + dailyGoal
+            dailyGoals = (current.dailyGoals ?: emptyList()) + dailyGoal,
         )
 
         return CompletableFuture.completedFuture(Unit)
@@ -387,9 +386,8 @@ class MockDatabase : Database() {
     override fun updateUserAchievements(
         userId: String,
         distanceDrawing: Double,
-        activityTimeDrawing: Double
+        activityTimeDrawing: Double,
     ): CompletableFuture<Unit> {
         TODO("Not yet implemented")
     }
-
 }

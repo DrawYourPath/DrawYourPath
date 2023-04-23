@@ -98,7 +98,7 @@ class FirebaseDatabase : Database() {
             .addOnSuccessListener {
                 if (it.value !is String) {
                     future.completeExceptionally(
-                        NoSuchFieldException("There is no username corresponding to the userId $userId")
+                        NoSuchFieldException("There is no username corresponding to the userId $userId"),
                     )
                 } else {
                     future.complete(it.value as String)
@@ -183,7 +183,7 @@ class FirebaseDatabase : Database() {
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.SURNAME}" to userData.surname,
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.FIRSTNAME}" to userData.firstname,
             "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_DISTANCE}" to userData.goals?.distance,
-            "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_PATH}" to userData.goals?.paths
+            "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_PATH}" to userData.goals?.paths,
 
         ).filter { entry -> entry.second != null }.associate { entry -> entry }
 
@@ -211,7 +211,7 @@ class FirebaseDatabase : Database() {
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.SURNAME}" to userData.surname,
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.FIRSTNAME}" to userData.firstname,
             "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_DISTANCE}" to userData.goals?.distance,
-            "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_PATH}" to userData.goals?.paths
+            "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_PATH}" to userData.goals?.paths,
 
         ).filter { entry -> entry.second != null }.associate { entry -> entry }
 
@@ -249,7 +249,6 @@ class FirebaseDatabase : Database() {
         return setUserData(userId, UserData(goals = goals))
     }
 
-
     override fun setProfilePhoto(userId: String, photo: Bitmap): CompletableFuture<Unit> {
         // TODO: Use Firebase Storage.
         // convert the bitmap to a byte array
@@ -262,7 +261,7 @@ class FirebaseDatabase : Database() {
 
     override fun addFriend(
         userId: String,
-        targetFriend: String
+        targetFriend: String,
     ): CompletableFuture<Unit> {
         return addUserIdToFriendList(userId, targetFriend).thenApply {
             // add the currentUser to the friend list of the user with userId
@@ -280,9 +279,10 @@ class FirebaseDatabase : Database() {
     override fun addRunToHistory(userId: String, run: Run): CompletableFuture<Unit> {
         // create the field for the new path, the key is the start time
         return setData(
-            userId, hashMapOf(
-                "${FirebaseKeys.RUN_HISTORY}/${run.getStartTime()}" to run
-            )
+            userId,
+            hashMapOf(
+                "${FirebaseKeys.RUN_HISTORY}/${run.getStartTime()}" to run,
+            ),
         )
     }
 
@@ -417,7 +417,7 @@ class FirebaseDatabase : Database() {
             picture = profile.child(FirebaseKeys.PICTURE).value as String?,
             runs = transformRunsHistory(profile.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDataToDailyGoalList(profile.child(FirebaseKeys.DAILY_GOALS)),
-            friendList = transformFriendsList(profile.child(FirebaseKeys.FRIENDS))
+            friendList = transformFriendsList(profile.child(FirebaseKeys.FRIENDS)),
         )
     }
 
@@ -479,7 +479,7 @@ class FirebaseDatabase : Database() {
             } else {
                 android.util.Log.w(
                     FirebaseDatabase::class.java.name,
-                    "A point of a run has invalid coordinates => ignoring the point"
+                    "A point of a run has invalid coordinates => ignoring the point",
                 )
             }
         }
@@ -542,7 +542,7 @@ class FirebaseDatabase : Database() {
             FirebaseKeys.GOAL_HISTORY_EXPECTED_PATHS to dailyGoal.expectedPaths,
             FirebaseKeys.GOAL_HISTORY_DISTANCE to dailyGoal.distance,
             FirebaseKeys.GOAL_HISTORY_TIME to dailyGoal.time,
-            FirebaseKeys.GOAL_HISTORY_PATHS to dailyGoal.paths
+            FirebaseKeys.GOAL_HISTORY_PATHS to dailyGoal.paths,
         )
     }
 

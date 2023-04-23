@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.userProfileCreation
 
 import android.content.Intent
-import android.os.SystemClock
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
@@ -38,8 +37,6 @@ class UserNameTestAndSetFragmentTest {
         // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation))
             .check(matches(withSubstring("taken")))
-
-
     }
 
     /**
@@ -55,7 +52,6 @@ class UserNameTestAndSetFragmentTest {
 
         // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("The username can't be empty !")))
-
     }
 
     /**
@@ -74,7 +70,6 @@ class UserNameTestAndSetFragmentTest {
 
         // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withSubstring("is available")))
-
     }
 
     /**
@@ -139,7 +134,7 @@ class UserNameTestAndSetFragmentTest {
 fun launchSetUsernameFragment(): FragmentScenario<SelectUsernameFragment> {
     return launchFragmentInContainer(
         bundleOf(
-            PROFILE_TEST_KEY to true
-        )
+            PROFILE_TEST_KEY to true,
+        ),
     )
 }

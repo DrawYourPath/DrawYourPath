@@ -7,11 +7,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.Auth
-import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
@@ -26,7 +24,7 @@ class SelectUsernameFragment : Fragment(R.layout.fragment_user_name_test_and_set
     private lateinit var auth: Auth
 
     private lateinit var outputView: TextView
-    private lateinit var inputUserName: EditText;
+    private lateinit var inputUserName: EditText
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -151,7 +149,6 @@ class SelectUsernameFragment : Fragment(R.layout.fragment_user_name_test_and_set
                 fragManagement.replace(R.id.userName_frame, persoInfoFrag).commit()
 
                 Log.i("DYP", "Moved to next fragment.")
-
             }.exceptionally {
                 Log.e("DYP", "Failed to set username: ${it.message}")
                 it.printStackTrace()
@@ -164,5 +161,3 @@ class SelectUsernameFragment : Fragment(R.layout.fragment_user_name_test_and_set
         }
     }
 }
-
-

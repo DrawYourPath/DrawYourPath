@@ -57,7 +57,7 @@ class UserModelCachedTest {
         DailyGoal(
             testUserModel.getCurrentDistanceGoal(),
             testUserModel.getCurrentActivityTime(),
-            testUserModel.getCurrentNumberOfPathsGoal()
+            testUserModel.getCurrentNumberOfPathsGoal(),
         )
 
     private val run =
@@ -65,9 +65,11 @@ class UserModelCachedTest {
             Path(
                 listOf(
                     LatLng(46.518493105924385, 6.561726074747257),
-                    LatLng(46.50615811055845, 6.620565690839656)
-                )
-            ), 0, 1286
+                    LatLng(46.50615811055845, 6.620565690839656),
+                ),
+            ),
+            0,
+            1286,
         )
 
     private val timeout: Long = 5
@@ -106,7 +108,7 @@ class UserModelCachedTest {
         assertEqualUser(
             testUserModel,
             user.getUser().getOrAwaitValue(),
-            newUsername = newUser.getUsername()
+            newUsername = newUser.getUsername(),
         )
     }
 
@@ -123,11 +125,11 @@ class UserModelCachedTest {
         assertEqualUser(
             testUserModel,
             user.getUser().getOrAwaitValue(),
-            newDistanceGoal = newUser.getCurrentDistanceGoal()
+            newDistanceGoal = newUser.getCurrentDistanceGoal(),
         )
         assertEquals(
             dailyGoal.copy(expectedDistance = newUser.getCurrentDistanceGoal()),
-            user.getTodayDailyGoal().getOrAwaitValue()
+            user.getTodayDailyGoal().getOrAwaitValue(),
         )
     }
 
@@ -147,7 +149,6 @@ class UserModelCachedTest {
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getCurrentActivityTime())
         assertEquals(dailyGoal.copy(expectedTime = newUser.getCurrentActivityTime()), user.getTodayDailyGoal().getOrAwaitValue())
          */
-
     }
 
     @Test
@@ -166,11 +167,11 @@ class UserModelCachedTest {
         assertEqualUser(
             testUserModel,
             user.getUser().getOrAwaitValue(),
-            newPathGoal = newUser.getCurrentNumberOfPathsGoal()
+            newPathGoal = newUser.getCurrentNumberOfPathsGoal(),
         )
         assertEquals(
             dailyGoal.copy(expectedPaths = newUser.getCurrentNumberOfPathsGoal()),
-            user.getTodayDailyGoal().getOrAwaitValue()
+            user.getTodayDailyGoal().getOrAwaitValue(),
         )
     }
 
@@ -254,16 +255,16 @@ class UserModelCachedTest {
         assertEquals(
             expected.getTotalDistance() + addDistanceProgress,
             actual.goalAndAchievements.totalDistance,
-            0.001
+            0.001,
         )
         assertEquals(
             expected.getTotalActivityTime() + addTimeProgress,
             actual.goalAndAchievements.totalActivityTime,
-            0.001
+            0.001,
         )
         assertEquals(
             expected.getTotalNbOfPaths() + addPathProgress,
-            actual.goalAndAchievements.totalNbOfPaths
+            actual.goalAndAchievements.totalNbOfPaths,
         )
         assertEquals(expected.getProfilePhoto(), actual.getProfilePhotoAsBitmap())
     }

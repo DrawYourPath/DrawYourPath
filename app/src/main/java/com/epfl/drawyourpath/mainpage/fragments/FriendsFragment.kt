@@ -20,7 +20,6 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.MockDatabase
-import com.epfl.drawyourpath.login.LoginActivity
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.Friend
@@ -60,10 +59,11 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         recyclerView.adapter = friendsListAdapter
 
         val currentUser =
-            if (database is MockDatabase)
+            if (database is MockDatabase) {
                 MockAuth(forceSigned = true).getUser()
-            else
+            } else {
                 FirebaseAuth.getUser()
+            }
 
         if (currentUser == null) {
             launchLoginActivity(requireActivity())
@@ -159,8 +159,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
             .thenApply {
                 if (it == null) {
                     Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
-                }
-                else {
+                } else {
                     database.addFriend(user.getUid(), it).thenAccept {
                         Toast.makeText(mainActivity, "Friend added", Toast.LENGTH_LONG).show()
                     }

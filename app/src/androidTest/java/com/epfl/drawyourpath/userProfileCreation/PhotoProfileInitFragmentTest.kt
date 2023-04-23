@@ -110,11 +110,10 @@ class PhotoProfileInitFragmentTest : Fragment() {
 private fun goToProfilePhotoInitFragment(): FragmentScenario<PhotoProfileInitFragment> {
     return launchFragmentInContainer(
         bundleOf(
-            PROFILE_TEST_KEY to true
-        )
+            PROFILE_TEST_KEY to true,
+        ),
     )
 }
-
 
 /**
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
