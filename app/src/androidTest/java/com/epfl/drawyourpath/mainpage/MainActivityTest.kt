@@ -6,7 +6,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockDatabase
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,12 +60,14 @@ class MainActivityTest {
 
     @Test
     fun usernameAndEmailAreCorrectInDrawerMenu() {
+        val database = MockDatabase()
+
         // go to drawer menu
         onView(withId(R.id.profile_button)).perform(click())
 
         // check username and email are correct
-        onView(withId(R.id.header_username)).check(matches(withText(MockDataBase().usernameTest)))
-        onView(withId(R.id.header_email)).check(matches(withText(MockDataBase().userAuthTest.getEmail())))
+        onView(withId(R.id.header_username)).check(matches(withText(database.mockUser.username)))
+        onView(withId(R.id.header_email)).check(matches(withText(database.mockUser.email)))
     }
 
     @Test

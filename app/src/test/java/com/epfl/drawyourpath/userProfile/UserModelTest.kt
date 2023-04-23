@@ -1,7 +1,7 @@
 package com.epfl.drawyourpath.userProfile
 
 import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -21,7 +21,7 @@ class UserModelTest {
     private val distanceGoal = 10.0
     private val timeGoal = 60.0
     private val nbOfPaths = 5
-    private val database = MockDataBase()
+    private val database = MockDatabase()
     private val auth = MockAuth.MOCK_USER
 
     /**
@@ -561,7 +561,7 @@ class UserModelTest {
      */
     @Test
     fun removeFriendOnFriendList() {
-        val newDataBase = MockDataBase()
+        val newDataBase = MockDatabase()
         val expectedFriendsList = emptyList<String>()
         // select a user present on the database
         val user = newDataBase.userModelTest
@@ -583,7 +583,7 @@ class UserModelTest {
      */
     @Test
     fun addFriendOnFriendList() {
-        val newDatabase = MockDataBase()
+        val newDatabase = MockDatabase()
         val expectedFriendList =
             listOf(newDatabase.userIdFriend1, newDatabase.userIdFriend2)
         // select a user present on the database
@@ -605,7 +605,7 @@ class UserModelTest {
      */
     @Test
     fun addFriendOnFriendListNotPresentOnDatabase() {
-        val newDatabase = MockDataBase()
+        val newDatabase = MockDatabase()
         // select a user present on the database
         val user = newDatabase.userModelTest
         // check that at the beginning the friends list of the user contains only one user: friend1
@@ -711,7 +711,7 @@ class UserModelTest {
      */
     @Test
     fun addRunToHistoryAndRemoveRunFromHistoryWorkAndKeepOrder() {
-        val newDatabase = MockDataBase()
+        val newDatabase = MockDatabase()
         val user = newDatabase.userModelTest
         // This run starts after the one already stored
         val newRun1StartTime = database.runTestStartTime + 1e7.toLong()
@@ -754,7 +754,7 @@ class UserModelTest {
      */
     @Test
     fun addRunToHistoryReplacesRunWithSameStartTime() {
-        val newDatabase = MockDataBase()
+        val newDatabase = MockDatabase()
         val user = newDatabase.userModelTest
         // This run starts at the same time as the one already stored but is slightly different
         val newRun = Run(
@@ -780,7 +780,7 @@ class UserModelTest {
      */
     @Test
     fun getDailyGoalListCorrect() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val user = database.userModelTest
         val obtainedDailyGoalList = user.getDailyGoalList()
 
@@ -789,32 +789,32 @@ class UserModelTest {
         // check the first daily goal
         assertEquals(obtainedDailyGoalList.get(0).date, database.dailyGoalListTest.get(0).date)
         assertEquals(
-            obtainedDailyGoalList.get(0).distanceInKilometerGoal,
-            database.dailyGoalListTest.get(0).distanceInKilometerGoal,
+            obtainedDailyGoalList.get(0).expectedDistance,
+            database.dailyGoalListTest.get(0).expectedDistance,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).activityTimeInMinutesGoal,
-            database.dailyGoalListTest.get(0).activityTimeInMinutesGoal,
+            obtainedDailyGoalList.get(0).expectedTime,
+            database.dailyGoalListTest.get(0).expectedTime,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).nbOfPathsGoal,
-            database.dailyGoalListTest.get(0).nbOfPathsGoal,
+            obtainedDailyGoalList.get(0).expectedPaths,
+            database.dailyGoalListTest.get(0).expectedPaths,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).distanceInKilometerProgress,
-            database.dailyGoalListTest.get(0).distanceInKilometerProgress,
+            obtainedDailyGoalList.get(0).distance,
+            database.dailyGoalListTest.get(0).distance,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).activityTimeInMinutesProgress,
-            database.dailyGoalListTest.get(0).activityTimeInMinutesProgress,
+            obtainedDailyGoalList.get(0).time,
+            database.dailyGoalListTest.get(0).time,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).nbOfPathsProgress,
-            database.dailyGoalListTest.get(0).nbOfPathsProgress,
+            obtainedDailyGoalList.get(0).paths,
+            database.dailyGoalListTest.get(0).paths,
         )
     }
 
@@ -823,7 +823,7 @@ class UserModelTest {
      */
     @Test
     fun addDailyGoalToListOfDailyGoalCorrectly() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val user = database.userModelTest
         user.addDailyGoalToListOfDailyGoal(
             DailyGoal(
@@ -845,42 +845,42 @@ class UserModelTest {
         // check the first daily goal
         assertEquals(obtainedDailyGoalList.get(0).date, database.dailyGoalListTest.get(0).date)
         assertEquals(
-            obtainedDailyGoalList.get(0).distanceInKilometerGoal,
-            database.dailyGoalListTest.get(0).distanceInKilometerGoal,
+            obtainedDailyGoalList.get(0).expectedDistance,
+            database.dailyGoalListTest.get(0).expectedDistance,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).activityTimeInMinutesGoal,
-            database.dailyGoalListTest.get(0).activityTimeInMinutesGoal,
+            obtainedDailyGoalList.get(0).expectedTime,
+            database.dailyGoalListTest.get(0).expectedTime,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).nbOfPathsGoal,
-            database.dailyGoalListTest.get(0).nbOfPathsGoal,
+            obtainedDailyGoalList.get(0).expectedPaths,
+            database.dailyGoalListTest.get(0).expectedPaths,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).distanceInKilometerProgress,
-            database.dailyGoalListTest.get(0).distanceInKilometerProgress,
+            obtainedDailyGoalList.get(0).distance,
+            database.dailyGoalListTest.get(0).distance,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).activityTimeInMinutesProgress,
-            database.dailyGoalListTest.get(0).activityTimeInMinutesProgress,
+            obtainedDailyGoalList.get(0).time,
+            database.dailyGoalListTest.get(0).time,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).nbOfPathsProgress,
-            database.dailyGoalListTest.get(0).nbOfPathsProgress,
+            obtainedDailyGoalList.get(0).paths,
+            database.dailyGoalListTest.get(0).paths,
         )
 
         // check the second daily goal
         assertEquals(obtainedDailyGoalList.get(1).date, LocalDate.of(2010, 1, 1))
-        assertEquals(obtainedDailyGoalList.get(1).distanceInKilometerGoal, 25.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).activityTimeInMinutesGoal, 30.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).nbOfPathsGoal, 2)
-        assertEquals(obtainedDailyGoalList.get(1).distanceInKilometerProgress, 20.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).activityTimeInMinutesProgress, 120.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).nbOfPathsProgress, 1)
+        assertEquals(obtainedDailyGoalList.get(1).expectedDistance, 25.0, 0.001)
+        assertEquals(obtainedDailyGoalList.get(1).expectedTime, 30.0, 0.001)
+        assertEquals(obtainedDailyGoalList.get(1).expectedPaths, 2)
+        assertEquals(obtainedDailyGoalList.get(1).distance, 20.0, 0.001)
+        assertEquals(obtainedDailyGoalList.get(1).time, 120.0, 0.001)
+        assertEquals(obtainedDailyGoalList.get(1).paths, 1)
 
         // control the dailyGoal List
         val obtainedDailyGoalListUser = user.getDailyGoalList()
@@ -889,42 +889,42 @@ class UserModelTest {
         // check the first daily goal
         assertEquals(obtainedDailyGoalListUser.get(0).date, database.dailyGoalListTest.get(0).date)
         assertEquals(
-            obtainedDailyGoalListUser.get(0).distanceInKilometerGoal,
-            database.dailyGoalListTest.get(0).distanceInKilometerGoal,
+            obtainedDailyGoalListUser.get(0).expectedDistance,
+            database.dailyGoalListTest.get(0).expectedDistance,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalListUser.get(0).activityTimeInMinutesGoal,
-            database.dailyGoalListTest.get(0).activityTimeInMinutesGoal,
+            obtainedDailyGoalListUser.get(0).expectedTime,
+            database.dailyGoalListTest.get(0).expectedTime,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalListUser.get(0).nbOfPathsGoal,
-            database.dailyGoalListTest.get(0).nbOfPathsGoal,
+            obtainedDailyGoalListUser.get(0).expectedPaths,
+            database.dailyGoalListTest.get(0).expectedPaths,
         )
         assertEquals(
-            obtainedDailyGoalListUser.get(0).distanceInKilometerProgress,
-            database.dailyGoalListTest.get(0).distanceInKilometerProgress,
+            obtainedDailyGoalListUser.get(0).distance,
+            database.dailyGoalListTest.get(0).distance,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalListUser.get(0).activityTimeInMinutesProgress,
-            database.dailyGoalListTest.get(0).activityTimeInMinutesProgress,
+            obtainedDailyGoalListUser.get(0).time,
+            database.dailyGoalListTest.get(0).time,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalListUser.get(0).nbOfPathsProgress,
-            database.dailyGoalListTest.get(0).nbOfPathsProgress,
+            obtainedDailyGoalListUser.get(0).paths,
+            database.dailyGoalListTest.get(0).paths,
         )
 
         // check the second daily goal
         assertEquals(obtainedDailyGoalListUser.get(1).date, LocalDate.of(2010, 1, 1))
-        assertEquals(obtainedDailyGoalListUser.get(1).distanceInKilometerGoal, 25.0, 0.001)
-        assertEquals(obtainedDailyGoalListUser.get(1).activityTimeInMinutesGoal, 30.0, 0.001)
-        assertEquals(obtainedDailyGoalListUser.get(1).nbOfPathsGoal, 2)
-        assertEquals(obtainedDailyGoalListUser.get(1).distanceInKilometerProgress, 20.0, 0.001)
-        assertEquals(obtainedDailyGoalListUser.get(1).activityTimeInMinutesProgress, 120.0, 0.001)
-        assertEquals(obtainedDailyGoalListUser.get(1).nbOfPathsProgress, 1)
+        assertEquals(obtainedDailyGoalListUser.get(1).expectedDistance, 25.0, 0.001)
+        assertEquals(obtainedDailyGoalListUser.get(1).expectedTime, 30.0, 0.001)
+        assertEquals(obtainedDailyGoalListUser.get(1).expectedPaths, 2)
+        assertEquals(obtainedDailyGoalListUser.get(1).distance, 20.0, 0.001)
+        assertEquals(obtainedDailyGoalListUser.get(1).time, 120.0, 0.001)
+        assertEquals(obtainedDailyGoalListUser.get(1).paths, 1)
     }
 
     /**
@@ -932,7 +932,7 @@ class UserModelTest {
      */
     @Test
     fun getTotalDistanceCorrectly() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val user = database.userModelTest
 
         assertEquals(user.getTotalDistance(), database.totalDistanceTest, 0.001)
@@ -943,7 +943,7 @@ class UserModelTest {
      */
     @Test
     fun getTotalActivityTimeCorrectly() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val user = database.userModelTest
 
         assertEquals(user.getTotalActivityTime(), database.totalActivityTimeTest, 0.001)
@@ -954,7 +954,7 @@ class UserModelTest {
      */
     @Test
     fun getTotalNbOfPathsCorrectly() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val user = database.userModelTest
 
         assertEquals(user.getTotalNbOfPaths(), database.totalNbOfPathsTest)
@@ -965,7 +965,7 @@ class UserModelTest {
      */
     @Test
     fun updateAchievementsCorrectly() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val user = database.userModelTest
         user.updateAchievements(10.0, 50.0).get()
 

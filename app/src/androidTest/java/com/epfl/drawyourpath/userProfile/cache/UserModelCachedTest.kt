@@ -5,7 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
-import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
@@ -29,11 +29,11 @@ class UserModelCachedTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private val mockDataBase = MockDataBase()
+    private val mockDataBase = MockDatabase()
 
     private val user: UserModelCached = UserModelCached(ApplicationProvider.getApplicationContext())
 
-    private val testUserModel = mockDataBase.userModelTest
+    private val testUserModel = UserModel(mockDataBase.mockUser)
 
     private val newPicture: Bitmap = Bitmap.createBitmap(14, 14, Bitmap.Config.RGB_565)
 
@@ -106,7 +106,7 @@ class UserModelCachedTest {
     fun setDistanceGoalModifyDistanceGoal() {
         user.updateDistanceGoal(newUser.getCurrentDistanceGoal()).get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.getCurrentDistanceGoal())
-        assertEquals(dailyGoal.copy(distanceInKilometerGoal = newUser.getCurrentDistanceGoal()), user.getTodayDailyGoal().getOrAwaitValue())
+        assertEquals(dailyGoal.copy(expectedDistance = newUser.getCurrentDistanceGoal()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -121,7 +121,7 @@ class UserModelCachedTest {
     fun setActivityTimeGoalModifyActivityTimeGoal() {
         user.updateActivityTimeGoal(newUser.getCurrentActivityTime()).get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getCurrentActivityTime())
-        assertEquals(dailyGoal.copy(activityTimeInMinutesGoal = newUser.getCurrentActivityTime()), user.getTodayDailyGoal().getOrAwaitValue())
+        assertEquals(dailyGoal.copy(expectedTime = newUser.getCurrentActivityTime()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -136,7 +136,7 @@ class UserModelCachedTest {
     fun setNumberOfPathsGoalModifyNumberOfPathsGoal() {
         user.updateNumberOfPathsGoal(newUser.getCurrentNumberOfPathsGoal()).get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.getCurrentNumberOfPathsGoal())
-        assertEquals(dailyGoal.copy(nbOfPathsGoal = newUser.getCurrentNumberOfPathsGoal()), user.getTodayDailyGoal().getOrAwaitValue())
+        assertEquals(dailyGoal.copy(expectedPaths = newUser.getCurrentNumberOfPathsGoal()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -160,7 +160,7 @@ class UserModelCachedTest {
             addPathProgress = 1,
         )
         assertEquals(
-            dailyGoal.copy(distanceInKilometerProgress = distance, activityTimeInMinutesProgress = time, nbOfPathsProgress = 1),
+            dailyGoal.copy(distance = distance, time = time, paths = 1),
             user.getTodayDailyGoal().getOrAwaitValue(),
         )
     }

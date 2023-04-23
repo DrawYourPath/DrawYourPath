@@ -2,13 +2,15 @@ package com.epfl.drawyourpath.userProfileCreation
 
 import android.content.Intent
 import android.widget.DatePicker
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -26,7 +28,7 @@ class PhotoProfileInitFragmentTest : Fragment() {
      */
     @Test
     fun correctTransitionOnClickSkip() {
-        var t = goToProfilePhotoInitFragment()
+        var t = manualGoToProfilePhotoInitFragment()
 
         onView(withId(R.id.skipPhotoProfile_button_userProfileCreation))
             .perform(click())
@@ -43,7 +45,7 @@ class PhotoProfileInitFragmentTest : Fragment() {
      */
     @Test
     fun correctTransitionOnClickValidate() {
-        var t = goToProfilePhotoInitFragment()
+        var t = manualGoToProfilePhotoInitFragment()
 
         onView(withId(R.id.selectPhotoInitPhotoFrag))
             .perform(click())
@@ -105,24 +107,37 @@ class PhotoProfileInitFragmentTest : Fragment() {
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
-private fun goToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreationActivity> {
+private fun goToProfilePhotoInitFragment(): FragmentScenario<PhotoProfileInitFragment> {
+    return launchFragmentInContainer(
+        bundleOf(
+            PROFILE_TEST_KEY to true
+        )
+    )
+}
+
+
+/**
+ * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
+ * and select the Mock Database for the tests.
+ */
+private fun manualGoToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreationActivity> {
     // pass in test mode to used the Mockdatabase instead of the Firebase
     var intent =
         Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)
-    intent.putExtra("isRunningTestForDataBase", true)
+    intent.putExtra(PROFILE_TEST_KEY, true)
     var t: ActivityScenario<UserProfileCreationActivity> = ActivityScenario.launch(intent)
     onView(withId(R.id.start_profile_creation_button_userProfileCreation))
         .perform(click())
     onView(withId(R.id.input_userName_text_UserProfileCreation))
-        .perform(typeText("hugo"))
+        .perform(replaceText("h"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.setUserName_button_userProfileCreation))
         .perform(click())
     onView(withId(R.id.input_firstname_text_UserProfileCreation))
-        .perform(typeText("Hugo"))
+        .perform(replaceText("H"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.input_surname_text_UserProfileCreation))
-        .perform(typeText("Hugo"))
+        .perform(replaceText("H"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.selectDate_button_userProfileCreation))
         .perform(click())
@@ -133,13 +148,13 @@ private fun goToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreation
     onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
         .perform(click())
     onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
-        .perform(typeText("10"))
+        .perform(replaceText("1"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.input_timeGoal_text_UserProfileCreation))
-        .perform(typeText("60"))
+        .perform(replaceText("6"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
-        .perform(typeText("5"))
+        .perform(replaceText("5"))
     Espresso.closeSoftKeyboard()
     onView(withId(R.id.setUserGoals_button_userProfileCreation))
         .perform(click())

@@ -21,7 +21,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.challenge.Trophy
 import com.epfl.drawyourpath.community.Tournament
-import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import org.junit.Rule
 import org.junit.Test
@@ -37,7 +37,7 @@ class ChallengeFragmentTest {
     @get:Rule
     val executorRule = CountingTaskExecutorRule()
 
-    private var mockUser = MockDataBase().userModelTest
+    private var mockUser = MockDatabase().mockUser
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val dailyGoal = DailyGoal.TEST_SAMPLE
 
@@ -60,7 +60,7 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentDistanceGoal())
+        val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.goals!!.distance!!)
 
         waitUntilAllThreadAreDone()
 
@@ -68,7 +68,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
             .check(matches(hasDescendant(withText(distanceProgressGoal))))
-            .check(matches(hasDescendant(withText(mockUser.getCurrentDistanceGoal().toInt().toString()))))
+            .check(matches(hasDescendant(withText(mockUser.goals!!.distance!!.toInt().toString()))))
             .check(matches(hasDescendant(withText(R.string.kilometers))))
 
         scenario.close()
@@ -85,7 +85,7 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentActivityTime())
+        val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.goals!!.activityTime!!)
 
         waitUntilAllThreadAreDone()
 
@@ -93,7 +93,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(1))
             .check(matches(hasDescendant(withText(timeProgressGoal))))
-            .check(matches(hasDescendant(withText(mockUser.getCurrentActivityTime().toInt().toString()))))
+            .check(matches(hasDescendant(withText(mockUser.goals!!.activityTime!!.toInt().toString()))))
             .check(matches(hasDescendant(withText(R.string.minutes))))
 
         scenario.close()
@@ -111,7 +111,7 @@ class ChallengeFragmentTest {
         )
 
         val pathProgressGoal =
-            context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.getCurrentNumberOfPathsGoal().toDouble())
+            context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.goals!!.paths!!.toDouble())
 
         waitUntilAllThreadAreDone()
 
@@ -119,7 +119,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(2))
             .check(matches(hasDescendant(withText(pathProgressGoal))))
-            .check(matches(hasDescendant(withText(mockUser.getCurrentNumberOfPathsGoal().toString()))))
+            .check(matches(hasDescendant(withText(mockUser.goals!!.paths!!.toString()))))
             .check(matches(hasDescendant(withText(R.string.paths))))
 
         scenario.close()
@@ -140,7 +140,7 @@ class ChallengeFragmentTest {
         )
 
         val distanceProgressGoal =
-            context.resources.getString(R.string.progress_over_goal).format(dailyGoal.distanceInKilometerProgress, dailyGoal.distanceInKilometerGoal)
+            context.resources.getString(R.string.progress_over_goal).format(dailyGoal.distance, dailyGoal.expectedDistance)
 
         waitUntilAllThreadAreDone()
 
@@ -148,7 +148,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
             .check(matches(hasDescendant(withText(distanceProgressGoal))))
-            .check(matches(hasDescendant(withText(dailyGoal.distanceInKilometerGoal.toInt().toString()))))
+            .check(matches(hasDescendant(withText(dailyGoal.expectedDistance.toInt().toString()))))
             .check(matches(hasDescendant(withText(R.string.kilometers))))
 
         scenario.close()
@@ -169,7 +169,7 @@ class ChallengeFragmentTest {
         )
 
         val timeProgressGoal =
-            context.resources.getString(R.string.progress_over_goal).format(dailyGoal.activityTimeInMinutesProgress, dailyGoal.activityTimeInMinutesGoal)
+            context.resources.getString(R.string.progress_over_goal).format(dailyGoal.time, dailyGoal.expectedTime)
 
         waitUntilAllThreadAreDone()
 
@@ -177,7 +177,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(1))
             .check(matches(hasDescendant(withText(timeProgressGoal))))
-            .check(matches(hasDescendant(withText(dailyGoal.activityTimeInMinutesGoal.toInt().toString()))))
+            .check(matches(hasDescendant(withText(dailyGoal.expectedTime.toInt().toString()))))
             .check(matches(hasDescendant(withText(R.string.minutes))))
 
         scenario.close()
@@ -199,7 +199,7 @@ class ChallengeFragmentTest {
 
         val pathProgressGoal =
             context.resources.getString(R.string.progress_over_goal_path)
-                .format(dailyGoal.nbOfPathsProgress.toDouble(), dailyGoal.nbOfPathsGoal.toDouble())
+                .format(dailyGoal.paths.toDouble(), dailyGoal.expectedPaths.toDouble())
 
         waitUntilAllThreadAreDone()
 
@@ -207,7 +207,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(2))
             .check(matches(hasDescendant(withText(pathProgressGoal))))
-            .check(matches(hasDescendant(withText(dailyGoal.nbOfPathsGoal.toString()))))
+            .check(matches(hasDescendant(withText(dailyGoal.expectedPaths.toString()))))
             .check(matches(hasDescendant(withText(R.string.paths))))
 
         scenario.close()
@@ -237,7 +237,7 @@ class ChallengeFragmentTest {
                 ),
             )
 
-        val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentDistanceGoal())
+        val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.goals!!.distance!!)
 
         waitUntilAllThreadAreDone()
 
@@ -245,7 +245,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
             .check(matches(hasDescendant(withText(distanceProgressGoal))))
-            .check(matches(hasDescendant(withText(mockUser.getCurrentDistanceGoal().toInt().toString()))))
+            .check(matches(hasDescendant(withText(mockUser.goals!!.distance!!.toInt().toString()))))
             .check(matches(hasDescendant(withText(R.string.kilometers))))
 
         scenario.close()
@@ -275,7 +275,7 @@ class ChallengeFragmentTest {
                 ),
             )
 
-        val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.getCurrentActivityTime())
+        val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.goals!!.activityTime!!)
 
         waitUntilAllThreadAreDone()
 
@@ -283,7 +283,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(1))
             .check(matches(hasDescendant(withText(timeProgressGoal))))
-            .check(matches(hasDescendant(withText(mockUser.getCurrentActivityTime().toInt().toString()))))
+            .check(matches(hasDescendant(withText(mockUser.goals!!.activityTime!!.toInt().toString()))))
             .check(matches(hasDescendant(withText(R.string.minutes))))
 
         scenario.close()
@@ -314,7 +314,7 @@ class ChallengeFragmentTest {
             )
 
         val pathProgressGoal =
-            context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.getCurrentNumberOfPathsGoal().toDouble())
+            context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.goals!!.paths!!.toDouble())
 
         waitUntilAllThreadAreDone()
 
@@ -322,7 +322,7 @@ class ChallengeFragmentTest {
         onView(withId(R.id.goals_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(2))
             .check(matches(hasDescendant(withText(pathProgressGoal))))
-            .check(matches(hasDescendant(withText(mockUser.getCurrentNumberOfPathsGoal().toString()))))
+            .check(matches(hasDescendant(withText(mockUser.goals!!.paths!!.toString()))))
             .check(matches(hasDescendant(withText(R.string.paths))))
 
         scenario.close()

@@ -2,6 +2,9 @@ package com.epfl.drawyourpath.userProfileCreation
 
 import android.content.Intent
 import android.widget.DatePicker
+import androidx.core.os.bundleOf
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -81,7 +84,7 @@ class UserGoalsInitFragmentTest {
         var t = goToProfilePhotoInitFragment()
         // incorrect double
         Espresso.onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("10.0"))
+            .perform(ViewActions.replaceText("10.0"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -102,7 +105,7 @@ class UserGoalsInitFragmentTest {
         var t = goToProfilePhotoInitFragment()
         // incorrect double
         Espresso.onView(withId(R.id.input_timeGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("10.0"))
+            .perform(ViewActions.replaceText("10.0"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -123,7 +126,7 @@ class UserGoalsInitFragmentTest {
         var t = goToProfilePhotoInitFragment()
         // incorrect double
         Espresso.onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("10.0"))
+            .perform(ViewActions.replaceText("10.0"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -144,7 +147,7 @@ class UserGoalsInitFragmentTest {
         var t = goToProfilePhotoInitFragment()
 
         Espresso.onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("10"))
+            .perform(ViewActions.replaceText("10"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -166,7 +169,7 @@ class UserGoalsInitFragmentTest {
         var t = goToProfilePhotoInitFragment()
 
         Espresso.onView(withId(R.id.input_timeGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("10"))
+            .perform(ViewActions.replaceText("10"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -188,7 +191,7 @@ class UserGoalsInitFragmentTest {
         var t = goToProfilePhotoInitFragment()
 
         Espresso.onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("10"))
+            .perform(ViewActions.replaceText("10"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -209,13 +212,13 @@ class UserGoalsInitFragmentTest {
         var t = goToProfilePhotoInitFragment()
 
         Espresso.onView(withId(R.id.input_distanceGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("10"))
+            .perform(ViewActions.replaceText("10"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.input_timeGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("60"))
+            .perform(ViewActions.replaceText("60"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.input_nbOfPathsGoal_text_UserProfileCreation))
-            .perform(ViewActions.typeText("5"))
+            .perform(ViewActions.replaceText("5"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setUserGoals_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -232,32 +235,10 @@ class UserGoalsInitFragmentTest {
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
-private fun goToProfilePhotoInitFragment(): ActivityScenario<UserProfileCreationActivity> {
-    // pass in test mode to used the Mockdatabase instead of the Firebase
-    var intent =
-        Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)
-    intent.putExtra("isRunningTestForDataBase", true)
-    var t: ActivityScenario<UserProfileCreationActivity> = ActivityScenario.launch(intent)
-    Espresso.onView(withId(R.id.start_profile_creation_button_userProfileCreation))
-        .perform(ViewActions.click())
-    Espresso.onView(withId(R.id.input_userName_text_UserProfileCreation))
-        .perform(ViewActions.typeText("hugo"))
-    Espresso.closeSoftKeyboard()
-    Espresso.onView(withId(R.id.setUserName_button_userProfileCreation))
-        .perform(ViewActions.click())
-    Espresso.onView(withId(R.id.input_firstname_text_UserProfileCreation))
-        .perform(ViewActions.typeText("Hugo"))
-    Espresso.closeSoftKeyboard()
-    Espresso.onView(withId(R.id.input_surname_text_UserProfileCreation))
-        .perform(ViewActions.typeText("Hugo"))
-    Espresso.closeSoftKeyboard()
-    Espresso.onView(withId(R.id.selectDate_button_userProfileCreation))
-        .perform(ViewActions.click())
-    Espresso.onView(isAssignableFrom(DatePicker::class.java))
-        .perform(PickerActions.setDate(2000, 2, 20))
-    Espresso.onView(withId(android.R.id.button1))
-        .perform(ViewActions.click())
-    Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
-        .perform(ViewActions.click())
-    return t
+private fun goToProfilePhotoInitFragment(): FragmentScenario<UserGoalsInitFragment> {
+    return launchFragmentInContainer(
+        bundleOf(
+            PROFILE_TEST_KEY to true
+        )
+    )
 }

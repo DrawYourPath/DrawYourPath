@@ -1,6 +1,7 @@
 package com.epfl.Utils.drawyourpath
 
 import com.google.android.gms.maps.model.LatLng
+import java.util.concurrent.CompletableFuture
 
 /**
  * A class containing various utility functions.
@@ -17,5 +18,11 @@ object Utils {
 
         val url = "https://maps.googleapis.com/maps/api/staticmap?size=80x80&maptype=roadmap&$path&key=$apiKey"
         return url
+    }
+
+    fun <T> failedFuture(throwable: Throwable): CompletableFuture<T> {
+        val future = CompletableFuture<T>()
+        future.completeExceptionally(throwable)
+        return future
     }
 }

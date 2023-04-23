@@ -8,7 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
 import org.junit.Rule
@@ -36,9 +36,9 @@ class FriendsFragmentTest {
 
         onView(withId(R.id.friends_search_bar))
             .check(matches(isDisplayed()))
-        onView(withId(R.id.friends_search_bar)).perform(typeText("friend1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+        onView(withId(R.id.friends_search_bar)).perform(replaceText("friend1")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
         //onView(withId(R.id.friends_search_bar))
-          //  .perform(typeText(), pressKey(KeyEvent.KEYCODE_ENTER))
+          //  .perform(replaceText(), pressKey(KeyEvent.KEYCODE_ENTER))
 
 
 
@@ -50,7 +50,7 @@ class FriendsFragmentTest {
 
     @Test
     fun correctListOfFriendsIsDisplayed() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
             FriendsFragment(database)
         }
@@ -60,7 +60,7 @@ class FriendsFragmentTest {
 
     @Test
     fun clickUnfriendButtonAndCheckIfFriend1HasAddFriendButton() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
             FriendsFragment(database)
         }
@@ -76,7 +76,7 @@ class FriendsFragmentTest {
 
     @Test
     fun clickFriendButtonAndCheckIfFriend1HasUnfriendButton() {
-        val database = MockDataBase()
+        val database = MockDatabase()
         val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
             FriendsFragment(database)
         }

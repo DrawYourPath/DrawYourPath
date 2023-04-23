@@ -37,12 +37,13 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
         // Iterate through each userId in friendsList
         for (userId in friendsList) {
             // Get the username CompletableFuture
-            val usernameFuture = database.getUsernameFromUserId(userId)
+            val usernameFuture = database.getUsername(userId)
 
             // When the CompletableFuture completes, update the list of friends
             usernameFuture.whenComplete { username, exception ->
                 if (exception == null) {
-                    database.getUserAccount(userId).whenComplete { userAccount, exception ->
+                    database.getUserData(userId).whenComplete { userdata, exception ->
+                        val userAccount = UserModel(userdata)
                         if (exception == null) {
                             // Add the new Friend object to the realFriends list
                             realFriends.add(

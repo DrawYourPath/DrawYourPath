@@ -11,22 +11,22 @@ class MockNonWorkingDatabaseTest {
     @Test
     fun everyFunctionShouldThrowError() {
         val mock = MockNonWorkingDatabase()
-        val mockUser = MockDataBase().userModelTest
+        val mockUser = MockDatabase().userModelTest
 
-        mock.isUserStoredInDatabase("").assertError(true)
-        mock.getUsernameFromUserId("").assertError("")
+        mock.isUserInDatabase("").assertError(true)
+        mock.getUsername("").assertError("")
         mock.getUserIdFromUsername("").assertError("")
         mock.isUsernameAvailable("").assertError(true)
         mock.updateUsername("").assertError(Unit)
         mock.setUsername("").assertError(Unit)
         mock.initUserProfile(mockUser).assertError(Unit)
-        mock.getUserAccount("").assertError(mockUser)
-        mock.getLoggedUserAccount().assertError(mockUser)
+        mock.getUserData("").assertError(mockUser)
+        mock.getLoggedUserData().assertError(mockUser)
         mock.setCurrentDistanceGoal(0.0).assertError(Unit)
         mock.setCurrentActivityTimeGoal(0.0).assertError(Unit)
         mock.setCurrentNbOfPathsGoal(0).assertError(Unit)
         mock.addUserToFriendsList("").assertError(Unit)
-        mock.removeUserFromFriendlist("").assertError(Unit)
+        mock.removeFriend("").assertError(Unit)
         mock.addDailyGoal(DailyGoal(0.0, 0.0, 0)).assertError(Unit)
         mock.updateUserAchievements(0.0, 0.0).assertError(Unit)
     }

@@ -14,8 +14,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.util.concurrent.CompletableFuture
 
@@ -40,13 +39,13 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
         if (argsFromLastFrag == null) {
             isTest = false
         } else {
-            isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
-            username = argsFromLastFrag.getString(Database.usernameFile).toString()
+            isTest = argsFromLastFrag.getBoolean(PROFILE_TEST_KEY)
+            username = argsFromLastFrag.getString(PROFILE_USERNAME_KEY).toString()
         }
 
         // select the correct database in function of test scenario
         if (isTest) {
-            userCached.setDatabase(MockDataBase())
+            userCached.setDatabase(MockDatabase())
         }
 
         imageView = view.findViewById(R.id.imagePhotoProfileInitFrag)
@@ -98,7 +97,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
                 requireActivity().supportFragmentManager.beginTransaction()
             val dataToEndProfileCreationFrag: Bundle = Bundle()
             // data to transmit to the UserGoalsInitFragment(username)
-            dataToEndProfileCreationFrag.putString(Database.usernameFile, username)
+            dataToEndProfileCreationFrag.putString(PROFILE_USERNAME_KEY, username)
             val endProfileCreationFrag = EndProfileCreationFragment()
             endProfileCreationFrag.arguments = dataToEndProfileCreationFrag
             fragManagement.replace(

@@ -14,8 +14,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
+import com.epfl.drawyourpath.userProfileCreation.PROFILE_TEST_KEY
 
 class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_photo) {
     // for the test
@@ -42,12 +43,12 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
         // retrieve the value from the welcome activity to know if we are running testes
         val isRunTest: Bundle? = arguments
         if (isRunTest != null) {
-            isTest = isRunTest.getBoolean("isRunningTestForDataBase")
+            isTest = isRunTest.getBoolean(PROFILE_TEST_KEY)
         }
 
         // select the correct database in function of test scenario
         if (isTest) {
-            user.setDatabase(MockDataBase())
+            user.setDatabase(MockDatabase())
         }
         // retrieve the different elements of the UI
         photoDescription = view.findViewById(R.id.photo_description_modify_profile_photo)

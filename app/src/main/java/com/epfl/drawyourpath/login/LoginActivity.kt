@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.login
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +27,11 @@ abstract class LoginActivityFragment(@LayoutRes layout: Int) : Fragment(layout) 
     protected inline fun <reified T> getLoginActivity(): T {
         return activity as T
     }
+}
+
+fun launchLoginActivity(activity: Activity) {
+    val intent = Intent(activity, LoginActivity::class.java)
+    activity.startActivity(intent)
 }
 
 /**

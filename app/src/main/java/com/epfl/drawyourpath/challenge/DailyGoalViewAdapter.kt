@@ -189,9 +189,9 @@ class DailyGoalViewAdapter(
      */
     private fun getGoalToDouble(goal: DailyGoal, pos: GoalPos): Double {
         return when (pos) {
-            GoalPos.DISTANCE -> goal.distanceInKilometerGoal
-            GoalPos.TIME -> goal.activityTimeInMinutesGoal
-            GoalPos.PATH -> goal.nbOfPathsGoal.toDouble()
+            GoalPos.DISTANCE -> goal.expectedDistance
+            GoalPos.TIME -> goal.expectedTime
+            GoalPos.PATH -> goal.expectedPaths.toDouble()
         }
     }
 
@@ -204,9 +204,9 @@ class DailyGoalViewAdapter(
      */
     private fun getProgressToDouble(goal: DailyGoal, pos: GoalPos): Double {
         return when (pos) {
-            GoalPos.DISTANCE -> goal.distanceInKilometerProgress
-            GoalPos.TIME -> goal.activityTimeInMinutesProgress
-            GoalPos.PATH -> goal.nbOfPathsProgress.toDouble()
+            GoalPos.DISTANCE -> goal.distance
+            GoalPos.TIME -> goal.time
+            GoalPos.PATH -> goal.paths.toDouble()
         }
     }
 
