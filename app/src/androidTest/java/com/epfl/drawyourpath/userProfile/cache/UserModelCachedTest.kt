@@ -149,7 +149,7 @@ class UserModelCachedTest {
 
     @Test
     fun setNewProgressModifyProgress() {
-        user.updateGoalProgress(run).get(timeout, TimeUnit.SECONDS)
+        user.addNewRun(run).get(timeout, TimeUnit.SECONDS)
         val distance = run.getDistance() / 1000.0
         val time = run.getDuration() / 60.0
         assertEqualUser(
@@ -168,7 +168,7 @@ class UserModelCachedTest {
     @Test
     fun setNewProgressWhenNoInternetDoesNotModifyProgress() {
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateGoalProgress(run).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        user.addNewRun(run).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         assertEquals(dailyGoal, user.getTodayDailyGoal().getOrAwaitValue())
     }

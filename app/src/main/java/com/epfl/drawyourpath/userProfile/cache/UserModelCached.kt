@@ -11,10 +11,12 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
+import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
@@ -49,6 +51,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     // room database daily goal
     private val dailyGoalCache = roomDatabase.dailyGoalDao()
 
+    // room database runs
+    private val runCache = roomDatabase.runDao()
+
     // current user id
     private var currentUserID: String? = null
 
@@ -62,6 +67,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
         dailyGoalCache.getDailyGoalById(user.userId).map {
             getTodayDailyGoal(user.goalAndAchievements, it.firstOrNull())
+        }
+    }
+
+    // runs
+    private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunAndPoints(it) }.map { runAndPoints ->
+        runAndPoints.map { entry ->
+            Run(Path(entry.value.map { LatLng(it.latitude, it.longitude) }), entry.key.startTime, entry.key.endTime)
         }
     }
 
@@ -216,10 +228,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * update the goal progress from a run
+     * add a new run to the run history and update the daily goal
      * @param run the run to add
      */
-    fun updateGoalProgress(run: Run): CompletableFuture<Unit> {
+    fun addNewRun(run: Run): CompletableFuture<Unit> {
+        //TODO add to run history
         checkCurrentUser()
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
