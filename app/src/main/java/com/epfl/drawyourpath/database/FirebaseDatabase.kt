@@ -42,6 +42,7 @@ class FirebaseKeys {
         // User goal keys sublevel
         const val GOAL_PATH = "paths"
         const val GOAL_DISTANCE = "distance"
+        const val GOAL_TIME = "time"
 
         // Goals history list sublevels
         const val GOAL_HISTORY_EXPECTED_DISTANCE = "expectedDistance"
@@ -179,13 +180,14 @@ class FirebaseDatabase : Database() {
         val data = listOf<Pair<String, Any?>>(
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.USERNAME}" to userData.username,
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.BIRTHDATE}" to userData.birthDate,
+            "${FirebaseKeys.PROFILE}/${FirebaseKeys.EMAIL}" to userData.email,
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.PICTURE}" to userData.picture,
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.SURNAME}" to userData.surname,
             "${FirebaseKeys.PROFILE}/${FirebaseKeys.FIRSTNAME}" to userData.firstname,
             "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_DISTANCE}" to userData.goals?.distance,
             "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_PATH}" to userData.goals?.paths,
-
-        ).filter { entry -> entry.second != null }.associate { entry -> entry }
+            "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_TIME}" to userData.goals?.activityTime,
+        ).filter { it.second != null }.associate { entry -> entry }
 
         userRoot(userId).updateChildren(data)
             .addOnSuccessListener {
@@ -199,31 +201,9 @@ class FirebaseDatabase : Database() {
     }
 
     override fun setUserData(userId: String, userData: UserData): CompletableFuture<Unit> {
-        val future = CompletableFuture<Unit>()
-
-        val data = listOf<Pair<String, Any?>>(
-            // We don't set the username here as updating username is more complicated.
-            // see FirebaseDatabase.setUsername()
-            // "${FirebaseKeys.PROFILE}/${FirebaseKeys.USERNAME}" to userData.username,
-
-            "${FirebaseKeys.PROFILE}/${FirebaseKeys.BIRTHDATE}" to userData.birthDate,
-            "${FirebaseKeys.PROFILE}/${FirebaseKeys.PICTURE}" to userData.picture,
-            "${FirebaseKeys.PROFILE}/${FirebaseKeys.SURNAME}" to userData.surname,
-            "${FirebaseKeys.PROFILE}/${FirebaseKeys.FIRSTNAME}" to userData.firstname,
-            "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_DISTANCE}" to userData.goals?.distance,
-            "${FirebaseKeys.GOALS}/${FirebaseKeys.GOAL_PATH}" to userData.goals?.paths,
-
-        ).filter { entry -> entry.second != null }.associate { entry -> entry }
-
-        userRoot(userId).updateChildren(data)
-            .addOnSuccessListener {
-                future.complete(Unit)
-            }
-            .addOnFailureListener {
-                future.completeExceptionally(it)
-            }
-
-        return future
+        // Setting user data is the same as creating a user, except we don't update the username
+        // when the user already exists.
+        return createUser(userId, userData.copy(username = null, userId = null))
     }
 
     override fun getUserData(userId: String): CompletableFuture<UserData> {
@@ -244,6 +224,10 @@ class FirebaseDatabase : Database() {
 
         if (goals.paths != null && goals.paths <= 0) {
             return Utils.failedFuture(Exception("Path must be greater than 0."))
+        }
+
+        if (goals.activityTime != null && goals.activityTime <= 0) {
+            return Utils.failedFuture(Exception("Activity time must be greater than 0."))
         }
 
         return setUserData(userId, UserData(goals = goals))
@@ -413,6 +397,7 @@ class FirebaseDatabase : Database() {
             goals = UserGoals(
                 paths = (goals.child(FirebaseKeys.GOAL_PATH).value as Number?)?.toLong(),
                 distance = (goals.child(FirebaseKeys.GOAL_DISTANCE).value as Number?)?.toDouble(),
+                activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toLong(),
             ),
             picture = profile.child(FirebaseKeys.PICTURE).value as String?,
             runs = transformRunsHistory(profile.child(FirebaseKeys.RUN_HISTORY)),
@@ -559,8 +544,10 @@ class FirebaseDatabase : Database() {
         val dailyGoalList = ArrayList<DailyGoal>()
 
         for (dailyGoal in data.children) {
-            val date: LocalDate? =
-                if (dailyGoal.key != null) LocalDate.ofEpochDay(dailyGoal.key!!.toLong()) else null
+            val date: LocalDate =
+                (if (dailyGoal.key != null) LocalDate.ofEpochDay(dailyGoal.key!!.toLong()) else null)
+                    ?: continue
+
             val expectedDistance: Double? =
                 dailyGoal.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_DISTANCE)
                     .getValue(Double::class.java)
@@ -576,9 +563,6 @@ class FirebaseDatabase : Database() {
             val paths: Int? =
                 (dailyGoal.child(FirebaseKeys.GOAL_HISTORY_PATHS).value as Long?)?.toInt()
 
-            if (date == null) {
-                continue
-            }
 
             dailyGoalList.add(
                 DailyGoal(
