@@ -11,12 +11,12 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
-import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.path.cache.PointsEntity
+import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
-import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
@@ -40,10 +40,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private var database: Database = FireDatabase()
 
     // room database
-    private val roomDatabase = Room
-        .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
-        .fallbackToDestructiveMigration()
-        .build()
+    private val roomDatabase = Room.databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME).fallbackToDestructiveMigration().build()
 
     // room database user
     private val userCache = roomDatabase.userDao()
@@ -72,9 +69,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     // runs
     private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunAndPoints(it) }.map { runAndPoints ->
-        runAndPoints.map { entry ->
-            Run(Path(entry.value.map { LatLng(it.latitude, it.longitude) }), entry.key.startTime, entry.key.endTime)
-        }
+        runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }
     }
 
     /**
@@ -85,14 +80,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         setUserId(userModel.getUserId())
         return CompletableFuture.supplyAsync {
             userCache.insertAll(
-                fromUserModelToUserData(userModel),
-                listOf(
+                fromUserModelToUserData(userModel), listOf(
                     DailyGoal(
                         userModel.getCurrentDistanceGoal(),
                         userModel.getCurrentActivityTime(),
                         userModel.getCurrentNumberOfPathsGoal(),
                     ).toDailyGoalEntity(userModel.getUserId()),
-                ),
+                ), listOf(), listOf()
             )
         }
     }
@@ -110,7 +104,12 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         }.thenComposeAsync {
             database.getUserAccount(userId)
         }.thenApplyAsync { userModel ->
-            userCache.insertAll(fromUserModelToUserData(userModel), userModel.getDailyGoalList().map { it.toDailyGoalEntity(userId) })
+            val runs = RunEntity.fromRunsToEntities(userModel.getUserId(), userModel.getRunsHistory())
+            userCache.insertAll(fromUserModelToUserData(userModel),
+                userModel.getDailyGoalList().map { it.toDailyGoalEntity(userId) },
+                runs.map { it.first },
+                runs.map { it.second }.flatten()
+            )
         }
     }
 
