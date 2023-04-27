@@ -1,16 +1,20 @@
 package com.epfl.drawyourpath.database
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.android.gms.maps.model.LatLng
-import org.junit.Assert
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.time.LocalDate
-import java.util.concurrent.ExecutionException
+import java.time.LocalTime
+import java.time.ZoneOffset
 
 class MockDatabaseTest {
     val mockDatabase = MockDatabase()
@@ -207,7 +211,7 @@ class MockDatabaseTest {
     @Test
     fun setDistanceGoalInvalid() {
         val database = MockDatabase()
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+        val exception = assertThrows(java.util.concurrent.ExecutionException::class.java) {
             database.setGoals(userIdTest, UserGoals(distance = -1.00)).get()
         }
         assertEquals(
@@ -235,7 +239,7 @@ class MockDatabaseTest {
     @Test
     fun setActivityTimeGoalInvalid() {
         val database = MockDatabase()
-        val exception = Assert.assertThrows(Throwable::class.java) {
+        val exception = assertThrows(Throwable::class.java) {
             database.setGoals(userIdTest, UserGoals(activityTime = -1)).get()
         }
         assertEquals(
@@ -516,5 +520,80 @@ class MockDatabaseTest {
         )
         assertEquals(userAccount.getTotalNbOfPaths(), database.totalNbOfPathsTest + 1)
         */
+    }
+
+    /**
+     * Test if a conversation was correctly created
+     */
+    @Test
+    fun createConversationCorrectly() {
+        val database = MockDatabase()
+        val convName = "New conversation"
+        val targetContext: Context = ApplicationProvider.getApplicationContext()
+        val welcomeMessage: String =
+            targetContext.resources.getString(R.string.welcome_chat_message)
+                .format(convName)
+        val members: List<String> = listOf(
+            database.MOCK_USERS[0].userId!!,
+            database.MOCK_USERS[1].userId!!,
+            database.MOCK_USERS[2].userId!!
+        )
+        val creator = database.MOCK_USERS[0].userId!!
+
+        //past database before executing the function
+        val pastChatPreview = database.MOCK_CHAT_PREVIEWS
+        val pastChatMembers = database.MOCK_CHAT_MEMBERS
+        val pastChatMessages = database.MOCK_CHAT_MESSAGES
+        val pastUser0Chat = database.MOCK_USERS[0].chatList
+        val userId0 = database.MOCK_USERS[0].userId!!
+        val pastUser1Chat = database.MOCK_USERS[1].chatList
+        val userId1 = database.MOCK_USERS[1].userId!!
+        val pastUser2Chat = database.MOCK_USERS[2].chatList
+        val userId2 = database.MOCK_USERS[2].userId!!
+
+        val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
+
+        database.createChatConversation(convName, members, creator)
+
+        //test the chat previews
+        val newPreview = ChatPreview(
+            conversationId = "1",
+            title = convName,
+            lastMessage = welcomeMessage,
+            lastSenderId = creator,
+            lastDate = date
+        )
+        assertEquals(pastChatPreview + newPreview, database.chatPreviews.values.toList())
+        //test the chat members
+        val newMembers = ChatMembers(conversationId = "1", membersList = members)
+        assertEquals(pastChatMembers + newMembers, database.chatMembers.values.toList())
+        //test the chat messages
+        val newMessage = ChatMessage(
+            conversationId = "1", messageList = listOf(
+                Message(
+                    conversationId = "1",
+                    content = welcomeMessage,
+                    sender = creator,
+                    date = date
+                )
+            )
+        )
+        assertEquals(pastChatMessages + newMessage, database.chatMessages.values.toList())
+        //test the chat list of the different members of the group
+        assertEquals(
+            if (pastUser0Chat == null) {
+                listOf("1")
+            } else pastUser0Chat + "1", database.users[userId0]!!.chatList
+        )
+        assertEquals(
+            if (pastUser1Chat == null) {
+                listOf("1")
+            } else pastUser1Chat + "1", database.users[userId1]!!.chatList
+        )
+        assertEquals(
+            if (pastUser2Chat == null) {
+                listOf("1")
+            } else pastUser2Chat + "1", database.users[userId2]!!.chatList
+        )
     }
 }

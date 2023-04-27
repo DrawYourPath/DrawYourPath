@@ -23,7 +23,33 @@ data class UserData(
     val friendList: List<String>? = null,
     val runs: List<Run>? = null,
     val dailyGoals: List<DailyGoal>? = null,
+    val chatList: List<String>? = null,
 )
+
+data class ChatPreview(
+    val conversationId: String? = null,
+    val title: String? = null,
+    val lastMessage: String? = null,
+    val lastSenderId: String? = null,
+    val lastDate: Long? = null,
+)
+
+data class ChatMembers(
+    val conversationId: String? = null,
+    val membersList: List<String>? = null,
+)
+
+data class Message(
+    val conversationId: String? = null,
+    val sender: String? = null,
+    val content: String? = null,
+    val date: Long? = null,
+)
+data class ChatMessage(
+    val conversationId: String? = null,
+    val messageList: List<Message>? = null
+)
+
 
 abstract class Database {
     /**
@@ -143,5 +169,22 @@ abstract class Database {
      * @param activityTimeDrawing time take by the user to realized the drawing
      * @return a future that indicate if the achievements of the user have been correctly updated.
      */
-    abstract fun updateUserAchievements(userId: String, distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit>
+    abstract fun updateUserAchievements(
+        userId: String,
+        distanceDrawing: Double,
+        activityTimeDrawing: Double
+    ): CompletableFuture<Unit>
+
+    /**
+     * Function used to create a chat conversation with other users of the DrawYourPath community.
+     * @param name name of the chat conversation
+     * @param membersList list of the members userId of the chat conversation(the creator must be included in this list)
+     * @param creatorId userId of the conversation creator
+     * @return a future that indicate if the conversation was correctly created inside the database
+     */
+    abstract fun createChatConversation(
+        name: String,
+        membersList: List<String>,
+        creatorId: String
+    ): CompletableFuture<Unit>
 }

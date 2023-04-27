@@ -1,13 +1,18 @@
 package com.epfl.drawyourpath.database
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.test.core.app.ApplicationProvider
 import com.epfl.Utils.drawyourpath.Utils
+import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneOffset
 import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 
@@ -45,6 +50,7 @@ class MockDatabase : Database() {
             ),
         ),
         friendList = listOf("0", "1"),
+        chatList = listOf("0"),
     )
 
     val MOCK_USERS = listOf<UserData>(
@@ -111,6 +117,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
+            chatList = listOf("0"),
         ),
         UserData(
             userId = "10",
@@ -180,6 +187,43 @@ class MockDatabase : Database() {
         mockUser,
     )
 
+    var MOCK_CHAT_PREVIEWS = listOf<ChatPreview>(
+        ChatPreview(
+            conversationId = "0",
+            title = "New Conversation",
+            lastMessage = "Hello",
+            lastDate = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
+            lastSenderId = MOCK_USERS[1].userId
+        )
+    )
+
+    val MOCK_CHAT_MEMBERS = listOf<ChatMembers>(
+        ChatMembers(
+            conversationId = "0",
+            membersList = listOf(mockUser.userId!!, MOCK_USERS[1].userId!!)
+        )
+    )
+
+    val MOCK_CHAT_MESSAGES = listOf<ChatMessage>(
+        ChatMessage(
+            conversationId = "0",
+            messageList = listOf(
+                Message(
+                    conversationId = "0",
+                    sender = MOCK_USERS[1].userId,
+                    date = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
+                    content = "Hello"
+                ),
+                Message(
+                    conversationId = "0",
+                    sender = mockUser.userId,
+                    date = LocalDate.of(2000, 2, 20).atTime(10, 0).toEpochSecond(ZoneOffset.UTC),
+                    content = "Hi"
+                )
+            )
+        )
+    )
+
     init {
         ilog("Mock database created.")
     }
@@ -195,6 +239,10 @@ class MockDatabase : Database() {
     val unameToUid = MOCK_USERS.associate { it.username to it.userId }.toMutableMap()
 
     val users = MOCK_USERS.associateBy { it.userId }.toMutableMap()
+
+    val chatPreviews = MOCK_CHAT_PREVIEWS.associateBy { it.conversationId }.toMutableMap()
+    val chatMembers = MOCK_CHAT_MEMBERS.associateBy { it.conversationId }.toMutableMap()
+    val chatMessages = MOCK_CHAT_MESSAGES.associateBy { it.conversationId }.toMutableMap()
 
     override fun isUserInDatabase(userId: String): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(unameToUid.containsValue(userId))
@@ -389,5 +437,118 @@ class MockDatabase : Database() {
         activityTimeDrawing: Double,
     ): CompletableFuture<Unit> {
         TODO("Not yet implemented")
+    }
+
+    override fun createChatConversation(
+        name: String,
+        membersList: List<String>,
+        creatorId: String
+    ): CompletableFuture<Unit> {
+        //create the id of the new conversation
+        val conversationId: String = (chatPreviews.size).toString()
+
+        val targetContext: Context = ApplicationProvider.getApplicationContext()
+        val welcomeMessage: String =
+            targetContext.resources.getString(R.string.welcome_chat_message)
+                .format(name)
+        val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
+        return initChatPreview(
+            conversationId,
+            chatPreview = ChatPreview(
+                title = name,
+                lastMessage = welcomeMessage,
+                lastSenderId = creatorId,
+                lastDate = date
+            )
+        )
+            .thenApply {
+                initChatMembers(conversationId, membersList)
+            }.thenApply {
+                initChatMessages(
+                    conversationId,
+                    Message(sender = creatorId, content = welcomeMessage, date = date)
+                )
+            }.thenApply {
+                updateMembersProfileWithNewChat(conversationId, membersList)
+            }
+    }
+
+    /**
+     * Helper function to initiate the chat preview of a given conversation
+     * @param conversationId id of the new conversation
+     * @param chatPreview object that contains the data of this preview
+     * @return a future that indicate if the chat preview was correctly created
+     */
+    private fun initChatPreview(
+        conversationId: String,
+        chatPreview: ChatPreview
+    ): CompletableFuture<Unit> {
+        chatPreviews[conversationId] = ChatPreview(
+            conversationId = conversationId,
+            title = chatPreview.title,
+            lastMessage = chatPreview.lastMessage,
+            lastSenderId = chatPreview.lastSenderId,
+            lastDate = chatPreview.lastDate
+        )
+
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    /**
+     * Helper function to initiate the chat members of a given conversation
+     * @param conversationId id of the new conversation
+     * @param membersList list of members of the conversation
+     * @return a future that indicate if the chat members have been correctly initiated.
+     */
+    private fun initChatMembers(
+        conversationId: String,
+        membersList: List<String>
+    ): CompletableFuture<Unit> {
+        chatMembers[conversationId] =
+            ChatMembers(conversationId = conversationId, membersList = membersList)
+
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    /**
+     * Helper function to initiate the chat messages of a given conversation
+     * @param conversationId id of the new conversation
+     * @param firstMessage first message of the conversation
+     */
+    private fun initChatMessages(
+        conversationId: String,
+        firstMessage: Message
+    ): CompletableFuture<Unit> {
+        chatMessages[conversationId] = ChatMessage(
+            conversationId = conversationId, messageList = listOf(
+                Message(
+                    conversationId = conversationId,
+                    content = firstMessage.content,
+                    sender = firstMessage.sender,
+                    date = firstMessage.date
+                )
+            )
+        )
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    /**
+     * Helper function to add the conversation id of new conversation to the profile of each member.
+     * @param conversationId id of the new conversation
+     * @param membersList list of all the members of the conversation
+     * @return a future that indicate if every member profile have been correctly updated
+     */
+    private fun updateMembersProfileWithNewChat(
+        conversationId: String,
+        membersList: List<String>
+    ): CompletableFuture<Unit> {
+        for (memberId in membersList) {
+            val current = users[memberId]!!
+            users[memberId] = current.copy(
+                chatList = (current.chatList ?: emptyList()) + conversationId,
+            )
+        }
+
+        return CompletableFuture.completedFuture(Unit)
     }
 }

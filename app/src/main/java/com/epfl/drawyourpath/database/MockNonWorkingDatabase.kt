@@ -77,6 +77,14 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
+    override fun createChatConversation(
+        name: String,
+        membersList: List<String>,
+        creatorId: String
+    ): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
     private fun <T : Any> failedFuture(): CompletableFuture<T> {
         return CompletableFuture.supplyAsync { throw Error(ERROR_NAME) }
     }
