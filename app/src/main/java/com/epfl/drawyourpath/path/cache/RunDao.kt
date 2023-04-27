@@ -11,7 +11,7 @@ interface RunDao {
      * @param userId the user id
      * @return [LiveData] of [RunEntity] and [PointsEntity]
      */
-    @Query("SELECT * FROM Run JOIN Points ON Run.user_id = Points.user_id WHERE Run.user_id = :userId")
+    @Query("SELECT * FROM Run JOIN Points ON Run.user_id = Points.user_id AND Run.start_time = Points.run_id WHERE Run.user_id = :userId ORDER BY Run.start_time DESC")
     fun getAllRunAndPoints(userId: String): LiveData<Map<RunEntity, List<PointsEntity>>>
 
     /**
