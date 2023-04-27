@@ -12,7 +12,6 @@ import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.path.cache.PointsEntity
 import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -144,6 +143,16 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
+     * get the run history (read-only)
+     *
+     * @return the [liveData] of a list of [Run]
+     */
+    fun getRunHistory(): LiveData<List<Run>> {
+        checkCurrentUser()
+        return runHistory
+    }
+
+    /**
      * get the current user id
      * @return the current user id
      */
@@ -227,17 +236,20 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
+     * TODO if no connection put run history inside cache then add it to database when connection
      * add a new run to the run history and update the daily goal
      * @param run the run to add
      */
     fun addNewRun(run: Run): CompletableFuture<Unit> {
-        //TODO add to run history
         checkCurrentUser()
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
-        return database.updateUserAchievements(distanceInKilometer, timeInMinute).thenApplyAsync {
-            dailyGoalCache.updateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1)
+        return database.addRunToHistory(run).thenComposeAsync {
+            database.updateUserAchievements(distanceInKilometer, timeInMinute)
+        }.thenApplyAsync {
+            val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run))
+            dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
         }.thenComposeAsync {
             database.addDailyGoal(DailyGoal(it))
         }

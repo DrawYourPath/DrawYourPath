@@ -15,33 +15,6 @@ interface RunDao {
     fun getAllRunAndPoints(userId: String): LiveData<Map<RunEntity, List<PointsEntity>>>
 
     /**
-     * insert the run with its path inside the cache
-     * @param run the run
-     * @param points the list of points
-     */
-    @Transaction
-    fun insert(run: RunEntity, points: List<PointsEntity>) {
-        insertRun(run)
-        insertAllPoints(points)
-    }
-
-    /**
-     * should not be used: use [insert] instead
-     * insert the run inside the cache
-     * @param run the run
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertRun(run: RunEntity)
-
-    /**
-     * should not be used: use [insert] instead
-     * insert the points inside the cache
-     * @param points the points
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllPoints(points: List<PointsEntity>)
-
-    /**
      * delete the run from the room database
      * @param run the user to delete
      */
