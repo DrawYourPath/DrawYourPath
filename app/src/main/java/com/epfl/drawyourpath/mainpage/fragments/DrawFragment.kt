@@ -39,12 +39,13 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
         val mapFragment = childFragmentManager
             .findFragmentById(R.id.fragment_draw_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        getLocationPermission()
     }
 
     override fun onMapReady(map: GoogleMap) {
         this.map = map
         map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
-        getLocationPermission()
         updateLocationUI()
         getDeviceLocation()
     }
@@ -56,9 +57,7 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
             == PackageManager.PERMISSION_GRANTED) {
             locationPermissionGranted = true
         } else {
-            ActivityCompat.requestPermissions(
-                this.requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
         }
     }
@@ -66,18 +65,18 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>,
                                             grantResults: IntArray) {
-        locationPermissionGranted = false
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     locationPermissionGranted = true
+                    updateLocationUI()
                 }
             }
-            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
-        updateLocationUI()
     }
 
     @SuppressLint("MissingPermission")
@@ -89,11 +88,11 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
             if (locationPermissionGranted) {
                 map?.isMyLocationEnabled = true
                 map?.uiSettings?.isMyLocationButtonEnabled = true
+                getDeviceLocation()
             } else {
                 map?.isMyLocationEnabled = false
                 map?.uiSettings?.isMyLocationButtonEnabled = false
                 lastKnownLocation = null
-                getLocationPermission()
             }
         } catch (e: SecurityException) {
             Log.e("Exception: %s", e.message, e)
@@ -113,9 +112,9 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
                 fusedLocationProviderClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult?) {
                         if (locationResult != null) {
-                            for (location in locationResult.locations) {
-                                map?.animateCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
-                            }
+                            var coordinates = LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
+                            map?.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
+                            lastKnownLocation = locationResult.lastLocation
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.")
                             map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
@@ -140,8 +139,8 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
         private val TAG = DrawFragment::class.java.simpleName
         private val DEFAULT_LOCATION = LatLng(46.5185, 6.56177)
         private const val DEFAULT_ZOOM = 18F
-        private const val LOCATION_REQUEST_INTERVAL = 10000L
-        private const val LOCATION_REQUEST_MIN_INTERVAL = 5000L
+        private const val LOCATION_REQUEST_INTERVAL = 5000L
+        private const val LOCATION_REQUEST_MIN_INTERVAL = 2500L
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
         private const val KEY_LOCATION = "location"
     }
