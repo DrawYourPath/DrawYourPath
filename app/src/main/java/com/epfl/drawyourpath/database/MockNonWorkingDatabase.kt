@@ -80,7 +80,8 @@ class MockNonWorkingDatabase : Database() {
     override fun createChatConversation(
         name: String,
         membersList: List<String>,
-        creatorId: String
+        creatorId: String,
+        welcomeMessage: String
     ): CompletableFuture<Unit> {
         return failedFuture()
     }

@@ -26,7 +26,7 @@ class MockNonWorkingDatabaseTest {
         mock.removeFriend("", "").assertError(Unit)
         mock.addDailyGoal("", DailyGoal(0.0, 0.0, 0)).assertError(Unit)
         mock.updateUserAchievements("", 0.0, 0.0).assertError(Unit)
-        mock.createChatConversation("", emptyList(), "").assertError(Unit)
+        mock.createChatConversation("", emptyList(), "", "").assertError(Unit)
         mock.getChatPreview("").assertError(mockChatPreview)
     }
 

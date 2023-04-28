@@ -4,9 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.test.core.app.ApplicationProvider
 import com.epfl.Utils.drawyourpath.Utils
-import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -437,7 +435,8 @@ class FirebaseDatabase : Database() {
     override fun createChatConversation(
         name: String,
         membersList: List<String>,
-        creatorId: String
+        creatorId: String,
+        welcomeMessage: String
     ): CompletableFuture<Unit> {
         //create the id of the new conversation
         val pushedPostRef: DatabaseReference = chatsRoot().push()
@@ -446,10 +445,6 @@ class FirebaseDatabase : Database() {
         if (conversationId == null) {
             throw Exception("Error in the generation of the conversation id !")
         } else {
-            val targetContext: Context = ApplicationProvider.getApplicationContext()
-            val welcomeMessage: String =
-                targetContext.resources.getString(R.string.welcome_chat_message)
-                    .format(name)
             val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
             return initChatPreview(
                 conversationId,

@@ -3,9 +3,7 @@ package com.epfl.drawyourpath.database
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.test.core.app.ApplicationProvider
 import com.epfl.Utils.drawyourpath.Utils
-import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
@@ -442,15 +440,12 @@ class MockDatabase : Database() {
     override fun createChatConversation(
         name: String,
         membersList: List<String>,
-        creatorId: String
+        creatorId: String,
+        welcomeMessage: String
     ): CompletableFuture<Unit> {
         //create the id of the new conversation
         val conversationId: String = (chatPreviews.size).toString()
 
-        val targetContext: Context = ApplicationProvider.getApplicationContext()
-        val welcomeMessage: String =
-            targetContext.resources.getString(R.string.welcome_chat_message)
-                .format(name)
         val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
         return initChatPreview(
             conversationId,

@@ -181,12 +181,14 @@ abstract class Database {
      * @param name name of the chat conversation
      * @param membersList list of the members userId of the chat conversation(the creator must be included in this list)
      * @param creatorId userId of the conversation creator
+     * @param welcomeMessage a welcome message in a string format
      * @return a future that indicate if the conversation was correctly created inside the database
      */
     abstract fun createChatConversation(
         name: String,
         membersList: List<String>,
-        creatorId: String
+        creatorId: String,
+        welcomeMessage: String
     ): CompletableFuture<Unit>
 
     /**

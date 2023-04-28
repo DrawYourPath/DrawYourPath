@@ -554,7 +554,7 @@ class MockDatabaseTest {
 
         val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
 
-        database.createChatConversation(convName, members, creator)
+        database.createChatConversation(convName, members, creator, welcomeMessage)
 
         //test the chat previews
         val newPreview = ChatPreview(
