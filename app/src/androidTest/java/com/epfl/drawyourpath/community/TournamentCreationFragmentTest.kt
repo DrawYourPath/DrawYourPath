@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.community
 
+import android.Manifest
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.test.espresso.Espresso.closeSoftKeyboard
@@ -11,6 +12,7 @@ import androidx.test.espresso.contrib.PickerActions.setTime
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import org.junit.Before
@@ -26,6 +28,9 @@ class TournamentCreationFragmentTest {
 
     @get:Rule
     var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
+
+    @get:Rule
+    var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     @Before
     fun launchFragment() {
