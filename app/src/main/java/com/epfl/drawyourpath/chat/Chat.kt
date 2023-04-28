@@ -49,7 +49,7 @@ sealed class MessageContent {
  * @property timestamp The timestamp of the message (in milliseconds since epoch).
  */
 data class Message(
-    val id: String,
+    val id: Long,
     val senderId: String,
     val content: MessageContent,
     val timestamp: Long
@@ -58,14 +58,13 @@ data class Message(
         /**
          * Factory method for creating a text message.
          *
-         * @param id The unique identifier for the message.
          * @param senderId The unique identifier for the sender of the message.
          * @param text The text content of the message.
-         * @param timestamp The timestamp of the message (in milliseconds since epoch).
+         * @param timestamp The timestamp of the message and also used as the id of the message (in milliseconds since epoch).
          * @return A Message object with the specified parameters and MessageType.Text.
          */
-        fun createTextMessage(id: String, senderId: String, text: String, timestamp: Long): Message {
-            return Message(id, senderId, MessageContent.Text(text), timestamp)
+        fun createTextMessage(senderId: String, text: String, timestamp: Long): Message {
+            return Message(timestamp, senderId, MessageContent.Text(text), timestamp)
         }
 
 
@@ -73,27 +72,25 @@ data class Message(
         /**
          * Factory method for creating an image message.
          *
-         * @param id The unique identifier for the message.
          * @param senderId The unique identifier for the sender of the message.
          * @param image The Bitmap image of the message.
-         * @param timestamp The timestamp of the message (in milliseconds since epoch).
+         * @param timestamp The timestamp of the message and also used as the id of the message (in milliseconds since epoch).
          * @return A Message object with the specified parameters and MessageType.Picture.
          */
-        fun createPictureMessage(id: String, senderId: String, image: Bitmap, timestamp: Long): Message {
-            return Message(id, senderId, MessageContent.Picture(image), timestamp)
+        fun createPictureMessage(senderId: String, image: Bitmap, timestamp: Long): Message {
+            return Message(timestamp, senderId, MessageContent.Picture(image), timestamp)
         }
 
         /**
          * Factory method for creating a run path message.
          *
-         * @param id The unique identifier for the message.
          * @param senderId The unique identifier for the sender of the message.
          * @param run The Run object containing the run path data.
-         * @param timestamp The timestamp of the message (in milliseconds since epoch).
+         * @param timestamp The timestamp of the message and also used as the id of the message (in milliseconds since epoch).
          * @return A Message object with the specified parameters and MessageType.RunPath.
          */
-        fun createRunPathMessage(id: String, senderId: String, run: Run, timestamp: Long): Message {
-            return Message(id, senderId, MessageContent.RunPath(run), timestamp)
+        fun createRunPathMessage(senderId: String, run: Run, timestamp: Long): Message {
+            return Message(timestamp, senderId, MessageContent.RunPath(run), timestamp)
         }
     }
 }
@@ -131,7 +128,7 @@ class Chat {
      * @param id The unique identifier of the message to retrieve.
      * @return The Message object with the specified ID, or null if not found.
      */
-    fun getMessageById(id: String): Message? {
+    fun getMessageById(id: Long): Message? {
         return messages.find { it.id == id }
     }
 
@@ -141,7 +138,7 @@ class Chat {
      * @param id The unique identifier of the message to remove.
      * @return A Boolean indicating whether the message was successfully removed.
      */
-    fun removeMessageById(id: String): Boolean {
+    fun removeMessageById(id: Long): Boolean {
         return messages.removeIf { it.id == id }
     }
 }

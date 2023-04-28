@@ -16,9 +16,9 @@ class ChatTest {
 
         // Create mock messages for testing
         val mockBitmap = Mockito.mock(Bitmap::class.java)
-        val textMessage = Message.createTextMessage("1", "sender1", "Hello, world!", 1000L)
-        val pictureMessage = Message.createPictureMessage("2", "sender1", mockBitmap, 2000L)
-        val runMessage = Message.createRunPathMessage("3", "sender1", createMockRun(), 3000L)
+        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
+        val pictureMessage = Message.createPictureMessage( "sender1", mockBitmap, 2000L)
+        val runMessage = Message.createRunPathMessage("sender1", createMockRun(), 3000L)
 
         // Add messages to the chat
         chat.addMessage(textMessage)
@@ -38,11 +38,11 @@ class ChatTest {
     fun testRemoveMessageById() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage("1", "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
         // Attempt to remove the message from the chat
-        val removed = chat.removeMessageById("1")
+        val removed = chat.removeMessageById(1000L)
 
         // Verify that the message was removed successfully
         assertTrue(removed)
@@ -54,11 +54,11 @@ class ChatTest {
     fun testRemoveMessageById_notFound() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage("1", "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
         // Attempt to remove a message that doesn't exist in the chat
-        val removed = chat.removeMessageById("2")
+        val removed = chat.removeMessageById(2000L)
 
         // Verify that the attempt was unsuccessful and the chat remains unchanged
         assertFalse(removed)
@@ -70,10 +70,10 @@ class ChatTest {
     fun testGetMessageById() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage("1", "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
-        val retrievedMessage = chat.getMessageById("1")
+        val retrievedMessage = chat.getMessageById(1000L)
         assertNotNull(retrievedMessage)
         assertEquals(textMessage, retrievedMessage)
     }
@@ -83,10 +83,10 @@ class ChatTest {
     fun testGetMessageById_notFound() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage("1", "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
-        val retrievedMessage = chat.getMessageById("2")
+        val retrievedMessage = chat.getMessageById(2000L)
         assertNull(retrievedMessage)
     }
 
@@ -96,13 +96,13 @@ class ChatTest {
     fun testUpdateMessageText() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage("1", "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
         val newText = "Hello, updated world!"
         (textMessage.content as MessageContent.Text).updateTextContent(newText)
 
-        val updatedMessage = chat.getMessageById("1")
+        val updatedMessage = chat.getMessageById(1000L)
         assertNotNull(updatedMessage)
         assertEquals(newText, (updatedMessage?.content as MessageContent.Text).text)
     }
