@@ -45,6 +45,7 @@ data class Message(
     val content: String? = null,
     val date: Long? = null,
 )
+
 data class ChatMessage(
     val conversationId: String? = null,
     val messageList: List<Message>? = null
@@ -187,4 +188,11 @@ abstract class Database {
         membersList: List<String>,
         creatorId: String
     ): CompletableFuture<Unit>
+
+    /**
+     * Function used to obtain the chat preview of a given conversation with his conversationId
+     * @param conversationId that we want to obtain the chat preview
+     * @return a future containing a chat preview object that contains the information of the chat preview
+     */
+    abstract fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview>
 }

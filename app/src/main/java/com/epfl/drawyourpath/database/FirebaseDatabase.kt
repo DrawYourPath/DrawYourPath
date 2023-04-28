@@ -126,7 +126,7 @@ class FirebaseDatabase : Database() {
      * @param conversationId id of the conversation
      * @return the file corresponding to this id in the chats file root.
      */
-    private fun conversation(conversationId: String): DatabaseReference {
+    private fun chatPreview(conversationId: String): DatabaseReference {
         return chatsRoot().child(conversationId)
     }
 
@@ -473,6 +473,23 @@ class FirebaseDatabase : Database() {
         }
     }
 
+    override fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview> {
+        val future = CompletableFuture<ChatPreview>()
+        chatPreview(conversationId).get()
+            .addOnSuccessListener { data ->
+                val preview = ChatPreview(
+                    conversationId = conversationId,
+                    title = data.child(FirebaseKeys.CHAT_TITLE).value as String?,
+                    lastMessage = data.child(FirebaseKeys.CHAT_LAST_MESSAGE).value as String?,
+                    lastSenderId = data.child(FirebaseKeys.CHAT_LAST_SENDER_ID).value as String?,
+                    lastDate = data.child(FirebaseKeys.CHAT_LAST_DATE).value as Long?
+                )
+                future.complete(preview)
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
     /**
      * Helper function to update data of the current user account
      * @param data to be updated
@@ -572,7 +589,7 @@ class FirebaseDatabase : Database() {
             if (startTime != null && endTime != null) {
                 runsHistory.add(Run(Path(points), startTime, endTime))
             } else {
-                android.util.Log.w(
+                Log.w(
                     FirebaseDatabase::class.java.name,
                     "A point of a run has invalid coordinates => ignoring the point",
                 )
@@ -725,7 +742,7 @@ class FirebaseDatabase : Database() {
             "${FirebaseKeys.CHATS_ROOT}/${FirebaseKeys.CHAT_LAST_DATE}" to chatPreview.lastDate,
         ).filter { it.second != null }.associate { entry -> entry }
 
-        conversation(conversationId).updateChildren(data)
+        chatPreview(conversationId).updateChildren(data)
             .addOnSuccessListener {
                 future.complete(Unit)
             }

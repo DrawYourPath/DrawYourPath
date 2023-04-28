@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
+import org.mockito.Mock
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -595,5 +596,16 @@ class MockDatabaseTest {
                 listOf("1")
             } else pastUser2Chat + "1", database.users[userId2]!!.chatList
         )
+    }
+
+    /**
+     * Test if the correct chat preview was return
+     */
+    @Test
+    fun getCorrectChatPreview(){
+        val database = MockDatabase()
+        val conversationId = database.MOCK_CHAT_PREVIEWS[0].conversationId!!
+        val chatPreview = database.getChatPreview(conversationId)
+        assertEquals(database.MOCK_CHAT_PREVIEWS[0], chatPreview.get())
     }
 }

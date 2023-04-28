@@ -12,6 +12,7 @@ class MockNonWorkingDatabaseTest {
     fun everyFunctionShouldThrowError() {
         val mock = MockNonWorkingDatabase()
         val mockUser = MockDatabase().mockUser
+        val mockChatPreview = MockDatabase().MOCK_CHAT_PREVIEWS[0]
 
         mock.isUserInDatabase("").assertError(true)
         mock.getUsername("").assertError("")
@@ -26,6 +27,7 @@ class MockNonWorkingDatabaseTest {
         mock.addDailyGoal("", DailyGoal(0.0, 0.0, 0)).assertError(Unit)
         mock.updateUserAchievements("", 0.0, 0.0).assertError(Unit)
         mock.createChatConversation("", emptyList(), "").assertError(Unit)
+        mock.getChatPreview("").assertError(mockChatPreview)
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {

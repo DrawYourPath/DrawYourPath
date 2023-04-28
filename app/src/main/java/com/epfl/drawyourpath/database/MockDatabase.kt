@@ -473,6 +473,17 @@ class MockDatabase : Database() {
             }
     }
 
+    override fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview> {
+        return CompletableFuture.completedFuture(ChatPreview(
+            conversationId = conversationId,
+            title = chatPreviews[conversationId]!!.title,
+            lastSenderId = chatPreviews[conversationId]!!.lastSenderId,
+            lastMessage = chatPreviews[conversationId]!!.lastMessage,
+            lastDate = chatPreviews[conversationId]!!.lastDate
+        )
+        )
+    }
+
     /**
      * Helper function to initiate the chat preview of a given conversation
      * @param conversationId id of the new conversation
