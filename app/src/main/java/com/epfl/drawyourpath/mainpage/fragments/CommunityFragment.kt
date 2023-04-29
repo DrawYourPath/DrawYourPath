@@ -132,11 +132,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         }
 
         val your = menu.addSubMenu("Your tournament")
-        for (t in tournament.getYourTournament("placeholder")) {
+        for (t in tournament.getYourTournaments("placeholder")) {
             createMenuItem(view, your, t)
         }
         val discover = menu.addSubMenu("Discover")
-        for (t in tournament.getDiscoverTournament("placeholder")) {
+        for (t in tournament.getDiscoverTournaments("placeholder")) {
             createMenuItem(view, discover, t)
         }
     }
@@ -207,8 +207,8 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         if (tournament.getWeeklyTournament() != null) {
             list.add(tournament.getWeeklyTournament()!!)
         }
-        list.addAll(tournament.getYourTournament("placeholder"))
-        list.addAll(tournament.getDiscoverTournament("placeholder"))
+        list.addAll(tournament.getYourTournaments("placeholder"))
+        list.addAll(tournament.getDiscoverTournaments("placeholder"))
         return list
     }
 

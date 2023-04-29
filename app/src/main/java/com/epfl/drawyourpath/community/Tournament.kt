@@ -3,17 +3,19 @@ package com.epfl.drawyourpath.community
 import java.time.Clock
 import java.time.Duration
 import java.time.LocalDateTime
-import java.util.*
 
 /**
  * class representing tournaments that the user can take part in
  */
 data class Tournament(
+    val id: String,
     val name: String,
     val description: String,
+    val creatorId: String,
+    val participants: List<String>,
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
-    var posts: List<TournamentPost> = mutableListOf(),
+    val posts: List<TournamentPost> = mutableListOf(),
     var visibility: Visibility = Visibility.PUBLIC,
     // val result: List<User>?
 ) : java.io.Serializable {

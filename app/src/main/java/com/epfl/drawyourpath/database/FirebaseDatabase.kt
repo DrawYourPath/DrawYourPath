@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import com.epfl.Utils.drawyourpath.Utils
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -14,15 +15,15 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
-import java.util.*
+import java.util.Base64
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.HashMap
 
 class FirebaseKeys {
     companion object {
         // Database root entries
         const val USERS_ROOT = "users"
         const val USERNAMES_ROOT = "usernameToUid"
+        const val TOURNAMENTS_ROOT = "tournaments"
 
         // User keys top level
         const val PROFILE = "profile"
@@ -30,6 +31,7 @@ class FirebaseKeys {
         const val RUN_HISTORY = "runs"
         const val FRIENDS = "friends"
         const val DAILY_GOALS = "dailyGoals"
+        const val USER_TOURNAMENTS = "tournaments"
 
         // User profile keys sublevel
         const val USERNAME = "username"
@@ -51,6 +53,9 @@ class FirebaseKeys {
         const val GOAL_HISTORY_DISTANCE = "distance"
         const val GOAL_HISTORY_PATHS = "paths"
         const val GOAL_HISTORY_TIME = "time"
+
+        // Tournaments keys
+        const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
     }
 }
 
@@ -58,6 +63,7 @@ class FirebaseKeys {
  * The Firebase contains files:
  * -usernameToUserId: that link the username to a unique userId
  * -users: that contains users based on the UserModel defined by their userId
+ * -tournaments: that contains the different tournaments
  */
 class FirebaseDatabase : Database() {
     val database: DatabaseReference = Firebase.database.reference
@@ -76,6 +82,10 @@ class FirebaseDatabase : Database() {
 
     private fun nameMapping(username: String): DatabaseReference {
         return nameMappingRoot().child(username)
+    }
+
+    private fun tournamentsRoot(): DatabaseReference {
+        return database.child(FirebaseKeys.TOURNAMENTS_ROOT)
     }
 
     override fun isUserInDatabase(userId: String): CompletableFuture<Boolean> {
@@ -362,6 +372,52 @@ class FirebaseDatabase : Database() {
         return future
         */
         return Utils.failedFuture(Error("Not implemented"))
+    }
+
+    override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // add the tournament to all tournaments
+        tournamentsRoot().updateChildren(mapOf(tournament.id to tournament))
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // this operation removes the tournament from the general list of tournaments
+        // and also from the list of tournaments of each user.
+        TODO("Not yet implemented")
+    }
+
+    override fun registerUserToTournament(
+        userId: String,
+        tournamentId: String
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // this operation requires two writes, we want to them at the same time
+        val changes: MutableMap<String, Any?> = hashMapOf(
+            FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to true,
+            FirebaseKeys.USERS_ROOT + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to true
+        )
+        database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun unregisterUserFromTournament(
+        userId: String,
+        tournamentId: String
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // this operation requires two deletions, we want them at the same time
+        val changes: MutableMap<String, Any?> = hashMapOf(
+            FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to null,
+            FirebaseKeys.USERS_ROOT + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
+        )
+        database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
     }
 
     /**
