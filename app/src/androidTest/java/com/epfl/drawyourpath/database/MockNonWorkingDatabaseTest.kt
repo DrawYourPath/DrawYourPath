@@ -13,6 +13,8 @@ class MockNonWorkingDatabaseTest {
         val mock = MockNonWorkingDatabase()
         val mockUser = MockDatabase().mockUser
         val mockChatPreview = MockDatabase().MOCK_CHAT_PREVIEWS[0]
+        val mockChatMembers = MockDatabase().MOCK_CHAT_MEMBERS[0].membersList!!
+        val mockChatMessages = MockDatabase().MOCK_CHAT_MESSAGES[0].chat!!
 
         mock.isUserInDatabase("").assertError(true)
         mock.getUsername("").assertError("")
@@ -28,6 +30,14 @@ class MockNonWorkingDatabaseTest {
         mock.updateUserAchievements("", 0.0, 0.0).assertError(Unit)
         mock.createChatConversation("", emptyList(), "", "").assertError(Unit)
         mock.getChatPreview("").assertError(mockChatPreview)
+        mock.setChatTitle("", "").assertError(Unit)
+        mock.getChatMemberList("").assertError(mockChatMembers)
+        mock.addChatMember("","").assertError(Unit)
+        mock.removeChatMember("","").assertError(Unit)
+        mock.getChatMessages("").assertError(mockChatMessages)
+        mock.addChatMessage("", mockChatMessages.get(0)).assertError(Unit)
+        mock.removeChatMessage("", 0L).assertError(Unit)
+        mock.modifyChatTextMessage("", 0L, "").assertError(Unit)
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {

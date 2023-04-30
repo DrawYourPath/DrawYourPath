@@ -5,6 +5,9 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.chat.Chat
+import com.epfl.drawyourpath.chat.Message
+import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -189,9 +192,7 @@ class MockDatabase : Database() {
         ChatPreview(
             conversationId = "0",
             title = "New Conversation",
-            lastMessage = "Hello",
-            lastDate = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
-            lastSenderId = MOCK_USERS[1].userId
+            lastMessage = Message(id = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC), senderId = MOCK_USERS[1].userId!!, content = MessageContent.Text("Hello"), timestamp = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC))
         )
     )
 
@@ -202,21 +203,21 @@ class MockDatabase : Database() {
         )
     )
 
-    val MOCK_CHAT_MESSAGES = listOf<ChatMessage>(
-        ChatMessage(
+    val MOCK_CHAT_MESSAGES = listOf<ChatMessages>(
+        ChatMessages(
             conversationId = "0",
-            messageList = listOf(
+            chat = listOf(
                 Message(
-                    conversationId = "0",
-                    sender = MOCK_USERS[1].userId,
-                    date = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
-                    content = "Hello"
+                    id = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
+                    senderId = MOCK_USERS[1].userId!!,
+                    timestamp = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
+                    content = MessageContent.Text("Hello")
                 ),
                 Message(
-                    conversationId = "0",
-                    sender = mockUser.userId,
-                    date = LocalDate.of(2000, 2, 20).atTime(10, 0).toEpochSecond(ZoneOffset.UTC),
-                    content = "Hi"
+                    id = LocalDate.of(2000, 2, 20).atTime(10, 0).toEpochSecond(ZoneOffset.UTC),
+                    senderId = mockUser.userId!!,
+                    timestamp = LocalDate.of(2000, 2, 20).atTime(10, 0).toEpochSecond(ZoneOffset.UTC),
+                    content = MessageContent.Text("Hi")
                 )
             )
         )
@@ -451,9 +452,7 @@ class MockDatabase : Database() {
             conversationId,
             chatPreview = ChatPreview(
                 title = name,
-                lastMessage = welcomeMessage,
-                lastSenderId = creatorId,
-                lastDate = date
+                lastMessage = Message(id = date, senderId = creatorId, content = MessageContent.Text(welcomeMessage), timestamp = date)
             )
         )
             .thenApply {
@@ -461,7 +460,7 @@ class MockDatabase : Database() {
             }.thenApply {
                 initChatMessages(
                     conversationId,
-                    Message(sender = creatorId, content = welcomeMessage, date = date)
+                    Message(id = date, senderId = creatorId, content = MessageContent.Text(welcomeMessage), timestamp = date)
                 )
             }.thenApply {
                 updateMembersProfileWithNewChat(conversationId, membersList)
@@ -472,11 +471,87 @@ class MockDatabase : Database() {
         return CompletableFuture.completedFuture(ChatPreview(
             conversationId = conversationId,
             title = chatPreviews[conversationId]!!.title,
-            lastSenderId = chatPreviews[conversationId]!!.lastSenderId,
             lastMessage = chatPreviews[conversationId]!!.lastMessage,
-            lastDate = chatPreviews[conversationId]!!.lastDate
         )
         )
+    }
+
+    override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {
+        val current = chatPreviews[conversationId]
+        chatPreviews[conversationId] = current!!.copy(title = newTitle)
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun getChatMemberList(conversationId: String): CompletableFuture<List<String>> {
+        return CompletableFuture.completedFuture(chatMembers[conversationId]!!.membersList)
+    }
+
+    override fun addChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
+        //add the new member to the member chat list
+        val current = chatMembers[conversationId]!!
+        chatMembers[conversationId] = current.copy(membersList = listOf(userId) + (current.membersList ?: emptyList()))
+        //add the conversationId to the chat list of the user with userId
+        val currentUser = users[userId]!!
+        users[userId] = currentUser.copy(chatList = listOf(conversationId) + (currentUser.chatList ?: emptyList()))
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun removeChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
+        //remove member to the members chat list
+        val current = chatMembers[conversationId]!!
+        chatMembers[conversationId] = current.copy(membersList = (current.membersList ?: emptyList()).stream().filter { it != userId }.toList())
+        //remove the conversationId to the chat list of the user with userId
+        val currentUser = users[userId]!!
+        users[userId] = currentUser.copy(chatList = (currentUser.chatList ?: emptyList()).stream().filter {it != conversationId}.toList())
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
+        return CompletableFuture.completedFuture(chatMessages[conversationId]!!.chat)
+    }
+
+    override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {
+        //update the messages list
+        val current = chatMessages[conversationId]!!
+        chatMessages[conversationId] = current.copy(chat = listOf(message) + (current.chat ?: emptyList()))
+        //update the preview
+        val currentPreview = chatPreviews[conversationId]!!
+        chatPreviews[conversationId] = currentPreview.copy(lastMessage = message)
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun removeChatMessage(
+        conversationId: String,
+        timestamp: Long
+    ): CompletableFuture<Unit> {
+        //update the messages list
+        val current = chatMessages[conversationId]!!
+        chatMessages[conversationId] = current.copy(chat = (current.chat ?: emptyList()).stream().filter{it.timestamp != timestamp}.toList())
+        //update the preview if needed
+        if(chatPreviews[conversationId]!!.lastMessage!!.timestamp == timestamp) {
+            val currentPreview = chatPreviews[conversationId]!!
+            val currentMessage = currentPreview.lastMessage!!
+            chatPreviews[conversationId] = currentPreview.copy(lastMessage = currentMessage.copy(content = MessageContent.Text("This message was deleted !")))
+        }
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun modifyChatTextMessage(
+        conversationId: String,
+        timestamp: Long,
+        message: String
+    ): CompletableFuture<Unit> {
+        //update the messages list
+        val current = chatMessages[conversationId]!!
+        chatMessages[conversationId] = current.copy(chat = (current.chat ?: emptyList()).stream().map {
+            if(it.timestamp == timestamp) it.copy(content = MessageContent.Text(message)) else it }.toList())
+        //update the preview if needed
+        if(chatPreviews[conversationId]!!.lastMessage!!.timestamp == timestamp) {
+            val currentPreview = chatPreviews[conversationId]!!
+            val currentMessage = currentPreview.lastMessage!!
+            chatPreviews[conversationId] = currentPreview.copy(lastMessage = currentMessage.copy(content = MessageContent.Text(message)))
+        }
+        return CompletableFuture.completedFuture(Unit)
     }
 
     /**
@@ -493,8 +568,6 @@ class MockDatabase : Database() {
             conversationId = conversationId,
             title = chatPreview.title,
             lastMessage = chatPreview.lastMessage,
-            lastSenderId = chatPreview.lastSenderId,
-            lastDate = chatPreview.lastDate
         )
 
         return CompletableFuture.completedFuture(Unit)
@@ -525,13 +598,13 @@ class MockDatabase : Database() {
         conversationId: String,
         firstMessage: Message
     ): CompletableFuture<Unit> {
-        chatMessages[conversationId] = ChatMessage(
-            conversationId = conversationId, messageList = listOf(
+        chatMessages[conversationId] = ChatMessages(
+            conversationId = conversationId, chat = listOf(
                 Message(
-                    conversationId = conversationId,
+                    id = firstMessage.id,
                     content = firstMessage.content,
-                    sender = firstMessage.sender,
-                    date = firstMessage.date
+                    senderId = firstMessage.senderId,
+                    timestamp = firstMessage.timestamp
                 )
             )
         )

@@ -1,6 +1,9 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import com.epfl.drawyourpath.chat.Chat
+import com.epfl.drawyourpath.chat.Message
+import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.util.concurrent.CompletableFuture
@@ -29,9 +32,7 @@ data class UserData(
 data class ChatPreview(
     val conversationId: String? = null,
     val title: String? = null,
-    val lastMessage: String? = null,
-    val lastSenderId: String? = null,
-    val lastDate: Long? = null,
+    val lastMessage: Message? = null,
 )
 
 data class ChatMembers(
@@ -39,16 +40,9 @@ data class ChatMembers(
     val membersList: List<String>? = null,
 )
 
-data class Message(
+data class ChatMessages(
     val conversationId: String? = null,
-    val sender: String? = null,
-    val content: String? = null,
-    val date: Long? = null,
-)
-
-data class ChatMessage(
-    val conversationId: String? = null,
-    val messageList: List<Message>? = null
+    val chat: List<Message>? = null,
 )
 
 
@@ -197,4 +191,68 @@ abstract class Database {
      * @return a future containing a chat preview object that contains the information of the chat preview
      */
     abstract fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview>
+
+    /**
+     * Function used to modify the title of a given conversation with his conversationId
+     * @param conversationId that we want to modify the name
+     * @param newTitle new title of the conversation
+     * @return a future that indicate if the name of the conversation was correctly modify.
+     */
+    abstract  fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit>
+
+    /**
+     * Function used to get the members list of a given conversation with his conversationId
+     * @param conversationId that we want to retrieve the members list
+     * @return a future that contains the members list (a list of their userId) of the conversation
+     */
+    abstract fun getChatMemberList(conversationId: String): CompletableFuture<List<String>>
+
+    /**
+     * Function used to add a member in a given conversation with his conversation Id
+     * @param userId userId of the member that we want to add to the conversation
+     * @param conversationId of the conversation
+     * @return a future that indicate if the new member was correctly added
+     */
+    abstract fun addChatMember(userId: String, conversationId: String): CompletableFuture<Unit>
+
+    /**
+     * Function used to remove a member in a given conversation with his conversation Id
+     * @param userId userId of the member that we want to remove to the conversation
+     * @param conversationId of the conversation
+     * @return a future that indicate if the member was correctly removed
+     */
+    abstract fun removeChatMember(userId: String, conversationId: String): CompletableFuture<Unit>
+
+    /**
+     * Function to get the chat messages of a given conversation with his conversation Id
+     * @param conversationId of the conversation
+     * @return a future that contains the messages of the given conversation
+     */
+    abstract fun getChatMessages(conversationId: String): CompletableFuture<List<Message>>
+
+    /**
+     * Function used to add a message to the messages list of a given conversation with his conversationId
+     * @param conversationId of the conversation
+     * @param message that we want to add to the conversation
+     * @return a future that indicated if the message was correctly added to the database
+     */
+    abstract fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit>
+
+    /**
+     * Function used to remove a message(with a given timestamp) from a conversation with his id
+     * @param conversationId of the conversation
+     * @param timestamp of the message that we want to removed(in epoch seconds)
+     * @return a future that indicated if the message was correctly deleted
+     */
+    abstract fun removeChatMessage(conversationId: String, timestamp: Long): CompletableFuture<Unit>
+
+    /**
+     * Function used to modify a text message(with a given timestamp) from a conversation with his id
+     * @param conversationId of the conversation
+     * @param timestamp of the text message that we want to modify (in epoch seconds)
+     * @param message the content text of the new message
+     * @return a future that indicated if the message was correctly modify
+     */
+    abstract fun modifyChatTextMessage(conversationId: String, timestamp: Long, message: String): CompletableFuture<Unit>
+
 }
