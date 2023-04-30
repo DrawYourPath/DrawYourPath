@@ -385,9 +385,23 @@ class FirebaseDatabase : Database() {
 
     override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        // this operation removes the tournament from the general list of tournaments
-        // and also from the list of tournaments of each user.
-        TODO("Not yet implemented")
+
+        database.child(tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get()
+            .addOnSuccessListener { data ->
+                // get the list of all participants (list of ids)
+                val idsList = transformSnapshotKeysToStringList(data)
+                // prepare changes in database
+                val changes: Map<String, Any?> = idsList.associate {
+                    FirebaseKeys.USERS_ROOT + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
+                }
+                //do the changes
+                database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+
+       return future
     }
 
     override fun registerUserToTournament(
@@ -395,7 +409,7 @@ class FirebaseDatabase : Database() {
         tournamentId: String
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        // this operation requires two writes, we want to them at the same time
+        // this operation requires two writes, we want to do them at the same time
         val changes: MutableMap<String, Any?> = hashMapOf(
             FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to true,
             FirebaseKeys.USERS_ROOT + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to true
@@ -410,7 +424,7 @@ class FirebaseDatabase : Database() {
         tournamentId: String
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        // this operation requires two deletions, we want them at the same time
+        // this operation requires two deletions, we want to do them at the same time
         val changes: MutableMap<String, Any?> = hashMapOf(
             FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to null,
             FirebaseKeys.USERS_ROOT + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
@@ -458,7 +472,7 @@ class FirebaseDatabase : Database() {
             picture = profile.child(FirebaseKeys.PICTURE).value as String?,
             runs = transformRunsHistory(profile.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDataToDailyGoalList(profile.child(FirebaseKeys.DAILY_GOALS)),
-            friendList = transformFriendsList(profile.child(FirebaseKeys.FRIENDS)),
+            friendList = transformSnapshotKeysToStringList(profile.child(FirebaseKeys.FRIENDS)),
         )
     }
 
@@ -477,20 +491,20 @@ class FirebaseDatabase : Database() {
     }
 
     /**
-     * Helper function to obtain the friends list from the database of the user
-     * @param data the data snapshot containing the user List
-     * @return a list containing the userIds of the friends
+     * Helper function to obtain a list from the keys of a database snapshot.
+     * @param data the data snapshot to be converted to a list
+     * @return a list containing the keys of the snapshot
      */
-    private fun transformFriendsList(data: DataSnapshot?): List<String> {
+    private fun transformSnapshotKeysToStringList(data: DataSnapshot?): List<String> {
         if (data == null) {
             return emptyList()
         }
-        val friendListUserIds = ArrayList<String>()
+        val stringList = ArrayList<String>()
 
-        for (friend in data.children) {
-            friendListUserIds.add(friend.key as String)
+        for (keyValue in data.children) {
+            stringList.add(keyValue.key as String)
         }
-        return friendListUserIds
+        return stringList
     }
 
     /**
@@ -518,7 +532,7 @@ class FirebaseDatabase : Database() {
             if (startTime != null && endTime != null) {
                 runsHistory.add(Run(Path(points), startTime, endTime))
             } else {
-                android.util.Log.w(
+                Log.w(
                     FirebaseDatabase::class.java.name,
                     "A point of a run has invalid coordinates => ignoring the point",
                 )
