@@ -1,34 +1,147 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
+import android.os.Looper
+import android.util.Log
 import android.view.View
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
 
 class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
-    // TODO: add Google Map UI here and the ViewModel for this screen/fragment.
+
+    private var map: GoogleMap? = null
+    private var lastKnownLocation: Location? = null
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var locationPermissionGranted = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (savedInstanceState != null) {
+            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
+        }
+        Places.initialize(this.requireActivity().applicationContext, getString(R.string.google_api_key))
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
 
         val mapFragment = childFragmentManager
             .findFragmentById(R.id.fragment_draw_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        getLocationPermission()
     }
 
     override fun onMapReady(map: GoogleMap) {
-        val coordinates = LatLng(46.5185, 6.56177)
-        map.addMarker(
-            MarkerOptions()
-                .position(coordinates)
-                .title("EPFL"),
-        )
-        map.moveCamera(CameraUpdateFactory.newLatLng(coordinates))
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 15F))
+        this.map = map
+        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
+        updateLocationUI()
+        getDeviceLocation()
+    }
+
+    private fun getLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this.requireActivity().applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+            locationPermissionGranted = true
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>,
+                                            grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationPermissionGranted = true
+                    updateLocationUI()
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun updateLocationUI() {
+        if (map == null) {
+            return
+        }
+        try {
+            if (locationPermissionGranted) {
+                map?.isMyLocationEnabled = true
+                map?.uiSettings?.isMyLocationButtonEnabled = true
+                getDeviceLocation()
+            } else {
+                map?.isMyLocationEnabled = false
+                map?.uiSettings?.isMyLocationButtonEnabled = false
+                lastKnownLocation = null
+            }
+        } catch (e: SecurityException) {
+            Log.e("Exception: %s", e.message, e)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getDeviceLocation() {
+        try {
+            if (locationPermissionGranted) {
+                // Request the location periodically
+                val locationRequest = LocationRequest.create()
+                    .setInterval(LOCATION_REQUEST_INTERVAL)
+                    .setFastestInterval(LOCATION_REQUEST_MIN_INTERVAL)
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+
+                fusedLocationProviderClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult?) {
+                        if (locationResult != null) {
+                            var coordinates = LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
+                            map?.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
+                            lastKnownLocation = locationResult.lastLocation
+                        } else {
+                            Log.d(TAG, "Current location is null. Using defaults.")
+                            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
+                            map?.uiSettings?.isMyLocationButtonEnabled = false
+                        }
+                    }
+                }, Looper.getMainLooper())
+            }
+        } catch (e: SecurityException) {
+            Log.e("Exception: %s", e.message, e)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        map?.let { map ->
+            outState.putParcelable(KEY_LOCATION, lastKnownLocation)
+        }
+        super.onSaveInstanceState(outState)
+    }
+
+    companion object {
+        private val TAG = DrawFragment::class.java.simpleName
+        private val DEFAULT_LOCATION = LatLng(46.5185, 6.56177)
+        private const val DEFAULT_ZOOM = 18F
+        private const val LOCATION_REQUEST_INTERVAL = 5000L
+        private const val LOCATION_REQUEST_MIN_INTERVAL = 2500L
+        private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
+        private const val KEY_LOCATION = "location"
     }
 }

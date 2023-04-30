@@ -1,10 +1,12 @@
 package com.epfl.drawyourpath.mainpage
 
+import android.Manifest
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
 import org.junit.Rule
@@ -12,10 +14,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
+
 @RunWith(JUnit4::class)
 class MainActivityTest {
     @get:Rule
     var testRule = ActivityScenarioRule(MainActivity::class.java)
+
+    @get:Rule
+    var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     @Test
     fun firstFragmentIsDrawFragmentWhenNoSavedState() {
