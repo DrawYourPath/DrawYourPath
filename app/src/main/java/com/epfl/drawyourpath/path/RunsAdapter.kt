@@ -52,8 +52,6 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         return runs.size
     }
 
-
-
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mapImageView: ImageView = itemView.findViewById(R.id.mapImageView)
         val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)

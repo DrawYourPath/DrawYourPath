@@ -1,23 +1,18 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import androidx.lifecycle.Observer
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunsAdapter
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
-import com.google.android.gms.maps.model.LatLng
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 class HistoryFragment : Fragment(R.layout.fragment_history) {
 

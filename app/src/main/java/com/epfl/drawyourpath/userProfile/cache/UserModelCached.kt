@@ -80,13 +80,16 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         setUserId(userModel.getUserId())
         return CompletableFuture.supplyAsync {
             userCache.insertAll(
-                fromUserModelToUserData(userModel), listOf(
+                fromUserModelToUserData(userModel),
+                listOf(
                     DailyGoal(
                         userModel.getCurrentDistanceGoal(),
                         userModel.getCurrentActivityTime(),
                         userModel.getCurrentNumberOfPathsGoal(),
                     ).toDailyGoalEntity(userModel.getUserId()),
-                ), listOf(), listOf()
+                ),
+                listOf(),
+                listOf(),
             )
         }
     }
@@ -105,10 +108,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             database.getUserAccount(userId)
         }.thenApplyAsync { userModel ->
             val runs = RunEntity.fromRunsToEntities(userModel.getUserId(), userModel.getRunsHistory())
-            userCache.insertAll(fromUserModelToUserData(userModel),
+            userCache.insertAll(
+                fromUserModelToUserData(userModel),
                 userModel.getDailyGoalList().map { it.toDailyGoalEntity(userId) },
                 runs.map { it.first },
-                runs.map { it.second }.flatten()
+                runs.map { it.second }.flatten(),
             )
         }
     }
