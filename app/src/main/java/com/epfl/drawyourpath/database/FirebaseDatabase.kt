@@ -563,7 +563,6 @@ class FirebaseDatabase : Database() {
             val paths: Int? =
                 (dailyGoal.child(FirebaseKeys.GOAL_HISTORY_PATHS).value as Long?)?.toInt()
 
-
             dailyGoalList.add(
                 DailyGoal(
                     expectedDistance = expectedDistance ?: 0.0,

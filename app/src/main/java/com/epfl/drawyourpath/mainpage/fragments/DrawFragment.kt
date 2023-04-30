@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
@@ -53,25 +52,32 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
     private fun getLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 this.requireActivity().applicationContext,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
             locationPermissionGranted = true
         } else {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION,
+            )
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) {
                     locationPermissionGranted = true
                     updateLocationUI()
                 }
@@ -109,19 +115,23 @@ class DrawFragment : Fragment(R.layout.fragment_draw), OnMapReadyCallback {
                     .setFastestInterval(LOCATION_REQUEST_MIN_INTERVAL)
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
-                fusedLocationProviderClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
-                    override fun onLocationResult(locationResult: LocationResult?) {
-                        if (locationResult != null) {
-                            var coordinates = LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
-                            map?.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
-                            lastKnownLocation = locationResult.lastLocation
-                        } else {
-                            Log.d(TAG, "Current location is null. Using defaults.")
-                            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
-                            map?.uiSettings?.isMyLocationButtonEnabled = false
+                fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest,
+                    object : LocationCallback() {
+                        override fun onLocationResult(locationResult: LocationResult?) {
+                            if (locationResult != null) {
+                                var coordinates = LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
+                                map?.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
+                                lastKnownLocation = locationResult.lastLocation
+                            } else {
+                                Log.d(TAG, "Current location is null. Using defaults.")
+                                map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
+                                map?.uiSettings?.isMyLocationButtonEnabled = false
+                            }
                         }
-                    }
-                }, Looper.getMainLooper())
+                    },
+                    Looper.getMainLooper(),
+                )
             }
         } catch (e: SecurityException) {
             Log.e("Exception: %s", e.message, e)
