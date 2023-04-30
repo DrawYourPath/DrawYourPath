@@ -1,17 +1,23 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import androidx.lifecycle.Observer
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunsAdapter
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.gms.maps.model.LatLng
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class HistoryFragment : Fragment(R.layout.fragment_history) {
 
@@ -26,38 +32,21 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
         val runsRecyclerView = view.findViewById<RecyclerView>(R.id.runsRecyclerView)
         runsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val runs = getRunsData() // replace this with your own function to get the list of runs
-        runsAdapter = RunsAdapter(runs)
+        runsAdapter = RunsAdapter(emptyList())
         runsRecyclerView.adapter = runsAdapter
 
+        val userModelCached: UserModelCached by activityViewModels()
+
+        val runHistoryObserver = object : Observer<List<Run>> {
+            override fun onChanged(value: List<Run>) {
+                if (value != null) {
+                    runsAdapter.updateRunsData(value)
+                }
+            }
+        }
+
+        userModelCached.getRunHistory().observe(viewLifecycleOwner, runHistoryObserver)
+
         return view
-    }
-
-    /**
-     * This function is a dummy function to get some dummy data for the list of runs.
-     * Replace this with your own function to get the list of runs.
-     */
-    private fun getRunsData(): List<Run> {
-        val runs = mutableListOf<Run>()
-
-        val point1 = LatLng(0.0, 0.0)
-        val point2 = LatLng(0.001, 0.001)
-        val points = listOf(point1, point2)
-        val path = Path(points)
-        val startTime = System.currentTimeMillis()
-        val endTime = startTime + 10
-        val run1 = Run(path, startTime, endTime)
-        runs.add(run1)
-
-        val point3 = LatLng(0.0, 0.0)
-        val point4 = LatLng(0.05, 0.0)
-        val points2 = listOf(point3, point4)
-        val path2 = Path(points2)
-        val startTime2 = System.currentTimeMillis()
-        val endTime2 = startTime + 1000
-        val run2 = Run(path2, startTime2, endTime2)
-        runs.add(run2)
-
-        return runs
     }
 }

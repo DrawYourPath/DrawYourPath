@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import androidx.room.Room
@@ -241,6 +242,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param run the run to add
      */
     fun addNewRun(run: Run): CompletableFuture<Unit> {
+        Log.d("RunRepository", "addNewRun!!")
         checkCurrentUser()
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
