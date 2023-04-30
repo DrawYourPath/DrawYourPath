@@ -21,7 +21,7 @@ interface UserDao {
     fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>, run: List<RunEntity>, points: List<PointsEntity>) {
         insertUser(user)
         insertAllDailyGoal(dailyGoals)
-        insertAllRun(run)
+        insertAllRuns(run)
         insertAllPoints(points)
     }
 
@@ -47,11 +47,11 @@ interface UserDao {
     fun insertAllDailyGoal(dailyGoal: List<DailyGoalEntity>)
 
     /**
-     * insert the run inside the cache
-     * @param run the run
+     * insert the runs inside the cache
+     * @param runs the run
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllRun(run: List<RunEntity>)
+    fun insertAllRuns(runs: List<RunEntity>)
 
     /**6
      * insert the points inside the cache
