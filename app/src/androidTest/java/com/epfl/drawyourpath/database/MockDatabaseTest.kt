@@ -145,7 +145,6 @@ class MockDatabaseTest {
         assertEquals(newUserData.goals?.activityTime, userData.goals?.activityTime)
     }
 
-
     @Test
     fun createUserCreatesUser() {
         val newUserData = UserData(

@@ -7,7 +7,6 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
-import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture

@@ -20,8 +20,11 @@ class MockDatabaseTestPhoto {
         val database = MockDatabase()
         database.setProfilePhoto(userIdTest, photoProfile).get()
         Assert.assertEquals(database.users[userIdTest]?.picture!!, Utils.encodePhoto(photoProfile))
-        Assert.assertEquals(database.users[userIdTest]?.picture!!, Utils.encodePhoto(
-            Utils.decodePhoto(database.users[userIdTest]?.picture!!)
-        ))
+        Assert.assertEquals(
+            database.users[userIdTest]?.picture!!,
+            Utils.encodePhoto(
+                Utils.decodePhoto(database.users[userIdTest]?.picture!!),
+            ),
+        )
     }
 }

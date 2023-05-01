@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.path.Path
@@ -12,7 +11,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture
