@@ -23,7 +23,6 @@ import java.time.LocalDate
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import kotlin.math.exp
 
 @RunWith(JUnit4::class)
 class UserModelCachedTest {
@@ -65,7 +64,7 @@ class UserModelCachedTest {
         Run(
             Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))),
             mockDataBase.runTestStartTime + 10,
-            mockDataBase.runTestStartTime + 10 + 1286
+            mockDataBase.runTestStartTime + 10 + 1286,
         )
 
     private val timeout: Long = 5

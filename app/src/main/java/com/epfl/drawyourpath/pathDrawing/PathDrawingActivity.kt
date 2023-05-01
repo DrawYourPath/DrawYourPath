@@ -5,12 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 
-
 class PathDrawingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_path_drawing_actvity)
-        //lunch the countdown fragment
+        // lunch the countdown fragment
         val fragTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.contentFragmentPathDrawing, PathDrawingCountDownFragment())
         fragTransaction.commit()

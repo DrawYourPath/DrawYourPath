@@ -22,5 +22,5 @@ data class PointsEntity(
     val latitude: Double,
 
     @ColumnInfo("lon")
-    val longitude: Double
+    val longitude: Double,
 )

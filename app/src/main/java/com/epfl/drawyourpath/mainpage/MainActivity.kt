@@ -20,7 +20,6 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
-import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE

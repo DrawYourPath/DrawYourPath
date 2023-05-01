@@ -26,5 +26,4 @@ interface RunDao {
      */
     @Query("DELETE FROM Run")
     fun clear()
-
 }

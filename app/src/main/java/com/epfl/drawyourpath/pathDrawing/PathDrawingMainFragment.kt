@@ -2,9 +2,9 @@ package com.epfl.drawyourpath.pathDrawing
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.map.MapFragment
@@ -20,17 +20,17 @@ class PathDrawingMainFragment(private val run: Run = getRunData(), private val i
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_path_drawing_main, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(isDrawing){
+        if (isDrawing) {
             showMap(view)
             showPauseButton(view)
-        }else{
+        } else {
             showPathPreview(view, run)
             showResumeStopButton(view)
         }
@@ -42,7 +42,7 @@ class PathDrawingMainFragment(private val run: Run = getRunData(), private val i
      * @param view used to display the sport data
      * @param run that contains the sport data
      */
-    private fun showSportData(view: View, run: Run){
+    private fun showSportData(view: View, run: Run) {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.content_sport_data, PathDrawingSportDataFragment(run))
         fragTransaction.commit()
@@ -52,7 +52,7 @@ class PathDrawingMainFragment(private val run: Run = getRunData(), private val i
      * Function used to display the fragment that show the map to the user to the user
      * @param view used to display the map
      */
-    private fun showMap(view: View){
+    private fun showMap(view: View) {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.content_map_or_path, MapFragment(showCurrentPosition = true, path = run.getPath()))
         fragTransaction.commit()
@@ -63,7 +63,7 @@ class PathDrawingMainFragment(private val run: Run = getRunData(), private val i
      * @param view used to display the path drawn by the user
      * @param run made by the user
      */
-    private fun showPathPreview(view: View, run: Run){
+    private fun showPathPreview(view: View, run: Run) {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.content_map_or_path, MapFragment(showCurrentPosition = false, path = run.getPath()))
         fragTransaction.commit()
@@ -73,7 +73,7 @@ class PathDrawingMainFragment(private val run: Run = getRunData(), private val i
      * Function used to display the fragment that show a button to pause the path drawing
      * @param view used to display the button
      */
-    private fun showPauseButton(view: View){
+    private fun showPauseButton(view: View) {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.content_pause_or_playStop, PathDrawingPauseFragment())
         fragTransaction.commit()
@@ -83,12 +83,13 @@ class PathDrawingMainFragment(private val run: Run = getRunData(), private val i
      * Function used to display the fragment that show a button to resume and a button to end the path drawing
      * @param view used to display the buttons
      */
-    private fun showResumeStopButton(view: View){
+    private fun showResumeStopButton(view: View) {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.content_pause_or_playStop, PathDrawingResumeStopFragment(run))
         fragTransaction.commit()
     }
 }
+
 /**
  * This function is used to generate a run
  */
@@ -102,7 +103,7 @@ private fun getRunData(): Run {
     val points = listOf(point1, point2, point3, point4)
     val path = Path(points)
     val startTime = System.currentTimeMillis()
-    val endTime = startTime + 4530 //1h15min30s
+    val endTime = startTime + 4530 // 1h15min30s
     val run1 = Run(path, startTime, endTime)
     return run1
 }
