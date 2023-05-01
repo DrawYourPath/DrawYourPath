@@ -235,12 +235,7 @@ class FirebaseDatabase : Database() {
 
     override fun setProfilePhoto(userId: String, photo: Bitmap): CompletableFuture<Unit> {
         // TODO: Use Firebase Storage.
-        // convert the bitmap to a byte array
-        val byteArray = ByteArrayOutputStream()
-        photo.compress(Bitmap.CompressFormat.WEBP, 70, byteArray)
-
-        val imageEncoded: String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
-        return setUserData(userId, UserData(picture = imageEncoded))
+        return setUserData(userId, UserData(picture = Utils.encodePhoto(photo)))
     }
 
     override fun addFriend(
@@ -419,20 +414,6 @@ class FirebaseDatabase : Database() {
             dailyGoals = transformDataToDailyGoalList(profile.child(FirebaseKeys.DAILY_GOALS)),
             friendList = transformFriendsList(profile.child(FirebaseKeys.FRIENDS)),
         )
-    }
-
-    /**
-     * Helper function to decode the photo from string to bitmap format and return null if the dataSnapShot is null
-     * @param photoStr photo encoded
-     * @return the photo in bitmap format, and null if no photo is stored on the database
-     */
-    private fun decodePhoto(photoStr: Any?): Bitmap? {
-        return if (photoStr == null) {
-            null
-        } else {
-            val tabByte = Base64.getDecoder().decode(photoStr as String)
-            BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
-        }
     }
 
     /**

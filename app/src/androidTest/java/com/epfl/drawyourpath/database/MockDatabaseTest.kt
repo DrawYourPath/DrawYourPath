@@ -145,6 +145,35 @@ class MockDatabaseTest {
         assertEquals(newUserData.goals?.activityTime, userData.goals?.activityTime)
     }
 
+
+    @Test
+    fun createUserCreatesUser() {
+        val newUserData = UserData(
+            userId = "foobar",
+            surname = "Michel",
+            firstname = "Machel",
+            email = "mochel@mochel.mochel",
+            username = "Muchel",
+            goals = UserGoals(
+                distance = 12.0,
+                activityTime = 15,
+                paths = 14,
+            ),
+        )
+        val database = MockDatabase()
+        database.createUser(newUserData.userId!!, newUserData).get()
+
+        val userData = database.getUserData(newUserData.userId!!).get()
+
+        assertEquals(newUserData.email, userData.email)
+        assertEquals(newUserData.username, userData.username)
+        assertEquals(newUserData.surname, userData.surname)
+        assertEquals(newUserData.firstname, userData.firstname)
+        assertEquals(newUserData.goals?.paths, userData.goals?.paths)
+        assertEquals(newUserData.goals?.distance, userData.goals?.distance)
+        assertEquals(newUserData.goals?.activityTime, userData.goals?.activityTime)
+    }
+
     /**
      * Test if a given unavailable username is not set in the database
      */

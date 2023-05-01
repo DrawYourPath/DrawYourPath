@@ -7,7 +7,9 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 
@@ -307,8 +309,8 @@ class MockDatabase : Database() {
         if (!users.contains(userId)) {
             return userDoesntExist()
         }
-
-        return CompletableFuture.completedFuture(Unit)
+        // convert the bitmap to a byte array
+        return setUserData(userId, UserData(picture = Utils.encodePhoto(photo)))
     }
 
     private fun addFriendToUser(user: String, target: String) {
