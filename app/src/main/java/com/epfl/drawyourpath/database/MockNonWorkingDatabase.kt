@@ -14,6 +14,10 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
+    override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
+        return failedFuture()
+    }
+
     override fun getUsername(userId: String): CompletableFuture<String> {
         return failedFuture()
     }

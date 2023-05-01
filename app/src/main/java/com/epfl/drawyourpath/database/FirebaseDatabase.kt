@@ -102,6 +102,20 @@ class FirebaseDatabase : Database() {
         return future
     }
 
+    override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+
+        tournamentsRoot().get()
+            .addOnSuccessListener {
+                future.complete(it.value != null)
+            }
+            .addOnFailureListener {
+                future.completeExceptionally(it)
+            }
+
+        return future
+    }
+
     override fun getUsername(userId: String): CompletableFuture<String> {
         val future = CompletableFuture<String>()
 
@@ -386,7 +400,8 @@ class FirebaseDatabase : Database() {
     override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        database.child(FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get()
+        database.child(FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS)
+            .get()
             .addOnSuccessListener { data ->
                 // get the list of all participants (list of ids)
                 val participantsIds = transformSnapshotKeysToStringList(data)
@@ -404,7 +419,7 @@ class FirebaseDatabase : Database() {
             }
             .addOnFailureListener { future.completeExceptionally(it) }
 
-       return future
+        return future
     }
 
     override fun addUserToTournament(
@@ -412,13 +427,26 @@ class FirebaseDatabase : Database() {
         tournamentId: String
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        // this operation requires two writes, we want to do them at the same time
-        val changes: MutableMap<String, Any?> = hashMapOf(
-            FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to true,
-            FirebaseKeys.USERS_ROOT + "/" + userId + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to true
-        )
-        database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
-            .addOnFailureListener { future.completeExceptionally(it) }
+        //check that the userId and tournamentId exist
+        isUserInDatabase(userId).thenCombine(isTournamentInDatabase(tournamentId)) { userExists, tournamentExists ->
+            run {
+                if (!userExists) {
+                    future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
+                } else if (!tournamentExists) {
+                    future.completeExceptionally(Exception("The tournament with tournamentId  $tournamentId doesn't exist."))
+                } else {
+                    // if they exist, do the operation which requires two writes, we want to do them at the same time
+                    val changes: MutableMap<String, Any?> = hashMapOf(
+                        FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to true,
+                        FirebaseKeys.USERS_ROOT + "/" + userId + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to true
+                    )
+                    database.updateChildren(changes)
+                        .addOnSuccessListener { future.complete(Unit) }
+                        .addOnFailureListener { future.completeExceptionally(it) }
+                }
+            }
+        }
+
         return future
     }
 

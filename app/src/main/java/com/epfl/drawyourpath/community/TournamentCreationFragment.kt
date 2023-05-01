@@ -111,9 +111,9 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             tournamentTitle.toString(),
             tournamentDescription.toString(),
             creatorId = "testCreatorId",
-            participants = listOf("testCreatorId"),
-            tournamentStartDate,
             tournamentEndDate,
+            tournamentStartDate,
+            participants = listOf("testCreatorId"),
             visibility = getVisibility(view.findViewById(tournamentVisibility)),
         )
     }

@@ -28,11 +28,18 @@ data class UserData(
 
 abstract class Database {
     /**
-     * This function is used to know if a certain user is already store in the database
-     * @param userId that correspond to the user
-     * @return a future that indicates if the user is store on the database
+     * This function is used to know if a certain user is already stored in the database
+     * @param userId that corresponds to the user
+     * @return a future that indicates if the user is stored on the database
      */
     abstract fun isUserInDatabase(userId: String): CompletableFuture<Boolean>
+
+    /**
+     * This function is used to know if a certain user is already stored in the database
+     * @param tournamentId that corresponds to the tournament
+     * @return a future that indicates if the tournament is stored on the database
+     */
+    abstract fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean>
 
     /**
      * This function will return a future that give the username in function of the userId

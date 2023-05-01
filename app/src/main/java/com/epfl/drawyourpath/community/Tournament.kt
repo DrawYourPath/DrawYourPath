@@ -12,9 +12,9 @@ data class Tournament(
     val name: String,
     val description: String,
     val creatorId: String,
-    val participants: List<String>,
-    val startDate: LocalDateTime,
     val endDate: LocalDateTime,
+    val startDate: LocalDateTime,
+    val participants: List<String> = mutableListOf(),
     val posts: List<TournamentPost> = mutableListOf(),
     var visibility: Visibility = Visibility.PUBLIC,
     // val result: List<User>?

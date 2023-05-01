@@ -48,7 +48,7 @@ class MockDatabase : Database() {
         friendList = listOf("0", "1"),
     )
 
-    val MOCK_USERS = listOf<UserData>(
+    val MOCK_USERS = listOf(
         UserData(
             userId = "0",
             birthDate = 120,
@@ -197,8 +197,14 @@ class MockDatabase : Database() {
 
     val users = MOCK_USERS.associateBy { it.userId }.toMutableMap()
 
+    //TODO val tournaments = MOCK_TOURNAMENTS.associateBy { it.id }.toMutableMap()
+
     override fun isUserInDatabase(userId: String): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(unameToUid.containsValue(userId))
+    }
+
+    override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
+        TODO("Not yet implemented")
     }
 
     override fun getUsername(userId: String): CompletableFuture<String> {
