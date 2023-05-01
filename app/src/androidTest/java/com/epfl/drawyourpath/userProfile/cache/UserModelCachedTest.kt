@@ -147,9 +147,9 @@ class UserModelCachedTest {
 
     @Test
     fun setActivityTimeGoalModifyActivityTimeGoal() {
-        /*
         user.updateActivityTimeGoal(newUser.getCurrentActivityTime()).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
+        /*
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.getCurrentActivityTime())
         assertEquals(dailyGoal.copy(expectedTime = newUser.getCurrentActivityTime()), user.getTodayDailyGoal().getOrAwaitValue())
          */

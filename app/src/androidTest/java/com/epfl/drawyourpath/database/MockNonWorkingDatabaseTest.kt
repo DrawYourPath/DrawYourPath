@@ -1,5 +1,7 @@
 package com.epfl.drawyourpath.database
 
+import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -25,6 +27,9 @@ class MockNonWorkingDatabaseTest {
         mock.removeFriend("", "").assertError(Unit)
         mock.addDailyGoal("", DailyGoal(0.0, 0.0, 0)).assertError(Unit)
         mock.updateUserAchievements("", 0.0, 0.0).assertError(Unit)
+        mock.setUserData("", UserData()).assertError(Unit)
+        mock.addRunToHistory("", Run(Path(), 0, 0))
+        mock.removeRunFromHistory("", Run(Path(), 0, 0))
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {
