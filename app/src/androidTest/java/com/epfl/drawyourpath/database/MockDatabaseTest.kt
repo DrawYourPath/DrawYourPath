@@ -483,7 +483,7 @@ class MockDatabaseTest {
             database.users[userIdTest]!!.dailyGoals!!
         assertEquals(dailyGoals.size, 2)
 
-        val added = dailyGoals[dailyGoals.size - 1]
+        val added = dailyGoals.find { it.date.year == 2010 && it.date.month.value == 1}!!
 
         // check the first daily goal
         assertEquals(added.date, LocalDate.of(2010, 1, 1))
