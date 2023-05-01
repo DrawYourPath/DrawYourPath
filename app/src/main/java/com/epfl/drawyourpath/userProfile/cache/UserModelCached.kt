@@ -238,7 +238,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     /**
      * Use this function to modify the daily number of paths goal of the user
-     * @param nbOfPathsGoal new daily number of paths goal
+     * @param nbOfPathsGoal new daily number of paths goal 
      */
     fun updateNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
         checkCurrentUser()
