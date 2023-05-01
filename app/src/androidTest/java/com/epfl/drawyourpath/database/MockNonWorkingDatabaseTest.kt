@@ -28,8 +28,8 @@ class MockNonWorkingDatabaseTest {
         mock.addDailyGoal("", DailyGoal(0.0, 0.0, 0)).assertError(Unit)
         mock.updateUserAchievements("", 0.0, 0.0).assertError(Unit)
         mock.setUserData("", UserData()).assertError(Unit)
-        mock.addRunToHistory("", Run(Path(), 0, 0))
-        mock.removeRunFromHistory("", Run(Path(), 0, 0))
+        mock.addRunToHistory("", Run(Path(), 1, 10))
+        mock.removeRunFromHistory("", Run(Path(), 1, 10))
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {
