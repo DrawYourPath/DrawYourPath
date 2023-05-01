@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.Auth
+import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
@@ -79,7 +80,7 @@ class SelectUsernameFragment : Fragment(R.layout.fragment_user_name_test_and_set
             }
             false -> {
                 database = FirebaseDatabase()
-                auth = MockAuth()
+                auth = FirebaseAuth()
             }
         }
     }
