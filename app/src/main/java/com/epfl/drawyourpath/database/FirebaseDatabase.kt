@@ -258,8 +258,7 @@ class FirebaseDatabase : Database() {
                 }.exceptionally {
                     result.completeExceptionally(it)
                 }
-            }
-            else {
+            } else {
                 result.completeExceptionally(Error("This user doesn't exist."))
             }
         }.exceptionally {
