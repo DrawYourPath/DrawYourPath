@@ -127,8 +127,8 @@ class MockDatabaseTest {
             goals = UserGoals(
                 distance = 12.0,
                 activityTime = 15,
-                paths = 14
-            )
+                paths = 14,
+            ),
         )
         val database = MockDatabase()
         database.createUser(newUserData.userId!!, UserData(username = newUserData.username)).get()
@@ -497,7 +497,7 @@ class MockDatabaseTest {
         )
         assertEquals(
             dailyGoals[0].expectedPaths,
-            2
+            2,
         )
         assertEquals(
             dailyGoals[0].distance,
@@ -513,7 +513,6 @@ class MockDatabaseTest {
             dailyGoals[0].paths,
             1,
         )
-
     }
 
     /**
