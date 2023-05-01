@@ -16,7 +16,7 @@ import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.database.MockDatabase
 import java.util.concurrent.CompletableFuture
 
-class SelectUsernameFragment : Fragment(R.layout.fragment_user_name_test_and_set) {
+class SelectUsernameFragment : Fragment(R.layout.fragment_select_username) {
 
     private var isTest: Boolean = false
 
