@@ -1,13 +1,19 @@
 package com.epfl.drawyourpath.friendsList
 
+import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.mainpage.MainActivity
+import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import com.epfl.drawyourpath.R
 
 @RunWith(AndroidJUnit4::class)
 class FriendsFragmentTest {
@@ -44,14 +50,12 @@ class FriendsFragmentTest {
 
     @Test
     fun correctListOfFriendsIsDisplayed() {
-        /*
         val database = MockDatabase()
         val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
             FriendsFragment(database)
         }
 
-        onView(withText("friend1")).check(matches(isDisplayed()))
-         */
+        // onView(withText("friend1")).check(matches(isDisplayed()))
     }
 
     @Test
