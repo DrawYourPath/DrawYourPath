@@ -116,6 +116,35 @@ class MockDatabaseTest {
         assertEquals(database.users[userIdTest]!!.username, "test")
     }
 
+    @Test
+    fun setUserDataSetsUserData() {
+        val newUserData = UserData(
+            userId = "foobar",
+            surname = "Michel",
+            firstname = "Machel",
+            email = "mochel@mochel.mochel",
+            username = "Muchel",
+            goals = UserGoals(
+                distance = 12.0,
+                activityTime = 15,
+                paths = 14
+            )
+        )
+        val database = MockDatabase()
+        database.createUser(newUserData.userId!!, UserData(username = newUserData.username)).get()
+        database.setUserData(newUserData.userId!!, newUserData).get()
+
+        val userData = database.getUserData(newUserData.userId!!).get()
+
+        assertEquals(newUserData.email, userData.email)
+        assertEquals(newUserData.username, userData.username)
+        assertEquals(newUserData.surname, userData.surname)
+        assertEquals(newUserData.firstname, userData.firstname)
+        assertEquals(newUserData.goals?.paths, userData.goals?.paths)
+        assertEquals(newUserData.goals?.distance, userData.goals?.distance)
+        assertEquals(newUserData.goals?.activityTime, userData.goals?.activityTime)
+    }
+
     /**
      * Test if a given unavailable username is not set in the database
      */
@@ -128,6 +157,7 @@ class MockDatabaseTest {
         }
         assertEquals(userIdTest, database.unameToUid[usernameTest])
         assertEquals(usernameTest, database.users[userIdTest]?.username)
+        assertNotNull(database.unameToUid[takenUsername])
     }
 
     /**
@@ -321,21 +351,18 @@ class MockDatabaseTest {
     fun removeValidUserToFriendsList() {
         val database = MockDatabase()
 
-        val friendCount = database.users[userIdTest]?.friendList?.size ?: 0
         database.addFriend(userIdTest, database.MOCK_USERS[3].userId!!).get()
+
+        val friendCount = database.users[userIdTest]?.friendList?.size ?: 0
 
         // test if the user has been correctly added
         // test if the same user has been correctly removed
-        /*database.removeFriend(userIdTest, database.MOCK_USERS[3].userId!!).get()
+        database.removeFriend(userIdTest, database.MOCK_USERS[3].userId!!).get()
 
         assertEquals(
-            friendCount,
-            database.users[userIdTest]?.friendList?.size ?: 0,
+            database.users[userIdTest]?.friendList?.size,
+            friendCount - 1,
         )
-        assertEquals(
-            friendCount,
-            database.users[database.MOCK_USERS[0].userId!!]?.friendList?.size ?: 0,
-        )*/
     }
 
     /**
@@ -450,53 +477,43 @@ class MockDatabaseTest {
                 LocalDate.of(2010, 1, 1),
             ),
         ).get()
-        /*
 
         // control the dailyGoal List
-        val obtainedDailyGoalList =
-            database.users[database.userIdTest]!!.getDailyGoalList()
-        assertEquals(obtainedDailyGoalList.size, 2)
+        val dailyGoals =
+            database.users[userIdTest]!!.dailyGoals!!
+        assertEquals(dailyGoals.size, 2)
 
         // check the first daily goal
-        assertEquals(obtainedDailyGoalList.get(0).date, database.dailyGoalListTest.get(0).date)
+        assertEquals(dailyGoals[0].date, LocalDate.of(2010, 1, 1))
         assertEquals(
-            obtainedDailyGoalList.get(0).expectedDistance,
-            database.dailyGoalListTest.get(0).expectedDistance,
+            dailyGoals[0].expectedDistance,
+            25.0,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).expectedTime,
-            database.dailyGoalListTest.get(0).expectedTime,
+            dailyGoals[0].expectedTime,
+            30.0,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).expectedPaths,
-            database.dailyGoalListTest.get(0).expectedPaths,
+            dailyGoals[0].expectedPaths,
+            2
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).distance,
-            database.dailyGoalListTest.get(0).distance,
+            dailyGoals[0].distance,
+            20.0,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).time,
-            database.dailyGoalListTest.get(0).time,
+            dailyGoals[0].time,
+            120.0,
             0.001,
         )
         assertEquals(
-            obtainedDailyGoalList.get(0).paths,
-            database.dailyGoalListTest.get(0).paths,
+            dailyGoals[0].paths,
+            1,
         )
 
-        // check the second daily goal
-        assertEquals(obtainedDailyGoalList.get(1).date, LocalDate.of(2010, 1, 1))
-        assertEquals(obtainedDailyGoalList.get(1).expectedDistance, 25.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).expectedTime, 30.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).expectedPaths, 2)
-        assertEquals(obtainedDailyGoalList.get(1).distance, 20.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).time, 120.0, 0.001)
-        assertEquals(obtainedDailyGoalList.get(1).paths, 1)
-        */
     }
 
     /**

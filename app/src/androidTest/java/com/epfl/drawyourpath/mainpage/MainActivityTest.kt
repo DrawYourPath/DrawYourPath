@@ -36,6 +36,8 @@ class MainActivityTest {
         // Check fragment is community
         onView(withId(R.id.fragment_community)).check(matches(isDisplayed()))
 
+        // TODO: Friends fragment redirect to login screen when not logged.
+        //       Find a way to test it.
         // Go to friends
         // onView(withId(R.id.friends_menu_item)).perform(click())
 

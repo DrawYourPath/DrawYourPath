@@ -103,7 +103,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             userCache.insertUserIfEmpty(UserEntity(userId))
         }.thenComposeAsync {
             database.getUserData(userId)
-        }.thenApplyAsync { userModel ->
+        }.thenApplyAsync { userData ->
+            val userModel = UserModel(userData)
             val runs = RunEntity.fromRunsToEntities(userModel.getUserId(), userModel.getRunsHistory())
             userCache.insertAll(
                 fromUserModelToUserData(userModel),
@@ -263,8 +264,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
-        return database.addRunToHistory(run).thenComposeAsync {
-            database.updateUserAchievements(distanceInKilometer, timeInMinute)
+        return database.addRunToHistory(currentUserID!!, run).thenComposeAsync {
+            database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
         }.thenApplyAsync {
             val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run))
             dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)

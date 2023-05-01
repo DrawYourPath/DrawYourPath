@@ -6,6 +6,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
@@ -32,7 +33,7 @@ class UserModelCachedTest {
     @get:Rule
     var counting = CountingTaskExecutorRule()
 
-    private val mockDataBase = MockDataBase()
+    private val mockDataBase = MockDatabase()
 
     private val user: UserModelCached = UserModelCached(ApplicationProvider.getApplicationContext())
 
@@ -66,8 +67,8 @@ class UserModelCachedTest {
     private val run =
         Run(
             Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))),
-            mockDataBase.runTestStartTime + 10,
-            mockDataBase.runTestStartTime + 10 + 1286,
+            100 + 10,
+            100 + 10 + 1286,
         )
 
     private val timeout: Long = 5
@@ -131,7 +132,7 @@ class UserModelCachedTest {
         user.updateDistanceGoal(newUser.getCurrentDistanceGoal()).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.getCurrentDistanceGoal())
-        assertEquals(dailyGoal.copy(distanceInKilometerGoal = newUser.getCurrentDistanceGoal()), user.getTodayDailyGoal().getOrAwaitValue())
+        assertEquals(dailyGoal.copy(distance = newUser.getCurrentDistanceGoal()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
@@ -167,7 +168,7 @@ class UserModelCachedTest {
         user.updateNumberOfPathsGoal(newUser.getCurrentNumberOfPathsGoal()).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.getCurrentNumberOfPathsGoal())
-        assertEquals(dailyGoal.copy(nbOfPathsGoal = newUser.getCurrentNumberOfPathsGoal()), user.getTodayDailyGoal().getOrAwaitValue())
+        assertEquals(dailyGoal.copy(distance = newUser.getCurrentNumberOfPathsGoal().toDouble()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
