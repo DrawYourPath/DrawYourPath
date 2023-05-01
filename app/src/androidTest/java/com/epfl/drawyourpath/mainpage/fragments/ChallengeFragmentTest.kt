@@ -17,19 +17,19 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.epfl.drawyourpath.database.MockDatabase
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
-import org.junit.Rule
-import org.junit.Test
-import java.util.*
-import java.util.concurrent.TimeUnit
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.TemporaryUser
 import com.epfl.drawyourpath.challenge.Trophy
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class ChallengeFragmentTest {
@@ -73,7 +73,6 @@ class ChallengeFragmentTest {
 
         scenario.close()
     }
-
 
     /**
      * test if the new nb of paths is correctly displayed when there is no today daily goal
@@ -488,5 +487,4 @@ class ChallengeFragmentTest {
         override fun perform(uiController: UiController, view: View) =
             pressImeActionButton().perform(uiController, view.findViewById(viewId))
     }
-
 }
