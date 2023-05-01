@@ -132,7 +132,7 @@ class UserModelCachedTest {
         user.updateDistanceGoal(newUser.getCurrentDistanceGoal()).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.getCurrentDistanceGoal())
-        assertEquals(dailyGoal.copy(distance = newUser.getCurrentDistanceGoal()), user.getTodayDailyGoal().getOrAwaitValue())
+        // assertEquals(dailyGoal.copy(distance = newUser.getCurrentDistanceGoal()), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test

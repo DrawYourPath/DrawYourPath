@@ -483,34 +483,36 @@ class MockDatabaseTest {
             database.users[userIdTest]!!.dailyGoals!!
         assertEquals(dailyGoals.size, 2)
 
+        val added = dailyGoals[dailyGoals.size - 1]
+
         // check the first daily goal
-        assertEquals(dailyGoals[0].date, LocalDate.of(2010, 1, 1))
+        assertEquals(added.date, LocalDate.of(2010, 1, 1))
         assertEquals(
-            dailyGoals[0].expectedDistance,
+            added.expectedDistance,
             25.0,
             0.001,
         )
         assertEquals(
-            dailyGoals[0].expectedTime,
+            added.expectedTime,
             30.0,
             0.001,
         )
         assertEquals(
-            dailyGoals[0].expectedPaths,
+            added.expectedPaths,
             2,
         )
         assertEquals(
-            dailyGoals[0].distance,
+            added.distance,
             20.0,
             0.001,
         )
         assertEquals(
-            dailyGoals[0].time,
+            added.time,
             120.0,
             0.001,
         )
         assertEquals(
-            dailyGoals[0].paths,
+            added.paths,
             1,
         )
     }

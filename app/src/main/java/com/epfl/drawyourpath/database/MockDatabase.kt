@@ -395,6 +395,7 @@ class MockDatabase : Database() {
         distanceDrawing: Double,
         activityTimeDrawing: Double,
     ): CompletableFuture<Unit> {
-        TODO("Not yet implemented")
+        // TODO: Implement it
+        return CompletableFuture.completedFuture(Unit)
     }
 }
