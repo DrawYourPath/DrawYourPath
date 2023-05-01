@@ -386,14 +386,17 @@ class FirebaseDatabase : Database() {
     override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        database.child(tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get()
+        database.child(FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get()
             .addOnSuccessListener { data ->
                 // get the list of all participants (list of ids)
-                val idsList = transformSnapshotKeysToStringList(data)
+                val participantsIds = transformSnapshotKeysToStringList(data)
                 // prepare changes in database
-                val changes: Map<String, Any?> = idsList.associate {
-                    FirebaseKeys.USERS_ROOT + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
-                }
+                // 1. remove the tournament from the list of tournaments of all participants
+                val changes: MutableMap<String, Any?> = participantsIds.associate {
+                    FirebaseKeys.USERS_ROOT + "/" + it + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
+                }.toMutableMap()
+                // 2. remove the tournament from the tournaments file
+                changes.put(FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId, null)
                 //do the changes
                 database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
                     .addOnFailureListener { future.completeExceptionally(it) }
@@ -404,7 +407,7 @@ class FirebaseDatabase : Database() {
        return future
     }
 
-    override fun registerUserToTournament(
+    override fun addUserToTournament(
         userId: String,
         tournamentId: String
     ): CompletableFuture<Unit> {
@@ -412,14 +415,14 @@ class FirebaseDatabase : Database() {
         // this operation requires two writes, we want to do them at the same time
         val changes: MutableMap<String, Any?> = hashMapOf(
             FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to true,
-            FirebaseKeys.USERS_ROOT + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to true
+            FirebaseKeys.USERS_ROOT + "/" + userId + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to true
         )
         database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
     }
 
-    override fun unregisterUserFromTournament(
+    override fun removeUserFromTournament(
         userId: String,
         tournamentId: String
     ): CompletableFuture<Unit> {
@@ -427,7 +430,7 @@ class FirebaseDatabase : Database() {
         // this operation requires two deletions, we want to do them at the same time
         val changes: MutableMap<String, Any?> = hashMapOf(
             FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to null,
-            FirebaseKeys.USERS_ROOT + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
+            FirebaseKeys.USERS_ROOT + "/" + userId + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
         )
         database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }

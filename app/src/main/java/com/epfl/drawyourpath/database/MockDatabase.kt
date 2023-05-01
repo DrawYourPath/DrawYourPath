@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -387,6 +388,28 @@ class MockDatabase : Database() {
         userId: String,
         distanceDrawing: Double,
         activityTimeDrawing: Double,
+    ): CompletableFuture<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override fun addUserToTournament(
+        userId: String,
+        tournamentId: String
+    ): CompletableFuture<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeUserFromTournament(
+        userId: String,
+        tournamentId: String
     ): CompletableFuture<Unit> {
         TODO("Not yet implemented")
     }

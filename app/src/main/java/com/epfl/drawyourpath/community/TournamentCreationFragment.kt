@@ -105,9 +105,13 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             return null
         }
 
+        //TODO change default values
         return Tournament(
+            id = "testTournamentId",
             tournamentTitle.toString(),
             tournamentDescription.toString(),
+            creatorId = "testCreatorId",
+            participants = listOf("testCreatorId"),
             tournamentStartDate,
             tournamentEndDate,
             visibility = getVisibility(view.findViewById(tournamentVisibility)),

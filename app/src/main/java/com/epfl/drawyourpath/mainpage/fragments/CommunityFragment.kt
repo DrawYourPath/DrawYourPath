@@ -238,8 +238,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         )
 
         return Tournament(
+            "id1",
             "Weekly tournament: Star Path",
             "draw a star path",
+            "creator1",
+            listOf(),
             LocalDateTime.now().plusDays(3L),
             LocalDateTime.now().plusDays(4L),
             posts,
@@ -266,15 +269,21 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         )
         return mutableListOf(
             Tournament(
+                "id2",
                 "best tournament ever",
                 "draw whatever you want",
+                "creator2",
+                listOf(),
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
                 posts1,
             ),
             Tournament(
+                "id3",
                 "time square",
                 "draw a square",
+                "creator3",
+                listOf(),
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
                 posts,
@@ -302,15 +311,21 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         )
         return mutableListOf(
             Tournament(
+                "id4",
                 "Discover the earth",
                 "draw the earth",
+                "creator4",
+                listOf(),
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
                 posts1,
             ),
             Tournament(
+                "id5",
                 "to the moon",
                 "draw the moon",
+                "creator5",
+                listOf(),
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
                 posts,

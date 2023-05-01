@@ -163,7 +163,7 @@ abstract class Database {
      * @param tournamentId the id of the tournament in which we register the user.
      * @return a future that indicates if the user has been registered correctly.
      */
-    abstract fun registerUserToTournament(
+    abstract fun addUserToTournament(
         userId: String,
         tournamentId: String
     ): CompletableFuture<Unit>
@@ -182,7 +182,7 @@ abstract class Database {
      * @param tournamentId the id of the tournament from which we want to remove the user.
      * @return a future that indicates if the user has been correctly unregistered.
      */
-    abstract fun unregisterUserFromTournament(
+    abstract fun removeUserFromTournament(
         userId: String,
         tournamentId: String
     ): CompletableFuture<Unit>
