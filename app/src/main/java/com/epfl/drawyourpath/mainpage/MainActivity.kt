@@ -20,6 +20,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
+import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         // Display the main fragment when no saved state
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.draw_menu_item
-            replaceFragment<DrawFragment>()
+            replaceFragment<DrawMenuFragment>()
         }
 
         setupNotifications()
@@ -167,7 +168,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.friends_menu_item -> replaceFragment<FriendsFragment>()
 
                 // Display drawing fragment
-                R.id.draw_menu_item -> replaceFragment<DrawFragment>()
+                R.id.draw_menu_item -> replaceFragment<DrawMenuFragment>()
 
                 // Display history fragment
                 R.id.history_menu_item -> replaceFragment<HistoryFragment>()

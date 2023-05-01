@@ -2,6 +2,8 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.epfl.drawyourpath.path.cache.PointsEntity
+import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
 
 @Dao
@@ -16,9 +18,11 @@ interface UserDao {
     fun getUserById(id: String): LiveData<UserEntity?>
 
     @Transaction
-    fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>) {
+    fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>, run: List<RunEntity>, points: List<PointsEntity>) {
         insertUser(user)
         insertAllDailyGoal(dailyGoals)
+        insertAllRuns(run)
+        insertAllPoints(points)
     }
 
     /**
@@ -41,6 +45,20 @@ interface UserDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAllDailyGoal(dailyGoal: List<DailyGoalEntity>)
+
+    /**
+     * insert the runs inside the cache
+     * @param runs the run
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllRuns(runs: List<RunEntity>)
+
+    /**6
+     * insert the points inside the cache
+     * @param points the points
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllPoints(points: List<PointsEntity>)
 
     /**
      * update the user with new data

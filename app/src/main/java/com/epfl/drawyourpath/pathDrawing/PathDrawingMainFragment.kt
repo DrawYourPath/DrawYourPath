@@ -5,15 +5,12 @@ import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.mainpage.fragments.DrawFragment
+import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
-import kotlin.math.min
 
 /**
  * The main fragment where the map and current sport will be displayed when the user will draw his path
@@ -57,7 +54,7 @@ class PathDrawingMainFragment(private val run: Run = getRunData(), private val i
      */
     private fun showMap(view: View){
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.content_map_or_path, DrawFragment())
+        fragTransaction.replace(R.id.content_map_or_path, MapFragment(showCurrentPosition = true, path = run.getPath()))
         fragTransaction.commit()
     }
 
@@ -68,7 +65,7 @@ class PathDrawingMainFragment(private val run: Run = getRunData(), private val i
      */
     private fun showPathPreview(view: View, run: Run){
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.content_map_or_path, PathDrawingPathPreviewFragment(run))
+        fragTransaction.replace(R.id.content_map_or_path, MapFragment(showCurrentPosition = false, path = run.getPath()))
         fragTransaction.commit()
     }
 

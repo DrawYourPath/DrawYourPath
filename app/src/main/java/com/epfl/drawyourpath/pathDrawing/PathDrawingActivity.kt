@@ -1,15 +1,9 @@
 package com.epfl.drawyourpath.pathDrawing
 
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.mainpage.fragments.DrawFragment
-import com.epfl.drawyourpath.userProfileCreation.PersonalInfoFragment
 
 
 class PathDrawingActivity : AppCompatActivity() {

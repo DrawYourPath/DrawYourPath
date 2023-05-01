@@ -12,6 +12,7 @@ import com.epfl.drawyourpath.database.FireDatabase
 import com.epfl.drawyourpath.database.MockDataBase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
@@ -38,16 +39,16 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private var database: Database = FireDatabase()
 
     // room database
-    private val roomDatabase = Room
-        .databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
-        .fallbackToDestructiveMigration()
-        .build()
+    private val roomDatabase = Room.databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME).fallbackToDestructiveMigration().build()
 
     // room database user
     private val userCache = roomDatabase.userDao()
 
     // room database daily goal
     private val dailyGoalCache = roomDatabase.dailyGoalDao()
+
+    // room database runs
+    private val runCache = roomDatabase.runDao()
 
     // current user id
     private var currentUserID: String? = null
@@ -65,6 +66,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    // runs
+    private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
+        runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }
+    }
+
     /**
      * This function will create a new user based on the user model of the app
      * @param userModel the userModel to create the new user
@@ -73,14 +79,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         setUserId(userModel.getUserId())
         return CompletableFuture.supplyAsync {
             userCache.insertAll(
-                fromUserModelToUserData(userModel),
-                listOf(
+                fromUserModelToUserData(userModel), listOf(
                     DailyGoal(
                         userModel.getCurrentDistanceGoal(),
                         userModel.getCurrentActivityTime(),
                         userModel.getCurrentNumberOfPathsGoal(),
                     ).toDailyGoalEntity(userModel.getUserId()),
-                ),
+                ), listOf(), listOf()
             )
         }
     }
@@ -98,7 +103,12 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         }.thenComposeAsync {
             database.getUserAccount(userId)
         }.thenApplyAsync { userModel ->
-            userCache.insertAll(fromUserModelToUserData(userModel), userModel.getDailyGoalList().map { it.toDailyGoalEntity(userId) })
+            val runs = RunEntity.fromRunsToEntities(userModel.getUserId(), userModel.getRunsHistory())
+            userCache.insertAll(fromUserModelToUserData(userModel),
+                userModel.getDailyGoalList().map { it.toDailyGoalEntity(userId) },
+                runs.map { it.first },
+                runs.map { it.second }.flatten()
+            )
         }
     }
 
@@ -130,6 +140,16 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun getTodayDailyGoal(): LiveData<DailyGoal> {
         checkCurrentUser()
         return todayDailyGoal
+    }
+
+    /**
+     * get the run history (read-only)
+     *
+     * @return the [liveData] of a list of [Run]
+     */
+    fun getRunHistory(): LiveData<List<Run>> {
+        checkCurrentUser()
+        return runHistory
     }
 
     /**
@@ -216,16 +236,20 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * update the goal progress from a run
+     * TODO if no connection put run history inside cache then add it to database when connection
+     * add a new run to the run history and update the daily goal
      * @param run the run to add
      */
-    fun updateGoalProgress(run: Run): CompletableFuture<Unit> {
+    fun addNewRun(run: Run): CompletableFuture<Unit> {
         checkCurrentUser()
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
-        return database.updateUserAchievements(distanceInKilometer, timeInMinute).thenApplyAsync {
-            dailyGoalCache.updateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1)
+        return database.addRunToHistory(run).thenComposeAsync {
+            database.updateUserAchievements(distanceInKilometer, timeInMinute)
+        }.thenApplyAsync {
+            val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run))
+            dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
         }.thenComposeAsync {
             database.addDailyGoal(DailyGoal(it))
         }

@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
+import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.firebase.auth.FirebaseAuth
@@ -52,7 +53,7 @@ class PathDrawingEndFragment(private val run: Run) : Fragment() {
 
         //display the preview of the path
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.content_end_preview, PathDrawingPathPreviewFragment(run))
+        fragTransaction.replace(R.id.content_end_preview, MapFragment(showCurrentPosition = false, path = run.getPath()))
         fragTransaction.commit()
 
         //return back to the menu add and save the path back clicking and the back to menu button
