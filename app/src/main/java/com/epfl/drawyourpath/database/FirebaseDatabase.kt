@@ -247,10 +247,26 @@ class FirebaseDatabase : Database() {
         userId: String,
         targetFriend: String,
     ): CompletableFuture<Unit> {
-        return addUserIdToFriendList(userId, targetFriend).thenApply {
-            // add the currentUser to the friend list of the user with userId
-            addUserIdToFriendList(targetFriend, userId)
+        val result = CompletableFuture<Unit>()
+
+        isUserInDatabase(targetFriend).thenApply { exists ->
+            if (exists) {
+                addUserIdToFriendList(userId, targetFriend).thenApply {
+                    // add the currentUser to the friend list of the user with userId
+                    addUserIdToFriendList(targetFriend, userId)
+                    result.complete(Unit)
+                }.exceptionally {
+                    result.completeExceptionally(it)
+                }
+            }
+            else {
+                result.completeExceptionally(Error("This user doesn't exist."))
+            }
+        }.exceptionally {
+            result.completeExceptionally(it)
         }
+
+        return result
     }
 
     override fun removeFriend(userId: String, targetFriend: String): CompletableFuture<Unit> {
