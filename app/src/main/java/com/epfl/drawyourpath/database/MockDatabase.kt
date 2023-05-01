@@ -227,7 +227,7 @@ class MockDatabase : Database() {
             return future
         }
 
-        ilog("Settings username $username for user $userId")
+        ilog("Settings username $username for user $userId.")
 
         // Create a new mapping to the new username.
         unameToUid[username] = userId
