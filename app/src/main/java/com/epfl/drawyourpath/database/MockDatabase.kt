@@ -269,7 +269,7 @@ class MockDatabase : Database() {
         }
 
         // The same as creating a user, except we can't edit uid and uname.
-        createUser(userId, userData.copy(userId = userId, username = users[userId]?.username))
+        createUser(userId, userData.copy(userId = null, username = null))
 
         return CompletableFuture.completedFuture(Unit)
     }

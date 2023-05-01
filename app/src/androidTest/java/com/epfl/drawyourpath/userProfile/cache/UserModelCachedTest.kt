@@ -165,10 +165,10 @@ class UserModelCachedTest {
 
     @Test
     fun setNumberOfPathsGoalModifyNumberOfPathsGoal() {
-        user.updateNumberOfPathsGoal(newUser.getCurrentNumberOfPathsGoal()).get(timeout, TimeUnit.SECONDS)
+        user.updateNumberOfPathsGoal(10).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
-        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.getCurrentNumberOfPathsGoal())
-        assertEquals(dailyGoal.copy(distance = newUser.getCurrentNumberOfPathsGoal().toDouble()), user.getTodayDailyGoal().getOrAwaitValue())
+        assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = 10)
+        assertEquals(dailyGoal.copy(expectedPaths = 10), user.getTodayDailyGoal().getOrAwaitValue())
     }
 
     @Test
