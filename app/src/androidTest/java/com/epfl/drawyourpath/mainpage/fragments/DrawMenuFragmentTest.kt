@@ -19,7 +19,7 @@ class DrawMenuFragmentTest {
     var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     @Test
-    fun checkThatTheMapIsDisplayed(){
+    fun checkThatTheMapIsDisplayed() {
         val scenario = launchFragmentInContainer<DrawMenuFragment>()
 
         Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
@@ -29,16 +29,16 @@ class DrawMenuFragmentTest {
     }
 
     @Test
-    fun checkThatClickingOnTheStartDrawButtonShowCountDown(){
+    fun checkThatClickingOnTheStartDrawButtonShowCountDown() {
         val scenario = launchFragmentInContainer<DrawMenuFragment>()
 
         Espresso.onView(ViewMatchers.withId(R.id.button_start_drawing))
             .perform(ViewActions.click())
 
-        //check that the draw path activity was lunched
+        // check that the draw path activity was lunched
         Espresso.onView(ViewMatchers.withId(R.id.contentFragmentPathDrawing))
             .check((ViewAssertions.matches(ViewMatchers.isDisplayed())))
-        //check that the countdown is currently displayed
+        // check that the countdown is currently displayed
         Espresso.onView(ViewMatchers.withId(R.id.path_countdown_fragment))
             .check((ViewAssertions.matches(ViewMatchers.isDisplayed())))
         scenario.close()

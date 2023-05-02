@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
@@ -14,7 +13,7 @@ class PathDrawingActivity : AppCompatActivity() {
     private val userCached: UserModelCached by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //retrieve the userId from the main activity
+        // retrieve the userId from the main activity
         val userId = intent.getStringExtra(MainActivity.EXTRA_USER_ID)
         if (userId != null) {
             userCached.setCurrentUser(userId)
