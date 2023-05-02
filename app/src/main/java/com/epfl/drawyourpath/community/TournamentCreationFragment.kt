@@ -19,6 +19,7 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import com.epfl.drawyourpath.mainpage.fragments.CommunityFragment
 import java.time.Duration
 import java.time.LocalDate
@@ -88,8 +89,11 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             // get the auth and database (could be mock)
             val database: Database
             val auth: Auth
-            if (arguments?.getBoolean("USE_MOCK", false) == true) {
+            if (arguments?.getBoolean("USE_WORKING_MOCK", false) == true) {
                 database = MockDatabase()
+                auth = MockAuth(forceSigned = true)
+            } else if (arguments?.getBoolean("USE_FAILING_MOCK", false) == true) {
+                database = MockNonWorkingDatabase()
                 auth = MockAuth()
             } else {
                 database = FirebaseDatabase()
