@@ -18,11 +18,12 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ProfileFragmentTest {
-    private fun launchFragment(userId: String? = null): FragmentScenario<ProfileFragment> {
+    private fun launchFragment(userId: String? = null, brokenDatabase: Boolean = false): FragmentScenario<ProfileFragment> {
         return launchFragmentInContainer(
             bundleOf(
                 PROFILE_TEST_KEY to true,
                 PROFILE_USER_ID_KEY to userId,
+                PROFILE_TEST_FAILING_KEY to brokenDatabase,
             ),
         )
     }
@@ -33,7 +34,10 @@ class ProfileFragmentTest {
 
     @Test
     fun overallLayoutMatchesExpectedContent() {
-        launchFragment()
+        val database = MockDatabase()
+        val targetUser = database.mockUser
+
+        launchFragment(targetUser.userId!!)
 
         textViewHasSubstring(R.id.TV_DaysStreak, " Days")
         textViewHasSubstring(R.id.TV_AvgSpeed, " KM/H")
@@ -79,6 +83,15 @@ class ProfileFragmentTest {
     @Test
     fun invalidUserShowsError() {
         launchFragment("Th1z_Uz3r_1z_1nv4l1d")
+        onView(withId(R.id.TV_Error)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun errorIsShownWhenDatabaseIsUnavailable() {
+        val database = MockDatabase()
+        val targetUser = database.mockUser
+
+        launchFragment(userId = targetUser.userId!!, brokenDatabase = true)
         onView(withId(R.id.TV_Error)).check(matches(isDisplayed()))
     }
 }

@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.mainpage.fragments
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ImageView
@@ -11,15 +12,13 @@ import androidx.fragment.app.Fragment
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.TrophyDialog
-import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FirebaseDatabase
-import com.epfl.drawyourpath.database.MockDatabase
-import com.epfl.drawyourpath.database.UserData
+import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.qrcode.generateQR
 import java.util.concurrent.CompletableFuture
 
 const val PROFILE_USER_ID_KEY = "userId"
 const val PROFILE_TEST_KEY = "test"
+const val PROFILE_TEST_FAILING_KEY = "testFailing"
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
@@ -46,17 +45,23 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun createDatabase(): Database {
         return when (arguments?.getBoolean(PROFILE_TEST_KEY) ?: false) {
-            true -> MockDatabase()
+            true -> when (arguments?.getBoolean(PROFILE_TEST_FAILING_KEY) ?: false) {
+                true -> MockNonWorkingDatabase()
+                false -> MockDatabase()
+            }
             false -> FirebaseDatabase()
         }
     }
 
     private fun fetchUser(userId: String) {
+        ilog("Fetching user $userId")
+
         updateUiForError("Loading...")
         database.getUserData(userId)
             .thenAccept {
+                ilog("User $userId fetched.")
+
                 updateUiForData(it)
-                setErrorVisibility(false)
             }.exceptionally {
                 updateUiForError(it.localizedMessage ?: "Unknown error")
                 null
@@ -104,6 +109,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         setStreak(0)
         setTrophyCount(0)
         setAchievementsCount(0)
+
+        setErrorVisibility(false)
     }
 
     private fun loadFriendsNames(friendIds: List<String>) {
@@ -194,5 +201,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun setUserImage(image: Bitmap) {
         view?.findViewById<ImageView>(R.id.IV_ProfilePicture)?.setImageBitmap(image)
+    }
+
+    private fun ilog(text: String) {
+        Log.i("ProfileFragment", text)
     }
 }

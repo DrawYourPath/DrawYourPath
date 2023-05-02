@@ -281,16 +281,17 @@
         android:background="@drawable/light_border_box"
         android:ellipsize="end"
         android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
         android:shadowDx="6"
         android:shadowDy="6"
         android:shadowRadius="6"
-        android:gravity="center"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="normal"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
