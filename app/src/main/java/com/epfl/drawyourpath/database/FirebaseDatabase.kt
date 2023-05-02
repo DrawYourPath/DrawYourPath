@@ -168,19 +168,19 @@ class FirebaseDatabase : Database() {
         ilog("Setting username $username for userid $userId")
 
         // Checks for availability.
-        isUsernameAvailable(username).handle { isAvailable, exc ->
-            if (!isAvailable || exc != null) {
+        isUsernameAvailable(username).handle { isAvailable, exc1 ->
+            if (!isAvailable || exc1 != null) {
                 future.completeExceptionally(Error("Username already taken"))
                 return@handle
             }
 
             // Wanted username is available, we get the old username.
-            getUsername(userId).handle { pastUsername, exc ->
+            getUsername(userId).handle { pastUsername, exc2 ->
 
                 // Create a new mapping to the new username.
                 nameMapping(username).setValue(userId).addOnSuccessListener {
                     // If there is a past username.
-                    if (exc == null) {
+                    if (exc2 == null) {
                         // And remove the old one.
                         nameMapping(pastUsername).removeValue { _, _ ->
                             future.complete(Unit)
@@ -448,7 +448,7 @@ class FirebaseDatabase : Database() {
                 } else if (!tournamentExists) {
                     future.completeExceptionally(Exception("The tournament with tournamentId  $tournamentId doesn't exist."))
                 } else {
-                    // if they exist, do the operation which requires two writes, we want to do them at the same time
+                    // if they exist, do the operation
                     val changes: MutableMap<String, Any?> = hashMapOf(
                         "${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}/$userId" to true,
                         "${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to true
@@ -468,7 +468,7 @@ class FirebaseDatabase : Database() {
         tournamentId: String
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        // this operation requires two deletions, we want to do them at the same time
+        // this operation requires two deletions
         val changes: MutableMap<String, Any?> = hashMapOf(
             "${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}/$userId" to null,
             "${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to null

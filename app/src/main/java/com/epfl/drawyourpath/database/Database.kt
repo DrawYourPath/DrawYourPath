@@ -163,13 +163,14 @@ abstract class Database {
     ): CompletableFuture<Unit>
 
     /**
-     * Function used to get a unique ID for a new tournament.
+     * Function used to get a unique ID for a new tournament. Never fails (because client side).
      * @return a unique ID or null if the operation failed.
      */
     abstract fun getTournamentUID(): String?
 
     /**
-     * Function used to add a tournament to the database.
+     * Function used to add a new tournament to the database. The participants and posts of the
+     * tournament will not be stored.
      * @param tournament the tournament to store.
      * @return a future that indicates if the tournament has been stored correctly.
      */

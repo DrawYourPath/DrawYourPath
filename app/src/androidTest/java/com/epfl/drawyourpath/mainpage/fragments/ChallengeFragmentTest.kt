@@ -184,29 +184,37 @@ class ChallengeFragmentTest {
     fun displayCorrectTournaments() {
         val endDate3 = LocalDateTime.now().minusDays(2L)
         val t1 = Tournament(
+            "id1",
             "test",
             "test",
+            "creator1",
             LocalDateTime.now().plusDays(3L),
             LocalDateTime.now().plusDays(4L),
         )
 
         val t2 = Tournament(
+            "id2",
             "2nd test",
             "test",
+            "creator2",
             LocalDateTime.now().minusDays(1L),
             LocalDateTime.now().plusDays(1L),
         )
 
         val t3 = Tournament(
+            "id3",
             "test3",
             "test3",
+            "creator3",
             LocalDateTime.now().minusDays(3L),
             endDate3,
         )
 
         val t4 = Tournament(
+            "id4",
             "4th test",
             "test",
+            "creator4",
             LocalDateTime.now(),
             LocalDateTime.now().plusDays(3L),
         )

@@ -14,8 +14,10 @@ class MockNonWorkingDatabaseTest {
     fun everyFunctionShouldThrowError() {
         val mock = MockNonWorkingDatabase()
         val mockUser = MockDatabase().mockUser
+        val mockTournament = MockDatabase().mockTournament
 
         mock.isUserInDatabase("").assertError(true)
+        mock.isTournamentInDatabase("").assertError(true)
         mock.getUsername("").assertError("")
         mock.getUserIdFromUsername("").assertError("")
         mock.isUsernameAvailable("").assertError(true)
@@ -28,8 +30,21 @@ class MockNonWorkingDatabaseTest {
         mock.addDailyGoal("", DailyGoal(0.0, 0.0, 0)).assertError(Unit)
         mock.updateUserAchievements("", 0.0, 0.0).assertError(Unit)
         mock.setUserData("", UserData()).assertError(Unit)
-        mock.addRunToHistory("", Run(Path(), 1, 10))
-        mock.removeRunFromHistory("", Run(Path(), 1, 10))
+        mock.addRunToHistory("", Run(Path(), 1, 10)).assertError(Unit)
+        mock.removeRunFromHistory("", Run(Path(), 1, 10)).assertError(Unit)
+        mock.addTournament(mockTournament).assertError(Unit)
+        mock.removeTournament("").assertError(Unit)
+        mock.addUserToTournament("", "").assertError(Unit)
+        mock.removeUserFromTournament("", "").assertError(Unit)
+    }
+
+    /**
+     * Test if getTournamentUID() returns null (as it doesn't return a future)
+     */
+    @Test
+    fun getTournamentUIDReturnsNull() {
+        val mock = MockNonWorkingDatabase()
+        assertEquals(null,  mock.getTournamentUID())
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {

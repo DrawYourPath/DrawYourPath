@@ -7,14 +7,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.DatePicker
-import android.widget.ImageButton
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
-import android.widget.TimePicker
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -51,8 +44,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     data class TournamentParameters(
         val name: String,
         val description: String,
-        val endDate: LocalDateTime,
         val startDate: LocalDateTime,
+        val endDate: LocalDateTime,
         val visibility: Tournament.Visibility
     )
 
@@ -149,10 +142,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
                 name = params.name,
                 description = params.description,
                 creatorId = creatorId,
-                endDate = params.endDate,
                 startDate = params.startDate,
-                participants = listOf(),
-                posts = listOf(),
+                endDate = params.endDate,
                 visibility = params.visibility
             )
         ).whenComplete { _, exception ->
@@ -231,9 +222,9 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         return TournamentParameters(
             tournamentTitle.toString(),
             tournamentDescription.toString(),
-            tournamentEndDate,
             tournamentStartDate,
-            visibility = getVisibility(view.findViewById(tournamentVisibility)),
+            tournamentEndDate,
+            getVisibility(view.findViewById(tournamentVisibility)),
         )
     }
 
@@ -272,9 +263,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
      *
      */
     private fun getVisibility(radioButton: RadioButton): Tournament.Visibility {
-        return Tournament.Visibility.valueOf(
-            radioButton.text.toString().uppercase().replace(" ", "_")
-        )
+        return Tournament.Visibility.valueOf(radioButton.text.toString().uppercase().replace(" ", "_"))
     }
 
     /**
@@ -350,8 +339,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         private const val DATE_SEPARATOR = " / "
         private const val TIME_SEPARATOR = " : "
         private val DEFAULT_START_DATE = LocalDate.now()
-        private val DEFAULT_START_TIME =
-            LocalTime.now().plusHours(2L).minusMinutes(LocalTime.now().minute.toLong())
+        private val DEFAULT_START_TIME = LocalTime.now().plusHours(2L).minusMinutes(LocalTime.now().minute.toLong())
         private val DEFAULT_END_DATE = DEFAULT_START_DATE.plusWeeks(1L)
         private val DEFAULT_END_TIME = DEFAULT_START_TIME
         val MIN_START_TIME_INTERVAL: Duration = Duration.of(1L, ChronoUnit.HOURS)
@@ -401,8 +389,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     /**
      * create a datePicker
      */
-    class DatePickerFragment(text: TextView) : DialogFragment(),
-        DatePickerDialog.OnDateSetListener {
+    class DatePickerFragment(text: TextView) : DialogFragment(), DatePickerDialog.OnDateSetListener {
         private val text: TextView
 
         init {
@@ -430,8 +417,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     /**
      * create a time picker
      */
-    class TimePickerFragment(text: TextView) : DialogFragment(),
-        TimePickerDialog.OnTimeSetListener {
+    class TimePickerFragment(text: TextView) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
         private val text: TextView
 
         init {

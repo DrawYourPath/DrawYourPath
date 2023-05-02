@@ -10,7 +10,6 @@ import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 
@@ -48,6 +47,7 @@ class MockDatabase : Database() {
             ),
         ),
         friendList = listOf("0", "1"),
+        tournaments = listOf("0")
     )
 
     // Please keep this list with more than 3 users to have enough data for tournaments.
@@ -83,6 +83,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
+            tournaments = listOf("0", "1")
         ),
         UserData(
             userId = "1",
@@ -115,6 +116,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
+            tournaments = listOf("0", "1", "2")
         ),
         UserData(
             userId = "10",
@@ -147,6 +149,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
+            tournaments = listOf("0")
         ),
 
         UserData(
@@ -180,6 +183,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
+            tournaments = listOf("0")
         ),
         mockUser,
     )
@@ -189,8 +193,8 @@ class MockDatabase : Database() {
         name = "mockTournament0",
         description = "Mock tournament number 0",
         creatorId = MockAuth.MOCK_USER.getUid(),
-        endDate = LocalDateTime.now().plusDays(4L),
         startDate = LocalDateTime.now().plusDays(3L),
+        endDate = LocalDateTime.now().plusDays(4L),
         participants = MOCK_USERS.map { it.userId!! },
         // The next args are useless for now
         posts = listOf(),
@@ -204,8 +208,8 @@ class MockDatabase : Database() {
             name = "mockTournament1",
             description = "Mock tournament number 1",
             creatorId = MOCK_USERS[0].userId!!,
-            endDate = LocalDateTime.now().plusDays(2L),
             startDate = LocalDateTime.now().plusDays(1L),
+            endDate = LocalDateTime.now().plusDays(2L),
             participants = listOf(MOCK_USERS[0].userId!!, MOCK_USERS[1].userId!!),
             // The next args are useless for now
             posts = listOf(),
@@ -216,8 +220,8 @@ class MockDatabase : Database() {
             name = "mockTournament2",
             description = "Mock tournament number 2",
             creatorId = MOCK_USERS[1].userId!!,
-            endDate = LocalDateTime.now().plusDays(3L),
             startDate = LocalDateTime.now().plusDays(2L),
+            endDate = LocalDateTime.now().plusDays(3L),
             participants = listOf(MOCK_USERS[1].userId!!),
             // The next args are useless for now
             posts = listOf(),
@@ -226,7 +230,7 @@ class MockDatabase : Database() {
 
     )
 
-    var mockTournamentUID = 3
+    var mockTournamentUID = 1234567
 
     init {
         ilog("Mock database created.")
@@ -501,12 +505,16 @@ class MockDatabase : Database() {
         // add tournament to user
         val currentUser = users[userId]!!
         users[userId] = currentUser.copy(
-            tournaments = ((currentUser.tournaments ?: emptyList()) + tournamentId)
+            tournaments = ((currentUser.tournaments ?: emptyList()).filter{
+                it != tournamentId
+            } + tournamentId)
         )
         // add user to tournament
         val currentTournament = tournaments[tournamentId]!!
         tournaments[tournamentId] = currentTournament.copy(
-            participants = (currentTournament.participants + userId)
+            participants = (currentTournament.participants.filter {
+                it != userId
+            } + userId)
         )
 
         return CompletableFuture.completedFuture(Unit)
