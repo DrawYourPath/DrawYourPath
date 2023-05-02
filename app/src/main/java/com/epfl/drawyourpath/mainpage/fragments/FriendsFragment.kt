@@ -110,6 +110,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                 ).show()
                             } else {
                                 database.getUserIdFromUsername(query).thenApply { userId ->
+                                    Log.i("Friends", "Uid of $query is $userId")
                                     database.getUserData(currentUser.getUid())
                                         .thenApply { loggedUserdata ->
                                             val loggedUserModel = UserModel(loggedUserdata)
@@ -118,7 +119,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                                     .thenApply { userdata ->
                                                         val userModel = UserModel(userdata)
                                                         val newFriend = Friend(
-                                                            userModel.getUserId(),
+                                                            userdata.userId!!,
                                                             userModel.getUsername(),
                                                             userModel.getProfilePhoto(),
                                                             false,

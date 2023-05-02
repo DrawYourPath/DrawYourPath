@@ -112,11 +112,14 @@ class FirebaseDatabase : Database() {
     override fun getUserIdFromUsername(username: String): CompletableFuture<String> {
         val future = CompletableFuture<String>()
 
+        Log.i("Database", "Solving uid of $username.")
+
         nameMapping(username).get()
             .addOnSuccessListener {
                 if (it.value !is String) {
                     future.completeExceptionally(NoSuchFieldException("There is no userId corresponding to the username $username"))
                 } else {
+                    Log.i("Database", "$username solved to uid ${it.value as String}.")
                     future.complete(it.value as String)
                 }
             }.addOnFailureListener {
@@ -189,6 +192,8 @@ class FirebaseDatabase : Database() {
 
         userRoot(userId).updateChildren(data)
             .addOnSuccessListener {
+                Log.i("Database", "Created user $userId (${userData.username}).")
+
                 future.complete(Unit)
             }
             .addOnFailureListener {
@@ -241,6 +246,11 @@ class FirebaseDatabase : Database() {
         targetFriend: String,
     ): CompletableFuture<Unit> {
         val result = CompletableFuture<Unit>()
+
+        Log.i(
+            FirebaseDatabase::class.java.name,
+            "Adding user $targetFriend as friend for $userId.",
+        )
 
         isUserInDatabase(targetFriend).thenApply { exists ->
             if (exists) {
@@ -408,9 +418,9 @@ class FirebaseDatabase : Database() {
                 activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toLong(),
             ),
             picture = profile.child(FirebaseKeys.PICTURE).value as String?,
-            runs = transformRunsHistory(profile.child(FirebaseKeys.RUN_HISTORY)),
-            dailyGoals = transformDataToDailyGoalList(profile.child(FirebaseKeys.DAILY_GOALS)),
-            friendList = transformFriendsList(profile.child(FirebaseKeys.FRIENDS)),
+            runs = transformRunsHistory(data.child(FirebaseKeys.RUN_HISTORY)),
+            dailyGoals = transformDataToDailyGoalList(data.child(FirebaseKeys.DAILY_GOALS)),
+            friendList = transformFriendsList(data.child(FirebaseKeys.FRIENDS)),
         )
     }
 
@@ -421,13 +431,24 @@ class FirebaseDatabase : Database() {
      */
     private fun transformFriendsList(data: DataSnapshot?): List<String> {
         if (data == null) {
+            Log.i(
+                FirebaseDatabase::class.java.name,
+                "Friend list is null. User has no friends.",
+            )
             return emptyList()
         }
+
         val friendListUserIds = ArrayList<String>()
 
         for (friend in data.children) {
             friendListUserIds.add(friend.key as String)
         }
+
+        Log.i(
+            FirebaseDatabase::class.java.name,
+            String.format("User has %d friends.", friendListUserIds.size),
+        )
+
         return friendListUserIds
     }
 
@@ -456,7 +477,7 @@ class FirebaseDatabase : Database() {
             if (startTime != null && endTime != null) {
                 runsHistory.add(Run(Path(points), startTime, endTime))
             } else {
-                android.util.Log.w(
+                Log.w(
                     FirebaseDatabase::class.java.name,
                     "A point of a run has invalid coordinates => ignoring the point",
                 )
@@ -478,12 +499,10 @@ class FirebaseDatabase : Database() {
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        // create the field for the new friend
-        val newFriend = hashMapOf<String, Any>(friendUserId to true)
-
         // updated the friendlist in the database
         userRoot(currentUserId).child(FirebaseKeys.FRIENDS)
-            .updateChildren(newFriend)
+            .child(friendUserId)
+            .setValue(true)
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
 
