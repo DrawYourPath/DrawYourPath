@@ -29,9 +29,9 @@ data class UserData(
 
 abstract class Database {
     /**
-     * This function is used to know if a certain user is already stored in the database
+     * This function is used to know if a certain user is already store in the database
      * @param userId that corresponds to the user
-     * @return a future that indicates if the user is stored on the database
+     * @return a future that indicates if the user is store on the database
      */
     abstract fun isUserInDatabase(userId: String): CompletableFuture<Boolean>
 
@@ -154,13 +154,9 @@ abstract class Database {
      * can be achieved each drawing activity).
      * @param distanceDrawing distance run by user to achieve the drawing
      * @param activityTimeDrawing time take by the user to realized the drawing
-     * @return a future that indicates if the achievements of the user have been correctly updated.
+     * @return a future that indicate if the achievements of the user have been correctly updated.
      */
-    abstract fun updateUserAchievements(
-        userId: String,
-        distanceDrawing: Double,
-        activityTimeDrawing: Double
-    ): CompletableFuture<Unit>
+    abstract fun updateUserAchievements(userId: String, distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit>
 
     /**
      * Function used to get a unique ID for a new tournament. Never fails (because client side).
