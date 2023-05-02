@@ -65,9 +65,8 @@ abstract class Database {
     abstract fun isUsernameAvailable(userName: String): CompletableFuture<Boolean>
 
     /**
-     * This function will add the username to the database as link to the userId of the user authenticate on the app
-     * and create a user account on the database for the user authenticate with is userId and his username as parameter
-     * of his user account
+     * Sets the username of the specified user. Fails if the username is already taken.
+     * @param userId The userId of the target user.
      * @param username username that the user want to set in the database
      * @return a future that indicates if the user account has been successfully created
      */
@@ -93,14 +92,15 @@ abstract class Database {
     abstract fun getUserData(userId: String): CompletableFuture<UserData>
 
     /**
-     * Set the current daily distance goal to the database(in kilometer) of the user logged
-     * @param distanceGoal new distance goal of the user
-     * @return a future that indicates if the goal has been correctly set to the database
+     * Sets the goals for this user.
+     * @param goals the goals we want to update. Passing null for a goal won't update it.
+     * @return a future that indicate if the goal has been correctly set to the database
      */
     abstract fun setGoals(userId: String, goals: UserGoals): CompletableFuture<Unit>
 
     /**
      * This function will set the profilePhoto to the database (Bitmap) of the user logged
+     * @param userId The userId of the user we want to set the photo.
      * @param photo that will be set
      * @return a future that indicates if the photo has been correctly set to the database
      */
@@ -108,15 +108,16 @@ abstract class Database {
 
     /**
      * This function will add a user to the the friends list of the current user with his userId if this user is present on the database
-     * @param userId of the user that we want to add to the friendsList of the current user
-     * @throws an Error if the user that we want to added to the friends list is not present on the database.
+     * @param userId Id of the current user.
+     * @param targetFriend of the user that we want to add to the friendsList of the current user
+     * @throws Exception an Error if the user that we want to added to the friends list is not present on the database.
      * @return a future that indicates if the user has been correctly added to the current user friends list
      */
     abstract fun addFriend(userId: String, targetFriend: String): CompletableFuture<Unit>
 
     /**
      * This function will remove a user to the the friends list of the current user with his userId
-     * @param userId of the user that we want to remove to the friendsList of the current user
+     * @param targetFriend of the user that we want to remove to the friendsList of the current user
      * @throws an Error if the user that we want to removed is not present on the database.
      * @return a future that indicates if the user has been correctly removed to the current user friends list
      */
@@ -124,6 +125,7 @@ abstract class Database {
 
     /**
      * This function will add a run to the history of runs, using its starting time as a key
+     * @param userId The target user.
      * @param run to be stored
      * @return a future that indicates if the run has been correctly added to the history in the database
      */
@@ -131,6 +133,7 @@ abstract class Database {
 
     /**
      * This function will remove a run from the history of runs, using its starting time as a key
+     * @param userId The target user.
      * @param run to be removed
      * @return a future that indicates if the run has been correctly removed from the history in the database
      */
@@ -139,6 +142,7 @@ abstract class Database {
     /**
      * This function is used to add a dailyGoal in the database to the list of dailyGoals realized by the user logged
      * in the dailyGoals section(the dailyGoal will be update if dailyGoal at this date already exist in the database).
+     * @param userId The target user.
      * @param dailyGaol that we want to add in the database
      * @return a future that indicates if the daily Goal have been correctly added to the database
      */

@@ -103,10 +103,6 @@ class PhotoProfileInitFragmentTest : Fragment() {
     }
 }
 
-/**
- * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
- * and select the Mock Database for the tests.
- */
 private fun goToProfilePhotoInitFragment(): FragmentScenario<PhotoProfileInitFragment> {
     return launchFragmentInContainer(
         bundleOf(

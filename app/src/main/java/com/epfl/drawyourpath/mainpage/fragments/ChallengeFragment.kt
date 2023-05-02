@@ -43,7 +43,7 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
 
         setDailyGoalView(view.findViewById(R.id.goals_view))
 
-        // TODO change this when in userModel
+        // TODO change this when in userModel.
         tournamentsView.layoutManager = LinearLayoutManager(context)
         tournamentsView.adapter = TournamentViewAdapter(tempUser.tournaments)
 

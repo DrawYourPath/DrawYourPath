@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.community.Tournament
@@ -13,10 +12,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.io.ByteArrayOutputStream
 import java.time.LocalDate
-import java.util.Base64
+import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.collections.HashMap
 
 class FirebaseKeys {
     companion object {
@@ -259,22 +258,32 @@ class FirebaseDatabase : Database() {
 
     override fun setProfilePhoto(userId: String, photo: Bitmap): CompletableFuture<Unit> {
         // TODO: Use Firebase Storage.
-        // convert the bitmap to a byte array
-        val byteArray = ByteArrayOutputStream()
-        photo.compress(Bitmap.CompressFormat.WEBP, 70, byteArray)
-
-        val imageEncoded: String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
-        return setUserData(userId, UserData(picture = imageEncoded))
+        return setUserData(userId, UserData(picture = Utils.encodePhoto(photo)))
     }
 
     override fun addFriend(
         userId: String,
         targetFriend: String,
     ): CompletableFuture<Unit> {
-        return addUserIdToFriendList(userId, targetFriend).thenApply {
-            // add the currentUser to the friend list of the user with userId
-            addUserIdToFriendList(targetFriend, userId)
+        val result = CompletableFuture<Unit>()
+
+        isUserInDatabase(targetFriend).thenApply { exists ->
+            if (exists) {
+                addUserIdToFriendList(userId, targetFriend).thenApply {
+                    // add the currentUser to the friend list of the user with userId
+                    addUserIdToFriendList(targetFriend, userId)
+                    result.complete(Unit)
+                }.exceptionally {
+                    result.completeExceptionally(it)
+                }
+            } else {
+                result.completeExceptionally(Error("This user doesn't exist."))
+            }
+        }.exceptionally {
+            result.completeExceptionally(it)
         }
+
+        return result
     }
 
     override fun removeFriend(userId: String, targetFriend: String): CompletableFuture<Unit> {
@@ -512,20 +521,6 @@ class FirebaseDatabase : Database() {
     }
 
     /**
-     * Helper function to decode the photo from string to bitmap format and return null if the dataSnapShot is null
-     * @param photoStr photo encoded
-     * @return the photo in bitmap format, and null if no photo is stored on the database
-     */
-    private fun decodePhoto(photoStr: Any?): Bitmap? {
-        return if (photoStr == null) {
-            null
-        } else {
-            val tabByte = Base64.getDecoder().decode(photoStr as String)
-            BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
-        }
-    }
-
-    /**
      * Helper function to obtain a list from the keys of a database snapshot.
      * @param data the data snapshot to be converted to a list
      * @return a list containing the keys of the snapshot
@@ -667,7 +662,6 @@ class FirebaseDatabase : Database() {
                 dailyGoal.child(FirebaseKeys.GOAL_HISTORY_TIME).getValue(Double::class.java)
             val paths: Int? =
                 (dailyGoal.child(FirebaseKeys.GOAL_HISTORY_PATHS).value as Long?)?.toInt()
-
 
             dailyGoalList.add(
                 DailyGoal(
