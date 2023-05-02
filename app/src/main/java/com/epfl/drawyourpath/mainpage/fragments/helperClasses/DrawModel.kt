@@ -33,7 +33,7 @@ class DrawModel : ViewModel() {
         if (pauseTime != null) {
             pauseTime = getCurrentTime()
         } else {
-            //TODO
+            // TODO
         }
     }
 
@@ -56,5 +56,4 @@ class DrawModel : ViewModel() {
     private fun <T> MutableLiveData<T>.modifyValue(transform: T.() -> T) {
         this.value = this.value?.run(transform)
     }
-
 }
