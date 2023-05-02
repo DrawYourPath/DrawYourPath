@@ -16,8 +16,8 @@ class ChatTest {
 
         // Create mock messages for testing
         val mockBitmap = Mockito.mock(Bitmap::class.java)
-        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
-        val pictureMessage = Message.createPictureMessage( "sender1", mockBitmap, 2000L)
+        val textMessage = Message.createTextMessage("sender1", "Hello, world!", 1000L)
+        val pictureMessage = Message.createPictureMessage("sender1", mockBitmap, 2000L)
         val runMessage = Message.createRunPathMessage("sender1", createMockRun(), 3000L)
 
         // Add messages to the chat
@@ -38,7 +38,7 @@ class ChatTest {
     fun testRemoveMessageById() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage("sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
         // Attempt to remove the message from the chat
@@ -54,7 +54,7 @@ class ChatTest {
     fun testRemoveMessageById_notFound() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage("sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
         // Attempt to remove a message that doesn't exist in the chat
@@ -70,7 +70,7 @@ class ChatTest {
     fun testGetMessageById() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage("sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
         val retrievedMessage = chat.getMessageById(1000L)
@@ -83,7 +83,7 @@ class ChatTest {
     fun testGetMessageById_notFound() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage("sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
         val retrievedMessage = chat.getMessageById(2000L)
@@ -96,7 +96,7 @@ class ChatTest {
     fun testUpdateMessageText() {
         val chat = Chat()
 
-        val textMessage = Message.createTextMessage( "sender1", "Hello, world!", 1000L)
+        val textMessage = Message.createTextMessage("sender1", "Hello, world!", 1000L)
         chat.addMessage(textMessage)
 
         val newText = "Hello, updated world!"

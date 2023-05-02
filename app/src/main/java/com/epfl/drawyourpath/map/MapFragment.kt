@@ -3,7 +3,6 @@ package com.epfl.drawyourpath.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.icu.text.Transliterator.Position
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -47,18 +46,18 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
 
     override fun onMapReady(map: GoogleMap) {
         this.map = map
-        if(showCurrentPosition){
+        if (showCurrentPosition) {
             updateLocationUI()
             getDeviceLocation()
-        }else{
-            //show the middle point of the path if the path is not null
-            if(path != null){
-                val middlePoint = path.getPoints().get(path.size()/2)
+        } else {
+            // show the middle point of the path if the path is not null
+            if (path != null) {
+                val middlePoint = path.getPoints().get(path.size() / 2)
                 map?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(middlePoint.latitude, middlePoint.longitude), DEFAULT_ZOOM))
             }
         }
-        if(path != null){
-            //add the path on the map if the run
+        if (path != null) {
+            // add the path on the map if the run
             drawPathOnMap(map, path)
         }
     }
@@ -68,9 +67,9 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
      * @param map where the polygon will be displayed
      * @param path will be drawed on the map
      */
-    private fun drawPathOnMap(map: GoogleMap, path: Path){
+    private fun drawPathOnMap(map: GoogleMap, path: Path) {
         val listLng = ArrayList<LatLng>()
-        for(coord in path.getPoints()){
+        for (coord in path.getPoints()) {
             listLng.add(LatLng(coord.latitude, coord.longitude))
         }
         map.addPolyline(PolylineOptions().clickable(false).addAll(listLng))
@@ -79,26 +78,32 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
     private fun getLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 this.requireActivity().applicationContext,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
             locationPermissionGranted = true
         } else {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION,
             )
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) {
                     locationPermissionGranted = true
                     updateLocationUI()
                 }
@@ -136,19 +141,23 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
                     .setFastestInterval(LOCATION_REQUEST_MIN_INTERVAL)
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
-                fusedLocationProviderClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
-                    override fun onLocationResult(locationResult: LocationResult?) {
-                        if (locationResult != null) {
-                            var coordinates = LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
-                            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, DEFAULT_ZOOM))
-                            lastKnownLocation = locationResult.lastLocation
-                        } else {
-                            Log.d(TAG, "Current location is null. Using defaults.")
-                            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
-                            map?.uiSettings?.isMyLocationButtonEnabled = false
+                fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest,
+                    object : LocationCallback() {
+                        override fun onLocationResult(locationResult: LocationResult?) {
+                            if (locationResult != null) {
+                                var coordinates = LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
+                                map?.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, DEFAULT_ZOOM))
+                                lastKnownLocation = locationResult.lastLocation
+                            } else {
+                                Log.d(TAG, "Current location is null. Using defaults.")
+                                map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
+                                map?.uiSettings?.isMyLocationButtonEnabled = false
+                            }
                         }
-                    }
-                }, Looper.getMainLooper())
+                    },
+                    Looper.getMainLooper(),
+                )
             }
         } catch (e: SecurityException) {
             Log.e("Exception: %s", e.message, e)

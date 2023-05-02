@@ -10,7 +10,6 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
-
 class PathDrawingActivity : AppCompatActivity() {
     private val userCached: UserModelCached by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +23,7 @@ class PathDrawingActivity : AppCompatActivity() {
                 .show()
         }
         setContentView(R.layout.activity_path_drawing_actvity)
-        //lunch the countdown fragment
+        // lunch the countdown fragment
         val fragTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.contentFragmentPathDrawing, PathDrawingCountDownFragment())
         fragTransaction.commit()
