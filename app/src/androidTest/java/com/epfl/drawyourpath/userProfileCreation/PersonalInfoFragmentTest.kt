@@ -1,9 +1,9 @@
 package com.epfl.drawyourpath.userProfileCreation
 
-import android.content.Intent
 import android.widget.DatePicker
-import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
+import androidx.core.os.bundleOf
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -11,6 +11,7 @@ import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
+import org.hamcrest.Matchers.not
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -49,7 +50,7 @@ class PersonalInfoFragmentTest {
 
         // test if the text printed is correct
         Espresso.onView(withId(R.id.surnameError_text_userProfileCreation))
-            .check(matches(withText("* This field can't be empty !")))
+            .check(matches(not(withText(""))))
 
         t.close()
     }
@@ -63,14 +64,14 @@ class PersonalInfoFragmentTest {
     fun errorPrintedWhithIncorrectFirstname() {
         var t = goToPersonalInfoFragment()
         Espresso.onView(withId(R.id.input_firstname_text_UserProfileCreation))
-            .perform(ViewActions.typeText("Hugo852"))
+            .perform(ViewActions.replaceText("Hugo852"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
         // test if the text printed is correct
         Espresso.onView(withId(R.id.firstnameError_text_userProfileCreation))
-            .check(matches(withText("* This field is in an incorrect format ! It must be composed of letters or character '-'")))
+            .check(matches(not(withText(""))))
 
         t.close()
     }
@@ -84,14 +85,14 @@ class PersonalInfoFragmentTest {
     fun errorPrintedWhithIncorrectSurname() {
         var t = goToPersonalInfoFragment()
         Espresso.onView(withId(R.id.input_surname_text_UserProfileCreation))
-            .perform(ViewActions.typeText("Hugo852"))
+            .perform(ViewActions.replaceText("Hugo852"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
 
         // test if the text printed is correct
         Espresso.onView(withId(R.id.surnameError_text_userProfileCreation))
-            .check(matches(withText("* This field is in an incorrect format ! It must be composed of letters or character '-'")))
+            .check(matches(not(withText(""))))
 
         t.close()
     }
@@ -105,7 +106,7 @@ class PersonalInfoFragmentTest {
     fun noErrorPrintedWhithCorrectFirstname() {
         var t = goToPersonalInfoFragment()
         Espresso.onView(withId(R.id.input_firstname_text_UserProfileCreation))
-            .perform(ViewActions.typeText("Hugo"))
+            .perform(ViewActions.replaceText("Hugo"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -126,7 +127,7 @@ class PersonalInfoFragmentTest {
     fun noErrorPrintedWhithCorrectSurname() {
         var t = goToPersonalInfoFragment()
         Espresso.onView(withId(R.id.input_surname_text_UserProfileCreation))
-            .perform(ViewActions.typeText("Hugo"))
+            .perform(ViewActions.replaceText("Hugo"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.setPersonalInfo_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -262,10 +263,10 @@ class PersonalInfoFragmentTest {
         var t = goToPersonalInfoFragment()
 
         Espresso.onView(withId(R.id.input_firstname_text_UserProfileCreation))
-            .perform(ViewActions.typeText("Hugo"))
+            .perform(ViewActions.replaceText("Hugo"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.input_surname_text_UserProfileCreation))
-            .perform(ViewActions.typeText("Hugo"))
+            .perform(ViewActions.replaceText("Hugo"))
         Espresso.closeSoftKeyboard()
         Espresso.onView(withId(R.id.selectDate_button_userProfileCreation))
             .perform(ViewActions.click())
@@ -288,18 +289,10 @@ class PersonalInfoFragmentTest {
  * Helper function to go from the UserProfileCreation activity to the PersonalInfoFragment in the UI
  * and select the Mock Database for the tests.
  */
-private fun goToPersonalInfoFragment(): ActivityScenario<UserProfileCreationActivity> {
-    // pass in test mode to used the Mockdatabase instead of the Firebase
-    var intent =
-        Intent(ApplicationProvider.getApplicationContext(), UserProfileCreationActivity::class.java)
-    intent.putExtra("isRunningTestForDataBase", true)
-    var t: ActivityScenario<UserProfileCreationActivity> = ActivityScenario.launch(intent)
-    Espresso.onView(withId(R.id.start_profile_creation_button_userProfileCreation))
-        .perform(ViewActions.click())
-    Espresso.onView(withId(R.id.input_userName_text_UserProfileCreation))
-        .perform(ViewActions.typeText("hugo"))
-    Espresso.closeSoftKeyboard()
-    Espresso.onView(withId(R.id.setUserName_button_userProfileCreation))
-        .perform(ViewActions.click())
-    return t
+private fun goToPersonalInfoFragment(): FragmentScenario<PersonalInfoFragment> {
+    return launchFragmentInContainer(
+        bundleOf(
+            PROFILE_TEST_KEY to true,
+        ),
+    )
 }

@@ -78,11 +78,11 @@ class SettingsFragmentTest {
 
         onView(withId(R.id.ET_Password)).perform(
             clearText(),
-            typeText("NewP4ss\\/\\/0rd"),
+            replaceText("NewP4ss\\/\\/0rd"),
         )
         onView(withId(R.id.ET_PasswordRepeat)).perform(
             clearText(),
-            typeText("NewP3ss\\/\\/0rdfoobar"),
+            replaceText("NewP3ss\\/\\/0rdfoobar"),
         )
         toastHasText("Passwords don't match")
     }
@@ -98,11 +98,11 @@ class SettingsFragmentTest {
 
         onView(withId(R.id.ET_Password)).perform(
             clearText(),
-            typeText("NewP4ss\\/\\/0rd"),
+            replaceText("NewP4ss\\/\\/0rd"),
         )
         onView(withId(R.id.ET_PasswordRepeat)).perform(
             clearText(),
-            typeText("NewP4ss\\/\\/0rd"),
+            replaceText("NewP4ss\\/\\/0rd"),
         )
         toastHasText("Passwords updated")
     }

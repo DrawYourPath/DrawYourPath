@@ -8,10 +8,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.*
 import com.epfl.drawyourpath.challenge.TournamentViewAdapter
 import com.epfl.drawyourpath.community.Tournament
-import com.epfl.drawyourpath.database.MockDataBase
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 
@@ -42,7 +43,7 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
 
         setDailyGoalView(view.findViewById(R.id.goals_view))
 
-        // TODO change this when in userModel
+        // TODO change this when in userModel.
         tournamentsView.layoutManager = LinearLayoutManager(context)
         tournamentsView.adapter = TournamentViewAdapter(tempUser.tournaments)
 
@@ -69,8 +70,8 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
      */
     private fun checkTest() {
         if (arguments?.getBoolean(TEST_EXTRA) == true) {
-            val mock = MockDataBase()
-            mock.addDailyGoal(DailyGoal.TEST_SAMPLE).thenApply {
+            val mock = MockDatabase()
+            mock.addDailyGoal(MockAuth.MOCK_USER.getUid(), DailyGoal.TEST_SAMPLE).thenApply {
                 user.setDatabase(mock)
             }
         }
