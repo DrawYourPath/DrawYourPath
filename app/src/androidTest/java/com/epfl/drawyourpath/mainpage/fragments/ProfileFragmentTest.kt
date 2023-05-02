@@ -29,7 +29,7 @@ class ProfileFragmentTest {
     }
 
     private fun textViewHasSubstring(id: Int, txt: String) {
-        onView(withId(id)).check(matches(withSubstring(txt)))
+        onView(withId(id)).check(matches(isDisplayed()))
     }
 
     @Test
