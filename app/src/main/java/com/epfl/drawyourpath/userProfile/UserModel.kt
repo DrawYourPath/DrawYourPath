@@ -1,14 +1,22 @@
 package com.epfl.drawyourpath.userProfile
 
 import android.graphics.Bitmap
+import android.util.Log
+import com.epfl.Utils.drawyourpath.Utils
+import com.epfl.drawyourpath.authentication.FirebaseAuth
+import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.FirebaseDatabase
+import com.epfl.drawyourpath.database.UserData
+import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 
+@Deprecated("This class is deprecated and shouldn't be user anymore.")
 class UserModel {
     // the userId of the user
     private val userId: String
@@ -62,6 +70,43 @@ class UserModel {
     // total number of paths draw by the user
     private var totalNbOfPaths: Int
 
+    constructor(userData: UserData) {
+        this.database = FirebaseDatabase()
+
+        // obtain the userId and the email give by the authentication
+        this.userId = FirebaseAuth.getUser()?.getUid() ?: MockAuth(forceSigned = true).getUser()!!.getUid()
+        this.emailAddress = userData.email ?: "userAuth.getEmail()"
+
+        // obtain the username
+        this.username = userData.username ?: "Anonymous"
+
+        // check the format of the firstname
+        this.firstname = userData.firstname ?: "Anon"
+
+        // check the format of the surname
+        this.surname = userData.surname ?: "Nyme"
+
+        // check that the birth date respect the age condition of the app(10<=age<=100)
+        this.dateOfBirth = LocalDate.ofEpochDay(userData.birthDate ?: 0)
+
+        // test the goals, the goals can't be equal or less than 0
+        this.currentDistanceGoal = userData.goals?.distance ?: 0.0
+
+        this.currentActivityTimeGoal = userData.goals?.activityTime?.toDouble() ?: 0.0
+
+        this.currentNbOfPathsGoal = (userData.goals?.paths ?: 0).toInt()
+
+        this.friendsList = ArrayList()
+        this.profilePhoto = null
+        this.runsHistory = ArrayList()
+        this.dailyGoalList = emptyList()
+
+        // init the user achievements
+        this.totalDistance = 0.0
+        this.totalActivityTime = 0.0
+        this.totalNbOfPaths = 0
+    }
+
     /**
      * This constructor will create a new user based on the user model of the app (constructor at the the profile creation)
      * @param userAuth user authenticate give by the login
@@ -78,6 +123,7 @@ class UserModel {
      * @param totalNbOfPaths total number of paths draw by the user since the creation of his profile
      * @throws error if the inputs are incorrect
      */
+    @Deprecated("Don't use this class.")
     constructor(
         userAuth: User,
         username: String,
@@ -236,7 +282,7 @@ class UserModel {
      * @param username that we want to set
      */
     fun setUsername(username: String): CompletableFuture<Unit> {
-        return database.updateUsername(username).thenApply {
+        return database.setUsername(getUserId(), username).thenApply {
             this.username = username
         }
     }
@@ -300,7 +346,7 @@ class UserModel {
      */
     fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
         checkDistanceGoal(distanceGoal)
-        return database.setCurrentDistanceGoal(distanceGoal).thenApply {
+        return database.setGoals(getUserId(), UserGoals(distance = distanceGoal)).thenApply {
             this.currentDistanceGoal = distanceGoal
         }
     }
@@ -319,7 +365,7 @@ class UserModel {
      */
     fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
         checkActivityTimeGoal(activityTimeGoal)
-        return database.setCurrentActivityTimeGoal(activityTimeGoal).thenApply {
+        return database.setGoals(getUserId(), UserGoals(activityTime = activityTimeGoal.toLong())).thenApply {
             this.currentActivityTimeGoal = activityTimeGoal
         }
     }
@@ -338,7 +384,7 @@ class UserModel {
      */
     fun setCurrentNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
         checkNbOfPathsGoal(nbOfPathsGoal)
-        return database.setCurrentNbOfPathsGoal(nbOfPathsGoal).thenApply {
+        return database.setGoals(getUserId(), UserGoals(paths = nbOfPathsGoal.toLong())).thenApply {
             this.currentNbOfPathsGoal = nbOfPathsGoal
         }
     }
@@ -358,9 +404,9 @@ class UserModel {
      */
     fun removeFriend(userId: String): CompletableFuture<Unit> {
         if (!friendsList.contains(userId)) {
-            throw Exception("This user with userId $userId is not in the friend list !")
+            return Utils.failedFuture(Exception("This user with userId $userId is not in the friend list !"))
         }
-        return database.removeUserFromFriendlist(userId).thenApply {
+        return database.removeFriend(getUserId(), userId).thenApply {
             val interList = friendsList.toMutableList()
             interList.remove(userId)
             friendsList = interList
@@ -373,7 +419,9 @@ class UserModel {
      * @return a future that indicate if the user was correctly added to the database
      */
     fun addFriend(userId: String): CompletableFuture<Unit> {
-        return database.addUserToFriendsList(userId).thenApply {
+        Log.i("UserModel", "Adding friend $userId.")
+
+        return database.addFriend(getUserId(), userId).thenApply {
             val interList = friendsList.toMutableList()
             interList.add(userId)
             friendsList = interList
@@ -395,7 +443,7 @@ class UserModel {
      * @return a future that indicate if the run was correctly added to the database
      */
     fun addRunToHistory(run: Run): CompletableFuture<Unit> {
-        return database.addRunToHistory(run).thenApply {
+        return database.addRunToHistory(getUserId(), run).thenApply {
             val tmpList =
                 runsHistory.filter { it.getStartTime() != run.getStartTime() }.toMutableList()
             tmpList.add(run)
@@ -417,7 +465,7 @@ class UserModel {
             return future
         }
 
-        return database.removeRunFromHistory(run).thenApply {
+        return database.removeRunFromHistory(getUserId(), run).thenApply {
             val tmpList = runsHistory.toMutableList()
             tmpList.remove(run)
             runsHistory = tmpList
@@ -446,7 +494,7 @@ class UserModel {
      * @return a completable future that indicate if the photo was correctly stored
      */
     fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
-        return database.setProfilePhoto(photo).thenApply {
+        return database.setProfilePhoto(getUserId(), photo).thenApply {
             this.profilePhoto = photo
         }
     }
@@ -465,7 +513,7 @@ class UserModel {
      * @return a future that indicate if the daily has been correctly added
      */
     fun addDailyGoalToListOfDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit> {
-        return this.database.addDailyGoal(dailyGoal).thenApply { isSet ->
+        return this.database.addDailyGoal(getUserId(), dailyGoal).thenApply { isSet ->
             val newDailyGoalList =
                 this.dailyGoalList.filter { it.date != dailyGoal.date }.toMutableList()
             newDailyGoalList.add(dailyGoal)
@@ -509,12 +557,11 @@ class UserModel {
         distanceDrawing: Double,
         activityTimeDrawing: Double,
     ): CompletableFuture<Unit> {
-        return this.database.updateUserAchievements(distanceDrawing, activityTimeDrawing)
-            .thenApply { isSet ->
+        return this.database.updateUserAchievements(getUserId(), distanceDrawing, activityTimeDrawing)
+            .thenApply {
                 this.totalDistance += distanceDrawing
                 this.totalActivityTime += activityTimeDrawing
                 this.totalNbOfPaths += 1
-                isSet
             }
     }
 
@@ -527,7 +574,7 @@ class UserModel {
          */
         fun checkNameFormat(name: String, variableName: String) {
             if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
-                throw java.lang.Error("Incorrect $variableName")
+                throw java.lang.Error("Incorrect $variableName \"$name\"")
             }
         }
 

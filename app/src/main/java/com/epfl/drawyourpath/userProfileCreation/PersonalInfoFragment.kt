@@ -9,10 +9,10 @@ import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.Database
 import java.time.LocalDate
 
 private val MIN_AGE: Int = 10
@@ -30,8 +30,8 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
         if (argsFromLastFrag == null) {
             isTest = false
         } else {
-            isTest = argsFromLastFrag.getBoolean("isRunningTestForDataBase")
-            username = argsFromLastFrag.getString(Database.usernameFile).toString()
+            isTest = argsFromLastFrag.getBoolean(PROFILE_TEST_KEY)
+            username = argsFromLastFrag.getString(PROFILE_USERNAME_KEY).toString()
         }
 
         // to select a new date in a date picker
@@ -46,7 +46,7 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
                 return DatePickerDialog(
                     requireContext(),
                     this,
-                    LocalDate.now().year,
+                    LocalDate.now().year - 20,
                     LocalDate.now().monthValue - 1,
                     LocalDate.now().dayOfMonth,
                 )
@@ -103,16 +103,15 @@ class PersonalInfoFragment : Fragment(R.layout.fragment_personal_info) {
                 val previousActivity = activity
                 if (previousActivity != null) {
                     val fragManagement = previousActivity.supportFragmentManager.beginTransaction()
-                    val dataToUserGoalsInitFrag: Bundle = Bundle()
-                    // data to transmit to the UserGoalsInitFragment(username + firstname + surname + dateOfBirth + isTest)
-                    dataToUserGoalsInitFrag.putBoolean("isRunningTestForDataBase", isTest)
-                    dataToUserGoalsInitFrag.putString(Database.usernameFile, username)
-                    dataToUserGoalsInitFrag.putString(Database.firstnameFile, firstname)
-                    dataToUserGoalsInitFrag.putString(Database.surnameFile, surname)
-                    dataToUserGoalsInitFrag.putLong(Database.dateOfBirthFile, dateOfBirth.toEpochDay())
-                    val userGoalsInitFrag = UserGoalsInitFragment()
-                    userGoalsInitFrag.arguments = dataToUserGoalsInitFrag
-                    fragManagement.replace(R.id.personalInfoFragment, userGoalsInitFrag).commit()
+                    val nextFrag = UserGoalsInitFragment()
+                    nextFrag.arguments = bundleOf(
+                        PROFILE_TEST_KEY to isTest,
+                        PROFILE_USERNAME_KEY to username,
+                        PROFILE_FIRSTNAME_KEY to firstname,
+                        PROFILE_SURNAME_KEY to surname,
+                        PROFILE_BIRTHDATE_KEY to dateOfBirth.toEpochDay(),
+                    )
+                    fragManagement.replace(R.id.personalInfoFragment, nextFrag).commit()
                 }
             }
         }

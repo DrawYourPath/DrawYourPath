@@ -24,8 +24,10 @@ class UserProfileCreationActivityTest {
             ApplicationProvider.getApplicationContext(),
             UserProfileCreationActivity::class.java,
         )
-        intent.putExtra("isRunningTestForDataBase", true)
+
+        intent.putExtra(PROFILE_USERNAME_KEY, true)
         var t: ActivityScenario<UserProfileCreationActivity> = ActivityScenario.launch(intent)
+
         Espresso.onView(ViewMatchers.withId(R.id.start_profile_creation_button_userProfileCreation))
             .perform(ViewActions.click())
 
