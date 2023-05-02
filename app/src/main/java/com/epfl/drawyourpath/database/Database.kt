@@ -1,9 +1,7 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
-import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.chat.Message
-import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.util.concurrent.CompletableFuture
@@ -169,7 +167,6 @@ abstract class Database {
      */
     abstract fun updateUserAchievements(userId: String, distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit>
 
-
     /**
      * Function used to create a chat conversation with other users of the DrawYourPath community.
      * @param name name of the chat conversation
@@ -182,7 +179,7 @@ abstract class Database {
         name: String,
         membersList: List<String>,
         creatorId: String,
-        welcomeMessage: String
+        welcomeMessage: String,
     ): CompletableFuture<Unit>
 
     /**
@@ -198,7 +195,7 @@ abstract class Database {
      * @param newTitle new title of the conversation
      * @return a future that indicate if the name of the conversation was correctly modify.
      */
-    abstract  fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit>
+    abstract fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit>
 
     /**
      * Function used to get the members list of a given conversation with his conversationId
@@ -254,5 +251,4 @@ abstract class Database {
      * @return a future that indicated if the message was correctly modify
      */
     abstract fun modifyChatTextMessage(conversationId: String, timestamp: Long, message: String): CompletableFuture<Unit>
-
 }

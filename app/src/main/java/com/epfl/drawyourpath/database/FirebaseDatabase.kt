@@ -60,11 +60,11 @@ class FirebaseKeys {
         const val GOAL_HISTORY_PATHS = "paths"
         const val GOAL_HISTORY_TIME = "time"
 
-        //Chats keys top level
+        // Chats keys top level
         const val CHAT_TITLE = "title"
         const val CHAT_LAST_MESSAGE = "lastMessage"
 
-        //Chats messages keys to level
+        // Chats messages keys to level
         const val CHAT_MESSAGE_SENDER = "sender"
         const val CHAT_MESSAGE_CONTENT_TEXT = "text"
         const val CHAT_MESSAGE_CONTENT_IMAGE = "image"
@@ -467,9 +467,9 @@ class FirebaseDatabase : Database() {
         name: String,
         membersList: List<String>,
         creatorId: String,
-        welcomeMessage: String
+        welcomeMessage: String,
     ): CompletableFuture<Unit> {
-        //create the id of the new conversation
+        // create the id of the new conversation
         val pushedPostRef: DatabaseReference = chatsRoot().push()
         val conversationId: String? = pushedPostRef.key
 
@@ -485,9 +485,9 @@ class FirebaseDatabase : Database() {
                         id = date,
                         senderId = creatorId,
                         content = MessageContent.Text(welcomeMessage),
-                        timestamp = date
-                    )
-                )
+                        timestamp = date,
+                    ),
+                ),
             )
                 .thenApply {
                     initChatMembers(conversationId, membersList)
@@ -498,8 +498,8 @@ class FirebaseDatabase : Database() {
                             id = date,
                             senderId = creatorId,
                             content = MessageContent.Text(welcomeMessage),
-                            timestamp = date
-                        )
+                            timestamp = date,
+                        ),
                     )
                 }.thenApply {
                     updateMembersProfileWithNewChat(conversationId, membersList)
@@ -515,7 +515,7 @@ class FirebaseDatabase : Database() {
                     conversationId = conversationId,
                     title = data.child(FirebaseKeys.CHAT_TITLE).value as String?,
                     lastMessage = getMessageFromData(
-                        data.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList().get(0)
+                        data.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList().get(0),
                     ),
                 )
                 future.complete(preview)
@@ -549,11 +549,11 @@ class FirebaseDatabase : Database() {
 
     override fun addChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        //add the new member to the members list
+        // add the new member to the members list
         val newMember = HashMap<String, Any>()
         newMember.put(userId, true)
         chatMembers(conversationId).updateChildren(newMember).addOnSuccessListener {
-            //add the chat to the chat list of the user with userId
+            // add the chat to the chat list of the user with userId
             val newChat = HashMap<String, Any>()
             newChat.put(conversationId, true)
             userProfile(userId).child(FirebaseKeys.USER_CHATS).updateChildren(newChat)
@@ -565,10 +565,10 @@ class FirebaseDatabase : Database() {
 
     override fun removeChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        //remove the member to the member chat list
+        // remove the member to the member chat list
         chatMembers(conversationId).child(userId).removeValue()
             .addOnSuccessListener {
-                //remove the chat to the user with userId chat list
+                // remove the chat to the user with userId chat list
                 userProfile(userId).child(FirebaseKeys.USER_CHATS).child(conversationId)
                     .removeValue()
                     .addOnSuccessListener { future.complete(Unit) }
@@ -581,7 +581,7 @@ class FirebaseDatabase : Database() {
         val future = CompletableFuture<List<Message>>()
         chatMessages(conversationId).get().addOnSuccessListener { data ->
             val listMessage = ArrayList<Message>()
-            //Log.println(Log.INFO,"", data.children.toMutableList().get(0).toString())
+            // Log.println(Log.INFO,"", data.children.toMutableList().get(0).toString())
             for (elem in data.children) {
                 listMessage.add(getMessageFromData(elem))
             }
@@ -591,7 +591,7 @@ class FirebaseDatabase : Database() {
     }
 
     override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {
-        //add the message to the list of the messages of the conversation
+        // add the message to the list of the messages of the conversation
         if (message.content.javaClass == MessageContent.RunPath::class.java) {
             return addChatRunMessage(conversationId, message)
         }
@@ -608,12 +608,12 @@ class FirebaseDatabase : Database() {
 
     override fun removeChatMessage(
         conversationId: String,
-        timestamp: Long
+        timestamp: Long,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         chatMessages(conversationId).child(timestamp.toString()).removeValue()
             .addOnSuccessListener {
-                //check if we must update the preview
+                // check if we must update the preview
                 chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(timestamp.toString()).get()
                     .addOnSuccessListener { data ->
                         if (data.value != null) {
@@ -637,7 +637,7 @@ class FirebaseDatabase : Database() {
     override fun modifyChatTextMessage(
         conversationId: String,
         timestamp: Long,
-        message: String
+        message: String,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         val newMessage = listOf<Pair<String, Any?>>(
@@ -646,12 +646,11 @@ class FirebaseDatabase : Database() {
         message(conversationId, timestamp).updateChildren(newMessage)
             .addOnSuccessListener {
                 chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(timestamp.toString()).get().addOnSuccessListener { preview ->
-                    if(preview.value != null){
+                    if (preview.value != null) {
                         chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(timestamp.toString()).updateChildren(newMessage)
                             .addOnSuccessListener { future.complete(Unit) }
                             .addOnFailureListener { future.completeExceptionally(it) }
                     }
-
                 }.addOnFailureListener { future.completeExceptionally(it) }
             }
             .addOnFailureListener { future.completeExceptionally(it) }
@@ -920,7 +919,7 @@ class FirebaseDatabase : Database() {
      */
     private fun initChatPreview(
         conversationId: String,
-        chatPreview: ChatPreview
+        chatPreview: ChatPreview,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
@@ -948,7 +947,7 @@ class FirebaseDatabase : Database() {
      */
     private fun initChatMembers(
         conversationId: String,
-        membersList: List<String>
+        membersList: List<String>,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
@@ -974,11 +973,11 @@ class FirebaseDatabase : Database() {
      */
     private fun initChatMessages(
         conversationId: String,
-        firstMessage: Message
+        firstMessage: Message,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        //the timestamp of the message is used as a key
+        // the timestamp of the message is used as a key
         val data = listOf<Pair<String, Any?>>(
             "${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to (firstMessage.content as MessageContent.Text).text,
             "${FirebaseKeys.CHAT_MESSAGE_SENDER}" to firstMessage.senderId,
@@ -1001,7 +1000,7 @@ class FirebaseDatabase : Database() {
      */
     private fun updateMembersProfileWithNewChat(
         conversationId: String,
-        membersList: List<String>
+        membersList: List<String>,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         for (memberId in membersList) {
@@ -1023,7 +1022,7 @@ class FirebaseDatabase : Database() {
      */
     private fun addChatRunMessage(
         conversationId: String,
-        message: Message
+        message: Message,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         val run = (message.content as MessageContent.RunPath).run
@@ -1033,12 +1032,12 @@ class FirebaseDatabase : Database() {
         ).associate { entry -> entry }
         chatMessages(conversationId).updateChildren(data)
             .addOnSuccessListener {
-                //update the chat preview
+                // update the chat preview
                 val lastMessage = listOf<Pair<String, Any?>>(
                     "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
                     "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_RUN}/${run.getStartTime()}" to run,
                 ).associate { entry -> entry }
-                //delete the previous last message and update it
+                // delete the previous last message and update it
                 chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).removeValue()
                     .addOnSuccessListener {
                         chatPreview(conversationId).updateChildren(lastMessage)
@@ -1059,14 +1058,14 @@ class FirebaseDatabase : Database() {
      */
     private fun addChatPictureMessage(
         conversationId: String,
-        message: Message
+        message: Message,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         val byteArray = ByteArrayOutputStream()
         (message.content as MessageContent.Picture).image.compress(
             Bitmap.CompressFormat.WEBP,
             70,
-            byteArray
+            byteArray,
         )
         val imageEncoded: String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
         val data = listOf<Pair<String, Any?>>(
@@ -1074,12 +1073,12 @@ class FirebaseDatabase : Database() {
             "${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE}" to imageEncoded,
         ).associate { entry -> entry }
         chatMessages(conversationId).updateChildren(data)
-            .addOnSuccessListener { //update the chat preview
+            .addOnSuccessListener { // update the chat preview
                 val lastMessage = listOf<Pair<String, Any?>>(
                     "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
                     "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE}" to imageEncoded,
                 ).associate { entry -> entry }
-                //delete the previous last message and update it
+                // delete the previous last message and update it
                 chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).removeValue()
                     .addOnSuccessListener {
                         chatPreview(conversationId).updateChildren(lastMessage)
@@ -1100,7 +1099,7 @@ class FirebaseDatabase : Database() {
      */
     private fun addChatTextMessage(
         conversationId: String,
-        message: Message
+        message: Message,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         val data = listOf<Pair<String, Any?>>(
@@ -1108,12 +1107,12 @@ class FirebaseDatabase : Database() {
             "${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to (message.content as MessageContent.Text).text,
         ).associate { entry -> entry }
         chatMessages(conversationId).updateChildren(data)
-            .addOnSuccessListener { //update the chat preview
+            .addOnSuccessListener { // update the chat preview
                 val lastMessage = listOf<Pair<String, Any?>>(
                     "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
                     "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to message.content.text,
                 ).associate { entry -> entry }
-                //delete the previous last message and update it
+                // delete the previous last message and update it
                 chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).removeValue()
                     .addOnSuccessListener {
                         chatPreview(conversationId).updateChildren(lastMessage)
@@ -1143,7 +1142,7 @@ class FirebaseDatabase : Database() {
                 id = date,
                 senderId = sender,
                 content = MessageContent.Picture(decodePhoto(dataImage.value as String)!!),
-                timestamp = date
+                timestamp = date,
             )
         }
         if (dataRun.value != null) {
@@ -1151,7 +1150,7 @@ class FirebaseDatabase : Database() {
                 id = date,
                 senderId = sender,
                 content = MessageContent.RunPath(transformRun(dataRun.children.toMutableList().get(0))!!),
-                timestamp = date
+                timestamp = date,
             )
         }
         if (dataText.value != null) {
@@ -1159,7 +1158,7 @@ class FirebaseDatabase : Database() {
                 id = date,
                 senderId = sender,
                 content = MessageContent.Text(dataText.value as String),
-                timestamp = date
+                timestamp = date,
             )
         }
         throw Error("The content of the message correspond to any type !")
