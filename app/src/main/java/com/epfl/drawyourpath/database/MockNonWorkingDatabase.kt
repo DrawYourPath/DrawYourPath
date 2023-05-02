@@ -82,7 +82,7 @@ class MockNonWorkingDatabase : Database() {
         name: String,
         membersList: List<String>,
         creatorId: String,
-        welcomeMessage: String
+        welcomeMessage: String,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }
@@ -117,7 +117,7 @@ class MockNonWorkingDatabase : Database() {
 
     override fun removeChatMessage(
         conversationId: String,
-        timestamp: Long
+        timestamp: Long,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }
@@ -125,7 +125,7 @@ class MockNonWorkingDatabase : Database() {
     override fun modifyChatTextMessage(
         conversationId: String,
         timestamp: Long,
-        message: String
+        message: String,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }
