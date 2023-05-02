@@ -1,5 +1,7 @@
 package com.epfl.drawyourpath.database
 
+import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -38,6 +40,9 @@ class MockNonWorkingDatabaseTest {
         mock.addChatMessage("", mockChatMessages.get(0)).assertError(Unit)
         mock.removeChatMessage("", 0L).assertError(Unit)
         mock.modifyChatTextMessage("", 0L, "").assertError(Unit)
+        mock.setUserData("", UserData()).assertError(Unit)
+        mock.addRunToHistory("", Run(Path(), 1, 10))
+        mock.removeRunFromHistory("", Run(Path(), 1, 10))
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {

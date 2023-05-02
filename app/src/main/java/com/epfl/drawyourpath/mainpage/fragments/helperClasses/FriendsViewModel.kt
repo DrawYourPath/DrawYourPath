@@ -48,7 +48,7 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
                             // Add the new Friend object to the realFriends list
                             realFriends.add(
                                 Friend(
-                                    userId,
+                                    userAccount.getUserId(),
                                     username,
                                     userAccount.getProfilePhoto(),
                                     true,
@@ -98,6 +98,8 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
      * The addOrRemoveFriend() function adds or removes a friend from the list of friends and updated the database.
      */
     fun addOrRemoveFriend(friend: Friend, isFriend: Boolean) {
+        Log.i("Friends", "Performing action for ${friend.id}")
+
         if (isFriend) {
             userModel.removeFriend(friend.id).whenComplete() { result, exception ->
                 if (exception != null) {

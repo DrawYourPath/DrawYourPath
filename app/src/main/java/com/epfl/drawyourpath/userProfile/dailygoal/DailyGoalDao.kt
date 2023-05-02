@@ -2,6 +2,8 @@ package com.epfl.drawyourpath.userProfile.dailygoal
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.epfl.drawyourpath.path.cache.PointsEntity
+import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.cache.GoalAndAchievements
 
 @Dao
@@ -40,23 +42,27 @@ interface DailyGoalDao {
     fun insertDailyGoal(dailyGoal: DailyGoalEntity)
 
     /**
-     * update the progress of the dailyGoal and total progress of the User
+     * add the run and update the progress of the dailyGoal and total progress of the User
      * @param userId the user id
      * @param date the date of the progress
      * @param distance the distance to add
      * @param time the time to add
      * @param paths the number of paths to add
+     * @param run the run to add
+     * @param points the path of the run
      * @return the new daily goal
      */
     @Transaction
-    fun updateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int): DailyGoalEntity {
+    fun addRunAndUpdateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int, run: RunEntity, points: List<PointsEntity>): DailyGoalEntity {
         addTotalProgressUser(userId, distance, time, paths)
         insertIfDailyGoalUpdateFailed(userId, date, addProgressDailyGoal(userId, date, distance, time, paths), distance, time, paths)
+        insertRun(run)
+        insertAllPoints(points)
         return getDailyGoalByIdAndDate(userId, date)
     }
 
     /**
-     * should not be used: use [updateProgress] instead
+     * should not be used: use [addRunAndUpdateProgress] instead
      * add the progress of the daily goal
      * @param userId the user id
      * @param date the date
@@ -68,7 +74,7 @@ interface DailyGoalDao {
     fun addProgressDailyGoal(userId: String, date: Long, distance: Double, time: Double, paths: Int): Int
 
     /**
-     * should not be used: use [updateProgress] instead
+     * should not be used: use [addRunAndUpdateProgress] instead
      * add the total progress of the user
      * @param userId the user id
      * @param distance the distance to set
@@ -77,6 +83,22 @@ interface DailyGoalDao {
      */
     @Query("UPDATE User SET total_distance = total_distance + :distance, total_time = total_time + :time, total_paths = total_paths + :paths WHERE id = :userId")
     fun addTotalProgressUser(userId: String, distance: Double, time: Double, paths: Int)
+
+    /**
+     * should not be used: use [addRunAndUpdateProgress] instead
+     * insert the run inside the cache
+     * @param run the run
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRun(run: RunEntity)
+
+    /**
+     * should not be used: use [addRunAndUpdateProgress] instead
+     * insert the points inside the cache
+     * @param points the points
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllPoints(points: List<PointsEntity>)
 
     /**
      * set a new distance goal to DailyGoal and User with the corresponding id and date

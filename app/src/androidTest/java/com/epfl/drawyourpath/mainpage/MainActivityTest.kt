@@ -1,10 +1,12 @@
 package com.epfl.drawyourpath.mainpage
 
+import android.Manifest
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
 import org.junit.Rule
@@ -16,6 +18,9 @@ import org.junit.runners.JUnit4
 class MainActivityTest {
     @get:Rule
     var testRule = ActivityScenarioRule(MainActivity::class.java)
+
+    @get:Rule
+    var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     @Test
     fun firstFragmentIsDrawFragmentWhenNoSavedState() {
@@ -31,6 +36,8 @@ class MainActivityTest {
         // Check fragment is community
         onView(withId(R.id.fragment_community)).check(matches(isDisplayed()))
 
+        // TODO: Friends fragment redirect to login screen when not logged.
+        //       Find a way to test it.
         // Go to friends
         // onView(withId(R.id.friends_menu_item)).perform(click())
 

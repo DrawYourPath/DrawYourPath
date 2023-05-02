@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.chat
 
-
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.path.Run
 
@@ -52,7 +51,7 @@ data class Message(
     val id: Long,
     val senderId: String,
     val content: MessageContent,
-    val timestamp: Long
+    val timestamp: Long,
 ) {
     companion object {
         /**
@@ -66,8 +65,6 @@ data class Message(
         fun createTextMessage(senderId: String, text: String, timestamp: Long): Message {
             return Message(timestamp, senderId, MessageContent.Text(text), timestamp)
         }
-
-
 
         /**
          * Factory method for creating an image message.

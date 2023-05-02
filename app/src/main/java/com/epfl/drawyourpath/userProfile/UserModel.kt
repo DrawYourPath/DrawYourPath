@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.userProfile
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
@@ -418,6 +419,8 @@ class UserModel {
      * @return a future that indicate if the user was correctly added to the database
      */
     fun addFriend(userId: String): CompletableFuture<Unit> {
+        Log.i("UserModel", "Adding friend $userId.")
+
         return database.addFriend(getUserId(), userId).thenApply {
             val interList = friendsList.toMutableList()
             interList.add(userId)

@@ -1,11 +1,9 @@
 package com.epfl.drawyourpath.database
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
@@ -14,6 +12,7 @@ import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 
@@ -45,7 +44,7 @@ class MockDatabase : Database() {
                 distance = 10.0,
                 expectedTime = 10.0,
                 expectedPaths = 10,
-                date = LocalDate.now(),
+                date = LocalDate.of(2020, 1, 1),
                 expectedDistance = 10.0,
                 time = 10.0,
             ),
@@ -274,7 +273,7 @@ class MockDatabase : Database() {
             return future
         }
 
-        ilog("Settings username $username for user $userId")
+        ilog("Settings username $username for user $userId.")
 
         // Create a new mapping to the new username.
         unameToUid[username] = userId
@@ -287,11 +286,25 @@ class MockDatabase : Database() {
     }
 
     override fun createUser(userId: String, userData: UserData): CompletableFuture<Unit> {
-        if (users.contains(userId)) {
-            return Utils.failedFuture(Error("This user already exists"))
-        }
+        val current = users[userId] ?: UserData()
 
-        users[userId] = userData
+        users[userId] = UserData(
+            userId = userId,
+            email = userData.email ?: current.email,
+            username = userData.username ?: current.username,
+            firstname = userData.firstname ?: current.firstname,
+            picture = userData.picture ?: current.picture,
+            surname = userData.surname ?: current.surname,
+            friendList = userData.friendList ?: current.friendList,
+            runs = userData.runs ?: current.runs,
+            birthDate = userData.birthDate ?: current.birthDate,
+            dailyGoals = userData.dailyGoals ?: current.dailyGoals,
+            goals = UserGoals(
+                distance = userData.goals?.distance ?: current.goals?.distance,
+                paths = userData.goals?.paths ?: current.goals?.paths,
+                activityTime = userData.goals?.activityTime ?: current.goals?.activityTime,
+            ),
+        )
 
         return CompletableFuture.completedFuture(Unit)
     }
@@ -301,15 +314,8 @@ class MockDatabase : Database() {
             return userDoesntExist()
         }
 
-        val current = users[userId]!!
-
-        users[userId] = current.copy(
-            goals = UserGoals(
-                distance = userData.goals?.distance ?: current.goals?.distance,
-                paths = userData.goals?.paths ?: current.goals?.paths,
-                activityTime = userData.goals?.activityTime ?: current.goals?.activityTime,
-            ),
-        )
+        // The same as creating a user, except we can't edit uid and uname.
+        createUser(userId, userData.copy(userId = null, username = null))
 
         return CompletableFuture.completedFuture(Unit)
     }
@@ -347,8 +353,8 @@ class MockDatabase : Database() {
         if (!users.contains(userId)) {
             return userDoesntExist()
         }
-
-        return CompletableFuture.completedFuture(Unit)
+        // convert the bitmap to a byte array
+        return setUserData(userId, UserData(picture = Utils.encodePhoto(photo)))
     }
 
     private fun addFriendToUser(user: String, target: String) {
@@ -627,7 +633,6 @@ class MockDatabase : Database() {
                 chatList = (current.chatList ?: emptyList()) + conversationId,
             )
         }
-
         return CompletableFuture.completedFuture(Unit)
     }
 }
