@@ -37,23 +37,14 @@ data class DailyGoalEntity(
     val nbOfPathsProgress: Int = 0,
 
 ) {
-
-    /**
-     * get the date of the DailyGoal
-     * @return the date of the DailyGoal
-     */
-    fun getDateAsLocalDate(): LocalDate {
-        return LocalDate.ofEpochDay(date)
-    }
-
-    companion object {
-        /**
-         * create a Long from a LocalDate
-         * @param date the localDate
-         * @return the Long
-         */
-        fun fromLocalDateToLong(date: LocalDate): Long {
-            return date.toEpochDay()
-        }
-    }
+    constructor(dailyGoal: DailyGoal, userId: String) : this(
+        userId,
+        dailyGoal.date.toEpochDay(),
+        dailyGoal.expectedDistance,
+        dailyGoal.expectedTime,
+        dailyGoal.expectedPaths,
+        dailyGoal.distance,
+        dailyGoal.time,
+        dailyGoal.paths,
+    )
 }

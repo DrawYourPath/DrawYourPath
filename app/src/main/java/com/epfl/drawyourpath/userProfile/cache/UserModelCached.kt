@@ -11,8 +11,10 @@ import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
+import com.epfl.utils.drawyourpath.Utils
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
@@ -54,13 +56,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val _currentUserID = MutableLiveData<String>()
 
     // user
-    private val user: LiveData<UserEntity> = _currentUserID.switchMap { userCache.getUserById(it) }
-        .map { user -> user ?: UserEntity("userID") }
+    private val user: LiveData<UserProfile> = _currentUserID.switchMap { userCache.getUserById(it) }
+        .map { entity -> entity?.let { UserProfile(it) } ?: UserProfile(UserEntity("empty user")) }
 
     // dailyGoal
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
         dailyGoalCache.getDailyGoalById(user.userId).map {
-            getTodayDailyGoal(user.goalAndAchievements, it.firstOrNull())
+            getTodayDailyGoal(user.goals, it.firstOrNull())
         }
     }
 
@@ -70,21 +72,15 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * This function will create a new user based on the user model of the app
-     * @param userModel the userModel to create the new user
+     * This function will create a new user
+     * @param userProfile the profile of the new user
      */
-    fun createNewUser(userModel: UserModel): CompletableFuture<Unit> {
-        setUserId(userModel.getUserId())
+    fun createNewUser(userProfile: UserProfile): CompletableFuture<Unit> {
+        setUserId(userProfile.userId)
         return CompletableFuture.supplyAsync {
             userCache.insertAll(
-                fromUserModelToUserData(userModel),
-                listOf(
-                    DailyGoal(
-                        userModel.getCurrentDistanceGoal(),
-                        userModel.getCurrentActivityTime(),
-                        userModel.getCurrentNumberOfPathsGoal(),
-                    ).toDailyGoalEntity(userModel.getUserId()),
-                ),
+                UserEntity(userProfile),
+                listOf(DailyGoalEntity(DailyGoal(userProfile.goals), userProfile.userId)),
                 listOf(),
                 listOf(),
             )
@@ -98,17 +94,11 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun setCurrentUser(userId: String): CompletableFuture<Unit> {
         checkCurrentUser(false)
         setUserId(userId)
-        return CompletableFuture.supplyAsync {
-            // insert empty user in cache to avoid null user
-            userCache.insertUserIfEmpty(UserEntity(userId))
-        }.thenComposeAsync {
-            database.getUserData(userId)
-        }.thenApplyAsync { userData ->
-            val userModel = UserModel(userData)
-            val runs = RunEntity.fromRunsToEntities(userModel.getUserId(), userModel.getRunsHistory())
+        return database.getUserData(userId).thenApplyAsync { userData ->
+            val runs = RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
             userCache.insertAll(
-                fromUserModelToUserData(userModel),
-                userModel.getDailyGoalList().map { it.toDailyGoalEntity(userId) },
+                UserEntity(userData, userId),
+                userData.dailyGoals?.map { DailyGoalEntity(it, userId) } ?: listOf(),
                 runs.map { it.first },
                 runs.map { it.second }.flatten(),
             )
@@ -130,7 +120,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * Its usage is as follow : `getUser().observe(viewLifecycleOwner) { viewText.text = it.username }`
      * @return the [LiveData] of [UserEntity]
      */
-    fun getUser(): LiveData<UserEntity> {
+    fun getUser(): LiveData<UserProfile> {
         checkCurrentUser()
         return user
     }
@@ -226,7 +216,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         UserModel.checkActivityTimeGoal(activityTimeGoal)
         return database.setGoals(
             currentUserID!!,
-            UserGoals(activityTime = activityTimeGoal.toLong()),
+            UserGoals(activityTime = activityTimeGoal),
         ).thenApplyAsync {
             dailyGoalCache.updateTimeGoal(
                 currentUserID!!,
@@ -267,9 +257,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
-        return database.addRunToHistory(currentUserID!!, run).thenComposeAsync {
+        return database.addRunToHistory(currentUserID!!, run)/*.thenComposeAsync { TODO add again when in database
             database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
-        }.thenApplyAsync {
+        }*/.thenApplyAsync {
             val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run))
             dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
         }.thenComposeAsync {
@@ -285,7 +275,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun updateProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
         checkCurrentUser()
         return database.setProfilePhoto(currentUserID!!, photo).thenApplyAsync {
-            userCache.updatePhoto(currentUserID!!, UserEntity.fromBitmapToByteArray(photo))
+            userCache.updatePhoto(currentUserID!!, Utils.encodePhotoToByteArray(photo))
         }
     }
 
@@ -320,38 +310,20 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @return DailyGoal representing today's Daily Goal
      */
     private fun getTodayDailyGoal(
-        goalAndAchievements: GoalAndAchievements,
+        goals: UserProfile.Goals,
         entity: DailyGoalEntity?,
     ): DailyGoal {
         if (entity == null || LocalDate.ofEpochDay(entity.date) != LocalDate.now()) {
             val dailyGoal = DailyGoal(
-                goalAndAchievements.distanceGoal,
-                goalAndAchievements.activityTimeGoal,
-                goalAndAchievements.nbOfPathsGoal,
+                goals.distanceGoal,
+                goals.activityTimeGoal,
+                goals.pathsGoal,
             )
             database.addDailyGoal(currentUserID!!, dailyGoal).thenApplyAsync {
-                dailyGoalCache.insertDailyGoal(dailyGoal.toDailyGoalEntity(currentUserID!!))
+                dailyGoalCache.insertDailyGoal(DailyGoalEntity(dailyGoal, currentUserID!!))
             }
             return dailyGoal
         }
         return DailyGoal(entity)
     }
-}
-
-/**
- * helper function to create a UserData from a UserModel
- * @param userModel the userModel
- * @return the resulting UserData
- */
-private fun fromUserModelToUserData(userModel: UserModel): UserEntity {
-    return UserEntity(
-        userModel.getUserId(),
-        userModel.getUsername(),
-        userModel.getEmailAddress(),
-        userModel.getFirstname(),
-        userModel.getSurname(),
-        UserEntity.fromLocalDateToLong(userModel.getDateOfBirth()),
-        GoalAndAchievements(userModel),
-        UserEntity.fromBitmapToByteArray(userModel.getProfilePhoto()),
-    )
 }

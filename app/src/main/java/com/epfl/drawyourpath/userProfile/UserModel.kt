@@ -2,7 +2,7 @@ package com.epfl.drawyourpath.userProfile
 
 import android.graphics.Bitmap
 import android.util.Log
-import com.epfl.Utils.drawyourpath.Utils
+import com.epfl.utils.drawyourpath.Utils
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
@@ -365,7 +365,7 @@ class UserModel {
      */
     fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
         checkActivityTimeGoal(activityTimeGoal)
-        return database.setGoals(getUserId(), UserGoals(activityTime = activityTimeGoal.toLong())).thenApply {
+        return database.setGoals(getUserId(), UserGoals(activityTime = activityTimeGoal)).thenApply {
             this.currentActivityTimeGoal = activityTimeGoal
         }
     }

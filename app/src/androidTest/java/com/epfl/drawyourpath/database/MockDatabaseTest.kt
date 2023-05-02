@@ -126,7 +126,7 @@ class MockDatabaseTest {
             username = "Muchel",
             goals = UserGoals(
                 distance = 12.0,
-                activityTime = 15,
+                activityTime = 15.0,
                 paths = 14,
             ),
         )
@@ -155,7 +155,7 @@ class MockDatabaseTest {
             username = "Muchel",
             goals = UserGoals(
                 distance = 12.0,
-                activityTime = 15,
+                activityTime = 15.0,
                 paths = 14,
             ),
         )
@@ -243,7 +243,7 @@ class MockDatabaseTest {
             birthDate = dateOfBirthTest,
             goals = UserGoals(
                 distance = distanceGoalTest,
-                activityTime = activityTimeGoalTest.toLong(),
+                activityTime = activityTimeGoalTest,
                 paths = nbOfPathsGoalTest.toLong(),
             ),
         )
@@ -294,7 +294,7 @@ class MockDatabaseTest {
     fun setActivityTimeGoalInvalid() {
         val database = MockDatabase()
         val exception = Assert.assertThrows(Throwable::class.java) {
-            database.setGoals(userIdTest, UserGoals(activityTime = -1)).get()
+            database.setGoals(userIdTest, UserGoals(activityTime = -1.0)).get()
         }
         assertEquals(
             database.users[userIdTest]?.goals?.activityTime?.toInt(),
@@ -308,7 +308,7 @@ class MockDatabaseTest {
     @Test
     fun setActivityTimeGoalValid() {
         val database = MockDatabase()
-        database.setGoals(userIdTest, UserGoals(activityTime = 45)).get()
+        database.setGoals(userIdTest, UserGoals(activityTime = 45.0)).get()
         assertEquals(
             45,
             database.users[userIdTest]?.goals?.activityTime?.toInt(),
