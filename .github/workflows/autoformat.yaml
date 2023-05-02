@@ -2,10 +2,10 @@ name: Code Auto Format
 run-name: Code Format by ${{ github.actor }}
 on:
   push:
-    branches:
+    branches-ignore:
       - main
 jobs:
-  Explore-GitHub-Actions:
+  Auto-Format:
     runs-on: ubuntu-latest
     
     permissions:
