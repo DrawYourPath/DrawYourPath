@@ -68,7 +68,7 @@ data class UserProfile(
         { Utils.decodePhotoOrGetDefault(userEntity.profilePhoto, it) },
     )
 
-    constructor(userData: UserData): this(
+    constructor(userData: UserData) : this(
         userData.userId ?: "invalid id",
         userData.username ?: "",
         userData.email ?: "",
@@ -107,5 +107,4 @@ data class UserProfile(
             userGoals.paths?.toInt() ?: 0,
         )
     }
-
 }

@@ -3,7 +3,6 @@ package com.epfl.drawyourpath.userProfile.cache
 import androidx.room.ColumnInfo
 import com.epfl.drawyourpath.database.UserData
 import com.epfl.drawyourpath.database.UserGoals
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.UserProfile
 
 data class GoalAndAchievements(

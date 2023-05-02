@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.epfl.drawyourpath.userProfile.cache.UserEntity
-import java.time.LocalDate
 
 @Entity(
     tableName = "DailyGoal",

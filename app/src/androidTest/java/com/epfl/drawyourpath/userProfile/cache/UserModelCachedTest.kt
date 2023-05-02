@@ -12,7 +12,6 @@ import com.epfl.drawyourpath.database.UserData
 import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.android.gms.maps.model.LatLng
@@ -54,16 +53,20 @@ class UserModelCachedTest {
         UserGoals(22, 325.0, 100.0),
         null,
         listOf(),
-        listOf(Run(
-            Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))),
-            100 + 10,
-            100 + 10 + 1286,
-        )),
-        listOf(DailyGoal(
-            testUserModel.goals!!.distance!!,
-            testUserModel.goals!!.activityTime!!,
-            testUserModel.goals!!.paths!!.toInt(),
-        )),
+        listOf(
+            Run(
+                Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))),
+                100 + 10,
+                100 + 10 + 1286,
+            ),
+        ),
+        listOf(
+            DailyGoal(
+                testUserModel.goals!!.distance!!,
+                testUserModel.goals!!.activityTime!!,
+                testUserModel.goals!!.paths!!.toInt(),
+            ),
+        ),
     )
 
     private val timeout: Long = 5
@@ -206,8 +209,8 @@ class UserModelCachedTest {
     fun setProfilePhotoModifyProfilePhoto() {
         user.updateProfilePhoto(newPicture).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
-        //TODO
-        //assertNotNull(user.getUser().getOrAwaitValue().profilePhoto(res))
+        // TODO
+        // assertNotNull(user.getUser().getOrAwaitValue().profilePhoto(res))
     }
 
     @Test
@@ -215,8 +218,8 @@ class UserModelCachedTest {
         user.setDatabase(MockNonWorkingDatabase())
         user.updateProfilePhoto(newPicture).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
-        //TODO
-        //assertNull(user.getUser().getOrAwaitValue().profilePhoto(res))
+        // TODO
+        // assertNull(user.getUser().getOrAwaitValue().profilePhoto(res))
     }
 
     @Before

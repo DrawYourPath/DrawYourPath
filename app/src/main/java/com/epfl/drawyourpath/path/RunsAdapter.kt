@@ -8,8 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.epfl.utils.drawyourpath.Utils.getStaticMapUrl
 import com.epfl.drawyourpath.R
+import com.epfl.utils.drawyourpath.Utils.getStaticMapUrl
 import com.google.android.gms.maps.model.LatLng
 
 /**

@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.userProfile
 
 import android.graphics.Bitmap
 import android.util.Log
-import com.epfl.utils.drawyourpath.Utils
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
@@ -12,6 +11,7 @@ import com.epfl.drawyourpath.database.UserData
 import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.utils.drawyourpath.Utils
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture

@@ -16,7 +16,6 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.login.launchLoginActivity
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.epfl.utils.drawyourpath.Utils
