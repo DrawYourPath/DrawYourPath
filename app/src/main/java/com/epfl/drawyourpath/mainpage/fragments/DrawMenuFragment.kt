@@ -8,12 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.findFragment
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.pathDrawing.PathDrawingActivity
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
 class DrawMenuFragment : Fragment() {
+    private val userCached: UserModelCached by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,6 +37,7 @@ class DrawMenuFragment : Fragment() {
         val startButton: Button = view.findViewById(R.id.button_start_drawing)
         startButton.setOnClickListener {
             val intent = Intent(this.context, PathDrawingActivity::class.java)
+            intent.putExtra(MainActivity.EXTRA_USER_ID, userCached.getUserId())
             startActivity(intent)
         }
     }

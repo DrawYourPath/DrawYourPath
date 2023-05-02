@@ -61,6 +61,7 @@ class PathDrawingEndFragment(private val run: Run) : Fragment() {
         backToMenuButton.setOnClickListener {
             //TODO:Save the path to the database
             val intent = Intent(activity, MainActivity::class.java)
+            intent.putExtra(MainActivity.EXTRA_USER_ID, userCached.getUserId())
             this.startActivity(intent)
         }
     }
