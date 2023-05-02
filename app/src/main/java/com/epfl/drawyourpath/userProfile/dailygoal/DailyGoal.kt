@@ -25,6 +25,16 @@ data class DailyGoal(
     }
 
     /**
+     * Checks if the user reached the goal this day.
+     * @return True if all goals were reached.
+     */
+    fun wasReached(): Boolean {
+        return distance >= expectedDistance &&
+            time >= expectedTime &&
+            paths >= expectedPaths
+    }
+
+    /**
      * constructor to transform a [DailyGoalEntity] into a [DailyGoal]
      * @param entity the entity to transform
      */

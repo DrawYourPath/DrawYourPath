@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -7,11 +8,23 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.TrophyDialog
+import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.FirebaseDatabase
+import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.database.UserData
 import com.epfl.drawyourpath.qrcode.generateQR
+import java.util.concurrent.CompletableFuture
+
+const val PROFILE_USER_ID_KEY = "userId"
+const val PROFILE_TEST_KEY = "test"
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
+
+    lateinit var database: Database
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -21,25 +34,99 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         view.findViewById<TextView>(R.id.TV_Trophy).setOnClickListener { onTrophyClicked() }
 
-        // TODO: Pull data from user model.
-        populateFriendList(
-            listOf(
-                "Miguel",
-                "Jean Radiateur",
-                "XxDenisXX",
-                "CrazyRunnerDu18",
-                "Alphonso9",
-                "SCRUM Masseur",
-            ),
+        database = createDatabase()
+
+        arguments?.getString(PROFILE_USER_ID_KEY).let {
+            when (it) {
+                null -> updateUiForError("This user doesn't exist (Empty user).")
+                else -> fetchUser(it)
+            }
+        }
+    }
+
+    private fun createDatabase(): Database {
+        return when (arguments?.getBoolean(PROFILE_TEST_KEY) ?: false) {
+            true -> MockDatabase()
+            false -> FirebaseDatabase()
+        }
+    }
+
+    private fun fetchUser(userId: String) {
+        updateUiForError("Loading...")
+        database.getUserData(userId)
+            .thenAccept {
+                updateUiForData(it)
+                setErrorVisibility(false)
+            }.exceptionally {
+                updateUiForError(it.localizedMessage ?: "Unknown error")
+                null
+            }
+    }
+
+    private fun updateUiForData(userData: UserData) {
+        val dailyGoals = (userData.dailyGoals ?: emptyList())
+
+        setQRCodeUserID(userData.userId ?: "")
+        setUsername(userData.username ?: "Anonymous")
+
+        loadFriendsNames(userData.friendList ?: emptyList())
+
+        if (userData.picture != null) {
+            setUserImage(Utils.decodePhoto(userData.picture))
+        }
+
+        setTotalKilometer(
+            dailyGoals.fold(0.0) {
+                    acc, dailyGoal ->
+                acc + dailyGoal.distance
+            }.toInt(),
         )
-        setStreak(44)
-        setTotalKilometer(120)
-        setShapesDrawn(15)
-        setAverageSpeed(7)
-        setGoalsReached(33)
-        setTrophyCount(459)
-        setAchievementsCount(14)
-        setQRCodeUserID("abcdefghijq")
+        setGoalsReached(
+            dailyGoals.fold(0) {
+                    acc, dailyGoal ->
+                acc + if (dailyGoal.wasReached()) 1 else 0
+            },
+        )
+        setAverageSpeed(
+            dailyGoals.fold(Pair(0.0, 0.0)) {
+                    acc, dailyGoal ->
+                Pair(acc.first + dailyGoal.distance, acc.second + dailyGoal.time)
+            }.let { if (it.second == 0.0) 0.0 else it.first / it.second }.toInt(),
+        )
+        setShapesDrawn(
+            dailyGoals.fold(0) {
+                    acc, dailyGoal ->
+                acc + dailyGoal.paths
+            },
+        )
+
+        // TODO: Add these stats when we implemented them.
+        setStreak(0)
+        setTrophyCount(0)
+        setAchievementsCount(0)
+    }
+
+    private fun loadFriendsNames(friendIds: List<String>) {
+        val futures = friendIds.map { database.getUsername(it) }
+        CompletableFuture.allOf(*futures.toTypedArray())
+            .thenApply {
+                futures.mapNotNull {
+                    if (it.isDone && !it.isCompletedExceptionally) it.get() else null
+                }
+            }
+            .thenAccept {
+                populateFriendList(it)
+            }
+    }
+
+    private fun updateUiForError(error: String) {
+        view?.findViewById<TextView>(R.id.TV_Error)?.text = error
+        setErrorVisibility(true)
+    }
+
+    private fun setErrorVisibility(visible: Boolean) {
+        view?.findViewById<TextView>(R.id.TV_Error)?.visibility =
+            if (visible) View.VISIBLE else View.GONE
     }
 
     private fun onTrophyClicked() {
@@ -99,5 +186,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun setQRCodeUserID(uid: String) {
         view?.findViewById<ImageView>(R.id.IV_QRCode)?.setImageBitmap(generateQR(uid, 300))
+    }
+
+    private fun setUsername(username: String) {
+        view?.findViewById<TextView>(R.id.TV_username)?.text = username
+    }
+
+    private fun setUserImage(image: Bitmap) {
+        view?.findViewById<ImageView>(R.id.IV_ProfilePicture)?.setImageBitmap(image)
     }
 }
