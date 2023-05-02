@@ -27,7 +27,7 @@ class ProfileFragmentTest {
         )
     }
 
-    private fun textViewHasSubstring(id: Int, txt: String) {
+    private fun elementExists(id: Int) {
         onView(withId(id)).check(matches(isDisplayed()))
     }
 
@@ -38,11 +38,11 @@ class ProfileFragmentTest {
 
         launchFragment(targetUser.userId!!)
 
-        textViewHasSubstring(R.id.TV_DaysStreak, " Days")
-        textViewHasSubstring(R.id.TV_AvgSpeed, " KM/H")
-        textViewHasSubstring(R.id.TV_ShapesDrawn, " Shapes")
-        textViewHasSubstring(R.id.TV_TotalKilometers, " KM")
-        textViewHasSubstring(R.id.TV_GoalsReached, " Goals")
+        elementExists(R.id.TV_DaysStreak)
+        elementExists(R.id.TV_AvgSpeed)
+        elementExists(R.id.TV_ShapesDrawn)
+        elementExists(R.id.TV_TotalKilometers)
+        elementExists(R.id.TV_GoalsReached)
 
         onView(withId(R.id.IV_QRCode)).check(matches(isDisplayed()))
 

@@ -76,7 +76,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         loadFriendsNames(userData.friendList ?: emptyList())
 
-        if (userData.picture != null) {
+        if (userData.picture != null && userData.picture.isNotEmpty()) {
             setUserImage(Utils.decodePhoto(userData.picture))
         }
 
