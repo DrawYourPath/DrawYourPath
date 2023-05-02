@@ -63,7 +63,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
                 updateUiForData(it)
             }.exceptionally {
-                updateUiForError(it.localizedMessage ?: "Unknown error")
+                updateUiForError(it.localizedMessage ?: "Unknown error.")
                 null
             }
     }
