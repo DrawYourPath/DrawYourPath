@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.community
 
+import com.google.firebase.database.Exclude
 import java.time.Clock
 import java.time.Duration
 import java.time.LocalDateTime
@@ -25,6 +26,7 @@ data class Tournament(
      *
      * @return the resulting string
      */
+    @Exclude
     fun getStartOrEndDate(): String {
         val now = LocalDateTime.now(Clock.systemDefaultZone())
         if (now < startDate) {

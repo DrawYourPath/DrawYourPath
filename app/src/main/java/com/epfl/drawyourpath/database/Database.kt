@@ -24,6 +24,7 @@ data class UserData(
     val friendList: List<String>? = null,
     val runs: List<Run>? = null,
     val dailyGoals: List<DailyGoal>? = null,
+    val tournaments: List<String>? = null
 )
 
 abstract class Database {
@@ -158,11 +159,26 @@ abstract class Database {
     ): CompletableFuture<Unit>
 
     /**
+     * Function used to get a unique ID for a new tournament.
+     * @return a unique ID or null if the operation failed.
+     */
+    abstract fun getTournamentUID(): String?
+
+    /**
      * Function used to add a tournament to the database.
      * @param tournament the tournament to store.
      * @return a future that indicates if the tournament has been stored correctly.
      */
     abstract fun addTournament(tournament: Tournament): CompletableFuture<Unit>
+
+    /**
+     * Function used to remove/delete a tournament based on its id. This should only be used
+     * by the creator of the tournament, the check should be done before calling this function.
+     * Also removes the tournament from the list of tournaments of the participants.
+     * @param tournamentId the id of the tournament to remove.
+     * @return a future that indicated if the tournament has been correctly removed.
+     */
+    abstract fun removeTournament(tournamentId: String): CompletableFuture<Unit>
 
     /**
      * Function used to add a participant to a tournament.
@@ -174,14 +190,6 @@ abstract class Database {
         userId: String,
         tournamentId: String
     ): CompletableFuture<Unit>
-
-    /**
-     * Function used to remove/delete a tournament based on its id. This should only be used
-     * by the creator of the tournament, the check should be done before calling this function.
-     * @param tournamentId the id of the tournament to remove.
-     * @return a future that indicated if the tournament has been correctly removed.
-     */
-    abstract fun removeTournament(tournamentId: String): CompletableFuture<Unit>
 
     /**
      * Function used to unregister a participant from a tournament.

@@ -388,6 +388,10 @@ class FirebaseDatabase : Database() {
         return Utils.failedFuture(Error("Not implemented"))
     }
 
+    override fun getTournamentUID(): String? {
+        return database.child(FirebaseKeys.TOURNAMENTS_ROOT).push().key
+    }
+
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         // add the tournament to all tournaments
@@ -400,7 +404,7 @@ class FirebaseDatabase : Database() {
     override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        database.child(FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS)
+        database.child("${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}")
             .get()
             .addOnSuccessListener { data ->
                 // get the list of all participants (list of ids)
@@ -408,10 +412,10 @@ class FirebaseDatabase : Database() {
                 // prepare changes in database
                 // 1. remove the tournament from the list of tournaments of all participants
                 val changes: MutableMap<String, Any?> = participantsIds.associate {
-                    FirebaseKeys.USERS_ROOT + "/" + it + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
+                    "${FirebaseKeys.USERS_ROOT}/$it/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to null
                 }.toMutableMap()
                 // 2. remove the tournament from the tournaments file
-                changes.put(FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId, null)
+                changes.put("${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId", null)
                 //do the changes
                 database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
                     .addOnFailureListener { future.completeExceptionally(it) }
@@ -427,7 +431,7 @@ class FirebaseDatabase : Database() {
         tournamentId: String
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        //check that the userId and tournamentId exist
+        // check that the userId and tournamentId exist
         isUserInDatabase(userId).thenCombine(isTournamentInDatabase(tournamentId)) { userExists, tournamentExists ->
             run {
                 if (!userExists) {
@@ -437,8 +441,8 @@ class FirebaseDatabase : Database() {
                 } else {
                     // if they exist, do the operation which requires two writes, we want to do them at the same time
                     val changes: MutableMap<String, Any?> = hashMapOf(
-                        FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to true,
-                        FirebaseKeys.USERS_ROOT + "/" + userId + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to true
+                        "${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}/$userId" to true,
+                        "${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to true
                     )
                     database.updateChildren(changes)
                         .addOnSuccessListener { future.complete(Unit) }
@@ -457,8 +461,8 @@ class FirebaseDatabase : Database() {
         val future = CompletableFuture<Unit>()
         // this operation requires two deletions, we want to do them at the same time
         val changes: MutableMap<String, Any?> = hashMapOf(
-            FirebaseKeys.TOURNAMENTS_ROOT + "/" + tournamentId + "/" + FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS + "/" + userId to null,
-            FirebaseKeys.USERS_ROOT + "/" + userId + "/" + FirebaseKeys.USER_TOURNAMENTS + "/" + tournamentId to null
+            "${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}/$userId" to null,
+            "${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to null
         )
         database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }

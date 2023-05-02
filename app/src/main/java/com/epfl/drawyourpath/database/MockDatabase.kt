@@ -9,6 +9,7 @@ import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 
@@ -48,6 +49,7 @@ class MockDatabase : Database() {
         friendList = listOf("0", "1"),
     )
 
+    // Please keep this list with more than 3 users to have enough data for tournaments.
     val MOCK_USERS = listOf(
         UserData(
             userId = "0",
@@ -181,6 +183,50 @@ class MockDatabase : Database() {
         mockUser,
     )
 
+    val mockTournament = Tournament(
+        id = "0",
+        name = "mockTournament0",
+        description = "Mock tournament number 0",
+        creatorId = MockAuth.MOCK_USER.getUid(),
+        endDate = LocalDateTime.now().plusDays(4L),
+        startDate = LocalDateTime.now().plusDays(3L),
+        participants = MOCK_USERS.map { it.userId!! },
+        // The next args are useless for now
+        posts = listOf(),
+        visibility = Tournament.Visibility.PUBLIC
+    )
+
+    val MOCK_TOURNAMENTS = listOf(
+        mockTournament,
+        Tournament(
+            id = "1",
+            name = "mockTournament1",
+            description = "Mock tournament number 1",
+            creatorId = MOCK_USERS[0].userId!!,
+            endDate = LocalDateTime.now().plusDays(2L),
+            startDate = LocalDateTime.now().plusDays(1L),
+            participants = listOf(MOCK_USERS[0].userId!!, MOCK_USERS[1].userId!!),
+            // The next args are useless for now
+            posts = listOf(),
+            visibility = Tournament.Visibility.PUBLIC
+        ),
+        Tournament(
+            id = "2",
+            name = "mockTournament2",
+            description = "Mock tournament number 2",
+            creatorId = MOCK_USERS[1].userId!!,
+            endDate = LocalDateTime.now().plusDays(3L),
+            startDate = LocalDateTime.now().plusDays(2L),
+            participants = listOf(MOCK_USERS[1].userId!!),
+            // The next args are useless for now
+            posts = listOf(),
+            visibility = Tournament.Visibility.PUBLIC
+        )
+
+    )
+
+    var mockTournamentUID = 3
+
     init {
         ilog("Mock database created.")
     }
@@ -193,18 +239,22 @@ class MockDatabase : Database() {
         return Utils.failedFuture(Error("This user doesn't exist $userId"))
     }
 
+    private fun <T> tournamentDoesntExist(tournamentId: String): CompletableFuture<T> {
+        return Utils.failedFuture(Error("This tournament doesn't exist $tournamentId"))
+    }
+
     val unameToUid = MOCK_USERS.associate { it.username to it.userId }.toMutableMap()
 
     val users = MOCK_USERS.associateBy { it.userId }.toMutableMap()
 
-    //TODO val tournaments = MOCK_TOURNAMENTS.associateBy { it.id }.toMutableMap()
+    val tournaments = MOCK_TOURNAMENTS.associateBy { it.id }.toMutableMap()
 
     override fun isUserInDatabase(userId: String): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(unameToUid.containsValue(userId))
     }
 
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
-        TODO("Not yet implemented")
+        return CompletableFuture.completedFuture(tournaments.containsKey(tournamentId))
     }
 
     override fun getUsername(userId: String): CompletableFuture<String> {
@@ -398,25 +448,78 @@ class MockDatabase : Database() {
         TODO("Not yet implemented")
     }
 
+    override fun getTournamentUID(): String {
+        return mockTournamentUID++.toString()
+    }
+
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
-        TODO("Not yet implemented")
+        // Replaces if id already exists, which would happen with Firebase but should never happen as we generate unique ids.
+        tournaments[tournament.id] = tournament
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
+        //check if tournament exists, if not do nothing (no fail future)
+        if (!tournaments.contains(tournamentId)) {
+            return CompletableFuture.completedFuture(Unit)
+        }
+        // 1. remove the tournament from the list of tournaments of all participants
+        tournaments[tournamentId]!!.participants.forEach { userId ->
+            if (users.contains(userId)) {
+                val currentUser = users[userId]!!
+                users[userId] = currentUser.copy(
+                    tournaments = users[userId]!!.tournaments?.filter { it != tournamentId })
+            }
+        }
+        // 2. remove the tournament from the tournaments file
+        tournaments.remove(tournamentId)
+
+        return CompletableFuture.completedFuture(Unit)
     }
 
     override fun addUserToTournament(
         userId: String,
         tournamentId: String
     ): CompletableFuture<Unit> {
-        TODO("Not yet implemented")
-    }
+        // check that the userId and tournamentId exist
+        if (!users.contains(userId)) {
+            return userDoesntExist(userId)
+        }
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
 
-    override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
-        TODO("Not yet implemented")
+        // add tournament to user
+        val currentUser = users[userId]!!
+        users[userId] = currentUser.copy(
+            tournaments = ((currentUser.tournaments ?: emptyList()) + tournamentId)
+        )
+        // add user to tournament
+        val currentTournament = tournaments[tournamentId]!!
+        tournaments[tournamentId] = currentTournament.copy(
+            participants = (currentTournament.participants + userId)
+        )
+
+        return CompletableFuture.completedFuture(Unit)
     }
 
     override fun removeUserFromTournament(
         userId: String,
         tournamentId: String
     ): CompletableFuture<Unit> {
-        TODO("Not yet implemented")
+        // check that the userId and tournamentId exist and remove them if it's the case
+        if (users.contains(userId)) {
+            val currentUser = users[userId]!!
+            users[userId] = currentUser.copy(
+                tournaments = currentUser.tournaments?.filter { it != tournamentId }
+            )
+        }
+        if (tournaments.contains(tournamentId)) {
+            val currentTournament = tournaments[tournamentId]!!
+            tournaments[tournamentId] = currentTournament.copy(
+                participants = currentTournament.participants.filter { it != userId }
+            )
+        }
+        return CompletableFuture.completedFuture(Unit)
     }
 }

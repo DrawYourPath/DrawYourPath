@@ -82,7 +82,15 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
+    override fun getTournamentUID(): String? {
+        return null
+    }
+
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
         return failedFuture()
     }
 
@@ -93,15 +101,11 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
-        return failedFuture()
-    }
-
     override fun removeUserFromTournament(
         userId: String,
         tournamentId: String
     ): CompletableFuture<Unit> {
-        TODO("Not yet implemented")
+        return failedFuture()
     }
 
     private fun <T : Any> failedFuture(): CompletableFuture<T> {
