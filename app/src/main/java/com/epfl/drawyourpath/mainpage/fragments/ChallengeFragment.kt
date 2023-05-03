@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.*
-import com.epfl.drawyourpath.challenge.TournamentViewAdapter
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
@@ -57,7 +56,10 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
      */
     private fun setDailyGoalView(goalView: RecyclerView) {
         val dailyGoalAdapter =
-            DailyGoalViewAdapter({ user.updateDistanceGoal(it) }, { user.updateActivityTimeGoal(it) }, { user.updateNumberOfPathsGoal(it) })
+            DailyGoalViewAdapter(
+                { user.updateGoals(distanceGoal = it) },
+                { user.updateGoals(activityTimeGoal = it) },
+                { user.updateGoals(pathsGoal = it) })
         user.getTodayDailyGoal().observe(viewLifecycleOwner) {
             dailyGoalAdapter.updateDailyGoal(it)
         }

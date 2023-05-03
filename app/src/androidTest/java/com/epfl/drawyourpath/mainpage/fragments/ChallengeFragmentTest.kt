@@ -302,9 +302,6 @@ class ChallengeFragmentTest {
         scenario.close()
     }
 
-    // TODO: These tests are failing.
-    /*
-
     /**
      * test if the new time goal is correctly displayed when there is no today daily goal
      */
@@ -457,7 +454,6 @@ class ChallengeFragmentTest {
 
         scenario.close()
     }
-     */
 
     /**
      * helper function to perform a replaceText inside a RecyclerView

@@ -8,6 +8,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.google.android.gms.maps.model.LatLng
 import java.io.ByteArrayOutputStream
+import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -103,5 +104,56 @@ object Utils {
      */
     fun encodePhotoToString(photo: Bitmap, quality: Int = 50): String {
         return Base64.getEncoder().encodeToString(encodePhotoToByteArray(photo, quality))
+    }
+
+    /**
+     * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
+     * @param name to be check
+     * @param variableName to be checked
+     * @throw an error if the format is not correct
+     */
+    fun checkNameFormat(name: String, variableName: String) {
+        if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
+            throw Error("Incorrect $variableName \"$name\"")
+        }
+    }
+
+    /**
+     * Helper function to check if the email address is correct
+     * @param email to be checked
+     * @return true is the email is in the correct format, and false otherwise
+     */
+    fun checkEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    /**
+     * Helper function to check if the date of birth of the user respect the age condition of the app
+     * @param date of the user birth
+     * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
+     */
+    fun checkDateOfBirth(date: LocalDate) {
+        if (!(date < LocalDate.now().plusYears(-10) && date > LocalDate.now().plusYears(-100))) {
+            throw Error("Incorrect date of birth !")
+        }
+    }
+
+    /**
+     * Helper function to check if the goals are greater or equal than zero
+     * @param distanceGoal to be checked
+     * @param activityTimeGoal to be checked
+     * @param nbOfPathsGoal to be checked
+     * @throw an error if the goal is incorrect
+     */
+    fun checkGoals(distanceGoal: Double? = null, activityTimeGoal: Double? = null, nbOfPathsGoal: Int? = null) {
+        if (distanceGoal != null && distanceGoal <= 0.0) {
+            throw Error("The distance goal can't be equal or less than 0.")
+        }
+        if (activityTimeGoal != null && activityTimeGoal <= 0.0) {
+            throw Error("The activity time goal can't be equal or less than 0.")
+        }
+        if (nbOfPathsGoal != null && nbOfPathsGoal <= 0) {
+            throw Error("The number of paths goal can't be equal or less than 0.")
+        }
     }
 }

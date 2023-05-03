@@ -1,6 +1,8 @@
 package com.epfl.drawyourpath.userProfile.cache
 
+import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.arch.core.executor.testing.CountingTaskExecutorRule
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
@@ -14,6 +16,7 @@ import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.utils.drawyourpath.Utils
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
 import org.junit.Before
@@ -35,9 +38,11 @@ class UserModelCachedTest {
     @get:Rule
     var counting = CountingTaskExecutorRule()
 
+    private val applicationContext: Application = ApplicationProvider.getApplicationContext()
+
     private val mockDataBase = MockDatabase()
 
-    private val user: UserModelCached = UserModelCached(ApplicationProvider.getApplicationContext())
+    private val user: UserModelCached = UserModelCached(applicationContext)
 
     private val testUserModel = mockDataBase.mockUser
 
@@ -108,6 +113,21 @@ class UserModelCachedTest {
         assertEqualUser(newUser, user.getUser().getOrAwaitValue())
     }
 
+    @Test(expected = Error::class)
+    fun createUserWithInvalidFirstnameThrowError() {
+        user.createNewUser(UserProfile(newUser).copy(firstname = "c moi")).get(timeout, TimeUnit.SECONDS)
+    }
+
+    @Test(expected = Error::class)
+    fun createUserWithInvalidSurnameThrowError() {
+        user.createNewUser(UserProfile(newUser).copy(surname = "c moi")).get(timeout, TimeUnit.SECONDS)
+    }
+
+    @Test(expected = Error::class)
+    fun createUserWithInvalidBrithDateThrowError() {
+        user.createNewUser(UserProfile(newUser).copy(birthDate = LocalDate.now().minusYears(3))).get(timeout, TimeUnit.SECONDS)
+    }
+
     @Test
     fun setUsernameModifyUsername() {
         user.updateUsername(newUser.username!!).get(timeout, TimeUnit.SECONDS)
@@ -123,9 +143,14 @@ class UserModelCachedTest {
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
     }
 
+    @Test(expected = Error::class)
+    fun setInvalidDistanceGoalThrowError() {
+        user.updateGoals(distanceGoal = -1.0).get(timeout, TimeUnit.SECONDS)
+    }
+
     @Test
     fun setDistanceGoalModifyDistanceGoal() {
-        user.updateDistanceGoal(newUser.goals!!.distance!!).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(distanceGoal = newUser.goals!!.distance!!).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.goals!!.distance!!)
         assertEquals(newUser.dailyGoals!![0].copy(expectedDistance = newUser.goals!!.distance!!), user.getTodayDailyGoal().getOrAwaitValue())
@@ -134,15 +159,20 @@ class UserModelCachedTest {
     @Test
     fun setDistanceGoalWhenNoInternetDoesNotModifyDistanceGoal() {
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateDistanceGoal(newUser.goals!!.distance!!).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(distanceGoal = newUser.goals!!.distance!!).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         assertEquals(newUser.dailyGoals!![0], user.getTodayDailyGoal().getOrAwaitValue())
     }
 
+    @Test(expected = Error::class)
+    fun setInvalidActivityTimeGoalThrowError() {
+        user.updateGoals(activityTimeGoal = -1.0).get(timeout, TimeUnit.SECONDS)
+    }
+
     @Test
     fun setActivityTimeGoalModifyActivityTimeGoal() {
-        user.updateActivityTimeGoal(newUser.goals!!.activityTime!!).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(activityTimeGoal = newUser.goals!!.activityTime!!).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.goals!!.activityTime!!)
         assertEquals(newUser.dailyGoals!![0].copy(expectedTime = newUser.goals!!.activityTime!!), user.getTodayDailyGoal().getOrAwaitValue())
@@ -151,15 +181,20 @@ class UserModelCachedTest {
     @Test
     fun setActivityTimeGoalWhenNoInternetDoesNotModifyActivityTimeGoal() {
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateActivityTimeGoal(newUser.goals!!.activityTime!!).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(activityTimeGoal = newUser.goals!!.activityTime!!).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         assertEquals(newUser.dailyGoals!![0], user.getTodayDailyGoal().getOrAwaitValue())
     }
 
+    @Test(expected = Error::class)
+    fun setInvalidNumberOfPathThrowError() {
+        user.updateGoals(pathsGoal = -1).get(timeout, TimeUnit.SECONDS)
+    }
+
     @Test
     fun setNumberOfPathsGoalModifyNumberOfPathsGoal() {
-        user.updateNumberOfPathsGoal(newUser.goals!!.paths!!.toInt()).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(pathsGoal = newUser.goals!!.paths!!.toInt()).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.goals!!.paths!!.toInt())
         assertEquals(newUser.dailyGoals!![0].copy(expectedPaths = newUser.goals!!.paths!!.toInt()), user.getTodayDailyGoal().getOrAwaitValue())
@@ -168,7 +203,7 @@ class UserModelCachedTest {
     @Test
     fun setNumberOfPathsGoalWhenNoInternetDoesNotModifyNumberOfPathsGoal() {
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateNumberOfPathsGoal(newUser.goals!!.paths!!.toInt()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(pathsGoal = newUser.goals!!.paths!!.toInt()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         assertEquals(newUser.dailyGoals!![0], user.getTodayDailyGoal().getOrAwaitValue())
@@ -202,24 +237,25 @@ class UserModelCachedTest {
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         assertEquals(newUser.dailyGoals!![0], user.getTodayDailyGoal().getOrAwaitValue())
+        Log.d("test", user.getRunHistory().getOrAwaitValue().toString())
         assertEqualRun(testUserModel.runs!!, user.getRunHistory().getOrAwaitValue())
     }
 
     @Test
     fun setProfilePhotoModifyProfilePhoto() {
         user.updateProfilePhoto(newPicture).get(timeout, TimeUnit.SECONDS)
+        val compressedPhoto = Utils.decodePhotoOrGetDefault(Utils.encodePhotoToByteArray(newPicture), applicationContext.resources)
         waitUntilAllThreadAreDone()
-        // TODO
-        // assertNotNull(user.getUser().getOrAwaitValue().profilePhoto(res))
+        assert(user.getUser().getOrAwaitValue().profilePhoto(applicationContext.resources).sameAs(compressedPhoto))
     }
 
     @Test
     fun setProfilePhotoWhenNoInternetDoesNotModifyProfilePhoto() {
         user.setDatabase(MockNonWorkingDatabase())
         user.updateProfilePhoto(newPicture).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        val compressedPhoto = Utils.decodePhotoOrGetDefault(Utils.encodePhotoToByteArray(newPicture), applicationContext.resources)
         waitUntilAllThreadAreDone()
-        // TODO
-        // assertNull(user.getUser().getOrAwaitValue().profilePhoto(res))
+        assert(!user.getUser().getOrAwaitValue().profilePhoto(applicationContext.resources).sameAs(compressedPhoto))
     }
 
     @Before

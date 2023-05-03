@@ -149,25 +149,25 @@ class UserModel {
         this.username = username
 
         // check the format of the firstname
-        checkNameFormat(firstname, "firstname")
+        Utils.checkNameFormat(firstname, "firstname")
         this.firstname = firstname
 
         // check the format of the surname
-        checkNameFormat(surname, "surname")
+        Utils.checkNameFormat(surname, "surname")
         this.surname = surname
 
         // check that the birth date respect the age condition of the app(10<=age<=100)
-        checkDateOfBirth(dateOfBirth)
+        Utils.checkDateOfBirth(dateOfBirth)
         this.dateOfBirth = dateOfBirth
 
         // test the goals, the goals can't be equal or less than 0
-        checkDistanceGoal(distanceGoal)
+        Utils.checkGoals(distanceGoal = distanceGoal)
         this.currentDistanceGoal = distanceGoal
 
-        checkActivityTimeGoal(activityTimeGoal)
+        Utils.checkGoals(activityTimeGoal = activityTimeGoal)
         this.currentActivityTimeGoal = activityTimeGoal
 
-        checkNbOfPathsGoal(nbOfPathsGoal)
+        Utils.checkGoals(nbOfPathsGoal = nbOfPathsGoal)
         this.currentNbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = ArrayList()
@@ -229,25 +229,25 @@ class UserModel {
         this.username = username
 
         // check the format of the firstname
-        checkNameFormat(firstname, "firstname")
+        Utils.checkNameFormat(firstname, "firstname")
         this.firstname = firstname
 
         // check the format of the surname
-        checkNameFormat(surname, "surname")
+        Utils.checkNameFormat(surname, "surname")
         this.surname = surname
 
         // check that the birth date respect the age condition of the app(10<=age<=100)
-        checkDateOfBirth(dateOfBirth)
+        Utils.checkDateOfBirth(dateOfBirth)
         this.dateOfBirth = dateOfBirth
 
         // test the goals, the goals can't be equal or less than 0
-        checkDistanceGoal(distanceGoal)
+        Utils.checkGoals(distanceGoal = distanceGoal)
         this.currentDistanceGoal = distanceGoal
 
-        checkActivityTimeGoal(activityTimeGoal)
+        Utils.checkGoals(activityTimeGoal = activityTimeGoal)
         this.currentActivityTimeGoal = activityTimeGoal
 
-        checkNbOfPathsGoal(nbOfPathsGoal)
+        Utils.checkGoals(nbOfPathsGoal = nbOfPathsGoal)
         this.currentNbOfPathsGoal = nbOfPathsGoal
 
         this.friendsList = friendsList
@@ -345,7 +345,7 @@ class UserModel {
      * @param distanceGoal new daily distance goal
      */
     fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
-        checkDistanceGoal(distanceGoal)
+        Utils.checkGoals(distanceGoal = distanceGoal)
         return database.setGoals(getUserId(), UserGoals(distance = distanceGoal)).thenApply {
             this.currentDistanceGoal = distanceGoal
         }
@@ -364,7 +364,7 @@ class UserModel {
      * @param activityTimeGoal new daily activity time goal
      */
     fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
-        checkActivityTimeGoal(activityTimeGoal)
+        Utils.checkGoals(activityTimeGoal = activityTimeGoal)
         return database.setGoals(getUserId(), UserGoals(activityTime = activityTimeGoal)).thenApply {
             this.currentActivityTimeGoal = activityTimeGoal
         }
@@ -383,7 +383,7 @@ class UserModel {
      * @param nbOfPathsGoal new daily number of paths goal
      */
     fun setCurrentNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
-        checkNbOfPathsGoal(nbOfPathsGoal)
+        Utils.checkGoals(nbOfPathsGoal = nbOfPathsGoal)
         return database.setGoals(getUserId(), UserGoals(paths = nbOfPathsGoal.toLong())).thenApply {
             this.currentNbOfPathsGoal = nbOfPathsGoal
         }
@@ -565,74 +565,4 @@ class UserModel {
             }
     }
 
-    companion object {
-        /**
-         * Helper function to check if the name format of a given variableName is correct and throw directly an error if it is incorrect
-         * @param name to be check
-         * @param variableName to be checked
-         * @throw an error if the format is not correct
-         */
-        fun checkNameFormat(name: String, variableName: String) {
-            if (name.find { !it.isLetter() && it != '-' } != null || name.isEmpty()) {
-                throw java.lang.Error("Incorrect $variableName \"$name\"")
-            }
-        }
-
-        /**
-         * Helper function to check if the email address is correct
-         * @param email to be checked
-         * @return true is the email is in the correct format, and false otherwise
-         */
-        fun checkEmail(email: String): Boolean {
-            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-        }
-
-        /**
-         * Helper function to check if the date of birth of the user respect the age condition of the app
-         * @param date of the user birth
-         * @throw an error if the age of the user give by the birth date don't respect the ge condition of the app
-         */
-        fun checkDateOfBirth(date: LocalDate) {
-            if (!(
-                    date < LocalDate.now().plusYears(-10) && date > LocalDate.now()
-                        .plusYears(-100)
-                    )
-            ) {
-                throw java.lang.Error("Incorrect date of birth !")
-            }
-        }
-
-        /**
-         * Helper function to check if the distance goal is greater or equal than zero
-         * @param distanceGoal to be checked
-         * @throw an error if the goal is incorrect
-         */
-        fun checkDistanceGoal(distanceGoal: Double) {
-            if (distanceGoal <= 0.0) {
-                throw java.lang.Error("The distance goal can't be equal or less than 0.")
-            }
-        }
-
-        /**
-         * Helper function to check if the activity time goal is greater or equal than zero
-         * @param activityTimeGoal to be checked
-         * @throw an error if the goal is incorrect
-         */
-        fun checkActivityTimeGoal(activityTimeGoal: Double) {
-            if (activityTimeGoal <= 0.0) {
-                throw java.lang.Error("The activity time goal can't be equal or less than 0.")
-            }
-        }
-
-        /**
-         * Helper function to check if the number of paths goal is greater or equal than zero
-         * @param nbOfPathsGoal to be checked
-         * @throw an error if the goal is incorrect
-         */
-        fun checkNbOfPathsGoal(nbOfPathsGoal: Int) {
-            if (nbOfPathsGoal <= 0) {
-                throw java.lang.Error("The number of paths goal can't be equal or less than 0.")
-            }
-        }
-    }
 }

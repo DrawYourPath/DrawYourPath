@@ -7,6 +7,7 @@ import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.utils.drawyourpath.Utils
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
@@ -27,11 +28,11 @@ class MockDatabase : Database() {
         firstname = "testfirstnamemock",
         picture = "1234567890",
         runs = listOf(
-            /*Run(
+            Run(
                 startTime = 10,
                 endTime = 20,
-                path = Path()
-            )*/
+                path = Path(listOf(LatLng(46.51854301997813, 6.56237289547834)))
+            )
         ),
         dailyGoals = listOf(
             DailyGoal(

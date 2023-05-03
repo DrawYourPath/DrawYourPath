@@ -77,6 +77,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun createNewUser(userProfile: UserProfile): CompletableFuture<Unit> {
         setUserId(userProfile.userId)
+        Utils.checkNameFormat(userProfile.firstname, "firstname")
+        Utils.checkNameFormat(userProfile.surname, "surname")
+        Utils.checkDateOfBirth(userProfile.birthDate)
         return CompletableFuture.supplyAsync {
             userCache.insertAll(
                 UserEntity(userProfile),
@@ -187,64 +190,26 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * * // TODO: Code duplication for with updateActivityTimeGoal etc. refactor.
-     * Use this function to modify the daily distance goal of the user
+     * Use this function to modify the daily goals of the user
      * @param distanceGoal new daily distance goal
+     * @param activityTimeGoal new daily time goal
+     * @param pathsGoal new daily paths goal
      */
-    fun updateDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
+    fun updateGoals(distanceGoal: Double? = null, activityTimeGoal: Double? = null, pathsGoal: Int? = null): CompletableFuture<Unit> {
         checkCurrentUser()
-        UserModel.checkDistanceGoal(distanceGoal)
-        return database.setGoals(currentUserID!!, UserGoals(distance = distanceGoal))
+        Utils.checkGoals(distanceGoal, activityTimeGoal, pathsGoal)
+        return database.setGoals(currentUserID!!, UserGoals(distance = distanceGoal, activityTime = activityTimeGoal, paths = pathsGoal?.toLong()))
             .thenApplyAsync {
-                dailyGoalCache.updateDistanceGoal(
+                dailyGoalCache.updateGoals(
                     currentUserID!!,
                     LocalDate.now().toEpochDay(),
                     distanceGoal,
+                    activityTimeGoal,
+                    pathsGoal,
                 )
             }.thenComposeAsync {
                 database.addDailyGoal(currentUserID!!, DailyGoal(it))
             }
-    }
-
-    /**
-     * * // TODO: Code duplication for with updateActivityTimeGoal etc. refactor.
-     * Use this function to modify the daily activity time goal of the user
-     * @param activityTimeGoal new daily activity time goal
-     */
-    fun updateActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
-        checkCurrentUser()
-        UserModel.checkActivityTimeGoal(activityTimeGoal)
-        return database.setGoals(
-            currentUserID!!,
-            UserGoals(activityTime = activityTimeGoal),
-        ).thenApplyAsync {
-            dailyGoalCache.updateTimeGoal(
-                currentUserID!!,
-                LocalDate.now().toEpochDay(),
-                activityTimeGoal,
-            )
-        }.thenComposeAsync {
-            database.addDailyGoal(currentUserID!!, DailyGoal(it))
-        }
-    }
-
-    /**
-     * // TODO: Code duplication for with updateActivityTimeGoal etc. refactor.
-     * Use this function to modify the daily number of paths goal of the user
-     * @param nbOfPathsGoal new daily number of paths goal
-     */
-    fun updateNumberOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
-        checkCurrentUser()
-        UserModel.checkNbOfPathsGoal(nbOfPathsGoal)
-        return database.setGoals(currentUserID!!, UserGoals(paths = nbOfPathsGoal.toLong())).thenApplyAsync {
-            dailyGoalCache.updatePathsGoal(
-                currentUserID!!,
-                LocalDate.now().toEpochDay(),
-                nbOfPathsGoal,
-            )
-        }.thenComposeAsync {
-            database.addDailyGoal(currentUserID!!, DailyGoal(it))
-        }
     }
 
     /**
