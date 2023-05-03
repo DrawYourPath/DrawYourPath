@@ -15,7 +15,8 @@
     <FrameLayout
         android:id="@+id/path_drawing_main_performance"
         android:layout_width="match_parent"
-        android:layout_height="125dp">
+        android:layout_height="wrap_content"
+        android:minHeight="125dp">
     </FrameLayout>
     <FrameLayout
         android:id="@+id/path_drawing_main_buttons"

@@ -44,7 +44,7 @@ class Run(
     private var timeForOneKilometer: Long = 0L
 
     private fun calculateTimeForOneKilometer() {
-        timeForOneKilometer = (averageSpeed * 1000).toLong()
+        timeForOneKilometer = (1000/averageSpeed).toLong()
     }
 
     private fun calculateAverageSpeed() {

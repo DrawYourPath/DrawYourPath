@@ -36,7 +36,10 @@ class PathDrawingDetailPerformanceFragment(private val run: Run) : Fragment(R.la
         textStartTime.text = getStringTimeStartEnd(run.getStartTime())
         textEndTime.text = getStringTimeStartEnd(run.getEndTime())
         textDistance.text = getStringDistance(run.getDistance())
-        textTimePerKm.text = getStringDuration(run.getTimeForOneKilometer())
+        val maxTime = 24*60*60
+        var time1km: Long = run.getTimeForOneKilometer()
+        if(run.getTimeForOneKilometer()>=maxTime){ time1km = (maxTime-1).toLong()}
+        textTimePerKm.text = getStringDuration(time1km as Long)
         textSpeed.text = getStringSpeed(run.getAverageSpeed())
         textCalories.text = run.getCalories().toString()
     }

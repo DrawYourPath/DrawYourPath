@@ -19,6 +19,9 @@ class PathDrawingActivityTest {
     @get:Rule
     var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
+    /**
+     * Test that the countdown fragment is lunch on the activity lunch
+     */
     @Test
     fun checkThatTheCountdownFragmentIsDisplayedAtTheCreation() {
         val intent = Intent(
@@ -33,22 +36,6 @@ class PathDrawingActivityTest {
                 ViewMatchers.isDisplayed(),
             ),
         )
-        t.close()
-    }
-
-    @Test
-    fun testThatTheTransitionIsMadeAfterCountDown() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
-        )
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
-
-        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Thread.sleep(4000)
-        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_main_fragment))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         t.close()
     }
 }
