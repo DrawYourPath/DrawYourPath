@@ -18,7 +18,7 @@ data class RunEntity(
 
     @ColumnInfo("start_time") val startTime: Long,
 
-    @ColumnInfo("end_time") val endTime: Long
+    @ColumnInfo("end_time") val endTime: Long,
 ) {
     companion object {
         /**
@@ -29,11 +29,18 @@ data class RunEntity(
          */
         fun fromRunsToEntities(userId: String, runs: List<Run>): List<Pair<RunEntity, List<PointsEntity>>> {
             return runs.map { run ->
-                Pair(RunEntity(userId, run.getStartTime(), run.getEndTime()), run.getPath().getPoints().mapIndexed { index, point ->
-                    PointsEntity(
-                        userId, run.getStartTime(), index, point.latitude, point.longitude
-                    )
-                })
+                Pair(
+                    RunEntity(userId, run.getStartTime(), run.getEndTime()),
+                    run.getPath().getPoints().mapIndexed { index, point ->
+                        PointsEntity(
+                            userId,
+                            run.getStartTime(),
+                            index,
+                            point.latitude,
+                            point.longitude,
+                        )
+                    },
+                )
             }
         }
 
