@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,8 @@ import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
 import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
+import com.epfl.utils.drawyourpath.Utils
 
 // TODO: Refactor this file
 
@@ -69,7 +72,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
             launchLoginActivity(requireActivity())
             return
         }
-        user = currentUser
 
         // TODO: Migrate away from UserModel and refactor
         // Initialize the ViewModel
@@ -77,10 +79,8 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
         userAccountFuture.thenApply { userdata ->
 
-            val userModel = UserModel(userdata)
-
             // Initialize the ViewModel with the userModel
-            val factory = FriendsViewModelFactory(userModel, this.database)
+            val factory = FriendsViewModelFactory(userdata.userId!!, this.database)
             viewModel = ViewModelProvider(this, factory)[FriendsViewModel::class.java]
 
             // Update the adapter with the fetched data
@@ -113,15 +113,13 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                     Log.i("Friends", "Uid of $query is $userId")
                                     database.getUserData(currentUser.getUid())
                                         .thenApply { loggedUserdata ->
-                                            val loggedUserModel = UserModel(loggedUserdata)
-                                            if (userId != loggedUserModel.getUserId()) {
+                                            if (userId != loggedUserdata.userId!!) {
                                                 database.getUserData(userId)
                                                     .thenApply { userdata ->
-                                                        val userModel = UserModel(userdata)
                                                         val newFriend = Friend(
                                                             userdata.userId!!,
-                                                            userModel.getUsername(),
-                                                            userModel.getProfilePhoto(),
+                                                            userdata.username!!,
+                                                            Utils.decodePhotoOrGetDefault(userdata.picture, resources),
                                                             false,
                                                         )
 

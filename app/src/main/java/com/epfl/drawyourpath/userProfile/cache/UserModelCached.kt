@@ -10,7 +10,6 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.cache.RunEntity
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
