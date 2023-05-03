@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.community
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.widget.DatePicker
@@ -17,8 +18,10 @@ import androidx.test.espresso.contrib.PickerActions.setTime
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
@@ -27,6 +30,8 @@ import java.time.LocalTime
 
 @RunWith(AndroidJUnit4::class)
 class TournamentCreationFragmentTest {
+    @get:Rule
+    var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     private fun launchFragmentFromMainActivity(
         workingDB: Boolean,
@@ -35,13 +40,12 @@ class TournamentCreationFragmentTest {
         Intents.init()
 
         val argDB = if (workingDB) "USE_WORKING_MOCK_DB" else "USE_FAILING_MOCK_DB"
-        val argAuth = if (workingAuth) "USE_WORKING_MOCK_UTH" else "USE_FAILING_MOCK_AUTH"
+        val argAuth = if (workingAuth) "USE_WORKING_MOCK_AUTH" else "USE_FAILING_MOCK_AUTH"
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         intent.putExtra("Database", argDB)
         intent.putExtra("Auth", argAuth)
 
         val scenario: ActivityScenario<MainActivity> = launch(intent)
-        //Thread.sleep(1000) //seems to bug otherwise...
         onView(withId(R.id.community_menu_item)).perform(click())
         onView(withId(R.id.community_menu_button)).perform(click())
         onView(withText(R.string.create_new_tournament)).perform(click())
@@ -55,7 +59,7 @@ class TournamentCreationFragmentTest {
     ): FragmentScenario<TournamentCreationFragment> {
         val args = Bundle()
         val argDB = if (workingDB) "USE_WORKING_MOCK_DB" else "USE_FAILING_MOCK_DB"
-        val argAuth = if (workingAuth) "USE_WORKING_MOCK_UTH" else "USE_FAILING_MOCK_AUTH"
+        val argAuth = if (workingAuth) "USE_WORKING_MOCK_AUTH" else "USE_FAILING_MOCK_AUTH"
         args.putBoolean(argDB, true)
         args.putBoolean(argAuth, true)
         return FragmentScenario.launchInContainer(
@@ -203,8 +207,8 @@ class TournamentCreationFragmentTest {
 
         onView(withId(R.id.fragment_community)).check(matches(isDisplayed()))
 
-        Intents.release()
         scenario.close()
+        Intents.release()
     }
 
     @Test
