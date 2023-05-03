@@ -153,12 +153,12 @@ class TournamentCreationFragmentTest {
     }
 
     private fun typeTitle(title: String) {
-        onView(withId(R.id.tournament_creation_title)).perform(scrollTo(), typeText(title))
+        onView(withId(R.id.tournament_creation_title)).perform(scrollTo(), replaceText(title))
         closeSoftKeyboard()
     }
 
     private fun typeDescription(description: String) {
-        onView(withId(R.id.tournament_creation_description)).perform(scrollTo(), typeText(description))
+        onView(withId(R.id.tournament_creation_description)).perform(scrollTo(), replaceText(description))
         closeSoftKeyboard()
     }
 

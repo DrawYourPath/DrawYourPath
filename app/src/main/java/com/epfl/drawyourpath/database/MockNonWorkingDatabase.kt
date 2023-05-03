@@ -1,8 +1,8 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.util.concurrent.CompletableFuture
 
@@ -10,11 +10,11 @@ import java.util.concurrent.CompletableFuture
  * this class is used for testing and will always return failed futures
  */
 class MockNonWorkingDatabase : Database() {
-    override fun isUserStoredInDatabase(userId: String): CompletableFuture<Boolean> {
+    override fun isUserInDatabase(userId: String): CompletableFuture<Boolean> {
         return failedFuture()
     }
 
-    override fun getUsernameFromUserId(userId: String): CompletableFuture<String> {
+    override fun getUsername(userId: String): CompletableFuture<String> {
         return failedFuture()
     }
 
@@ -26,63 +26,107 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun updateUsername(username: String): CompletableFuture<Unit> {
+    override fun setUsername(userId: String, username: String): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setUsername(username: String): CompletableFuture<Unit> {
+    override fun createUser(userId: String, userData: UserData): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun initUserProfile(userModel: UserModel): CompletableFuture<Unit> {
+    override fun setUserData(userId: String, userData: UserData): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun getUserAccount(userId: String): CompletableFuture<UserModel> {
+    override fun getUserData(userId: String): CompletableFuture<UserData> {
         return failedFuture()
     }
 
-    override fun getLoggedUserAccount(): CompletableFuture<UserModel> {
+    override fun setGoals(userId: String, goals: UserGoals): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setCurrentDistanceGoal(distanceGoal: Double): CompletableFuture<Unit> {
+    override fun setProfilePhoto(userId: String, photo: Bitmap): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setCurrentActivityTimeGoal(activityTimeGoal: Double): CompletableFuture<Unit> {
+    override fun addFriend(userId: String, targetFriend: String): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setCurrentNbOfPathsGoal(nbOfPathsGoal: Int): CompletableFuture<Unit> {
+    override fun removeFriend(userId: String, targetFriend: String): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun setProfilePhoto(photo: Bitmap): CompletableFuture<Unit> {
+    override fun addRunToHistory(userId: String, run: Run): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun addUserToFriendsList(userId: String): CompletableFuture<Unit> {
+    override fun removeRunFromHistory(userId: String, run: Run): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun removeUserFromFriendlist(userId: String): CompletableFuture<Unit> {
+    override fun addDailyGoal(userId: String, dailyGoal: DailyGoal): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun addRunToHistory(run: Run): CompletableFuture<Unit> {
+    override fun updateUserAchievements(
+        userId: String,
+        distanceDrawing: Double,
+        activityTimeDrawing: Double,
+    ): CompletableFuture<Unit> {
         return failedFuture()
     }
 
-    override fun removeRunFromHistory(run: Run): CompletableFuture<Unit> {
+    override fun createChatConversation(
+        name: String,
+        membersList: List<String>,
+        creatorId: String,
+        welcomeMessage: String,
+    ): CompletableFuture<String> {
         return failedFuture()
     }
 
-    override fun addDailyGoal(dailyGoal: DailyGoal): CompletableFuture<Unit> {
+    override fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview> {
         return failedFuture()
     }
 
-    override fun updateUserAchievements(distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit> {
+    override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun getChatMemberList(conversationId: String): CompletableFuture<List<String>> {
+        return failedFuture()
+    }
+
+    override fun addChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun removeChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
+        return failedFuture()
+    }
+
+    override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun removeChatMessage(
+        conversationId: String,
+        messageId: Long,
+    ): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun modifyChatTextMessage(
+        conversationId: String,
+        messageId: Long,
+        message: String,
+    ): CompletableFuture<Unit> {
         return failedFuture()
     }
 

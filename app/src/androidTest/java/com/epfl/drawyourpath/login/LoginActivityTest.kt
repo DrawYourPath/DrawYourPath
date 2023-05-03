@@ -289,17 +289,17 @@ class LoginActivityTest {
         onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
 
         // Invalid email
-        onView(withId(R.id.ET_Email)).perform(ViewActions.typeText("inv"))
+        onView(withId(R.id.ET_Email)).perform(ViewActions.replaceText("inv"))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
 
         // Empty password
-        onView(withId(R.id.ET_Email)).perform(ViewActions.typeText("alid@domain.org"))
+        onView(withId(R.id.ET_Email)).perform(ViewActions.replaceText("alid@domain.org"))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
 
         // Invalid password
-        onView(withId(R.id.ET_Password)).perform(ViewActions.typeText("a"))
+        onView(withId(R.id.ET_Password)).perform(ViewActions.replaceText("a"))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.BT_RegisterEmail)).perform(ViewActions.click())
 
@@ -317,17 +317,17 @@ class LoginActivityTest {
         onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
 
         // Invalid email
-        onView(withId(R.id.ET_Email)).perform(ViewActions.typeText("inv"))
+        onView(withId(R.id.ET_Email)).perform(ViewActions.replaceText("inv"))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
 
         // Empty password
-        onView(withId(R.id.ET_Email)).perform(ViewActions.typeText("alid@domain.org"))
+        onView(withId(R.id.ET_Email)).perform(ViewActions.replaceText("alid@domain.org"))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
 
         // Invalid password
-        onView(withId(R.id.ET_Password)).perform(ViewActions.typeText("a"))
+        onView(withId(R.id.ET_Password)).perform(ViewActions.replaceText("a"))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.BT_LoginEmail)).perform(ViewActions.click())
 

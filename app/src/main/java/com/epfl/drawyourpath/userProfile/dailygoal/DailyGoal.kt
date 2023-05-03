@@ -6,12 +6,12 @@ import java.time.LocalDate
  * class representing the Daily Goal that the user set
  */
 data class DailyGoal(
-    var distanceInKilometerGoal: Double,
-    var activityTimeInMinutesGoal: Double,
-    var nbOfPathsGoal: Int,
-    var distanceInKilometerProgress: Double = 0.0,
-    var activityTimeInMinutesProgress: Double = 0.0,
-    var nbOfPathsProgress: Int = 0,
+    var expectedDistance: Double,
+    var expectedTime: Double,
+    var expectedPaths: Int,
+    var distance: Double = 0.0,
+    var time: Double = 0.0,
+    var paths: Int = 0,
     val date: LocalDate = LocalDate.now(),
 ) {
 
@@ -21,7 +21,7 @@ data class DailyGoal(
      * @return a new DailyGoal
      */
     fun createNewGoalFromThis(): DailyGoal {
-        return DailyGoal(this.distanceInKilometerGoal, this.activityTimeInMinutesGoal, this.nbOfPathsGoal)
+        return DailyGoal(this.expectedDistance, this.expectedTime, this.expectedPaths)
     }
 
     /**
@@ -42,12 +42,12 @@ data class DailyGoal(
         return DailyGoalEntity(
             userId,
             DailyGoalEntity.fromLocalDateToLong(date),
-            distanceInKilometerGoal,
-            activityTimeInMinutesGoal,
-            nbOfPathsGoal,
-            distanceInKilometerProgress,
-            activityTimeInMinutesProgress,
-            nbOfPathsProgress,
+            expectedDistance,
+            expectedTime,
+            expectedPaths,
+            distance,
+            time,
+            paths,
         )
     }
 
