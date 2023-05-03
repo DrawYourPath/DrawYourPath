@@ -2,8 +2,8 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.epfl.utils.drawyourpath.Utils
 import com.epfl.drawyourpath.chat.Message
+import com.epfl.utils.drawyourpath.Utils
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
