@@ -12,7 +12,6 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
-import com.epfl.drawyourpath.pathDrawing.PathDrawingActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
