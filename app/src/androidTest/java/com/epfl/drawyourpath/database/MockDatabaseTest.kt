@@ -818,7 +818,7 @@ class MockDatabaseTest {
     }
 
     /**
-     * Test that a message in the preview is correctly deleted
+     * Test that a message in the conversation preview is correctly deleted
      */
     @Test
     fun removeChatMessageInPreviewCorrectly() {
