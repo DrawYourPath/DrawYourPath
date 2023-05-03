@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.pathDrawing
 
-import android.view.View
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
@@ -31,22 +30,22 @@ class PathDrawingMainFragmentTest {
         // check that the map is displayed
         Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        //check that the sports information displayed
+        // check that the sports information displayed
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_sport_data_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        //check the time displayed
-        val expectedTimeStr:String = displayedDuration(mockRun.getDuration())
+        // check the time displayed
+        val expectedTimeStr: String = displayedDuration(mockRun.getDuration())
         Espresso.onView(ViewMatchers.withId(R.id.display_time))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedTimeStr)))
-        //check the speed displayed
+        // check the speed displayed
         val expectedSpeed: String = ((mockRun.getAverageSpeed() * 100.0).roundToInt() / 100.0).toString()
         Espresso.onView(ViewMatchers.withId(R.id.display_speed))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedSpeed)))
-        val expectedDistance: String = ((mockRun.getDistance() / 10.0).roundToInt() / 100.0).toString() //converted in km
+        val expectedDistance: String = ((mockRun.getDistance() / 10.0).roundToInt() / 100.0).toString() // converted in km
         Espresso.onView(ViewMatchers.withId(R.id.display_distance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedDistance)))
 
-        //check that the stop button is displayed
+        // check that the stop button is displayed
         Espresso.onView(ViewMatchers.withId(R.id.pause_drawing_button))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         scenario.close()

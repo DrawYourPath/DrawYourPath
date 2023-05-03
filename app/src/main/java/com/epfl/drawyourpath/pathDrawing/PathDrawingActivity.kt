@@ -8,8 +8,6 @@ import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
-import com.epfl.drawyourpath.userProfileCreation.PROFILE_TEST_KEY
-import com.epfl.drawyourpath.userProfileCreation.SelectUsernameFragment
 
 class PathDrawingActivity : AppCompatActivity() {
     private val userCached: UserModelCached by viewModels()

@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.pathDrawing
 
 import android.content.Intent
-import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso

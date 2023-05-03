@@ -2,9 +2,7 @@ package com.epfl.drawyourpath.pathDrawing
 
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -25,7 +23,7 @@ class PathDrawingCountDownFragment : Fragment(R.layout.fragment_path_drawing_cou
             }
 
             override fun onFinish() {
-                if(activity!=null){
+                if (activity != null) {
                     displayedMainDrawFragment()
                 }
             }
@@ -35,7 +33,7 @@ class PathDrawingCountDownFragment : Fragment(R.layout.fragment_path_drawing_cou
     /**
      * Helper function to displayed the main draw fragment
      */
-    private fun displayedMainDrawFragment(){
+    private fun displayedMainDrawFragment() {
         // lunch the fragment to draw a path
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.contentFragmentPathDrawing, PathDrawingMainFragment(isDrawing = true)).commit()
