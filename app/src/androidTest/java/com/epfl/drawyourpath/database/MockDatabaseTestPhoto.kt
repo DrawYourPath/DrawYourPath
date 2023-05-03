@@ -7,9 +7,6 @@ import com.epfl.drawyourpath.chat.Message
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneOffset
 
 @RunWith(AndroidJUnit4::class)
 class MockDatabaseTestPhoto {

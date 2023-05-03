@@ -867,10 +867,11 @@ class MockDatabaseTest {
         assertEquals(database.MOCK_CHAT_PREVIEWS[0], database.chatPreviews[conversationId])
     }
 }
+
 /**
  * Get current date and time in epoch seconds
  * @return current dte and time in epoch seconds
  */
-fun getCurrentDateTimeInEpochSeconds(): Long{
+fun getCurrentDateTimeInEpochSeconds(): Long {
     return LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
 }
