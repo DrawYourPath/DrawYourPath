@@ -37,10 +37,11 @@ class PathDrawingEndFragment(private val run: Run) : Fragment(R.layout.fragment_
             returnBackToMenu()
         }
     }
+
     /**
      * Helper function to setup the path preview on the map in correct place of the fragment
      */
-    private fun setupPathPreview(){
+    private fun setupPathPreview() {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.path_drawing_end_map, MapFragment(focusedOnPosition = false, path = run.getPath()))
         fragTransaction.commit()
@@ -49,7 +50,7 @@ class PathDrawingEndFragment(private val run: Run) : Fragment(R.layout.fragment_
     /**
      * Helper function to setup the preview of the performance data of the user in correct place of the fragment
      */
-    private fun setupPerformancePreview(){
+    private fun setupPerformancePreview() {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.path_drawing_end_performance, PathDrawingDetailPerformanceFragment(run = run))
         fragTransaction.commit()
@@ -58,7 +59,7 @@ class PathDrawingEndFragment(private val run: Run) : Fragment(R.layout.fragment_
     /**
      * Helper function to return back to the main menu of the app
      */
-    private fun returnBackToMenu(){
+    private fun returnBackToMenu() {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra(MainActivity.EXTRA_USER_ID, userCached.getUserId())
         this.startActivity(intent)

@@ -30,11 +30,11 @@ class PathDrawingMainFragmentTest {
         // check that the map is displayed
         Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        //check that the sports information displayed
+        // check that the sports information displayed
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_current_performance_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        //check the time displayed
-        val expectedTimeStr:String = displayedDuration(mockRun.getDuration())
+        // check the time displayed
+        val expectedTimeStr: String = displayedDuration(mockRun.getDuration())
         Espresso.onView(ViewMatchers.withId(R.id.display_time_current_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedTimeStr)))
         // check the speed displayed
