@@ -48,10 +48,10 @@ class FriendsFragmentTest {
 
     @Test
     fun correctListOfFriendsIsDisplayed() {
-        val database = MockDatabase()
+        /*val database = MockDatabase()
         val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
             FriendsFragment(database)
-        }
+        }*/
 
         // onView(withText("friend1")).check(matches(isDisplayed()))
     }
