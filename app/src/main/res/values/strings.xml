@@ -112,4 +112,8 @@
     <string name="progress_over_goal">%.3f/%.0f</string>
     <string name="progress_over_goal_path">%.0f/%.0f</string>
     <string name="welcome_chat_message">Welcome to the %s conversation !</string>
+    <string name="hint_enter_message">enter message</string>
+    <string name="desc_send_image">send image</string>
+    <string name="desc_send_run">share run</string>
+    <string name="desc_send_message">send message</string>
 </resources>
