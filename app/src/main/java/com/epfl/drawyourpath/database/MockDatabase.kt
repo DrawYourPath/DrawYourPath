@@ -44,6 +44,15 @@ class MockDatabase : Database() {
                 expectedDistance = 10.0,
                 time = 10.0,
             ),
+            DailyGoal(
+                paths = 1,
+                distance = 3.0,
+                expectedTime = 20.0,
+                expectedPaths = 10,
+                date = LocalDate.of(2022, 1, 1),
+                expectedDistance = 10.0,
+                time = 2.0,
+            ),
         ),
         friendList = listOf("0", "1"),
     )

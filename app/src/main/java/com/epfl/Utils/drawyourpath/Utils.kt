@@ -36,8 +36,13 @@ object Utils {
      * @return the photo in bitmap format, and null if no photo is stored on the database
      */
     fun decodePhoto(photoStr: String): Bitmap {
-        val tabByte = Base64.getDecoder().decode(photoStr as String)
-        return BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+        return try {
+            val tabByte = Base64.getDecoder().decode(photoStr)
+            BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+        } catch (e: Throwable) {
+            // Returns an empty bitmap
+            Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        }
     }
 
     /**
