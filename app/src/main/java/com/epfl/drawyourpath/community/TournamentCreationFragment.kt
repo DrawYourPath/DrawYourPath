@@ -7,7 +7,14 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.DatePicker
+import android.widget.ImageButton
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
+import android.widget.TimePicker
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -29,6 +36,7 @@ import java.time.temporal.ChronoUnit
 
 class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creation) {
 
+    //Keep track of the context in futures
     private lateinit var mActivity: Activity
 
     private lateinit var title: TextView
@@ -87,18 +95,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
                 checkTournamentConstraints(view) ?: return@setOnClickListener
 
             // get the auth and database (could be mock)
-            val database: Database
-            val auth: Auth
-            if (arguments?.getBoolean("USE_WORKING_MOCK", false) == true) {
-                database = MockDatabase()
-                auth = MockAuth(forceSigned = true)
-            } else if (arguments?.getBoolean("USE_FAILING_MOCK", false) == true) {
-                database = MockNonWorkingDatabase()
-                auth = MockAuth()
-            } else {
-                database = FirebaseDatabase()
-                auth = FirebaseAuth()
-            }
+            val database = getDatabase()
+            val auth = getAuth()
 
             // get the id of the creator of the tournament from auth
             val creatorId = auth.getUser()?.getUid()
@@ -122,6 +120,29 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             // get back to community fragment without waiting for database
             replaceFragment<CommunityFragment>()
 
+        }
+    }
+
+    /**
+     * Helper function that returns a database based on the arguments passed to
+     */
+    private fun getDatabase(): Database {
+        return if (arguments?.getBoolean("USE_WORKING_MOCK_DB", false) == true) {
+            MockDatabase()
+        } else if (arguments?.getBoolean("USE_FAILING_MOCK_DB", false) == true) {
+            MockNonWorkingDatabase()
+        } else {
+            FirebaseDatabase()
+        }
+    }
+
+    private fun getAuth(): Auth {
+        return if (arguments?.getBoolean("USE_WORKING_MOCK_AUTH", false) == true) {
+            MockAuth(forceSigned = true)
+        } else if (arguments?.getBoolean("USE_FAILING_MOCK_AUTH", false) == true) {
+            MockAuth()
+        } else {
+            FirebaseAuth()
         }
     }
 
@@ -267,7 +288,9 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
      *
      */
     private fun getVisibility(radioButton: RadioButton): Tournament.Visibility {
-        return Tournament.Visibility.valueOf(radioButton.text.toString().uppercase().replace(" ", "_"))
+        return Tournament.Visibility.valueOf(
+            radioButton.text.toString().uppercase().replace(" ", "_")
+        )
     }
 
     /**
@@ -343,7 +366,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         private const val DATE_SEPARATOR = " / "
         private const val TIME_SEPARATOR = " : "
         private val DEFAULT_START_DATE = LocalDate.now()
-        private val DEFAULT_START_TIME = LocalTime.now().plusHours(2L).minusMinutes(LocalTime.now().minute.toLong())
+        private val DEFAULT_START_TIME =
+            LocalTime.now().plusHours(2L).minusMinutes(LocalTime.now().minute.toLong())
         private val DEFAULT_END_DATE = DEFAULT_START_DATE.plusWeeks(1L)
         private val DEFAULT_END_TIME = DEFAULT_START_TIME
         val MIN_START_TIME_INTERVAL: Duration = Duration.of(1L, ChronoUnit.HOURS)
@@ -393,7 +417,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     /**
      * create a datePicker
      */
-    class DatePickerFragment(text: TextView) : DialogFragment(), DatePickerDialog.OnDateSetListener {
+    class DatePickerFragment(text: TextView) : DialogFragment(),
+        DatePickerDialog.OnDateSetListener {
         private val text: TextView
 
         init {
@@ -421,7 +446,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     /**
      * create a time picker
      */
-    class TimePickerFragment(text: TextView) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
+    class TimePickerFragment(text: TextView) : DialogFragment(),
+        TimePickerDialog.OnTimeSetListener {
         private val text: TextView
 
         init {

@@ -65,7 +65,13 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         tournamentPostsView = view.findViewById(R.id.display_community_tournaments_view)
         scroll = view.findViewById(R.id.community_nested_scroll_view)
 
-        tournament.setSample(TournamentModel.SampleTournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments()))
+        tournament.setSample(
+            TournamentModel.SampleTournamentModel(
+                sampleWeekly(),
+                sampleYourTournaments(),
+                sampleDiscoveryTournaments()
+            )
+        )
     }
 
     /**
@@ -113,7 +119,8 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             headlineHome.visibility = View.VISIBLE
             headlineDetailsLayout.visibility = View.GONE
             detailsLayout.visibility = View.GONE
-            tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
+            tournamentPostsView.adapter =
+                CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
             tournamentPostsView.invalidate()
             scroll.scrollTo(0, 0)
         }
@@ -145,7 +152,13 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         menu.add(getString(R.string.create_new_tournament))
             .setIcon(R.drawable.ic_add)
             .setOnMenuItemClickListener {
-                replaceFragment<TournamentCreationFragment>()
+                // send args for mock to tournament creation fragment
+                val db = activity?.intent?.getStringExtra("Database")
+                val auth = activity?.intent?.getStringExtra("Auth")
+                val fragmentArgs = Bundle()
+                if (db != null) fragmentArgs.putBoolean(db, true)
+                if (auth != null) fragmentArgs.putBoolean(auth, true)
+                replaceFragment<TournamentCreationFragment>(fragmentArgs)
                 true
             }
     }
@@ -167,8 +180,10 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     private fun menuItemListener(view: View, tournament: Tournament): Boolean {
         view.findViewById<TextView>(R.id.community_detail_name).text = tournament.name
         view.findViewById<TextView>(R.id.community_detail_description).text = tournament.description
-        view.findViewById<TextView>(R.id.community_detail_date).text = tournament.getStartOrEndDate()
-        tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getPostsFrom(tournament), false)
+        view.findViewById<TextView>(R.id.community_detail_date).text =
+            tournament.getStartOrEndDate()
+        tournamentPostsView.adapter =
+            CommunityTournamentPostViewAdapter(getPostsFrom(tournament), false)
         tournamentPostsView.invalidate()
         scroll.scrollTo(0, 0)
         headlineHome.visibility = View.GONE
@@ -194,7 +209,14 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      * @return the list of all pairs of tournament and posts
      */
     private fun getAllPostsFromAll(): List<Pair<Tournament, TournamentPost>> {
-        return getAllTournaments().flatMap { tournament -> tournament.posts.map { p -> Pair(tournament, p) } }
+        return getAllTournaments().flatMap { tournament ->
+            tournament.posts.map { p ->
+                Pair(
+                    tournament,
+                    p
+                )
+            }
+        }
     }
 
     /**
@@ -215,10 +237,10 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     /**
      * replace this fragment by another one
      */
-    private inline fun <reified F : Fragment> replaceFragment() {
+    private inline fun <reified F : Fragment> replaceFragment(fragmentArgs: Bundle? = null) {
         activity?.supportFragmentManager?.commit {
             setReorderingAllowed(true)
-            replace<F>(R.id.fragmentContainerView)
+            replace<F>(R.id.fragmentContainerView, args = fragmentArgs)
         }
     }
 
