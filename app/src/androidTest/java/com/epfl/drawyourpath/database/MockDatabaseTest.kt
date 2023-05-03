@@ -5,9 +5,9 @@ import androidx.test.core.app.ApplicationProvider
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
-import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
