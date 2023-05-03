@@ -94,4 +94,23 @@ class HistoryFragmentTest {
             ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         }
     }
+
+
+    @Test
+    fun testEmptyRecyclerView() {
+        val runs = mutableListOf<Run>()
+
+        scenario.onFragment { fragment ->
+            val recyclerView =
+                fragment.requireView().findViewById<RecyclerView>(R.id.runsRecyclerView)
+
+            recyclerView.adapter = RunsAdapter(runs)
+            recyclerView.layoutManager = LinearLayoutManager(fragment.requireContext())
+        }
+
+        Espresso.onView(ViewMatchers.withId(R.id.runsRecyclerView))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(0)))
+    }
+
+
 }
