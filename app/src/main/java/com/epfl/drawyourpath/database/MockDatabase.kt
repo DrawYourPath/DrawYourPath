@@ -568,7 +568,7 @@ class MockDatabase : Database() {
     /**
      * Helper function to initiate the chat preview of a given conversation
      * @param conversationId id of the new conversation
-     * @param chatPreview object that contains the data of this preview
+     * @param chatPreview object that contains the data of this conversation preview
      * @return a future that indicate if the chat preview was correctly created
      */
     private fun initChatPreview(
