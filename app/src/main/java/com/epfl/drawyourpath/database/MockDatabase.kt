@@ -9,7 +9,6 @@ import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.utils.drawyourpath.Utils
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
-import java.util.Comparator
 import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 

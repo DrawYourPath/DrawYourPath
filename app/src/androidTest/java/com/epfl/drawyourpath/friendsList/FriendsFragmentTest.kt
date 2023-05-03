@@ -1,14 +1,10 @@
 package com.epfl.drawyourpath.friendsList
 
-import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.mainpage.MainActivity
-import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
