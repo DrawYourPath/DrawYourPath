@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,8 +26,6 @@ import com.epfl.drawyourpath.mainpage.fragments.helperClasses.Friend
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
-import com.epfl.drawyourpath.userProfile.UserModel
-import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.epfl.utils.drawyourpath.Utils
 
 // TODO: Refactor this file

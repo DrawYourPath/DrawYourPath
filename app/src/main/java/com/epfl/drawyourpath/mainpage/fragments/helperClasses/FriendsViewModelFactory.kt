@@ -3,7 +3,6 @@ package com.epfl.drawyourpath.mainpage.fragments.helperClasses
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.userProfile.UserModel
 
 /**
  * Factory for creating a [FriendsViewModel] with a constructor that takes a user id and a [Database].
