@@ -10,9 +10,11 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunsAdapter
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
+import com.google.android.gms.maps.model.LatLng
 
 class HistoryFragment : Fragment(R.layout.fragment_history) {
 
@@ -30,18 +32,21 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
         runsAdapter = RunsAdapter(emptyList())
         runsRecyclerView.adapter = runsAdapter
 
-        val userModelCached: UserModelCached by activityViewModels()
 
-        val runHistoryObserver = object : Observer<List<Run>> {
-            override fun onChanged(value: List<Run>) {
-                if (value != null) {
-                    runsAdapter.updateRunsData(value)
-                }
-            }
-        }
 
-        userModelCached.getRunHistory().observe(viewLifecycleOwner, runHistoryObserver)
+
+
+
+
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val userModelCached: UserModelCached by activityViewModels()
+
+        userModelCached.getRunHistory().observe(viewLifecycleOwner) {
+            runsAdapter.updateRunsData(it)
+        }
     }
 }
