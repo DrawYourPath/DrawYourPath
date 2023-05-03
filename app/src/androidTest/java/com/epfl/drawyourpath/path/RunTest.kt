@@ -46,7 +46,7 @@ class RunTest {
         // check that duration is calculated correctly
         assertEquals(3000L, run.getDuration())
     }
-    
+
     @Test
     fun calculateAverageSpeed() {
         // create a run with known path and duration

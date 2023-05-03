@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.path
 
-import android.location.Location
 import com.google.firebase.database.Exclude
 import java.text.SimpleDateFormat
 import java.util.*
@@ -76,8 +75,8 @@ class Run(
 
         // The MET is calculated with a 4th degree polynomial approximation of the
         // MET values from the 2011 Compendium of Physical Activities
-        val met = 0.05506* averageSpeed.pow(4) - 0.6525 * averageSpeed.pow(3) +
-                  2.506  * averageSpeed.pow(2) - 0.1385 * averageSpeed.pow(1) + 1.486
+        val met = 0.05506 * averageSpeed.pow(4) - 0.6525 * averageSpeed.pow(3) +
+            2.506 * averageSpeed.pow(2) - 0.1385 * averageSpeed.pow(1) + 1.486
         val averageWeight = 70
         val cal = met * averageWeight * duration / 3600
         calories = cal.toInt()
