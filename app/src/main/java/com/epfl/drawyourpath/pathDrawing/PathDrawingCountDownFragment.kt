@@ -31,7 +31,7 @@ class PathDrawingCountDownFragment : Fragment(R.layout.fragment_path_drawing_cou
             }
 
             override fun onFinish() {
-                if(activity!=null){
+                if (activity != null) {
                     displayedMainDrawFragment()
                 }
             }
