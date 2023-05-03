@@ -42,11 +42,11 @@ class PathDrawingMainFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.display_speed_current_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedSpeed)))
         val expectedDistance: String = ((mockRun.getDistance() / 10.0).roundToInt() / 100.0).toString() // converted in km
-        Espresso.onView(ViewMatchers.withId(R.id.display_distance))
+        Espresso.onView(ViewMatchers.withId(R.id.display_distance_current_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedDistance)))
 
         // check that the stop button is displayed
-        Espresso.onView(ViewMatchers.withId(R.id.pause_drawing_button))
+        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         scenario.close()
     }

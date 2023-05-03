@@ -37,7 +37,7 @@ class PathDrawingCountDownFragmentTest {
         // wait one seconds
         Thread.sleep(1000)
         Espresso.onView(ViewMatchers.withId(R.id.countdown_text))
-            .check(ViewAssertions.matches(ViewMatchers.withText("GO")))
+            .check(ViewAssertions.matches(ViewMatchers.withText("GO !")))
         t.close()
     }
 }
