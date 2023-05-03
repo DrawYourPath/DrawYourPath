@@ -58,7 +58,7 @@ class HistoryFragmentTest {
             recyclerView.adapter = RunsAdapter(runs)
             recyclerView.layoutManager = LinearLayoutManager(fragment.requireContext())
 
-            // wait for recyclerView to finish layout
+            // wait for recyclerView to finish the layout
         }
 
         // verify that the runs are displayed in the recyclerView
