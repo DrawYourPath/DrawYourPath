@@ -48,7 +48,7 @@ class MockDatabase : Database() {
             ),
         ),
         friendList = listOf("0", "1"),
-        tournaments = listOf("0")
+        tournaments = listOf("0"),
     )
 
     // Please keep this list with more than 3 users to have enough data for tournaments.
@@ -84,7 +84,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
-            tournaments = listOf("0", "1")
+            tournaments = listOf("0", "1"),
         ),
         UserData(
             userId = "1",
@@ -117,7 +117,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
-            tournaments = listOf("0", "1", "2")
+            tournaments = listOf("0", "1", "2"),
         ),
         UserData(
             userId = "10",
@@ -150,7 +150,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
-            tournaments = listOf("0")
+            tournaments = listOf("0"),
         ),
 
         UserData(
@@ -184,7 +184,7 @@ class MockDatabase : Database() {
                     time = 10.0,
                 ),
             ),
-            tournaments = listOf("0")
+            tournaments = listOf("0"),
         ),
         mockUser,
     )
@@ -199,7 +199,7 @@ class MockDatabase : Database() {
         participants = MOCK_USERS.map { it.userId!! },
         // The next args are useless for now
         posts = listOf(),
-        visibility = Tournament.Visibility.PUBLIC
+        visibility = Tournament.Visibility.PUBLIC,
     )
 
     val MOCK_TOURNAMENTS = listOf(
@@ -214,7 +214,7 @@ class MockDatabase : Database() {
             participants = listOf(MOCK_USERS[0].userId!!, MOCK_USERS[1].userId!!),
             // The next args are useless for now
             posts = listOf(),
-            visibility = Tournament.Visibility.PUBLIC
+            visibility = Tournament.Visibility.PUBLIC,
         ),
         Tournament(
             id = "2",
@@ -226,8 +226,8 @@ class MockDatabase : Database() {
             participants = listOf(MOCK_USERS[1].userId!!),
             // The next args are useless for now
             posts = listOf(),
-            visibility = Tournament.Visibility.PUBLIC
-        )
+            visibility = Tournament.Visibility.PUBLIC,
+        ),
 
     )
 
@@ -473,7 +473,7 @@ class MockDatabase : Database() {
     }
 
     override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
-        //check if tournament exists, if not do nothing (no fail future)
+        // check if tournament exists, if not do nothing (no fail future)
         if (!tournaments.contains(tournamentId)) {
             return CompletableFuture.completedFuture(Unit)
         }
@@ -482,7 +482,8 @@ class MockDatabase : Database() {
             if (users.contains(userId)) {
                 val currentUser = users[userId]!!
                 users[userId] = currentUser.copy(
-                    tournaments = users[userId]!!.tournaments?.filter { it != tournamentId })
+                    tournaments = users[userId]!!.tournaments?.filter { it != tournamentId },
+                )
             }
         }
         // 2. remove the tournament from the tournaments file
@@ -493,7 +494,7 @@ class MockDatabase : Database() {
 
     override fun addUserToTournament(
         userId: String,
-        tournamentId: String
+        tournamentId: String,
     ): CompletableFuture<Unit> {
         // check that the userId and tournamentId exist
         if (!users.contains(userId)) {
@@ -506,16 +507,20 @@ class MockDatabase : Database() {
         // add tournament to user
         val currentUser = users[userId]!!
         users[userId] = currentUser.copy(
-            tournaments = ((currentUser.tournaments ?: emptyList()).filter{
-                it != tournamentId
-            } + tournamentId)
+            tournaments = (
+                (currentUser.tournaments ?: emptyList()).filter {
+                    it != tournamentId
+                } + tournamentId
+                ),
         )
         // add user to tournament
         val currentTournament = tournaments[tournamentId]!!
         tournaments[tournamentId] = currentTournament.copy(
-            participants = (currentTournament.participants.filter {
-                it != userId
-            } + userId)
+            participants = (
+                currentTournament.participants.filter {
+                    it != userId
+                } + userId
+                ),
         )
 
         return CompletableFuture.completedFuture(Unit)
@@ -523,19 +528,19 @@ class MockDatabase : Database() {
 
     override fun removeUserFromTournament(
         userId: String,
-        tournamentId: String
+        tournamentId: String,
     ): CompletableFuture<Unit> {
         // check that the userId and tournamentId exist and remove them if it's the case
         if (users.contains(userId)) {
             val currentUser = users[userId]!!
             users[userId] = currentUser.copy(
-                tournaments = currentUser.tournaments?.filter { it != tournamentId }
+                tournaments = currentUser.tournaments?.filter { it != tournamentId },
             )
         }
         if (tournaments.contains(tournamentId)) {
             val currentTournament = tournaments[tournamentId]!!
             tournaments[tournamentId] = currentTournament.copy(
-                participants = currentTournament.participants.filter { it != userId }
+                participants = currentTournament.participants.filter { it != userId },
             )
         }
         return CompletableFuture.completedFuture(Unit)

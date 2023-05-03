@@ -96,14 +96,14 @@ class MockNonWorkingDatabase : Database() {
 
     override fun addUserToTournament(
         userId: String,
-        tournamentId: String
+        tournamentId: String,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }
 
     override fun removeUserFromTournament(
         userId: String,
-        tournamentId: String
+        tournamentId: String,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }

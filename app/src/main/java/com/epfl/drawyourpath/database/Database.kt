@@ -24,7 +24,7 @@ data class UserData(
     val friendList: List<String>? = null,
     val runs: List<Run>? = null,
     val dailyGoals: List<DailyGoal>? = null,
-    val tournaments: List<String>? = null
+    val tournaments: List<String>? = null,
 )
 
 abstract class Database {
@@ -189,7 +189,7 @@ abstract class Database {
      */
     abstract fun addUserToTournament(
         userId: String,
-        tournamentId: String
+        tournamentId: String,
     ): CompletableFuture<Unit>
 
     /**
@@ -200,6 +200,6 @@ abstract class Database {
      */
     abstract fun removeUserFromTournament(
         userId: String,
-        tournamentId: String
+        tournamentId: String,
     ): CompletableFuture<Unit>
 }
