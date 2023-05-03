@@ -1,9 +1,12 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.chat.Message
+import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -12,7 +15,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneOffset
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.collections.HashMap
@@ -23,6 +29,9 @@ class FirebaseKeys {
         const val USERS_ROOT = "users"
         const val USERNAMES_ROOT = "usernameToUid"
         const val TOURNAMENTS_ROOT = "tournaments"
+        const val CHATS_ROOT = "chats"
+        const val CHATS_MEMBERS_ROOT = "chatsMembers"
+        const val CHATS_MESSAGES_ROOT = "chatsMessages"
 
         // User keys top level
         const val PROFILE = "profile"
@@ -31,6 +40,7 @@ class FirebaseKeys {
         const val FRIENDS = "friends"
         const val DAILY_GOALS = "dailyGoals"
         const val USER_TOURNAMENTS = "tournaments"
+        const val USER_CHATS = "chats"
 
         // User profile keys sublevel
         const val USERNAME = "username"
@@ -55,6 +65,16 @@ class FirebaseKeys {
 
         // Tournaments keys
         const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+
+        // Chats keys top level
+        const val CHAT_TITLE = "title"
+        const val CHAT_LAST_MESSAGE = "lastMessage"
+
+        // Chats messages keys to level
+        const val CHAT_MESSAGE_SENDER = "sender"
+        const val CHAT_MESSAGE_CONTENT_TEXT = "text"
+        const val CHAT_MESSAGE_CONTENT_IMAGE = "image"
+        const val CHAT_MESSAGE_CONTENT_RUN = "run"
     }
 }
 
@@ -85,6 +105,67 @@ class FirebaseDatabase : Database() {
 
     private fun tournamentsRoot(): DatabaseReference {
         return database.child(FirebaseKeys.TOURNAMENTS_ROOT)
+    }
+
+    /**
+     * Helper function to return the file in the chats root
+     * @return the file in the chats root
+     */
+    private fun chatsRoot(): DatabaseReference {
+        return database.child(FirebaseKeys.CHATS_ROOT)
+    }
+
+    /**
+     * Helper function to return the file in the members chats root
+     * @return the file in the members chats root
+     */
+    private fun chatsMembersRoot(): DatabaseReference {
+        return database.child(FirebaseKeys.CHATS_MEMBERS_ROOT)
+    }
+
+    /**
+     * Helper function to return the file in the messages chats root
+     * @return the file in the messages chats root
+     */
+    private fun chatsMessagesRoot(): DatabaseReference {
+        return database.child(FirebaseKeys.CHATS_MESSAGES_ROOT)
+    }
+
+    /**
+     * Helper function to return the file of a conversation with his id
+     * @param conversationId id of the conversation
+     * @return the file corresponding to this id in the chats file root.
+     */
+    private fun chatPreview(conversationId: String): DatabaseReference {
+        return chatsRoot().child(conversationId)
+    }
+
+    /**
+     * Helper function to return the file containing the members of a given conversation
+     * @param conversationId id of the conversation
+     * @return the file containing the member of a given conversation
+     */
+    private fun chatMembers(conversationId: String): DatabaseReference {
+        return chatsMembersRoot().child(conversationId)
+    }
+
+    /**
+     * Helper function to return the file containing the messages of a given conversation
+     * @param conversationId id of the conversation
+     * @return the file containing the messages of a given conversation.
+     */
+    private fun chatMessages(conversationId: String): DatabaseReference {
+        return chatsMessagesRoot().child(conversationId)
+    }
+
+    /**
+     * Helper function to return the file containing a message of a given conversation
+     * @param conversationId id of the conversation
+     * @param timestamp of the message in milliseconds
+     * @return the file containing the message of a given conversation(with the corresponding message id).
+     */
+    private fun message(conversationId: String, timestamp: Long): DatabaseReference {
+        return chatMessages(conversationId).child(timestamp.toString())
     }
 
     override fun isUserInDatabase(userId: String): CompletableFuture<Boolean> {
@@ -487,6 +568,199 @@ class FirebaseDatabase : Database() {
         return future
     }
 
+    override fun createChatConversation(
+        name: String,
+        membersList: List<String>,
+        creatorId: String,
+        welcomeMessage: String,
+    ): CompletableFuture<String> {
+        // create the id of the new conversation
+        val pushedPostRef: DatabaseReference = chatsRoot().push()
+        val conversationId: String? = pushedPostRef.key
+
+        if (conversationId == null) {
+            val future = CompletableFuture<String>()
+            future.completeExceptionally(Exception("Error in the generation of the conversation id !"))
+            return future
+        } else {
+            val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
+            return initChatPreview(
+                conversationId,
+                chatPreview = ChatPreview(
+                    title = name,
+                    lastMessage = Message(
+                        id = date,
+                        senderId = creatorId,
+                        content = MessageContent.Text(welcomeMessage),
+                        timestamp = date,
+                    ),
+                ),
+            )
+                .thenApply {
+                    initChatMembers(conversationId, membersList)
+                }.thenApply {
+                    initChatMessages(
+                        conversationId,
+                        Message(
+                            id = date,
+                            senderId = creatorId,
+                            content = MessageContent.Text(welcomeMessage),
+                            timestamp = date,
+                        ),
+                    )
+                }.thenApply {
+                    updateMembersProfileWithNewChat(conversationId, membersList)
+                    conversationId
+                }
+        }
+    }
+
+    override fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview> {
+        val future = CompletableFuture<ChatPreview>()
+        chatPreview(conversationId).get()
+            .addOnSuccessListener { data ->
+                val preview = ChatPreview(
+                    conversationId = conversationId,
+                    title = data.child(FirebaseKeys.CHAT_TITLE).value as String?,
+                    lastMessage = getMessageFromData(
+                        data.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList().get(0),
+                    ),
+                )
+                future.complete(preview)
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        val data = listOf<Pair<String, Any?>>(
+            FirebaseKeys.CHAT_TITLE to newTitle,
+        ).associate { entry -> entry }
+        chatPreview(conversationId).updateChildren(data)
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun getChatMemberList(conversationId: String): CompletableFuture<List<String>> {
+        val future = CompletableFuture<List<String>>()
+        chatMembers(conversationId).get().addOnSuccessListener { data ->
+            val members = ArrayList<String>()
+            for (elem in (data.value as Map<*, *>)) {
+                members.add(elem.key as String)
+            }
+            future.complete(members)
+        }.addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun addChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // add the new member to the members list
+        val newMember = HashMap<String, Any>()
+        newMember.put(userId, true)
+        chatMembers(conversationId).updateChildren(newMember).addOnSuccessListener {
+            // add the chat to the chat list of the user with userId
+            val newChat = HashMap<String, Any>()
+            newChat.put(conversationId, true)
+            userProfile(userId).child(FirebaseKeys.USER_CHATS).updateChildren(newChat)
+                .addOnSuccessListener { future.complete(Unit) }
+                .addOnFailureListener { future.completeExceptionally(it) }
+        }.addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun removeChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // remove the member to the member chat list
+        chatMembers(conversationId).child(userId).removeValue()
+            .addOnSuccessListener {
+                // remove the chat to the user with userId chat list
+                userProfile(userId).child(FirebaseKeys.USER_CHATS).child(conversationId)
+                    .removeValue()
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+            }.addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
+        val future = CompletableFuture<List<Message>>()
+        chatMessages(conversationId).get().addOnSuccessListener { data ->
+            val listMessage = ArrayList<Message>()
+            // Log.println(Log.INFO,"", data.children.toMutableList().get(0).toString())
+            for (elem in data.children) {
+                listMessage.add(getMessageFromData(elem))
+            }
+            future.complete(listMessage)
+        }.addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {
+        // add the message to the list of the messages of the conversation
+        when (message.content.javaClass) {
+            MessageContent.RunPath::class.java -> return addChatRunMessage(conversationId, message)
+            MessageContent.Picture::class.java -> return addChatPictureMessage(conversationId, message)
+            MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
+        }
+        val future = CompletableFuture<Unit>()
+        future.completeExceptionally(Error("No type found for the content of the message !"))
+        return future
+    }
+
+    override fun removeChatMessage(
+        conversationId: String,
+        messageId: Long,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        chatMessages(conversationId).child(messageId.toString()).removeValue()
+            .addOnSuccessListener {
+                // check if we must update the preview
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).get()
+                    .addOnSuccessListener { data ->
+                        if (data.value != null) {
+                            val lastMessage = listOf<Pair<String, Any?>>(
+                                "${FirebaseKeys.CHAT_MESSAGE_SENDER}" to data.child(FirebaseKeys.CHAT_MESSAGE_SENDER).value as String,
+                                "${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to "This message was deleted",
+                            ).associate { entry -> entry }
+                            chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
+                                .child(messageId.toString()).updateChildren(lastMessage)
+                                .addOnSuccessListener { future.complete(Unit) }
+                                .addOnFailureListener { future.completeExceptionally(it) }
+                        }
+                        future.complete(Unit)
+                    }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun modifyChatTextMessage(
+        conversationId: String,
+        messageId: Long,
+        message: String,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        val newMessage = listOf<Pair<String, Any?>>(
+            "${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to message,
+        ).associate { entry -> entry }
+        message(conversationId, messageId).updateChildren(newMessage)
+            .addOnSuccessListener {
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).get().addOnSuccessListener { preview ->
+                    if (preview.value != null) {
+                        chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).updateChildren(newMessage)
+                            .addOnSuccessListener { future.complete(Unit) }
+                            .addOnFailureListener { future.completeExceptionally(it) }
+                    }
+                }.addOnFailureListener { future.completeExceptionally(it) }
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
     /**
      * Helper function to update data of the current user account
      * @param data to be updated
@@ -526,7 +800,22 @@ class FirebaseDatabase : Database() {
             runs = transformRunsHistory(profile.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDataToDailyGoalList(profile.child(FirebaseKeys.DAILY_GOALS)),
             friendList = transformSnapshotKeysToStringList(profile.child(FirebaseKeys.FRIENDS)),
+            chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
         )
+    }
+
+    /**
+     * Helper function to decode the photo from string to bitmap format and return null if the dataSnapShot is null
+     * @param photoStr photo encoded
+     * @return the photo in bitmap format, and null if no photo is stored on the database
+     */
+    private fun decodePhoto(photoStr: Any?): Bitmap? {
+        return if (photoStr == null) {
+            null
+        } else {
+            val tabByte = Base64.getDecoder().decode(photoStr as String)
+            BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+        }
     }
 
     /**
@@ -564,18 +853,9 @@ class FirebaseDatabase : Database() {
         val runsHistory = ArrayList<Run>()
 
         for (run in data.children) {
-            val points = ArrayList<LatLng>()
-            for (point in run.child("path").child("points").children) {
-                val lat = point.child("latitude").getValue(Double::class.java)
-                val lon = point.child("longitude").getValue(Double::class.java)
-                if (lat != null && lon != null) {
-                    points.add(LatLng(lat, lon))
-                }
-            }
-            val startTime = run.child("startTime").value as? Long
-            val endTime = run.child("endTime").value as? Long
-            if (startTime != null && endTime != null) {
-                runsHistory.add(Run(Path(points), startTime, endTime))
+            val transformRun = transformRun(run)
+            if (transformRun != null) {
+                runsHistory.add(transformRun)
             } else {
                 Log.w(
                     FirebaseDatabase::class.java.name,
@@ -585,6 +865,45 @@ class FirebaseDatabase : Database() {
         }
 
         return runsHistory
+    }
+
+    /**
+     * Helper function to retrieve a run object from the database
+     * @param data the datasnapshot containing the run
+     * @return the run corresponding to the data
+     */
+    private fun transformRun(data: DataSnapshot): Run? {
+        val points = ArrayList<LatLng>()
+        for (point in data.child("path").child("points").children) {
+            val lat = point.child("latitude").getValue(Double::class.java)
+            val lon = point.child("longitude").getValue(Double::class.java)
+            if (lat != null && lon != null) {
+                points.add(LatLng(lat, lon))
+            }
+        }
+        val startTime = data.child("startTime").value as? Long
+        val endTime = data.child("endTime").value as? Long
+        if (startTime != null && endTime != null) {
+            return Run(Path(points), startTime, endTime)
+        }
+        return null
+    }
+
+    /**
+     * Helper function to obtain the chats list from the database of the user
+     * @param data the data snapshot containing the chats List
+     * @return a list containing the conversationId of all the chats where the user is present
+     */
+    private fun transformChatList(data: DataSnapshot?): List<String> {
+        if (data == null) {
+            return emptyList()
+        }
+        val chatListConversationId = ArrayList<String>()
+
+        for (chat in data.children) {
+            chatListConversationId.add(chat.key as String)
+        }
+        return chatListConversationId
     }
 
     /**
@@ -689,6 +1008,259 @@ class FirebaseDatabase : Database() {
             )
         }
         return dailyGoalList
+    }
+
+    /**
+     * Helper function to initiate the chat preview of a given conversation
+     * @param conversationId id of the new conversation
+     * @param chatPreview object that contains the data of this preview
+     * @return a future that indicate if the chat preview was correctly created
+     */
+    private fun initChatPreview(
+        conversationId: String,
+        chatPreview: ChatPreview,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+
+        val data = listOf<Pair<String, Any?>>(
+            "${FirebaseKeys.CHAT_TITLE}" to chatPreview.title,
+            "${FirebaseKeys.CHAT_LAST_MESSAGE}/${chatPreview.lastMessage!!.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to chatPreview.lastMessage.senderId,
+            "${FirebaseKeys.CHAT_LAST_MESSAGE}/${chatPreview.lastMessage.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to (chatPreview.lastMessage.content as MessageContent.Text).text,
+        ).filter { it.second != null }.associate { entry -> entry }
+
+        chatPreview(conversationId).updateChildren(data)
+            .addOnSuccessListener {
+                future.complete(Unit)
+            }
+            .addOnFailureListener {
+                future.completeExceptionally(it)
+            }
+        return future
+    }
+
+    /**
+     * Helper function to initiate the chat members of a given conversation
+     * @param conversationId id of the new conversation
+     * @param membersList list of members of the conversation
+     * @return a future that indicate if the chat members have been correctly initiated.
+     */
+    private fun initChatMembers(
+        conversationId: String,
+        membersList: List<String>,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+
+        val data = HashMap<String, Any>()
+        for (member in membersList) {
+            data.put(member, true)
+        }
+
+        chatMembers(conversationId).updateChildren(data)
+            .addOnSuccessListener {
+                future.complete(Unit)
+            }
+            .addOnFailureListener {
+                future.completeExceptionally(it)
+            }
+        return future
+    }
+
+    /**
+     * Helper function to initiate the chat messages of a given conversation
+     * @param conversationId id of the new conversation
+     * @param firstMessage first message of the conversation
+     */
+    private fun initChatMessages(
+        conversationId: String,
+        firstMessage: Message,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+
+        // the timestamp of the message is used as a key
+        val data = listOf<Pair<String, Any?>>(
+            "${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to (firstMessage.content as MessageContent.Text).text,
+            "${FirebaseKeys.CHAT_MESSAGE_SENDER}" to firstMessage.senderId,
+        ).filter { it.second != null }.associate { entry -> entry }
+        message(conversationId, firstMessage.timestamp).updateChildren(data)
+            .addOnSuccessListener {
+                future.complete(Unit)
+            }
+            .addOnFailureListener {
+                future.completeExceptionally(it)
+            }
+        return future
+    }
+
+    /**
+     * Helper function to add the conversation id of new conversation to the profile of each member.
+     * @param conversationId id of the new conversation
+     * @param membersList list of all the members of the conversation
+     * @return a future that indicate if every member profile have been correctly updated
+     */
+    private fun updateMembersProfileWithNewChat(
+        conversationId: String,
+        membersList: List<String>,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        for (memberId in membersList) {
+            val data = HashMap<String, Any>()
+            data.put(conversationId, true)
+            userProfile(memberId).child(FirebaseKeys.USER_CHATS).updateChildren(data)
+                .addOnSuccessListener { future.complete(Unit) }
+                .addOnFailureListener { future.completeExceptionally(it) }
+        }
+
+        return future
+    }
+
+    /**
+     * Helper function to add a run message to a conversation
+     * @param conversationId id of the conversation
+     * @message that we want to add
+     * @return a future to indicate if the message was correctly added
+     */
+    private fun addChatRunMessage(
+        conversationId: String,
+        message: Message,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        val run = (message.content as MessageContent.RunPath).run
+        val data = listOf<Pair<String, Any?>>(
+            "${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
+            "${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_RUN}/${run.getStartTime()}" to run,
+        ).associate { entry -> entry }
+        chatMessages(conversationId).updateChildren(data)
+            .addOnSuccessListener {
+                // update the chat preview
+                val lastMessage = listOf<Pair<String, Any?>>(
+                    "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
+                    "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_RUN}/${run.getStartTime()}" to run,
+                ).associate { entry -> entry }
+                // delete the previous last message and update it
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).removeValue()
+                    .addOnSuccessListener {
+                        chatPreview(conversationId).updateChildren(lastMessage)
+                            .addOnSuccessListener {
+                                future.complete(Unit)
+                            }.addOnFailureListener { future.completeExceptionally(it) }
+                    }.addOnFailureListener { future.completeExceptionally(it) }
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    /**
+     * Helper function to add a picture message to a conversation
+     * @param conversationId id of the conversation
+     * @message that we want to add
+     * @return a future to indicate if the message was correctly added
+     */
+    private fun addChatPictureMessage(
+        conversationId: String,
+        message: Message,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        val byteArray = ByteArrayOutputStream()
+        (message.content as MessageContent.Picture).image.compress(
+            Bitmap.CompressFormat.WEBP,
+            70,
+            byteArray,
+        )
+        val imageEncoded: String = Base64.getEncoder().encodeToString(byteArray.toByteArray())
+        val data = listOf<Pair<String, Any?>>(
+            "${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
+            "${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE}" to imageEncoded,
+        ).associate { entry -> entry }
+        chatMessages(conversationId).updateChildren(data)
+            .addOnSuccessListener { // update the chat preview
+                val lastMessage = listOf<Pair<String, Any?>>(
+                    "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
+                    "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE}" to imageEncoded,
+                ).associate { entry -> entry }
+                // delete the previous last message and update it
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).removeValue()
+                    .addOnSuccessListener {
+                        chatPreview(conversationId).updateChildren(lastMessage)
+                            .addOnSuccessListener {
+                                future.complete(Unit)
+                            }.addOnFailureListener { future.completeExceptionally(it) }
+                    }.addOnFailureListener { future.completeExceptionally(it) }
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    /**
+     * Helper function to add a text message to a conversation
+     * @param conversationId id of the conversation
+     * @message that we want to add
+     * @return a future to indicate if the message was correctly added
+     */
+    private fun addChatTextMessage(
+        conversationId: String,
+        message: Message,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        val data = listOf<Pair<String, Any?>>(
+            "${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
+            "${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to (message.content as MessageContent.Text).text,
+        ).associate { entry -> entry }
+        chatMessages(conversationId).updateChildren(data)
+            .addOnSuccessListener { // update the chat preview
+                val lastMessage = listOf<Pair<String, Any?>>(
+                    "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to message.senderId,
+                    "${FirebaseKeys.CHAT_LAST_MESSAGE}/${message.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to message.content.text,
+                ).associate { entry -> entry }
+                // delete the previous last message and update it
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).removeValue()
+                    .addOnSuccessListener {
+                        chatPreview(conversationId).updateChildren(lastMessage)
+                            .addOnSuccessListener {
+                                future.complete(Unit)
+                            }.addOnFailureListener { future.completeExceptionally(it) }
+                    }.addOnFailureListener { future.completeExceptionally(it) }
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    /**
+     * Helper function to transform some data into a message
+     * @param data datasnpshot that contains the data of the message
+     * @return a message correposnding to this data
+     */
+    private fun getMessageFromData(data: DataSnapshot): Message {
+        val dateStr: String = data.key ?: throw Exception("There content of this data not correspond to a message")
+        val date = dateStr.toLong()
+        val sender = data.child(FirebaseKeys.CHAT_MESSAGE_SENDER).value as String
+        val dataImage = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE)
+        val dataRun = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_RUN)
+        val dataText = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT)
+        if (dataImage.value != null) {
+            return Message(
+                id = date,
+                senderId = sender,
+                content = MessageContent.Picture(decodePhoto(dataImage.value as String)!!),
+                timestamp = date,
+            )
+        }
+        if (dataRun.value != null) {
+            return Message(
+                id = date,
+                senderId = sender,
+                content = MessageContent.RunPath(transformRun(dataRun.children.toMutableList().get(0))!!),
+                timestamp = date,
+            )
+        }
+        if (dataText.value != null) {
+            return Message(
+                id = date,
+                senderId = sender,
+                content = MessageContent.Text(dataText.value as String),
+                timestamp = date,
+            )
+        }
+        throw Error("The content of the message correspond to any type !")
     }
 
     private fun ilog(text: String) {
