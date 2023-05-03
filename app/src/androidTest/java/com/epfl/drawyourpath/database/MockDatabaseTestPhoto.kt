@@ -40,7 +40,7 @@ class MockDatabaseTestPhoto {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
         val senderId = database.MOCK_USERS[0].userId!!
-        val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
+        val date = getCurrentDateTimeInEpochSeconds()
         val messageSent = Message.createPictureMessage(senderId, photoProfile, date)
         database.addChatMessage(conversationId, messageSent)
         // check the chat messages list

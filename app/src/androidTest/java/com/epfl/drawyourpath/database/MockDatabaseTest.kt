@@ -830,7 +830,7 @@ class MockDatabaseTest {
         // check the messages list
         assertEquals((database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(), database.chatMessages[conversationId]!!.chat)
         // check the preview
-        assertEquals(database.MOCK_CHAT_PREVIEWS[0].copy(lastMessage = database.MOCK_CHAT_PREVIEWS[0].lastMessage!!.copy(content = MessageContent.Text("This message was deleted !"))), database.chatPreviews[conversationId])
+        assertEquals(database.MOCK_CHAT_PREVIEWS[0].copy(lastMessage = database.MOCK_CHAT_PREVIEWS[0].lastMessage!!.copy(content = MessageContent.Text(database.DELETE_MESSAGE_STR))), database.chatPreviews[conversationId])
     }
 
     /**
@@ -866,4 +866,11 @@ class MockDatabaseTest {
         // check the preview
         assertEquals(database.MOCK_CHAT_PREVIEWS[0], database.chatPreviews[conversationId])
     }
+}
+/**
+ * Get current date and time in epoch seconds
+ * @return current dte and time in epoch seconds
+ */
+fun getCurrentDateTimeInEpochSeconds(): Long{
+    return LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
 }

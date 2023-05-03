@@ -468,13 +468,15 @@ class FirebaseDatabase : Database() {
         membersList: List<String>,
         creatorId: String,
         welcomeMessage: String,
-    ): CompletableFuture<Unit> {
+    ): CompletableFuture<String> {
         // create the id of the new conversation
         val pushedPostRef: DatabaseReference = chatsRoot().push()
         val conversationId: String? = pushedPostRef.key
 
         if (conversationId == null) {
-            throw Exception("Error in the generation of the conversation id !")
+            val future = CompletableFuture<String>()
+            future.completeExceptionally(Exception("Error in the generation of the conversation id !"))
+            return future
         } else {
             val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
             return initChatPreview(
@@ -503,6 +505,7 @@ class FirebaseDatabase : Database() {
                     )
                 }.thenApply {
                     updateMembersProfileWithNewChat(conversationId, membersList)
+                    conversationId
                 }
         }
     }
@@ -592,14 +595,10 @@ class FirebaseDatabase : Database() {
 
     override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {
         // add the message to the list of the messages of the conversation
-        if (message.content.javaClass == MessageContent.RunPath::class.java) {
-            return addChatRunMessage(conversationId, message)
-        }
-        if (message.content.javaClass == MessageContent.Picture::class.java) {
-            return addChatPictureMessage(conversationId, message)
-        }
-        if (message.content.javaClass == MessageContent.Text::class.java) {
-            return addChatTextMessage(conversationId, message)
+        when (message.content.javaClass) {
+            MessageContent.RunPath::class.java -> return addChatRunMessage(conversationId, message)
+            MessageContent.Picture::class.java -> return addChatPictureMessage(conversationId, message)
+            MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
         }
         val future = CompletableFuture<Unit>()
         future.completeExceptionally(Error("No type found for the content of the message !"))
@@ -608,13 +607,13 @@ class FirebaseDatabase : Database() {
 
     override fun removeChatMessage(
         conversationId: String,
-        timestamp: Long,
+        messageId: Long,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        chatMessages(conversationId).child(timestamp.toString()).removeValue()
+        chatMessages(conversationId).child(messageId.toString()).removeValue()
             .addOnSuccessListener {
                 // check if we must update the preview
-                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(timestamp.toString()).get()
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).get()
                     .addOnSuccessListener { data ->
                         if (data.value != null) {
                             val lastMessage = listOf<Pair<String, Any?>>(
@@ -622,7 +621,7 @@ class FirebaseDatabase : Database() {
                                 "${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to "This message was deleted",
                             ).associate { entry -> entry }
                             chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
-                                .child(timestamp.toString()).updateChildren(lastMessage)
+                                .child(messageId.toString()).updateChildren(lastMessage)
                                 .addOnSuccessListener { future.complete(Unit) }
                                 .addOnFailureListener { future.completeExceptionally(it) }
                         }
@@ -636,18 +635,18 @@ class FirebaseDatabase : Database() {
 
     override fun modifyChatTextMessage(
         conversationId: String,
-        timestamp: Long,
+        messageId: Long,
         message: String,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         val newMessage = listOf<Pair<String, Any?>>(
             "${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to message,
         ).associate { entry -> entry }
-        message(conversationId, timestamp).updateChildren(newMessage)
+        message(conversationId, messageId).updateChildren(newMessage)
             .addOnSuccessListener {
-                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(timestamp.toString()).get().addOnSuccessListener { preview ->
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).get().addOnSuccessListener { preview ->
                     if (preview.value != null) {
-                        chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(timestamp.toString()).updateChildren(newMessage)
+                        chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).updateChildren(newMessage)
                             .addOnSuccessListener { future.complete(Unit) }
                             .addOnFailureListener { future.completeExceptionally(it) }
                     }
@@ -1131,7 +1130,7 @@ class FirebaseDatabase : Database() {
      * @return a message correposnding to this data
      */
     private fun getMessageFromData(data: DataSnapshot): Message {
-        val dateStr = data.key!!
+        val dateStr: String = data.key ?: throw Exception("There content of this data not correspond to a message")
         val date = dateStr.toLong()
         val sender = data.child(FirebaseKeys.CHAT_MESSAGE_SENDER).value as String
         val dataImage = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE)

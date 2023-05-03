@@ -12,7 +12,6 @@ import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 
@@ -221,6 +220,7 @@ class MockDatabase : Database() {
             ),
         ),
     )
+    val DELETE_MESSAGE_STR = "This message was deleted !"
 
     init {
         ilog("Mock database created.")
@@ -450,7 +450,7 @@ class MockDatabase : Database() {
         membersList: List<String>,
         creatorId: String,
         welcomeMessage: String,
-    ): CompletableFuture<Unit> {
+    ): CompletableFuture<String> {
         // create the id of the new conversation
         val conversationId: String = (chatPreviews.size).toString()
 
@@ -471,6 +471,7 @@ class MockDatabase : Database() {
                 )
             }.thenApply {
                 updateMembersProfileWithNewChat(conversationId, membersList)
+                conversationId
             }
     }
 
@@ -530,34 +531,34 @@ class MockDatabase : Database() {
 
     override fun removeChatMessage(
         conversationId: String,
-        timestamp: Long,
+        messageId: Long,
     ): CompletableFuture<Unit> {
         // update the messages list
         val current = chatMessages[conversationId]!!
-        chatMessages[conversationId] = current.copy(chat = (current.chat ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList())
+        chatMessages[conversationId] = current.copy(chat = (current.chat ?: emptyList()).stream().filter { it.timestamp != messageId }.toList())
         // update the preview if needed
-        if (chatPreviews[conversationId]!!.lastMessage!!.timestamp == timestamp) {
+        if (chatPreviews[conversationId]!!.lastMessage!!.timestamp == messageId) {
             val currentPreview = chatPreviews[conversationId]!!
             val currentMessage = currentPreview.lastMessage!!
-            chatPreviews[conversationId] = currentPreview.copy(lastMessage = currentMessage.copy(content = MessageContent.Text("This message was deleted !")))
+            chatPreviews[conversationId] = currentPreview.copy(lastMessage = currentMessage.copy(content = MessageContent.Text(DELETE_MESSAGE_STR)))
         }
         return CompletableFuture.completedFuture(Unit)
     }
 
     override fun modifyChatTextMessage(
         conversationId: String,
-        timestamp: Long,
+        messageId: Long,
         message: String,
     ): CompletableFuture<Unit> {
         // update the messages list
         val current = chatMessages[conversationId]!!
         chatMessages[conversationId] = current.copy(
             chat = (current.chat ?: emptyList()).stream().map {
-                if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(message)) else it
+                if (it.timestamp == messageId) it.copy(content = MessageContent.Text(message)) else it
             }.toList(),
         )
         // update the preview if needed
-        if (chatPreviews[conversationId]!!.lastMessage!!.timestamp == timestamp) {
+        if (chatPreviews[conversationId]!!.lastMessage!!.timestamp == messageId) {
             val currentPreview = chatPreviews[conversationId]!!
             val currentMessage = currentPreview.lastMessage!!
             chatPreviews[conversationId] = currentPreview.copy(lastMessage = currentMessage.copy(content = MessageContent.Text(message)))

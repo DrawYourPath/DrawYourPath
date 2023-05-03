@@ -173,14 +173,14 @@ abstract class Database {
      * @param membersList list of the members userId of the chat conversation(the creator must be included in this list)
      * @param creatorId userId of the conversation creator
      * @param welcomeMessage a welcome message in a string format
-     * @return a future that indicate if the conversation was correctly created inside the database
+     * @return a future that gives the conversationId of the new conversation created
      */
     abstract fun createChatConversation(
         name: String,
         membersList: List<String>,
         creatorId: String,
         welcomeMessage: String,
-    ): CompletableFuture<Unit>
+    ): CompletableFuture<String>
 
     /**
      * Function used to obtain the chat preview of a given conversation with his conversationId
@@ -238,17 +238,17 @@ abstract class Database {
     /**
      * Function used to remove a message(with a given timestamp) from a conversation with his id
      * @param conversationId of the conversation
-     * @param timestamp of the message that we want to removed(in epoch seconds)
+     * @param messageId of the message that we want to removed thant also correspond to the timestamp of the message(in epoch seconds)
      * @return a future that indicated if the message was correctly deleted
      */
-    abstract fun removeChatMessage(conversationId: String, timestamp: Long): CompletableFuture<Unit>
+    abstract fun removeChatMessage(conversationId: String, messageId: Long): CompletableFuture<Unit>
 
     /**
      * Function used to modify a text message(with a given timestamp) from a conversation with his id
      * @param conversationId of the conversation
-     * @param timestamp of the text message that we want to modify (in epoch seconds)
+     * @param messageId of the text message that we want to modify that also correspond to the timestamp of the message(in epoch seconds)
      * @param message the content text of the new message
      * @return a future that indicated if the message was correctly modify
      */
-    abstract fun modifyChatTextMessage(conversationId: String, timestamp: Long, message: String): CompletableFuture<Unit>
+    abstract fun modifyChatTextMessage(conversationId: String, messageId: Long, message: String): CompletableFuture<Unit>
 }
