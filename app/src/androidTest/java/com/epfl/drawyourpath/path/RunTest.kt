@@ -50,7 +50,7 @@ class RunTest {
         // check that duration is calculated correctly
         assertEquals(3000L, run.getDuration())
     }
-
+    
     @Test
     fun calculateStartTime() {
         // create a run with a known timing
