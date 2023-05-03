@@ -564,5 +564,4 @@ class UserModel {
                 this.totalNbOfPaths += 1
             }
     }
-
 }

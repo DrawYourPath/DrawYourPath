@@ -59,7 +59,8 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
             DailyGoalViewAdapter(
                 { user.updateGoals(distanceGoal = it) },
                 { user.updateGoals(activityTimeGoal = it) },
-                { user.updateGoals(pathsGoal = it) })
+                { user.updateGoals(pathsGoal = it) },
+            )
         user.getTodayDailyGoal().observe(viewLifecycleOwner) {
             dailyGoalAdapter.updateDailyGoal(it)
         }

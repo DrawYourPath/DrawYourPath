@@ -327,7 +327,6 @@ class ChallengeFragmentTest {
         scenario.close()
     }
 
-
     /**
      * test if the nb of paths is correctly displayed when there is today daily goal
      */
@@ -395,7 +394,6 @@ class ChallengeFragmentTest {
 
         scenario.close()
     }
-
 
     /**
      * test if the time goal is correctly displayed when there is today daily goal
