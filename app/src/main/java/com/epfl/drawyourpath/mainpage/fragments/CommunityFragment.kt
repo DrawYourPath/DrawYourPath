@@ -69,8 +69,8 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             TournamentModel.SampleTournamentModel(
                 sampleWeekly(),
                 sampleYourTournaments(),
-                sampleDiscoveryTournaments()
-            )
+                sampleDiscoveryTournaments(),
+            ),
         )
     }
 
@@ -213,7 +213,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             tournament.posts.map { p ->
                 Pair(
                     tournament,
-                    p
+                    p,
                 )
             }
         }

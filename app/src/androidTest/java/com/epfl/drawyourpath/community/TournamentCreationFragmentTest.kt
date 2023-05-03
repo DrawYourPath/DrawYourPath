@@ -30,7 +30,7 @@ class TournamentCreationFragmentTest {
 
     private fun launchFragmentFromMainActivity(
         workingDB: Boolean,
-        workingAuth: Boolean
+        workingAuth: Boolean,
     ): ActivityScenario<MainActivity> {
         Intents.init()
 
@@ -49,10 +49,9 @@ class TournamentCreationFragmentTest {
         return scenario
     }
 
-
     private fun launchFragment(
         workingDB: Boolean,
-        workingAuth: Boolean
+        workingAuth: Boolean,
     ): FragmentScenario<TournamentCreationFragment> {
         val args = Bundle()
         val argDB = if (workingDB) "USE_WORKING_MOCK_DB" else "USE_FAILING_MOCK_DB"
@@ -214,7 +213,7 @@ class TournamentCreationFragmentTest {
 
         selectCorrectOptionsAndCreate()
 
-        //TODO also test toast
+        // TODO also test toast
 
         onView(withId(R.id.tournament_creation_fragment)).check(matches(isDisplayed()))
 
@@ -228,7 +227,7 @@ class TournamentCreationFragmentTest {
 
         selectCorrectOptionsAndCreate()
 
-        //TODO also test toast
+        // TODO also test toast
 
         onView(withId(R.id.tournament_creation_fragment)).check(matches(isDisplayed()))
 
@@ -244,7 +243,7 @@ class TournamentCreationFragmentTest {
     private fun typeDescription(description: String) {
         onView(withId(R.id.tournament_creation_description)).perform(
             scrollTo(),
-            replaceText(description)
+            replaceText(description),
         )
         closeSoftKeyboard()
     }
@@ -255,8 +254,8 @@ class TournamentCreationFragmentTest {
             setDate(
                 date.year,
                 date.monthValue,
-                date.dayOfMonth
-            )
+                date.dayOfMonth,
+            ),
         )
         onView(withId(android.R.id.button1)).perform(click())
     }
@@ -273,8 +272,8 @@ class TournamentCreationFragmentTest {
             setDate(
                 date.year,
                 date.monthValue,
-                date.dayOfMonth
-            )
+                date.dayOfMonth,
+            ),
         )
         onView(withId(android.R.id.button1)).perform(click())
     }
@@ -289,12 +288,12 @@ class TournamentCreationFragmentTest {
         when (visibility.ordinal) {
             0 -> onView(withId(R.id.tournament_creation_visibility_item_0)).perform(
                 scrollTo(),
-                click()
+                click(),
             )
 
             1 -> onView(withId(R.id.tournament_creation_visibility_item_1)).perform(
                 scrollTo(),
-                click()
+                click(),
             )
         }
     }

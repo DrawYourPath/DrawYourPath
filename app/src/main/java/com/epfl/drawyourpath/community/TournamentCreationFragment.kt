@@ -36,7 +36,7 @@ import java.time.temporal.ChronoUnit
 
 class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creation) {
 
-    //Keep track of the context in futures
+    // Keep track of the context in futures
     private lateinit var mActivity: Activity
 
     private lateinit var title: TextView
@@ -49,13 +49,13 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     // TODO add visibility to tournament
     private lateinit var visibility: RadioGroup
 
-    //data class used when the user has chosen the parameters of the tournament.
+    // data class used when the user has chosen the parameters of the tournament.
     data class TournamentParameters(
         val name: String,
         val description: String,
         val startDate: LocalDateTime,
         val endDate: LocalDateTime,
-        val visibility: Tournament.Visibility
+        val visibility: Tournament.Visibility,
     )
 
     override fun onAttach(context: Context) {
@@ -89,7 +89,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     private fun createCreateButton(view: View) {
         val createButton = view.findViewById<Button>(R.id.tournament_creation_create_button)
         createButton.setOnClickListener {
-
             // check that the parameters are entered correctly
             val newTournamentParameters =
                 checkTournamentConstraints(view) ?: return@setOnClickListener
@@ -109,7 +108,9 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             val id = database.getTournamentUID()
             if (id == null) {
                 Toast.makeText(
-                    mActivity, "Can't get a tournament id!", Toast.LENGTH_LONG
+                    mActivity,
+                    "Can't get a tournament id!",
+                    Toast.LENGTH_LONG,
                 ).show()
                 return@setOnClickListener
             }
@@ -119,7 +120,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
 
             // get back to community fragment without waiting for database
             replaceFragment<CommunityFragment>()
-
         }
     }
 
@@ -159,7 +159,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         params: TournamentParameters,
         id: String,
         creatorId: String,
-        db: Database
+        db: Database,
     ) {
         db.addTournament(
             Tournament(
@@ -169,8 +169,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
                 creatorId = creatorId,
                 startDate = params.startDate,
                 endDate = params.endDate,
-                visibility = params.visibility
-            )
+                visibility = params.visibility,
+            ),
         ).whenComplete { _, exception ->
             // Display toasts when complete. Note that it does not complete while offline (but the tournament
             // is stored when the user gets back online)
@@ -178,15 +178,13 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
                 Toast.makeText(
                     mActivity,
                     "Operation failed: ${exception.message}",
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_LONG,
                 ).show()
             } else {
                 Toast.makeText(mActivity, "Tournament created!", Toast.LENGTH_LONG).show()
             }
-
         }
     }
-
 
     /**
      * check the constraints on the tournament
@@ -213,13 +211,13 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         error = error or checkConstraint(
             tournamentTitle.isBlank(),
             getString(R.string.tournament_creation_title_error),
-            titleError
+            titleError,
         )
         // check description
         error = error or checkConstraint(
             tournamentDescription.isBlank(),
             getString(R.string.tournament_creation_description_error),
-            descriptionError
+            descriptionError,
         )
         // check start date and time
         error = error or checkConstraint(
@@ -237,7 +235,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         error = error or checkConstraint(
             tournamentVisibility == -1,
             getString(R.string.tournament_creation_visibility_error),
-            visibilityError
+            visibilityError,
         )
 
         if (error) {
@@ -289,7 +287,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
      */
     private fun getVisibility(radioButton: RadioButton): Tournament.Visibility {
         return Tournament.Visibility.valueOf(
-            radioButton.text.toString().uppercase().replace(" ", "_")
+            radioButton.text.toString().uppercase().replace(" ", "_"),
         )
     }
 
@@ -417,7 +415,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     /**
      * create a datePicker
      */
-    class DatePickerFragment(text: TextView) : DialogFragment(),
+    class DatePickerFragment(text: TextView) :
+        DialogFragment(),
         DatePickerDialog.OnDateSetListener {
         private val text: TextView
 
@@ -446,7 +445,8 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     /**
      * create a time picker
      */
-    class TimePickerFragment(text: TextView) : DialogFragment(),
+    class TimePickerFragment(text: TextView) :
+        DialogFragment(),
         TimePickerDialog.OnTimeSetListener {
         private val text: TextView
 
