@@ -9,9 +9,6 @@ import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneOffset
 
 /**
  * This fragment is used to display a countdown to the user(3,2,1,GO).
@@ -41,9 +38,9 @@ class PathDrawingCountDownFragment : Fragment(R.layout.fragment_path_drawing_cou
     /**
      * Helper function to displayed the main draw fragment to begin to draw a path
      */
-    private fun displayedMainDrawFragment(){
-        //initial run
-        val initRun = Run(path = Path(), startTime = getCurrentDateTimeInEpochSeconds(), endTime = getCurrentDateTimeInEpochSeconds()+1)
+    private fun displayedMainDrawFragment() {
+        // initial run
+        val initRun = Run(path = Path(), startTime = getCurrentDateTimeInEpochSeconds(), endTime = getCurrentDateTimeInEpochSeconds() + 1)
         // lunch the fragment to draw a path
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.path_drawing_activity_content, PathDrawingMainFragment(isDrawing = true, run = initRun)).commit()

@@ -34,7 +34,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var locationPermissionGranted = false
 
-    //to know if the map is open for the first time
+    // to know if the map is open for the first time
     private var mapInit = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,7 +45,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         }
         Places.initialize(
             this.requireActivity().applicationContext,
-            getString(R.string.google_api_key)
+            getString(R.string.google_api_key),
         )
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(this.requireActivity())
@@ -54,17 +54,17 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
             .findFragmentById(R.id.fragment_draw_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        //obtain the privacy location permission
+        // obtain the privacy location permission
         getLocationPermission()
     }
 
     override fun onMapReady(map: GoogleMap) {
         this.map = map
-        //set the UI interface in function of focusedOnPosition (displayed location button, enable scroll on map...)
+        // set the UI interface in function of focusedOnPosition (displayed location button, enable scroll on map...)
         updateLocationUI()
-        //obtain the user position and move the camera in function of focusedOnPosition
+        // obtain the user position and move the camera in function of focusedOnPosition
         getDeviceLocation()
-        //focused on
+        // focused on
         val pathReady = path != null && path.getPoints().isNotEmpty()
         if (pathReady && !focusedOnPosition) {
             val middlePoint = path!!.getPoints().get(path.size() / 2)
@@ -72,9 +72,10 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
                 CameraUpdateFactory.newLatLngZoom(
                     LatLng(
                         middlePoint.latitude,
-                        middlePoint.longitude
-                    ), DEFAULT_ZOOM
-                )
+                        middlePoint.longitude,
+                    ),
+                    DEFAULT_ZOOM,
+                ),
             )
         }
         if (pathReady) {
@@ -174,15 +175,16 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
                         override fun onLocationResult(locationResult: LocationResult?) {
                             if (locationResult != null) {
                                 lastKnownLocation = locationResult.lastLocation
-                                //move the camera if we focused the view on the user position or we initiate the map with a null path
+                                // move the camera if we focused the view on the user position or we initiate the map with a null path
                                 if ((mapInit && path == null) || focusedOnPosition) {
                                     map?.moveCamera(
                                         CameraUpdateFactory.newLatLngZoom(
                                             LatLng(
                                                 locationResult.lastLocation.latitude,
-                                                locationResult.lastLocation.longitude
-                                            ), DEFAULT_ZOOM
-                                        )
+                                                locationResult.lastLocation.longitude,
+                                            ),
+                                            DEFAULT_ZOOM,
+                                        ),
                                     )
                                 }
                                 mapInit = false
