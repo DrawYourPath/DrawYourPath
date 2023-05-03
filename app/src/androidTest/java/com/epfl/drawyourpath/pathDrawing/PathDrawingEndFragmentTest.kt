@@ -55,7 +55,7 @@ class PathDrawingEndFragmentTest {
         // click on stop button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_stop_button))
             .perform(ViewActions.click())
-        // click on back to menu button
+        // click on back to the menu button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_end_back_menu_button))
             .perform(ViewActions.click())
         // check that the main menu activity is displayed
