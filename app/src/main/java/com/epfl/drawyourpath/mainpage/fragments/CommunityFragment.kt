@@ -152,12 +152,19 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         menu.add(getString(R.string.create_new_tournament))
             .setIcon(R.drawable.ic_add)
             .setOnMenuItemClickListener {
-                // send args for mock to tournament creation fragment
+                // Sends args for mock to tournament creation fragment, only used during testing
+                // When not testing, db and auth are null, so no args are passed to the
+                // TournamentCreationFragment.
+
+                // Get database and auth types from the activity's launching intent.
                 val db = activity?.intent?.getStringExtra("Database")
                 val auth = activity?.intent?.getStringExtra("Auth")
+                // Put the strings in the activity's intent as keys with values true in a bundle used
+                // by the TournamentCreationFragment to choose which database and auth to use.
                 val fragmentArgs = Bundle()
                 if (db != null) fragmentArgs.putBoolean(db, true)
                 if (auth != null) fragmentArgs.putBoolean(auth, true)
+                // Launches the fragment
                 replaceFragment<TournamentCreationFragment>(fragmentArgs)
                 true
             }

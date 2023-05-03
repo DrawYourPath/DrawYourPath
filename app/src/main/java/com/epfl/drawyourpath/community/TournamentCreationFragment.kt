@@ -1,10 +1,8 @@
 package com.epfl.drawyourpath.community
 
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -36,9 +34,6 @@ import java.time.temporal.ChronoUnit
 
 class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creation) {
 
-    // Keep track of the context in futures
-    private lateinit var mActivity: Activity
-
     private lateinit var title: TextView
     private lateinit var description: TextView
     private lateinit var startDate: TextView
@@ -58,13 +53,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         val visibility: Tournament.Visibility,
     )
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is Activity) {
-            mActivity = context
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -80,56 +68,56 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
 
         createDateAndTime(endDate, endTime)
 
-        createCreateButton(view)
+        view.findViewById<Button>(R.id.tournament_creation_create_button).setOnClickListener {
+            onCreateTournamentClicked(view)
+        }
     }
 
     /**
-     * create the create button
+     * Handles the logic when the "Create Tournament" button is pressed.
      */
-    private fun createCreateButton(view: View) {
-        val createButton = view.findViewById<Button>(R.id.tournament_creation_create_button)
-        createButton.setOnClickListener {
-            // check that the parameters are entered correctly
-            val newTournamentParameters =
-                checkTournamentConstraints(view) ?: return@setOnClickListener
+    private fun onCreateTournamentClicked(view: View) {
+        // check that the parameters are entered correctly
+        val newTournamentParameters =
+            checkTournamentConstraints(view) ?: return
 
-            // get the auth and database (could be mock)
-            val database = getDatabase()
-            val auth = getAuth()
+        // get the auth and database (could be mock)
+        val database = getDatabase()
+        val auth = getAuth()
 
-            // get the id of the creator of the tournament from auth
-            val creatorId = auth.getUser()?.getUid()
-            if (creatorId == null) {
-                Toast.makeText(mActivity, "No user logged in!", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-
-            // get a uid for the tournament from database (client side)
-            val id = database.getTournamentUID()
-            if (id == null) {
-                Toast.makeText(
-                    mActivity,
-                    "Can't get a tournament id!",
-                    Toast.LENGTH_LONG,
-                ).show()
-                return@setOnClickListener
-            }
-
-            // ask to store the tournament in the database and handle exceptions
-            storeNewTournament(newTournamentParameters, id, creatorId, database)
-
-            // get back to community fragment without waiting for database
-            replaceFragment<CommunityFragment>()
+        // get the id of the creator of the tournament from auth
+        val creatorId = auth.getUser()?.getUid()
+        if (creatorId == null) {
+            Toast.makeText(activity, "No user logged in!", Toast.LENGTH_LONG).show()
+            return
         }
+
+        // get a uid for the tournament from database (client side)
+        val id = database.getTournamentUID()
+        if (id == null) {
+            Toast.makeText(
+                activity,
+                "Can't get a tournament id!",
+                Toast.LENGTH_LONG,
+            ).show()
+            return
+        }
+
+        // ask to store the tournament in the database and handle exceptions
+        storeNewTournament(newTournamentParameters, id, creatorId, database)
+
+        // get back to community fragment without waiting for database
+        replaceFragment<CommunityFragment>()
     }
+
 
     /**
      * Helper function that returns a database based on the arguments passed to
      */
     private fun getDatabase(): Database {
-        return if (arguments?.getBoolean("USE_WORKING_MOCK_DB", false) == true) {
+        return if (arguments?.getBoolean(USE_WORKING_MOCK_DB, false) == true) {
             MockDatabase()
-        } else if (arguments?.getBoolean("USE_FAILING_MOCK_DB", false) == true) {
+        } else if (arguments?.getBoolean(USE_FAILING_MOCK_DB, false) == true) {
             MockNonWorkingDatabase()
         } else {
             FirebaseDatabase()
@@ -137,9 +125,9 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     }
 
     private fun getAuth(): Auth {
-        return if (arguments?.getBoolean("USE_WORKING_MOCK_AUTH", false) == true) {
+        return if (arguments?.getBoolean(USE_WORKING_MOCK_AUTH, false) == true) {
             MockAuth(forceSigned = true)
-        } else if (arguments?.getBoolean("USE_FAILING_MOCK_AUTH", false) == true) {
+        } else if (arguments?.getBoolean(USE_FAILING_MOCK_AUTH, false) == true) {
             MockAuth()
         } else {
             FirebaseAuth()
@@ -176,12 +164,12 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             // is stored when the user gets back online)
             if (exception != null) {
                 Toast.makeText(
-                    mActivity,
+                    activity,
                     "Operation failed: ${exception.message}",
                     Toast.LENGTH_LONG,
                 ).show()
             } else {
-                Toast.makeText(mActivity, "Tournament created!", Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, "Tournament created!", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -361,6 +349,12 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     }
 
     companion object {
+        // Debug parameters
+        const val USE_WORKING_MOCK_DB = "USE_WORKING_MOCK_DB"
+        const val USE_FAILING_MOCK_DB = "USE_FAILING_MOCK_DB"
+        const val USE_WORKING_MOCK_AUTH = "USE_WORKING_MOCK_AUTH"
+        const val USE_FAILING_MOCK_AUTH = "USE_FAILING_MOCK_AUTH"
+
         private const val DATE_SEPARATOR = " / "
         private const val TIME_SEPARATOR = " : "
         private val DEFAULT_START_DATE = LocalDate.now()

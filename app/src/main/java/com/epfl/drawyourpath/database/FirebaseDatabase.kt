@@ -19,9 +19,8 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Base64
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.HashMap
 
 class FirebaseKeys {
     companion object {
@@ -532,24 +531,21 @@ class FirebaseDatabase : Database() {
         val future = CompletableFuture<Unit>()
         // check that the userId and tournamentId exist
         isUserInDatabase(userId).thenCombine(isTournamentInDatabase(tournamentId)) { userExists, tournamentExists ->
-            run {
-                if (!userExists) {
-                    future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
-                } else if (!tournamentExists) {
-                    future.completeExceptionally(Exception("The tournament with tournamentId  $tournamentId doesn't exist."))
-                } else {
-                    // if they exist, do the operation
-                    val changes: MutableMap<String, Any?> = hashMapOf(
-                        "${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}/$userId" to true,
-                        "${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to true,
-                    )
-                    database.updateChildren(changes)
-                        .addOnSuccessListener { future.complete(Unit) }
-                        .addOnFailureListener { future.completeExceptionally(it) }
-                }
+            if (!userExists) {
+                future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
+            } else if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId  $tournamentId doesn't exist."))
+            } else {
+                // if they exist, do the operation
+                val changes: MutableMap<String, Any?> = hashMapOf(
+                    "${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}/$userId" to true,
+                    "${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to true,
+                )
+                database.updateChildren(changes)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
             }
         }
-
         return future
     }
 
@@ -702,7 +698,11 @@ class FirebaseDatabase : Database() {
         // add the message to the list of the messages of the conversation
         when (message.content.javaClass) {
             MessageContent.RunPath::class.java -> return addChatRunMessage(conversationId, message)
-            MessageContent.Picture::class.java -> return addChatPictureMessage(conversationId, message)
+            MessageContent.Picture::class.java -> return addChatPictureMessage(
+                conversationId,
+                message
+            )
+
             MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
         }
         val future = CompletableFuture<Unit>()
@@ -718,7 +718,8 @@ class FirebaseDatabase : Database() {
         chatMessages(conversationId).child(messageId.toString()).removeValue()
             .addOnSuccessListener {
                 // check if we must update the preview
-                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).get()
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
+                    .child(messageId.toString()).get()
                     .addOnSuccessListener { data ->
                         if (data.value != null) {
                             val lastMessage = listOf<Pair<String, Any?>>(
@@ -749,9 +750,11 @@ class FirebaseDatabase : Database() {
         ).associate { entry -> entry }
         message(conversationId, messageId).updateChildren(newMessage)
             .addOnSuccessListener {
-                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).get().addOnSuccessListener { preview ->
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
+                    .child(messageId.toString()).get().addOnSuccessListener { preview ->
                     if (preview.value != null) {
-                        chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).updateChildren(newMessage)
+                        chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
+                            .child(messageId.toString()).updateChildren(newMessage)
                             .addOnSuccessListener { future.complete(Unit) }
                             .addOnFailureListener { future.completeExceptionally(it) }
                     }
@@ -1230,7 +1233,8 @@ class FirebaseDatabase : Database() {
      * @return a message correposnding to this data
      */
     private fun getMessageFromData(data: DataSnapshot): Message {
-        val dateStr: String = data.key ?: throw Exception("There content of this data not correspond to a message")
+        val dateStr: String =
+            data.key ?: throw Exception("There content of this data not correspond to a message")
         val date = dateStr.toLong()
         val sender = data.child(FirebaseKeys.CHAT_MESSAGE_SENDER).value as String
         val dataImage = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE)
@@ -1248,7 +1252,11 @@ class FirebaseDatabase : Database() {
             return Message(
                 id = date,
                 senderId = sender,
-                content = MessageContent.RunPath(transformRun(dataRun.children.toMutableList().get(0))!!),
+                content = MessageContent.RunPath(
+                    transformRun(
+                        dataRun.children.toMutableList().get(0)
+                    )!!
+                ),
                 timestamp = date,
             )
         }

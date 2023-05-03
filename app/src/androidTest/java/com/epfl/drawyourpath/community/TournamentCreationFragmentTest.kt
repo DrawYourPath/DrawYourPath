@@ -20,6 +20,10 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.community.TournamentCreationFragment.Companion.USE_FAILING_MOCK_AUTH
+import com.epfl.drawyourpath.community.TournamentCreationFragment.Companion.USE_FAILING_MOCK_DB
+import com.epfl.drawyourpath.community.TournamentCreationFragment.Companion.USE_WORKING_MOCK_AUTH
+import com.epfl.drawyourpath.community.TournamentCreationFragment.Companion.USE_WORKING_MOCK_DB
 import com.epfl.drawyourpath.mainpage.MainActivity
 import org.junit.Rule
 import org.junit.Test
@@ -39,8 +43,8 @@ class TournamentCreationFragmentTest {
     ): ActivityScenario<MainActivity> {
         Intents.init()
 
-        val argDB = if (workingDB) "USE_WORKING_MOCK_DB" else "USE_FAILING_MOCK_DB"
-        val argAuth = if (workingAuth) "USE_WORKING_MOCK_AUTH" else "USE_FAILING_MOCK_AUTH"
+        val argDB = if (workingDB) USE_WORKING_MOCK_DB else USE_FAILING_MOCK_DB
+        val argAuth = if (workingAuth) USE_WORKING_MOCK_AUTH else USE_FAILING_MOCK_AUTH
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         intent.putExtra("Database", argDB)
         intent.putExtra("Auth", argAuth)
@@ -58,8 +62,8 @@ class TournamentCreationFragmentTest {
         workingAuth: Boolean,
     ): FragmentScenario<TournamentCreationFragment> {
         val args = Bundle()
-        val argDB = if (workingDB) "USE_WORKING_MOCK_DB" else "USE_FAILING_MOCK_DB"
-        val argAuth = if (workingAuth) "USE_WORKING_MOCK_AUTH" else "USE_FAILING_MOCK_AUTH"
+        val argDB = if (workingDB) USE_WORKING_MOCK_DB else USE_FAILING_MOCK_DB
+        val argAuth = if (workingAuth) USE_WORKING_MOCK_AUTH else USE_FAILING_MOCK_AUTH
         args.putBoolean(argDB, true)
         args.putBoolean(argAuth, true)
         return FragmentScenario.launchInContainer(
