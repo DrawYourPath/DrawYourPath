@@ -18,19 +18,15 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.sql.Time
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
-import kotlin.math.roundToInt
-import kotlin.time.Duration.Companion.seconds
 
 @RunWith(JUnit4::class)
 class PathDrawingEndFragmentTest {
     private val mockPath = Path(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0)))
-    val date = LocalDate.of(2000, 1, 1).atTime(LocalTime.of(12, 0,5)).toEpochSecond(ZoneOffset.UTC)
-    private val mockRun = Run(path = mockPath, startTime = date, endTime = date+75)
+    val date = LocalDate.of(2000, 1, 1).atTime(LocalTime.of(12, 0, 5)).toEpochSecond(ZoneOffset.UTC)
+    private val mockRun = Run(path = mockPath, startTime = date, endTime = date + 75)
     val expectedDistance = "111.19"
     val expectedSpeed = "1482.6"
     val expectedTime = "00:01:15"
@@ -51,22 +47,23 @@ class PathDrawingEndFragmentTest {
             PathDrawingActivity::class.java,
         )
         val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
-        //wait that the countdown passed
+        // wait that the countdown passed
         Thread.sleep(4100)
-        //click on pause button
+        // click on pause button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .perform(ViewActions.click())
-        //click on stop button
+        // click on stop button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_stop_button))
             .perform(ViewActions.click())
-        //click on back to menu button
+        // click on back to menu button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_end_back_menu_button))
             .perform(ViewActions.click())
-        //check that the main menu activity is displayed
+        // check that the main menu activity is displayed
         Espresso.onView(ViewMatchers.withId(R.id.drawerLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         t.close()
     }
+
     /**
      * Test that the information displayed on the end drawing fragment are correct for the given run.
      */
@@ -84,22 +81,22 @@ class PathDrawingEndFragmentTest {
         // check the time displayed
         Espresso.onView(ViewMatchers.withId(R.id.display_time_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedTime)))
-        //check the start time displayed
+        // check the start time displayed
         Espresso.onView(ViewMatchers.withId(R.id.display_start_time_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedStartTime)))
-        //check the end time displayed
+        // check the end time displayed
         Espresso.onView(ViewMatchers.withId(R.id.display_end_time_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedEndTime)))
         // check the speed displayed
         Espresso.onView(ViewMatchers.withId(R.id.display_speed_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedSpeed)))
-        //check time taken for 1 km
+        // check time taken for 1 km
         Espresso.onView(ViewMatchers.withId(R.id.display_time_km_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedTimeFor1km)))
-        //check distance displayed
+        // check distance displayed
         Espresso.onView(ViewMatchers.withId(R.id.display_distance_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(expectedDistance)))
-        //check calories displayed
+        // check calories displayed
         Espresso.onView(ViewMatchers.withId(R.id.display_calories_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(mockRun.getCalories().toString())))
 

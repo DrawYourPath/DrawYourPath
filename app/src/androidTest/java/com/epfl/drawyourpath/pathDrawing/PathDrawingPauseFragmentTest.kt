@@ -30,15 +30,15 @@ class PathDrawingPauseFragmentTest {
             PathDrawingActivity::class.java,
         )
         val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
-        //wait that the countdown passed
+        // wait that the countdown passed
         Thread.sleep(4100)
-        //click on stop button
+        // click on stop button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .perform(ViewActions.click())
-        //check that the main fragment is displayed
+        // check that the main fragment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_main_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        //check the content of the main fragment
+        // check the content of the main fragment
         Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_detail_performance_fragment))
