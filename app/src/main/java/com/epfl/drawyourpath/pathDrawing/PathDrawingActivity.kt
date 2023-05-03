@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
+import com.epfl.drawyourpath.userProfileCreation.PROFILE_TEST_KEY
+import com.epfl.drawyourpath.userProfileCreation.SelectUsernameFragment
 
 class PathDrawingActivity : AppCompatActivity() {
     private val userCached: UserModelCached by viewModels()
@@ -24,7 +26,6 @@ class PathDrawingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_path_drawing_actvity)
         // lunch the countdown fragment
         val fragTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.contentFragmentPathDrawing, PathDrawingCountDownFragment())
-        fragTransaction.commit()
+        fragTransaction.add(R.id.contentFragmentPathDrawing, PathDrawingCountDownFragment()).commit()
     }
 }

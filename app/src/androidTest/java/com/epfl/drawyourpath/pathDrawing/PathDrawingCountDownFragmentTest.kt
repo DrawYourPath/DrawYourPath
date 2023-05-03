@@ -1,6 +1,9 @@
 package com.epfl.drawyourpath.pathDrawing
 
+import android.content.Intent
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -14,7 +17,11 @@ class PathDrawingCountDownFragmentTest {
 
     @Test
     fun testThatTheCountdownIsDisplayedCorrectly() {
-        val scenario = launchFragmentInContainer<PathDrawingCountDownFragment>()
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            PathDrawingActivity::class.java,
+        )
+        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
 
         Espresso.onView(ViewMatchers.withId(R.id.path_countdown_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -32,6 +39,6 @@ class PathDrawingCountDownFragmentTest {
         Thread.sleep(1000)
         Espresso.onView(ViewMatchers.withId(R.id.countdown_text))
             .check(ViewAssertions.matches(ViewMatchers.withText("GO")))
-        scenario.close()
+        t.close()
     }
 }

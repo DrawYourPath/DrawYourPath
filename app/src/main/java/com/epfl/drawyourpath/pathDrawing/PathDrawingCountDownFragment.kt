@@ -10,16 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 
-class PathDrawingCountDownFragment : Fragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        return inflater.inflate(R.layout.fragment_path_drawing_count_down, container, false)
-    }
-
+class PathDrawingCountDownFragment : Fragment(R.layout.fragment_path_drawing_count_down) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -34,11 +25,19 @@ class PathDrawingCountDownFragment : Fragment() {
             }
 
             override fun onFinish() {
-                // lunch the fragment to draw a path
-                val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-                fragTransaction.replace(R.id.contentFragmentPathDrawing, PathDrawingMainFragment(isDrawing = true))
-                fragTransaction.commit()
+                if(activity!=null){
+                    displayedMainDrawFragment()
+                }
             }
         }.start()
+    }
+
+    /**
+     * Helper function to displayed the main draw fragment
+     */
+    private fun displayedMainDrawFragment(){
+        // lunch the fragment to draw a path
+        val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+        fragTransaction.replace(R.id.contentFragmentPathDrawing, PathDrawingMainFragment(isDrawing = true)).commit()
     }
 }
