@@ -44,7 +44,7 @@ object Utils {
         if (photo == null) {
             return getDefaultPhoto(res)
         }
-        return BitmapFactory.decodeByteArray(photo, 0, photo.size, BitmapFactory.Options())
+        return BitmapFactory.decodeByteArray(photo, 0, photo.size, BitmapFactory.Options()) ?: getDefaultPhoto(res)
     }
 
     /**
@@ -62,7 +62,7 @@ object Utils {
      * @return the photo in bitmap format, and null if no photo is stored on the database
      */
     fun decodePhoto(photoStr: String): Bitmap {
-        val tabByte = Base64.getDecoder().decode(photoStr as String)
+        val tabByte = Base64.getDecoder().decode(photoStr)
         return BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
     }
 
