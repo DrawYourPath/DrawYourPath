@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.pathDrawing
 
 import android.content.Intent
-import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -23,7 +22,7 @@ class PathDrawingCountDownFragmentTest {
         )
         val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
 
-        Espresso.onView(ViewMatchers.withId(R.id.path_countdown_fragment))
+        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.countdown_text))
             .check(ViewAssertions.matches(ViewMatchers.withText("3")))

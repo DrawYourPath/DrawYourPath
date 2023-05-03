@@ -44,10 +44,10 @@ class DrawMenuFragmentTest {
             .perform(ViewActions.click())
 
         // check that the draw path activity was lunched
-        Espresso.onView(ViewMatchers.withId(R.id.contentFragmentPathDrawing))
+        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_activity_content))
             .check((ViewAssertions.matches(ViewMatchers.isDisplayed())))
         // check that the countdown is currently displayed
-        Espresso.onView(ViewMatchers.withId(R.id.path_countdown_fragment))
+        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment))
             .check((ViewAssertions.matches(ViewMatchers.isDisplayed())))
 
         t.close()

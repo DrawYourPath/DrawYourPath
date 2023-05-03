@@ -10,31 +10,27 @@ import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Run
 
-class PathDrawingResumeStopFragment(private val run: Run) : Fragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        return inflater.inflate(R.layout.fragment_path_drawing_resume_stop, container, false)
-    }
-
+/**
+ * This fragment is used to display a button to resume the drawing of a path and a button to stop the drawing and save the run.
+ * @param run that will be displayed when we will be resume or will saved when we stopped.
+ */
+class PathDrawingResumeStopFragment(private val run: Run) : Fragment(R.layout.fragment_path_drawing_resume_stop) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // update the main view if the resume button is clicked
-        val resumeButton: Button = view.findViewById(R.id.resume_drawing_button)
+        val resumeButton: Button = view.findViewById(R.id.path_drawing_resume_button)
         resumeButton.setOnClickListener {
             val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-            fragTransaction.replace(R.id.contentFragmentPathDrawing, PathDrawingMainFragment(isDrawing = true))
+            fragTransaction.replace(R.id.path_drawing_activity_content, PathDrawingMainFragment(isDrawing = true, run = run))
             fragTransaction.commit()
         }
 
         // show the end draw path view by clicking on the End the draw button
-        val stopButton: Button = view.findViewById(R.id.stop_drawing_button)
+        val stopButton: Button = view.findViewById(R.id.path_drawing_stop_button)
         stopButton.setOnClickListener {
             val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-            fragTransaction.replace(R.id.contentFragmentPathDrawing, PathDrawingEndFragment(run))
+            fragTransaction.replace(R.id.path_drawing_activity_content, PathDrawingEndFragment(run))
             fragTransaction.commit()
         }
     }

@@ -4,7 +4,7 @@
     android:layout_height="125dp"
     android:gravity="center|top"
     android:orientation="vertical"
-    android:id="@+id/path_drawing_sport_data_fragment">
+    android:id="@+id/path_drawing_current_performance_fragment">
     
     <View
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/time"/>
     <TextView
-        android:id="@+id/display_time"
+        android:id="@+id/display_time_current_performance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/initial_time"
@@ -45,7 +45,7 @@
                 android:text="@string/average_speed_m_s"/>
 
             <TextView
-                android:id="@+id/display_speed"
+                android:id="@+id/display_speed_current_performance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/initial_speed"
@@ -72,7 +72,7 @@
                 android:text="@string/distance_km"/>
 
             <TextView
-                android:id="@+id/display_distance"
+                android:id="@+id/display_distance_current_performance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/initial_distance"

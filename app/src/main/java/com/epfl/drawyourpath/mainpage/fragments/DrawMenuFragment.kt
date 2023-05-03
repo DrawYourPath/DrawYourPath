@@ -27,7 +27,7 @@ class DrawMenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment = MapFragment()
+        val mapFragment = MapFragment(focusedOnPosition = false, path = null)
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(R.id.mapMenuFragmentContent, mapFragment)
         fragTransaction.commit()

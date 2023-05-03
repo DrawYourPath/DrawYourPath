@@ -2,14 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:orientation="horizontal">
-
-    <Space
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"/>
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:id="@+id/path_drawing_resume_stop_fragment">
 
     <Button
-        android:id="@+id/stop_drawing_button"
+        android:id="@+id/path_drawing_stop_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/end_the_draw"
@@ -18,7 +16,7 @@
         android:layout_width="30dp"
         android:layout_height="wrap_content"/>
     <Button
-        android:id="@+id/resume_drawing_button"
+        android:id="@+id/path_drawing_resume_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/resume"

@@ -28,7 +28,7 @@ class PathDrawingActivityTest {
         val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
 
         // test that the countdown fragment is displayed
-        Espresso.onView(ViewMatchers.withId(R.id.path_countdown_fragment)).check(
+        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed(),
             ),
@@ -44,10 +44,10 @@ class PathDrawingActivityTest {
         )
         val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
 
-        Espresso.onView(ViewMatchers.withId(R.id.path_countdown_fragment))
+        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Thread.sleep(4000)
-        Espresso.onView(ViewMatchers.withId(R.id.path_draw_main_fragment))
+        Espresso.onView(ViewMatchers.withId(R.id.path_drawing_main_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         t.close()
     }

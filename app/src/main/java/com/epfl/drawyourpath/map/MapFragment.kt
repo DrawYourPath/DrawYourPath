@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.map
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -21,12 +20,22 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.libraries.places.api.Places
 
-class MapFragment(private val showCurrentPosition: Boolean = true, private val path: Path? = null) : Fragment(R.layout.fragment_map), OnMapReadyCallback {
+/**
+ * This fragment is used to show a map with the Google map api.
+ * @param focusedOnPosition if true then the camera automatically track the user position and the map is not scrollable,
+ *  if false the camera tracking is not enable and we can scroll on the map
+ * @param path if the path is not null, then it will be drawn on the map (and the view will be centered on the middle of the path).
+ */
+class MapFragment(private val focusedOnPosition: Boolean = true, private val path: Path? = null) :
+    Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     private var map: GoogleMap? = null
     private var lastKnownLocation: Location? = null
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var locationPermissionGranted = false
+
+    //to know if the map is open for the first time
+    private var mapInit = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,31 +43,43 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
         }
-        Places.initialize(this.requireActivity().applicationContext, getString(R.string.google_api_key))
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
+        Places.initialize(
+            this.requireActivity().applicationContext,
+            getString(R.string.google_api_key)
+        )
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(this.requireActivity())
 
         val mapFragment = childFragmentManager
             .findFragmentById(R.id.fragment_draw_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        //obtain the privacy location permission
         getLocationPermission()
     }
 
     override fun onMapReady(map: GoogleMap) {
         this.map = map
-        if (showCurrentPosition) {
-            updateLocationUI()
-            getDeviceLocation()
-        } else {
-            // show the middle point of the path if the path is not null
-            if (path != null) {
-                val middlePoint = path.getPoints().get(path.size() / 2)
-                map?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(middlePoint.latitude, middlePoint.longitude), DEFAULT_ZOOM))
-            }
+        //set the UI interface in function of focusedOnPosition (displayed location button, enable scroll on map...)
+        updateLocationUI()
+        //obtain the user position and move the camera in function of focusedOnPosition
+        getDeviceLocation()
+        //focused on
+        val pathReady = path != null && path.getPoints().isNotEmpty()
+        if (pathReady && !focusedOnPosition) {
+            val middlePoint = path!!.getPoints().get(path.size() / 2)
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        middlePoint.latitude,
+                        middlePoint.longitude
+                    ), DEFAULT_ZOOM
+                )
+            )
         }
-        if (path != null) {
+        if (pathReady) {
             // add the path on the map if the run
-            drawPathOnMap(map, path)
+            drawPathOnMap(map, path!!)
         }
     }
 
@@ -75,6 +96,9 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
         map.addPolyline(PolylineOptions().clickable(false).addAll(listLng))
     }
 
+    /**
+     * This function is used to ask the privacy localization permission
+     */
     private fun getLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 this.requireActivity().applicationContext,
@@ -105,13 +129,14 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
                 ) {
                     locationPermissionGranted = true
-                    updateLocationUI()
                 }
             }
         }
     }
 
-    @SuppressLint("MissingPermission")
+    /**
+     * This function is used to setup the map ui (like the position button, scroll gesture)
+     */
     private fun updateLocationUI() {
         if (map == null) {
             return
@@ -119,8 +144,8 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
         try {
             if (locationPermissionGranted) {
                 map?.isMyLocationEnabled = true
-                map?.uiSettings?.isMyLocationButtonEnabled = true
-                getDeviceLocation()
+                map?.uiSettings?.isScrollGesturesEnabled = !focusedOnPosition
+                map?.uiSettings?.isMyLocationButtonEnabled = !focusedOnPosition
             } else {
                 map?.isMyLocationEnabled = false
                 map?.uiSettings?.isMyLocationButtonEnabled = false
@@ -131,7 +156,9 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
         }
     }
 
-    @SuppressLint("MissingPermission")
+    /**
+     * This function is used to update the last known location of the user and update the camera view if needed
+     */
     private fun getDeviceLocation() {
         try {
             if (locationPermissionGranted) {
@@ -146,9 +173,19 @@ class MapFragment(private val showCurrentPosition: Boolean = true, private val p
                     object : LocationCallback() {
                         override fun onLocationResult(locationResult: LocationResult?) {
                             if (locationResult != null) {
-                                var coordinates = LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
-                                map?.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, DEFAULT_ZOOM))
                                 lastKnownLocation = locationResult.lastLocation
+                                //move the camera if we focused the view on the user position or we initiate the map with a null path
+                                if ((mapInit && path == null) || focusedOnPosition) {
+                                    map?.moveCamera(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            LatLng(
+                                                locationResult.lastLocation.latitude,
+                                                locationResult.lastLocation.longitude
+                                            ), DEFAULT_ZOOM
+                                        )
+                                    )
+                                }
+                                mapInit = false
                             } else {
                                 Log.d(TAG, "Current location is null. Using defaults.")
                                 map?.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM))
