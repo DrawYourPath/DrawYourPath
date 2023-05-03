@@ -1,13 +1,18 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.Manifest
+import android.content.Intent
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.MainActivity
+import com.epfl.drawyourpath.pathDrawing.PathDrawingActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,7 +35,11 @@ class DrawMenuFragmentTest {
 
     @Test
     fun checkThatClickingOnTheStartDrawButtonShowCountDown() {
-        val scenario = launchFragmentInContainer<DrawMenuFragment>()
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            MainActivity::class.java,
+        )
+        val t: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
 
         Espresso.onView(ViewMatchers.withId(R.id.button_start_drawing))
             .perform(ViewActions.click())
@@ -41,6 +50,7 @@ class DrawMenuFragmentTest {
         // check that the countdown is currently displayed
         Espresso.onView(ViewMatchers.withId(R.id.path_countdown_fragment))
             .check((ViewAssertions.matches(ViewMatchers.isDisplayed())))
-        scenario.close()
+
+        t.close()
     }
 }
