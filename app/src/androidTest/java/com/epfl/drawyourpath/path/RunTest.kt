@@ -46,7 +46,7 @@ class RunTest {
         // check that duration is calculated correctly
         assertEquals(3000L, run.getDuration())
     }
-
+    
     @Test
     fun calculateAverageSpeed() {
         // create a run with known path and duration
@@ -59,6 +59,26 @@ class RunTest {
         val run = Run(path, startTime, endTime)
 
         assertEquals(path.getDistance() / 3000, run.getAverageSpeed(), 0.1)
+    }
+
+    @Test
+    fun calculateCalories() {
+        // create a run with known path and duration
+        val point1 = LatLng(0.0, 0.0)
+        val point2 = LatLng(0.1, 0.1)
+        val points = listOf(point1, point2)
+        val path = Path(points)
+
+        val met = 11.0
+        // Speed should be 7 mph to have a MET of 11.0
+        val speed = 7 / 2.23693629205440238
+        // That means we need to run for (distance / speed) seconds
+        val startTime = 0L
+        val endTime = (path.getDistance() / speed).toLong()
+        val run = Run(path, startTime, endTime)
+
+        val cal = met * 70 * run.getDuration() / 3600
+        assertEquals(cal, run.getCalories().toDouble(), cal / 50)
     }
 
     @Test
