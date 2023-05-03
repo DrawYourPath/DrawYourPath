@@ -13,7 +13,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -83,11 +82,11 @@ fun getStringDuration(time: Long): String {
 fun getStringTimeStartEnd(time: Long): String {
     val localTime = LocalDateTime.ofEpochSecond(time, 0, ZoneOffset.UTC)
     val hours = localTime.hour
-    val hoursStr = if(hours==0) "00" else if(hours<10) "0$hours" else hours
+    val hoursStr = if (hours == 0) "00" else if (hours < 10) "0$hours" else hours
     val minutes = localTime.minute
-    val minutesStr = if(minutes ==0) "00" else if(minutes <10) "0$minutes" else minutes
+    val minutesStr = if (minutes == 0) "00" else if (minutes < 10) "0$minutes" else minutes
     val seconds = localTime.second
-    val secondsStr = if(seconds==0) "00" else if(seconds<10) "0$seconds" else seconds
+    val secondsStr = if (seconds == 0) "00" else if (seconds < 10) "0$seconds" else seconds
     return "$hoursStr:$minutesStr:$secondsStr"
 }
 
