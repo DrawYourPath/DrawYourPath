@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import androidx.room.Room
@@ -96,7 +97,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun setCurrentUser(userId: String): CompletableFuture<Unit> {
         checkCurrentUser(false)
         setUserId(userId)
+        Log.d("test", userId)
         return database.getUserData(userId).thenApplyAsync { userData ->
+            Log.d("test", userData.username.toString())
             val runs = RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
             userCache.insertAll(
                 UserEntity(userData, userId),

@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.userProfile.UserModel
 import com.epfl.utils.drawyourpath.Utils
 
 class FriendsViewModel(private val userId: String, private val database: Database) : ViewModel() {
