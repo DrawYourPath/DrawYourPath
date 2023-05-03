@@ -95,7 +95,6 @@ class HistoryFragmentTest {
         }
     }
 
-
     @Test
     fun testEmptyRecyclerView() {
         val runs = mutableListOf<Run>()
@@ -111,6 +110,4 @@ class HistoryFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.runsRecyclerView))
             .check(ViewAssertions.matches(ViewMatchers.hasChildCount(0)))
     }
-
-
 }
