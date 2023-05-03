@@ -15,16 +15,25 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.authentication.FirebaseAuth
+import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.Friend
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
+import com.epfl.drawyourpath.userProfile.UserModel
+
+// TODO: Refactor this file
 
 class FriendsFragment(private val database: Database) : Fragment(R.layout.fragment_friends) {
     private lateinit var viewModel: FriendsViewModel
     private lateinit var friendsListAdapter: FriendsListAdapter
+    private lateinit var user: User
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,14 +58,30 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         }
         recyclerView.adapter = friendsListAdapter
 
-        // Initialize the ViewModel
-        val userAccountFuture = database.getLoggedUserAccount()
+        val currentUser =
+            if (database is MockDatabase) {
+                MockAuth(forceSigned = true).getUser()
+            } else {
+                FirebaseAuth.getUser()
+            }
 
-        userAccountFuture.thenApply { userModel ->
+        if (currentUser == null) {
+            launchLoginActivity(requireActivity())
+            return
+        }
+        user = currentUser
+
+        // TODO: Migrate away from UserModel and refactor
+        // Initialize the ViewModel
+        val userAccountFuture = database.getUserData(user.getUid())
+
+        userAccountFuture.thenApply { userdata ->
+
+            val userModel = UserModel(userdata)
 
             // Initialize the ViewModel with the userModel
             val factory = FriendsViewModelFactory(userModel, this.database)
-            viewModel = ViewModelProvider(this, factory).get(FriendsViewModel::class.java)
+            viewModel = ViewModelProvider(this, factory)[FriendsViewModel::class.java]
 
             // Update the adapter with the fetched data
             recyclerView.adapter = friendsListAdapter
@@ -68,6 +93,9 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
             // Set up the search functionality
             val searchView: SearchView = view.findViewById(R.id.friends_search_bar)
+
+            // TODO: Refactor this nightmare. We should avoid more than 3 indentation levels.
+            //       At the deepest level we have 12...
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -82,27 +110,32 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                 ).show()
                             } else {
                                 database.getUserIdFromUsername(query).thenApply { userId ->
-                                    database.getLoggedUserAccount().thenApply { loggedUserModel ->
-                                        if (userId != loggedUserModel.getUserId()) {
-                                            database.getUserAccount(userId).thenApply { userModel ->
-                                                val newFriend = Friend(
-                                                    userModel.getUserId(),
-                                                    userModel.getUsername(),
-                                                    userModel.getProfilePhoto(),
-                                                    false,
-                                                )
+                                    Log.i("Friends", "Uid of $query is $userId")
+                                    database.getUserData(currentUser.getUid())
+                                        .thenApply { loggedUserdata ->
+                                            val loggedUserModel = UserModel(loggedUserdata)
+                                            if (userId != loggedUserModel.getUserId()) {
+                                                database.getUserData(userId)
+                                                    .thenApply { userdata ->
+                                                        val userModel = UserModel(userdata)
+                                                        val newFriend = Friend(
+                                                            userdata.userId!!,
+                                                            userModel.getUsername(),
+                                                            userModel.getProfilePhoto(),
+                                                            false,
+                                                        )
 
-                                                // Add the new friend to the list and update the UI
-                                                viewModel.addPotentialFriend(newFriend)
+                                                        // Add the new friend to the list and update the UI
+                                                        viewModel.addPotentialFriend(newFriend)
+                                                    }
+                                            } else {
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    "You can't add yourself as a friend.",
+                                                    Toast.LENGTH_SHORT,
+                                                ).show()
                                             }
-                                        } else {
-                                            Toast.makeText(
-                                                requireContext(),
-                                                "You can't add yourself as a friend.",
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
                                         }
-                                    }
                                 }
                             }
                         }
@@ -118,7 +151,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         }.exceptionally { exception ->
             // Handle any exceptions that occurred during the CompletableFuture execution
             Log.e(TAG, "Error while getting UserAccount: ", exception)
-            null
         }
     }
 
@@ -126,15 +158,17 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         val mainActivity = requireActivity() as MainActivity
         mainActivity.scanQRCode()
             .thenApply {
-                // TODO: Add friend from ID "it"
                 if (it == null) {
                     Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(mainActivity, "Scanned $it", Toast.LENGTH_LONG).show()
+                    database.addFriend(user.getUid(), it).thenAccept {
+                        Toast.makeText(mainActivity, "Friend added", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             .exceptionally {
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+                null
             }
     }
 }

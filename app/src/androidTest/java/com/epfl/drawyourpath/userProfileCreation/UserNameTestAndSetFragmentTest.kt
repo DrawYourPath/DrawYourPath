@@ -1,6 +1,9 @@
 package com.epfl.drawyourpath.userProfileCreation
 
 import android.content.Intent
+import androidx.core.os.bundleOf
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -9,8 +12,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
 import org.junit.Test
@@ -25,18 +27,16 @@ class UserNameTestAndSetFragmentTest {
      */
     fun usernameUnAvailableIsPrintUnAvailable() {
         // pass in test mode to used the Mockdatabase instead of the Firebase
-        var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
-        intent.putExtra("isRunningTestForDataBase", true)
-        var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
-        onView(withId(R.id.input_userName_text_UserProfileCreation)).perform(ViewActions.typeText("albert"))
+        launchSetUsernameFragment()
+        onView(withId(R.id.input_userName_text_UserProfileCreation))
+            .perform(ViewActions.replaceText("hugo"))
         closeSoftKeyboard()
-        onView(withId(R.id.testUserName_button_userProfileCreation)).perform(ViewActions.click())
+        onView(withId(R.id.testUserName_button_userProfileCreation))
+            .perform(ViewActions.click())
 
         // test if the text printed is correct
-        onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("*The username albert is NOT available !")))
-
-        t.close()
+        onView(withId(R.id.testUserName_text_userProfileCreation))
+            .check(matches(withSubstring("taken")))
     }
 
     /**
@@ -47,15 +47,11 @@ class UserNameTestAndSetFragmentTest {
     @Test
     fun usernameUnAvailableIsPrintIncorrectWhenWeChooseAnEmptyUsername() {
         // pass in test mode to used the Mockdatabase instead of the Firebase
-        var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
-        intent.putExtra("isRunningTestForDataBase", true)
-        var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
+        launchSetUsernameFragment()
         onView(withId(R.id.testUserName_button_userProfileCreation)).perform(ViewActions.click())
 
         // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("The username can't be empty !")))
-        t.close()
     }
 
     /**
@@ -66,17 +62,14 @@ class UserNameTestAndSetFragmentTest {
     @Test
     fun usernameCorrectIsPrintCorrect() {
         // pass in test mode to used the Mockdatabase instead of the Firebase
-        var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
-        intent.putExtra("isRunningTestForDataBase", true)
-        var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
-        onView(withId(R.id.input_userName_text_UserProfileCreation)).perform(ViewActions.typeText("hugo"))
+        launchSetUsernameFragment()
+
+        onView(withId(R.id.input_userName_text_UserProfileCreation)).perform(ViewActions.replaceText("albert"))
         closeSoftKeyboard()
         onView(withId(R.id.testUserName_button_userProfileCreation)).perform(ViewActions.click())
 
         // test if the text printed is correct
-        onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("*The username hugo is available !")))
-        t.close()
+        onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withSubstring("is available")))
     }
 
     /**
@@ -84,19 +77,15 @@ class UserNameTestAndSetFragmentTest {
      * will show the message that this username is unavailable
      */
     @Test
-    fun validateAnUnAvailableUserNameShowMessage() {
+    fun validateAnUnavailableUserNameShowMessage() {
         // pass in test mode to used the Mockdatabase instead of the Firebase
-        var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
-        intent.putExtra("isRunningTestForDataBase", true)
-        var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
-        onView(withId(R.id.input_userName_text_UserProfileCreation)).perform(ViewActions.typeText("albert"))
+        launchSetUsernameFragment()
+        onView(withId(R.id.input_userName_text_UserProfileCreation)).perform(ViewActions.replaceText("hugo"))
         closeSoftKeyboard()
         onView(withId(R.id.setUserName_button_userProfileCreation)).perform(ViewActions.click())
 
         // test if the text printed is correct
-        onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("*The username albert is NOT available !")))
-        t.close()
+        onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withSubstring("taken")))
     }
 
     /**
@@ -106,15 +95,12 @@ class UserNameTestAndSetFragmentTest {
     @Test
     fun validateAnEmptyUserNameShowMessage() {
         // pass in test mode to used the Mockdatabase instead of the Firebase
-        var intent = Intent(getApplicationContext(), UserProfileCreationActivity::class.java)
-        intent.putExtra("isRunningTestForDataBase", true)
-        var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
-        onView(withId(R.id.start_profile_creation_button_userProfileCreation)).perform(ViewActions.click())
+        launchSetUsernameFragment()
+
         onView(withId(R.id.setUserName_button_userProfileCreation)).perform(ViewActions.click())
 
         // test if the text printed is correct
         onView(withId(R.id.testUserName_text_userProfileCreation)).check(matches(withText("The username can't be empty !")))
-        t.close()
     }
 
     /**
@@ -128,20 +114,27 @@ class UserNameTestAndSetFragmentTest {
             getApplicationContext(),
             UserProfileCreationActivity::class.java,
         )
-        intent.putExtra("isRunningTestForDataBase", true)
+        intent.putExtra(PROFILE_TEST_KEY, true)
         var t: ActivityScenario<UserProfileCreationActivity> = launch(intent)
+
         onView(withId(R.id.start_profile_creation_button_userProfileCreation))
             .perform(ViewActions.click())
         onView(withId(R.id.input_userName_text_UserProfileCreation))
-            .perform(ViewActions.typeText("hugo"))
+            .perform(ViewActions.replaceText("albert"))
         closeSoftKeyboard()
         onView(withId(R.id.setUserName_button_userProfileCreation))
             .perform(ViewActions.click())
 
-        // test if the correct fragment is show after clicking on VALIDATE button
+        // test if the correct fragment is shown after clicking on VALIDATE button
         onView(withId(R.id.personalInfoFragment))
             .check(matches(ViewMatchers.isDisplayed()))
-
-        t.close()
     }
+}
+
+fun launchSetUsernameFragment(): FragmentScenario<SelectUsernameFragment> {
+    return launchFragmentInContainer(
+        bundleOf(
+            PROFILE_TEST_KEY to true,
+        ),
+    )
 }

@@ -8,11 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-<<<<<<< HEAD
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.findFragment
-=======
->>>>>>> f281179b20ce0f1ac80a14389724715b366544f8
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.map.MapFragment
