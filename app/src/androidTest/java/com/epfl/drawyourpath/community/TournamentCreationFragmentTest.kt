@@ -41,7 +41,7 @@ class TournamentCreationFragmentTest {
         intent.putExtra("Auth", argAuth)
 
         val scenario: ActivityScenario<MainActivity> = launch(intent)
-        //Thread.sleep(1000) //seems to bug otherwise...
+        // Thread.sleep(1000) //seems to bug otherwise...
         onView(withId(R.id.community_menu_item)).perform(click())
         onView(withId(R.id.community_menu_button)).perform(click())
         onView(withText(R.string.create_new_tournament)).perform(click())
