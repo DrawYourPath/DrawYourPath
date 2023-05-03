@@ -700,7 +700,7 @@ class FirebaseDatabase : Database() {
             MessageContent.RunPath::class.java -> return addChatRunMessage(conversationId, message)
             MessageContent.Picture::class.java -> return addChatPictureMessage(
                 conversationId,
-                message
+                message,
             )
 
             MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
@@ -752,13 +752,13 @@ class FirebaseDatabase : Database() {
             .addOnSuccessListener {
                 chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
                     .child(messageId.toString()).get().addOnSuccessListener { preview ->
-                    if (preview.value != null) {
-                        chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
-                            .child(messageId.toString()).updateChildren(newMessage)
-                            .addOnSuccessListener { future.complete(Unit) }
-                            .addOnFailureListener { future.completeExceptionally(it) }
-                    }
-                }.addOnFailureListener { future.completeExceptionally(it) }
+                        if (preview.value != null) {
+                            chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
+                                .child(messageId.toString()).updateChildren(newMessage)
+                                .addOnSuccessListener { future.complete(Unit) }
+                                .addOnFailureListener { future.completeExceptionally(it) }
+                        }
+                    }.addOnFailureListener { future.completeExceptionally(it) }
             }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
@@ -1254,8 +1254,8 @@ class FirebaseDatabase : Database() {
                 senderId = sender,
                 content = MessageContent.RunPath(
                     transformRun(
-                        dataRun.children.toMutableList().get(0)
-                    )!!
+                        dataRun.children.toMutableList().get(0),
+                    )!!,
                 ),
                 timestamp = date,
             )

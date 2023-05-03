@@ -110,7 +110,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         replaceFragment<CommunityFragment>()
     }
 
-
     /**
      * Helper function that returns a database based on the arguments passed to
      */
