@@ -98,6 +98,10 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         )
     }
 
+    /**
+     * set the dynamic drawing of the map
+     * @param map the map
+     */
     private fun setupDrawingOnMap(map: GoogleMap) {
         val polyline = map.addPolyline(PolylineOptions().clickable(false))
         pathDrawingModel.points.observe(viewLifecycleOwner) {

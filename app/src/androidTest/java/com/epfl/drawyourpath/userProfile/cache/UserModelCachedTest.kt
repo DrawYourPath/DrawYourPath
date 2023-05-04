@@ -102,6 +102,7 @@ class UserModelCachedTest {
         waitUntilAllThreadAreDone()
         // check that it is the correct user
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
+        // TODO future task
         // assertEqualRun(testUserModel.runs!!, user.getRunHistory().getOrAwaitValue())
         // set non working database
         user.setDatabase(MockNonWorkingDatabase())
@@ -226,6 +227,7 @@ class UserModelCachedTest {
             newUser.dailyGoals!![0].copy(distance = distance, time = time, paths = 1),
             user.getTodayDailyGoal().getOrAwaitValue(),
         )
+        // TODO future task
         // assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(0, run) }, user.getRunHistory().getOrAwaitValue())
     }
 
@@ -242,6 +244,7 @@ class UserModelCachedTest {
             newUser.dailyGoals!![0].copy(distance = distance, time = time, paths = 1),
             user.getTodayDailyGoal().getOrAwaitValue(),
         )
+        // TODO future task
         // assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(0, run) }, user.getRunHistory().getOrAwaitValue())
     }
 

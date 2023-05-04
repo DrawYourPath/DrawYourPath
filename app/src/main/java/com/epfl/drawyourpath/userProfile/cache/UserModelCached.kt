@@ -68,6 +68,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     // runs
     private val runHistory: MutableLiveData<List<Run>> = MutableLiveData(listOf())
+    // TODO change this in future task
     /*private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
         runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }
     }*/
