@@ -44,6 +44,19 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val currentUser =
+            if (database is MockDatabase) {
+                MockAuth(forceSigned = true).getUser()
+            } else {
+                FirebaseAuth.getUser()
+            }
+
+        if (currentUser == null) {
+            launchLoginActivity(requireActivity())
+            return
+        }
+        user = currentUser
+
         // Set up QR code scanning
         view.findViewById<Button>(R.id.BT_ScanQR).setOnClickListener { onScanQRClicked() }
 
@@ -85,7 +98,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
         userAccountFuture.thenApply { userdata ->
             val factory = FriendsViewModelFactory(userdata.userId!!, this.database)
-            viewModel = ViewModelProvider(this, factory)[FriendsViewModel::class.java]
+            viewModel = ViewModelProvider(requireActivity(), factory)[FriendsViewModel::class.java]
 
             // Observe the friendsList LiveData from the ViewModel
             viewModel.friendsList.observe(viewLifecycleOwner) { friends ->
@@ -133,15 +146,19 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                         Log.i("Friends", "Uid of $query is $userId")
                         database.getUserData(user.getUid())
                             .thenApply { loggedUserdata ->
+                                Log.i("Friends", "Here1!!!!!!!!")
                                 if (userId != loggedUserdata.userId!!) {
+                                    Log.i("Friends", "Here1.5!!!!!!!!")
                                     database.getUserData(userId)
                                         .thenApply { userdata ->
+                                            Log.i("Friends", "Here2!!!!!!!!")
                                             val newFriend = Friend(
                                                 userdata.userId!!,
                                                 userdata.username!!,
                                                 Utils.decodePhotoOrGetDefault(userdata.picture, resources),
                                                 false,
                                             )
+
 
                                             // Add the new friend to the list and update the UI
                                             viewModel.addPotentialFriend(newFriend)
