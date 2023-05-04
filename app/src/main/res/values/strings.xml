@@ -118,4 +118,11 @@
     <string name="desc_send_message">send message</string>
     <string name="menu_chat">chat</string>
     <string name="settings">Settings</string>
+    <string name="time">Time:</string>
+    <string name="distance">Distance:</string>
+    <string name="speed">Speed:</string>
+    <string name="calories_burnt">Calories burnt:</string>
+    <string name="date">Date:</string>
+    <string name="senderName">Sender Name</string>
+    <string name="message_content_string">Message Content</string>
 </resources>

@@ -11,19 +11,13 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ChatAdapter
 
-class ChatFragment : Fragment() {
+class ChatFragment: Fragment(R.layout.fragment_chat_list){
 
     private lateinit var chatRecyclerView: RecyclerView
     private lateinit var chatAdapter: ChatAdapter
     private val chatList = mutableListOf<Chat>()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        return inflater.inflate(R.layout.fragment_chat_list, container, false)
-    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

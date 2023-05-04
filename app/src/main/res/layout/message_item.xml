@@ -16,7 +16,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Sender Name" />
+        tools:text="@string/senderName" />
 
     <TextView
         android:id="@+id/messageContentTextView"
@@ -25,7 +25,7 @@
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="@id/senderNameTextView"
         app:layout_constraintTop_toBottomOf="@id/senderNameTextView"
-        tools:text="Message Content" />
+        tools:text="@string/message_content_string" />
 
     <ImageView
         android:id="@+id/messageImageView"

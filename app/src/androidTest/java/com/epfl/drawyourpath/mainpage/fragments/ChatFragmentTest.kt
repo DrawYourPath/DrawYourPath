@@ -21,16 +21,17 @@ class ChatFragmentTest {
     val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Test
-    fun test_chatFragment_isDisplayed() {
+    fun testChatFragmentisDisplayed() {
         // Go to chats
         onView(withId(R.id.chat_menu_item)).perform(click())
-
+        //wait for the fragment to load
+        Thread.sleep(1000)
         // Check fragment is chats
         onView(withId(R.id.chat_list_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
-    fun test_chatListRecyclerView_isVisible() {
+    fun testChatListRecyclerViewisVisible() {
         // Go to chats
         onView(withId(R.id.chat_menu_item)).perform(click())
 
@@ -40,7 +41,7 @@ class ChatFragmentTest {
     }
 
     @Test
-    fun test_chatListItem_isVisible() {
+    fun testChatListItemIsVisible() {
         // Go to chats
         onView(withId(R.id.chat_menu_item)).perform(click())
 
@@ -51,7 +52,7 @@ class ChatFragmentTest {
     }
 
     @Test
-    fun test_clickingChatItem_opensChatOpenFragment() {
+    fun testClickingChatItemOpensChatOpenFragment() {
         // Go to chats
         onView(withId(R.id.chat_menu_item)).perform(click())
 
@@ -64,7 +65,7 @@ class ChatFragmentTest {
     }
 
     @Test
-    fun test_typingMessage_updatesMessageEditText() {
+    fun testTypingMessageUpdatesMessageEditText() {
         navigateToChatOpenFragment()
 
         // Type a message
@@ -76,7 +77,7 @@ class ChatFragmentTest {
     }
 
     @Test
-    fun test_sendingMessage_addsMessageToRecyclerView() {
+    fun testSendingMessageAddsMessageToRecyclerView() {
         navigateToChatOpenFragment()
 
         // Type a message
