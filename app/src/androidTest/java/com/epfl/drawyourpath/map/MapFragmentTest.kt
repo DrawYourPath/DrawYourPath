@@ -22,7 +22,7 @@ class MapFragmentTest {
     var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     /**
-     * Map is displayed in drawing scenario
+     * Map is displayed in current drawing scenario
      */
     @Test
     fun checkMapDisplayedInDrawingMode() {
