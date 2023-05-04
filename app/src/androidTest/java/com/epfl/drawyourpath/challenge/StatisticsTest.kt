@@ -1,9 +1,11 @@
 package com.epfl.drawyourpath.challenge
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class StatisticsTest {
