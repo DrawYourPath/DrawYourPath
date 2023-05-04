@@ -14,8 +14,6 @@ import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.MessagesAdapter
 
-
-
 class ChatOpenFragment : Fragment() {
     private lateinit var messagesAdapter: MessagesAdapter
     private lateinit var messagesRecyclerView: RecyclerView
@@ -24,16 +22,13 @@ class ChatOpenFragment : Fragment() {
     private lateinit var sendImageButton: ImageButton
     private lateinit var sendRunButton: ImageButton
 
-
-
-
-
     // This is a sample list of messages, replace it with actual messages data
     private val messagesList = mutableListOf<Message>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
 
@@ -85,7 +80,6 @@ class ChatOpenFragment : Fragment() {
 
         // Update the adapter by calling notifyDataSetChanged()
         messagesAdapter.notifyDataSetChanged()
-
     }
 
     companion object {
