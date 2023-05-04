@@ -73,7 +73,7 @@ class RunTest {
         val run = Run(path, startTime, endTime)
 
         assertEquals(
-            (path.getDistance() / 3000) * 1000,
+            1000 / (path.getDistance() / 3000),
             run.getTimeForOneKilometer().toDouble(),
             1.0,
         )

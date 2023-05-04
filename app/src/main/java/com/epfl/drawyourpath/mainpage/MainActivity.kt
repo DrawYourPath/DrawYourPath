@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         // Display the main fragment when no saved state
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.draw_menu_item
-            replaceFragment<DrawFragment>()
+            replaceFragment<DrawMenuFragment>()
         }
 
         setupNotifications()
@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.friends_menu_item -> replaceFragment<FriendsFragment>()
 
                 // Display drawing fragment
-                R.id.draw_menu_item -> replaceFragment<DrawFragment>()
+                R.id.draw_menu_item -> replaceFragment<DrawMenuFragment>()
 
                 // Display history fragment
                 R.id.history_menu_item -> replaceFragment<HistoryFragment>()
