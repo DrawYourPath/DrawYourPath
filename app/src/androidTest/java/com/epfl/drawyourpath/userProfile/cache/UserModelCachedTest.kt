@@ -15,7 +15,7 @@ import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
-import com.epfl.utils.drawyourpath.Utils
+import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
 import org.junit.Before

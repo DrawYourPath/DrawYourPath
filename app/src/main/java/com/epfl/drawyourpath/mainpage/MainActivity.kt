@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -28,6 +29,7 @@ import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.ktx.database
 import java.util.concurrent.CompletableFuture
 
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
@@ -142,7 +144,11 @@ class MainActivity : AppCompatActivity() {
         drawerNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 // Display profile fragment
-                R.id.profile_menu_item -> replaceFragment<ProfileFragment>()
+                R.id.profile_menu_item -> replaceFragment<ProfileFragment>(
+                    bundleOf(
+                        PROFILE_USER_ID_KEY to userCached.getUserId(),
+                    ),
+                )
 
                 // Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
@@ -180,10 +186,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private inline fun <reified F : Fragment> replaceFragment() {
+    private inline fun <reified F : Fragment> replaceFragment(args: Bundle? = null) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace<F>(R.id.fragmentContainerView)
+            replace(R.id.fragmentContainerView, F::class.java, args)
         }
     }
 

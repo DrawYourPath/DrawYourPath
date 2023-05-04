@@ -6,7 +6,7 @@ import com.epfl.drawyourpath.database.UserData
 import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.userProfile.cache.GoalAndAchievements
 import com.epfl.drawyourpath.userProfile.cache.UserEntity
-import com.epfl.utils.drawyourpath.Utils
+import com.epfl.drawyourpath.utils.Utils
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 

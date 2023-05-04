@@ -14,7 +14,7 @@ import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
-import com.epfl.utils.drawyourpath.Utils
+import com.epfl.drawyourpath.utils.Utils
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 

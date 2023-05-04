@@ -6,6 +6,9 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import org.junit.Test
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class RunTest {
@@ -76,8 +79,8 @@ class RunTest {
         val endTime = startTime + 3000
         val run = Run(path, startTime, endTime)
         // check that date is calculated correctly
-        val formatter = SimpleDateFormat("MMM d, yyyy HH:mm", Locale.getDefault())
-        assertEquals(formatter.format(Date(endTime)), run.getDate())
+        val date = LocalDateTime.ofEpochSecond(startTime, 0, ZoneOffset.UTC)
+        assertEquals(date.format(DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm")), run.getDate())
     }
 
     @Test

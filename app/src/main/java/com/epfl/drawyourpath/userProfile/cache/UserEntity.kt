@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.epfl.drawyourpath.database.UserData
 import com.epfl.drawyourpath.userProfile.UserProfile
-import com.epfl.utils.drawyourpath.Utils
+import com.epfl.drawyourpath.utils.Utils
 
 @Entity(tableName = "User")
 data class UserEntity(
