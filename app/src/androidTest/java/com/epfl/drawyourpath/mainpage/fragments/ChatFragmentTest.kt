@@ -95,7 +95,7 @@ class ChatFragmentTest {
         // Go to chats
         onView(withId(R.id.chat_menu_item)).perform(click())
 
-        // Click the first chat item in the list
+        // Click the first chat item in the list of chats
         onView(withId(R.id.chatListRecyclerView))
             .perform(RecyclerViewActions.actionOnItemAtPosition<ChatAdapter.ChatViewHolder>(0, click()))
     }
