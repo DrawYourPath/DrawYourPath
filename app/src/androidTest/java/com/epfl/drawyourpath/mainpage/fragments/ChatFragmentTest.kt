@@ -63,7 +63,6 @@ class ChatFragmentTest {
         onView(withId(R.id.chat_open_fragment)).check(matches(isDisplayed()))
     }
 
-
     @Test
     fun test_typingMessage_updatesMessageEditText() {
         navigateToChatOpenFragment()
