@@ -58,11 +58,12 @@ class PathDrawingCountDownFragmentTest {
             ApplicationProvider.getApplicationContext(),
             PathDrawingActivity::class.java,
         )
+        intent.putExtra(PathDrawingActivity.EXTRA_COUNTDOWN_DURATION, 1L)
         val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
 
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Thread.sleep(4000)
+        Thread.sleep(1002)
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_main_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         t.close()

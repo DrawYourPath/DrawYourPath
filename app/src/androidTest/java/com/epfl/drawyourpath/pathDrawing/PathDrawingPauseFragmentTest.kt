@@ -29,9 +29,10 @@ class PathDrawingPauseFragmentTest {
             ApplicationProvider.getApplicationContext(),
             PathDrawingActivity::class.java,
         )
+        intent.putExtra(PathDrawingActivity.EXTRA_COUNTDOWN_DURATION, 1L)
         val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
         // wait that the countdown passed
-        Thread.sleep(4100)
+        Thread.sleep(1001)
         // click on stop button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .perform(ViewActions.click())

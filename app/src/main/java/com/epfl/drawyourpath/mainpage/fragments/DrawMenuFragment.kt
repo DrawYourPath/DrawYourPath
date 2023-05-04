@@ -15,16 +15,8 @@ import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.pathDrawing.PathDrawingActivity
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
-class DrawMenuFragment : Fragment() {
+class DrawMenuFragment : Fragment(R.layout.fragment_draw_menu) {
     private val userCached: UserModelCached by activityViewModels()
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        return inflater.inflate(R.layout.fragment_draw_menu, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = MapFragment(focusedOnPosition = false, path = null)

@@ -68,20 +68,28 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         val pathReady = path != null && path.getPoints().isNotEmpty()
         if (pathReady && !focusedOnPosition) {
             val middlePoint = path!!.getPoints().get(path.size() / 2)
-            map.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(
-                        middlePoint.latitude,
-                        middlePoint.longitude,
-                    ),
-                    DEFAULT_ZOOM,
-                ),
-            )
+            moveCameraToPosition(location = middlePoint, zoom = DEFAULT_ZOOM)
         }
         if (pathReady) {
             // add the path on the map if the run
             drawPathOnMap(map, path!!)
         }
+    }
+    /**
+     * Function used to move the camera at a given location
+     * @param location where we want to move the camera
+     * @param zoom apply to the camera
+     */
+    private fun moveCameraToPosition(location: LatLng, zoom: Float){
+        map?.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(
+                    location.latitude,
+                    location.longitude,
+                ),
+                DEFAULT_ZOOM,
+            ),
+        )
     }
 
     /**
