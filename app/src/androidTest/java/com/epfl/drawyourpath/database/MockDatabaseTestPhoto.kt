@@ -24,7 +24,7 @@ class MockDatabaseTestPhoto {
         Assert.assertEquals(
             database.users[userIdTest]?.picture!!,
             Utils.encodePhotoToString(
-                Utils.decodePhoto(database.users[userIdTest]?.picture!!),
+                Utils.decodePhoto(database.users[userIdTest]?.picture!!)!!,
             ),
         )
     }

@@ -69,11 +69,11 @@ data class UserProfile(
     )
 
     constructor(userData: UserData) : this(
-        userData.userId ?: "invalid id",
-        userData.username ?: "",
-        userData.email ?: "",
-        userData.firstname ?: "",
-        userData.surname ?: "",
+        userData.userId ?: "ID_INVALID",
+        userData.username ?: "USERNAME_INVALID",
+        userData.email ?: "EMAIL_INVALID",
+        userData.firstname ?: "FIRSTNAME_INVALID",
+        userData.surname ?: "SURNAME_INVALID",
         userData.birthDate?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now(),
         userData.goals?.let { Goals(it) } ?: Goals(0.0, 0.0, 0),
         { Utils.decodePhotoOrGetDefault(userData.picture, it) },
@@ -101,7 +101,7 @@ data class UserProfile(
             goalAndAchievements.nbOfPathsGoal,
         )
 
-        constructor(userGoals: UserGoals) : this (
+        constructor(userGoals: UserGoals) : this(
             userGoals.distance ?: 0.0,
             userGoals.activityTime?.toDouble() ?: 0.0,
             userGoals.paths?.toInt() ?: 0,

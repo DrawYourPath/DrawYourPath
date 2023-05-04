@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.database.UserGoals
 import com.google.android.gms.maps.model.LatLng
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
@@ -42,10 +43,7 @@ object Utils {
      * @return the profile photo or the default profile photo
      */
     fun decodePhotoOrGetDefault(photo: ByteArray?, res: Resources): Bitmap {
-        if (photo == null) {
-            return getDefaultPhoto(res)
-        }
-        return BitmapFactory.decodeByteArray(photo, 0, photo.size, BitmapFactory.Options()) ?: getDefaultPhoto(res)
+        return photo?.let { decodePhoto(photo) } ?: getDefaultPhoto(res)
     }
 
     /**
@@ -58,13 +56,21 @@ object Utils {
     }
 
     /**
-     * Decodes the photo from base64 string to bitmap format and return null if the dataSnapShot is null
-     * @param photoStr photo encoded
-     * @return the photo in bitmap format, and null if no photo is stored on the database
+     * Decodes the photo from byte array to bitmap format
+     * @param photo photo encoded
+     * @return the photo in bitmap format
      */
-    fun decodePhoto(photoStr: String): Bitmap {
-        val tabByte = Base64.getDecoder().decode(photoStr)
-        return BitmapFactory.decodeByteArray(tabByte, 0, tabByte.size)
+    fun decodePhoto(photo: ByteArray): Bitmap? {
+        return BitmapFactory.decodeByteArray(photo, 0, photo.size)
+    }
+
+    /**
+     * Decodes the photo from base64 string to bitmap format
+     * @param photoStr photo encoded
+     * @return the photo in bitmap format
+     */
+    fun decodePhoto(photoStr: String): Bitmap? {
+        return decodePhoto(decodeStringAsByteArray(photoStr)!!)
     }
 
     /**
@@ -140,19 +146,17 @@ object Utils {
 
     /**
      * Helper function to check if the goals are greater or equal than zero
-     * @param distanceGoal to be checked
-     * @param activityTimeGoal to be checked
-     * @param nbOfPathsGoal to be checked
+     * @param goals to be checked
      * @throw an error if the goal is incorrect
      */
-    fun checkGoals(distanceGoal: Double? = null, activityTimeGoal: Double? = null, nbOfPathsGoal: Int? = null) {
-        if (distanceGoal != null && distanceGoal <= 0.0) {
+    fun checkGoals(goals: UserGoals) {
+        if (goals.distance != null && goals.distance <= 0.0) {
             throw Error("The distance goal can't be equal or less than 0.")
         }
-        if (activityTimeGoal != null && activityTimeGoal <= 0.0) {
+        if (goals.activityTime != null && goals.activityTime <= 0.0) {
             throw Error("The activity time goal can't be equal or less than 0.")
         }
-        if (nbOfPathsGoal != null && nbOfPathsGoal <= 0) {
+        if (goals.paths != null && goals.paths <= 0) {
             throw Error("The number of paths goal can't be equal or less than 0.")
         }
     }

@@ -190,21 +190,17 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     /**
      * Use this function to modify the daily goals of the user
-     * @param distanceGoal new daily distance goal
-     * @param activityTimeGoal new daily time goal
-     * @param pathsGoal new daily paths goal
+     * @param goals the goals to add
      */
-    fun updateGoals(distanceGoal: Double? = null, activityTimeGoal: Double? = null, pathsGoal: Int? = null): CompletableFuture<Unit> {
+    fun updateGoals(goals: UserGoals): CompletableFuture<Unit> {
         checkCurrentUser()
-        Utils.checkGoals(distanceGoal, activityTimeGoal, pathsGoal)
-        return database.setGoals(currentUserID!!, UserGoals(distance = distanceGoal, activityTime = activityTimeGoal, paths = pathsGoal?.toLong()))
+        Utils.checkGoals(goals)
+        return database.setGoals(currentUserID!!, goals)
             .thenApplyAsync {
                 dailyGoalCache.updateGoals(
                     currentUserID!!,
                     LocalDate.now().toEpochDay(),
-                    distanceGoal,
-                    activityTimeGoal,
-                    pathsGoal,
+                    goals,
                 )
             }.thenComposeAsync {
                 database.addDailyGoal(currentUserID!!, DailyGoal(it))

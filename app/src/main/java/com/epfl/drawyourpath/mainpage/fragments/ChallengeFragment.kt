@@ -12,6 +12,7 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.*
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 
@@ -57,9 +58,9 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
     private fun setDailyGoalView(goalView: RecyclerView) {
         val dailyGoalAdapter =
             DailyGoalViewAdapter(
-                { user.updateGoals(distanceGoal = it) },
-                { user.updateGoals(activityTimeGoal = it) },
-                { user.updateGoals(pathsGoal = it) },
+                { user.updateGoals(UserGoals(distance = it)) },
+                { user.updateGoals(UserGoals(activityTime = it)) },
+                { user.updateGoals(UserGoals(paths = it.toLong())) },
             )
         user.getTodayDailyGoal().observe(viewLifecycleOwner) {
             dailyGoalAdapter.updateDailyGoal(it)

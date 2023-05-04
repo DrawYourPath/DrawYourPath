@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.dailygoal
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.path.cache.PointsEntity
 import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.cache.GoalAndAchievements
@@ -104,22 +105,20 @@ interface DailyGoalDao {
      * set a new distance, time, path goal to DailyGoal and User with the corresponding id and date
      * @param userId the id of the user
      * @param date the date of the daily goal
-     * @param distanceGoal the new distance goal of the user
-     * @param timeGoal the new time goal of the user
-     * @param pathsGoal the new paths goal of the user
+     * @param goals the new goals of the user
      * @return the new daily goal
      */
     @Transaction
-    fun updateGoals(userId: String, date: Long, distanceGoal: Double? = null, timeGoal: Double? = null, pathsGoal: Int? = null): DailyGoalEntity {
-        distanceGoal?.apply {
+    fun updateGoals(userId: String, date: Long, goals: UserGoals): DailyGoalEntity {
+        goals.distance?.apply {
             updateDistanceGoalUser(userId, this)
             insertIfDailyGoalUpdateFailed(userId, date, updateDistanceGoalDailyGoal(userId, date, this))
         }
-        timeGoal?.apply {
+        goals.activityTime?.apply {
             updateTimeGoalUser(userId, this)
             insertIfDailyGoalUpdateFailed(userId, date, updateTimeGoalDailyGoal(userId, date, this))
         }
-        pathsGoal?.apply {
+        goals.paths?.toInt()?.apply {
             updatePathsGoalUser(userId, this)
             insertIfDailyGoalUpdateFailed(userId, date, updatePathsGoalDailyGoal(userId, date, this))
         }

@@ -145,12 +145,12 @@ class UserModelCachedTest {
 
     @Test(expected = Error::class)
     fun setInvalidDistanceGoalThrowError() {
-        user.updateGoals(distanceGoal = -1.0).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(distance = -1.0)).get(timeout, TimeUnit.SECONDS)
     }
 
     @Test
     fun setDistanceGoalModifyDistanceGoal() {
-        user.updateGoals(distanceGoal = newUser.goals!!.distance!!).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(distance = newUser.goals!!.distance!!)).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newDistanceGoal = newUser.goals!!.distance!!)
         assertEquals(newUser.dailyGoals!![0].copy(expectedDistance = newUser.goals!!.distance!!), user.getTodayDailyGoal().getOrAwaitValue())
@@ -159,7 +159,7 @@ class UserModelCachedTest {
     @Test
     fun setDistanceGoalWhenNoInternetDoesNotModifyDistanceGoal() {
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateGoals(distanceGoal = newUser.goals!!.distance!!).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(distance = newUser.goals!!.distance!!)).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         assertEquals(newUser.dailyGoals!![0], user.getTodayDailyGoal().getOrAwaitValue())
@@ -167,12 +167,12 @@ class UserModelCachedTest {
 
     @Test(expected = Error::class)
     fun setInvalidActivityTimeGoalThrowError() {
-        user.updateGoals(activityTimeGoal = -1.0).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(activityTime = -1.0)).get(timeout, TimeUnit.SECONDS)
     }
 
     @Test
     fun setActivityTimeGoalModifyActivityTimeGoal() {
-        user.updateGoals(activityTimeGoal = newUser.goals!!.activityTime!!).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(activityTime = newUser.goals!!.activityTime!!)).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newTimeGoal = newUser.goals!!.activityTime!!)
         assertEquals(newUser.dailyGoals!![0].copy(expectedTime = newUser.goals!!.activityTime!!), user.getTodayDailyGoal().getOrAwaitValue())
@@ -181,7 +181,7 @@ class UserModelCachedTest {
     @Test
     fun setActivityTimeGoalWhenNoInternetDoesNotModifyActivityTimeGoal() {
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateGoals(activityTimeGoal = newUser.goals!!.activityTime!!).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(activityTime = newUser.goals!!.activityTime!!)).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         assertEquals(newUser.dailyGoals!![0], user.getTodayDailyGoal().getOrAwaitValue())
@@ -189,12 +189,12 @@ class UserModelCachedTest {
 
     @Test(expected = Error::class)
     fun setInvalidNumberOfPathThrowError() {
-        user.updateGoals(pathsGoal = -1).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(paths = -1)).get(timeout, TimeUnit.SECONDS)
     }
 
     @Test
     fun setNumberOfPathsGoalModifyNumberOfPathsGoal() {
-        user.updateGoals(pathsGoal = newUser.goals!!.paths!!.toInt()).get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(paths = newUser.goals!!.paths!!)).get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue(), newPathGoal = newUser.goals!!.paths!!.toInt())
         assertEquals(newUser.dailyGoals!![0].copy(expectedPaths = newUser.goals!!.paths!!.toInt()), user.getTodayDailyGoal().getOrAwaitValue())
@@ -203,7 +203,7 @@ class UserModelCachedTest {
     @Test
     fun setNumberOfPathsGoalWhenNoInternetDoesNotModifyNumberOfPathsGoal() {
         user.setDatabase(MockNonWorkingDatabase())
-        user.updateGoals(pathsGoal = newUser.goals!!.paths!!.toInt()).exceptionally { }.get(timeout, TimeUnit.SECONDS)
+        user.updateGoals(UserGoals(paths = newUser.goals!!.paths!!)).exceptionally { }.get(timeout, TimeUnit.SECONDS)
         waitUntilAllThreadAreDone()
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
         assertEquals(newUser.dailyGoals!![0], user.getTodayDailyGoal().getOrAwaitValue())
