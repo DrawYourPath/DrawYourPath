@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.mainpage.fragments.helperClasses
+package com.epfl.drawyourpath.pathDrawing
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-class DrawModel : ViewModel() {
+class PathDrawingModel : ViewModel() {
 
     private val _run: MutableLiveData<Run> = MutableLiveData(Run(Path(), 0, 1))
     val run: LiveData<Run> = _run
