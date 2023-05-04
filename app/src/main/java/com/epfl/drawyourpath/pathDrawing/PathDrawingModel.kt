@@ -22,6 +22,7 @@ class PathDrawingModel : ViewModel() {
     private var pauseTime: Long? = null
     private var pauseDuration: Duration = Duration.ZERO
     private var lastRunUpdate: Long = 0
+    private var timeIntervalPointAdded: Long = 1
 
     val run: LiveData<Run> = _run
     val points: LiveData<List<LatLng>> = run.map { it.getPath().getPoints() }
@@ -49,7 +50,6 @@ class PathDrawingModel : ViewModel() {
     fun startRun() {
         resultingRun = Run(Path(), getAndSetStartTime(), startTime!! + 1)
         _run.postValue(resultingRun)
-        lastRunUpdate = startTime!!
         handler.post(updateHandler)
     }
 
@@ -62,7 +62,7 @@ class PathDrawingModel : ViewModel() {
             resultingRun = resultingRun.let { oldRun ->
                 Run(
                     oldRun.getPath().also {
-                        if (getCurrentTime() - lastRunUpdate >= TIME_BETWEEN_UPDATES && point != null) {
+                        if (getCurrentTime() - lastRunUpdate >= timeIntervalPointAdded && point != null) {
                             it.addPoint(point)
                             lastRunUpdate = getCurrentTime()
                         }
@@ -96,6 +96,13 @@ class PathDrawingModel : ViewModel() {
         }
     }
 
+    /**
+     * set the minimal interval between each points added
+     */
+    fun setNewTimeInterval(interval: Long) {
+        timeIntervalPointAdded = interval
+    }
+
     private fun getAndSetStartTime(): Long {
         startTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
         return startTime!!
@@ -111,9 +118,5 @@ class PathDrawingModel : ViewModel() {
 
     private fun isPaused(): Boolean {
         return pauseTime != null
-    }
-
-    companion object {
-        private const val TIME_BETWEEN_UPDATES: Long = 1
     }
 }
