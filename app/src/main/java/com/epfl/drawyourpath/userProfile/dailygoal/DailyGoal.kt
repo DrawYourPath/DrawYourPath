@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.userProfile.dailygoal
 
+import com.epfl.drawyourpath.userProfile.UserProfile
 import java.time.LocalDate
 
 /**
@@ -15,14 +16,11 @@ data class DailyGoal(
     val date: LocalDate = LocalDate.now(),
 ) {
 
-    /**
-     * create a new Empty DailyGoal based on the current one
-     *
-     * @return a new DailyGoal
-     */
-    fun createNewGoalFromThis(): DailyGoal {
-        return DailyGoal(this.expectedDistance, this.expectedTime, this.expectedPaths)
-    }
+    constructor(goals: UserProfile.Goals) : this(
+        goals.distanceGoal,
+        goals.activityTimeGoal,
+        goals.pathsGoal,
+    )
 
     /**
      * constructor to transform a [DailyGoalEntity] into a [DailyGoal]
@@ -35,21 +33,8 @@ data class DailyGoal(
         entity.distanceInKilometerProgress,
         entity.activityTimeInMinutesProgress,
         entity.nbOfPathsProgress,
-        entity.getDateAsLocalDate(),
+        LocalDate.ofEpochDay(entity.date),
     )
-
-    fun toDailyGoalEntity(userId: String): DailyGoalEntity {
-        return DailyGoalEntity(
-            userId,
-            DailyGoalEntity.fromLocalDateToLong(date),
-            expectedDistance,
-            expectedTime,
-            expectedPaths,
-            distance,
-            time,
-            paths,
-        )
-    }
 
     companion object {
         val TEST_SAMPLE = DailyGoal(23.0, 86.0, 2, 17.6543, 39.01247, 1)

@@ -5,9 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.utils.drawyourpath.Utils
 
-class FriendsViewModel(private val userModel: UserModel, private val database: Database) : ViewModel() {
+class FriendsViewModel(private val userId: String, private val database: Database) : ViewModel() {
 
     // empty list of Friend
     var allFriends = listOf<Friend>()
@@ -25,49 +25,48 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
 
     private fun loadFriends() {
         // Get the friend list from the UserModel
-        val friendsList = userModel.getFriendList()
-        val database: Database = this.database
+        database.getUserData(userId).thenApplyAsync {
+            val friendsList = it.friendList ?: listOf()
+            // Use a mutable list to store the realFriends
+            val realFriends = mutableListOf<Friend>()
 
-        // Use a mutable list to store the realFriends
-        val realFriends = mutableListOf<Friend>()
+            // Counter for tracking when all friends are loaded
+            var friendsLoaded = 0
 
-        // Counter for tracking when all friends are loaded
-        var friendsLoaded = 0
+            // Iterate through each userId in friendsList
+            for (userId in friendsList) {
+                // Get the username CompletableFuture
+                val usernameFuture = database.getUsername(userId)
 
-        // Iterate through each userId in friendsList
-        for (userId in friendsList) {
-            // Get the username CompletableFuture
-            val usernameFuture = database.getUsername(userId)
+                // When the CompletableFuture completes, update the list of friends
+                usernameFuture.whenComplete { username, exception ->
+                    if (exception == null) {
+                        database.getUserData(userId).whenComplete { userdata, exception ->
+                            if (exception == null) {
+                                // Add the new Friend object to the realFriends list
+                                realFriends.add(
+                                    Friend(
+                                        userdata.userId!!,
+                                        username,
+                                        userdata.picture?.let { pic -> Utils.decodePhoto(pic) },
+                                        true,
+                                    ),
+                                )
 
-            // When the CompletableFuture completes, update the list of friends
-            usernameFuture.whenComplete { username, exception ->
-                if (exception == null) {
-                    database.getUserData(userId).whenComplete { userdata, exception ->
-                        val userAccount = UserModel(userdata)
-                        if (exception == null) {
-                            // Add the new Friend object to the realFriends list
-                            realFriends.add(
-                                Friend(
-                                    userAccount.getUserId(),
-                                    username,
-                                    userAccount.getProfilePhoto(),
-                                    true,
-                                ),
-                            )
+                                // Increment the friendsLoaded counter
+                                friendsLoaded++
 
-                            // Increment the friendsLoaded counter
-                            friendsLoaded++
+                                // Check if all friends have been loaded
+                                if (friendsLoaded == friendsList.size) {
+                                    // Concatenate the testFriends and realFriends lists
+                                    allFriends = realFriends
 
-                            // Check if all friends have been loaded
-                            if (friendsLoaded == friendsList.size) {
-                                // Concatenate the testFriends and realFriends lists
-                                allFriends = realFriends
-
-                                // Set the initial value of _friendsList to allFriends.
-                                _friendsList.postValue(allFriends)
+                                    // Set the initial value of _friendsList to allFriends.
+                                    _friendsList.postValue(allFriends)
+                                }
+                            } else {
+                                // Handle the exception (e.g., log the error, show a message to the user, etc.)
                             }
-                        } else {
-                            // Handle the exception (e.g., log the error, show a message to the user, etc.)
                         }
                     }
                 }
@@ -101,21 +100,13 @@ class FriendsViewModel(private val userModel: UserModel, private val database: D
         Log.i("Friends", "Performing action for ${friend.id}")
 
         if (isFriend) {
-            userModel.removeFriend(friend.id).whenComplete() { result, exception ->
-                if (exception != null) {
-                    Log.w("Debug", "Error removing friend!")
-                } else {
-                    Log.w("Debug", "Friend removed!")
-                }
-            }
+            database.removeFriend(userId, friend.id)
+                .thenApplyAsync { Log.w("Debug", "Friend removed!") }
+                .exceptionally { Log.w("Debug", "Error removing friend!") }
         } else {
-            userModel.addFriend(friend.id).whenComplete() { result, exception ->
-                if (exception != null) {
-                    Log.w("Debug", "Error adding friend!")
-                } else {
-                    Log.w("Debug", "Friend added!")
-                }
-            }
+            database.addFriend(userId, friend.id)
+                .thenApplyAsync { Log.w("Debug", "Friend added!") }
+                .exceptionally { Log.w("Debug", "Error adding friend!") }
         }
 
         val updatedFriendsList = allFriends.map {

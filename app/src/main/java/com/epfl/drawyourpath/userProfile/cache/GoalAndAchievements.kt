@@ -1,7 +1,9 @@
 package com.epfl.drawyourpath.userProfile.cache
 
 import androidx.room.ColumnInfo
-import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.database.UserData
+import com.epfl.drawyourpath.database.UserGoals
+import com.epfl.drawyourpath.userProfile.UserProfile
 
 data class GoalAndAchievements(
     /**
@@ -41,14 +43,24 @@ data class GoalAndAchievements(
     val totalNbOfPaths: Int = 0,
 ) {
     /**
-     * construct a [GoalAndAchievements] from a [UserModel]
+     * construct a [GoalAndAchievements] from a [UserData]
+     * TODO add total when in userData
      */
-    constructor(userModel: UserModel) : this(
-        userModel.getCurrentDistanceGoal(),
-        userModel.getCurrentActivityTime(),
-        userModel.getCurrentNumberOfPathsGoal(),
-        userModel.getTotalDistance(),
-        userModel.getTotalActivityTime(),
-        userModel.getTotalNbOfPaths(),
+    constructor(userGoals: UserGoals) : this(
+        userGoals.distance ?: 0.0,
+        userGoals.activityTime?.toDouble() ?: 0.0,
+        userGoals.paths?.toInt() ?: 0,
+        0.0,
+        0.0,
+        0,
+    )
+
+    constructor(goals: UserProfile.Goals) : this(
+        goals.distanceGoal,
+        goals.activityTimeGoal,
+        goals.pathsGoal,
+        0.0,
+        0.0,
+        0,
     )
 }

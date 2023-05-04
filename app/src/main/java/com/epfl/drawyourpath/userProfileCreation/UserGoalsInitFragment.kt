@@ -16,8 +16,9 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.login.launchLoginActivity
-import com.epfl.drawyourpath.userProfile.UserModel
+import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
+import com.epfl.utils.drawyourpath.Utils
 import java.time.LocalDate
 
 class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
@@ -136,20 +137,18 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
 
             userCached.setDatabase(database)
 
-            // TODO: Remove user model
-            val usermodel = UserModel(
-                user,
+            val userProfile = UserProfile(
+                user.getUid(),
                 username,
+                user.getEmail(),
                 firstname,
                 surname,
                 LocalDate.ofEpochDay(dateOfBirth),
-                distanceGoal.toDouble(),
-                timeGoal.toDouble(),
-                numberOfPathGoal,
-                database,
+                UserProfile.Goals(distanceGoal.toDouble(), timeGoal.toDouble(), numberOfPathGoal),
+                { Utils.getDefaultPhoto(it) },
             )
 
-            userCached.createNewUser(usermodel)
+            userCached.createNewUser(userProfile)
 
             database.createUser(
                 if (!isTest) user.getUid() else "testidnew",
@@ -159,7 +158,7 @@ class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
                     birthDate = dateOfBirth,
                     goals = UserGoals(
                         distance = distanceGoal.toDouble(),
-                        activityTime = timeGoal.toLong(),
+                        activityTime = timeGoal.toDouble(),
                         paths = numberOfPathGoal.toLong(),
                     ),
                 ),
