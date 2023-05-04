@@ -190,4 +190,3 @@ class FriendsFragmentFactory(private val database: Database) : FragmentFactory()
         }
     }
 }
-
