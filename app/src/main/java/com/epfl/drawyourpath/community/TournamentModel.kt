@@ -20,24 +20,24 @@ class TournamentModel : java.io.Serializable {
     }
 
     /**
-     * get the tournament of the user
+     * get the tournaments of the user
      * TODO link with the database to get the tournament of the user
      *
      * @param userId the id of the user
      * @return the list of tournaments of the user
      */
-    fun getYourTournament(userId: String): List<Tournament> {
+    fun getYourTournaments(userId: String): List<Tournament> {
         return your.toList()
     }
 
     /**
-     * get the tournament which the user might like
+     * get the tournaments which the user might like
      * TODO link with the database to get the tournaments
      *
      * @param userId the id of the user
      * @return the list of tournaments the user might like
      */
-    fun getDiscoverTournament(userId: String): List<Tournament> {
+    fun getDiscoverTournaments(userId: String): List<Tournament> {
         return discover.toList()
     }
 

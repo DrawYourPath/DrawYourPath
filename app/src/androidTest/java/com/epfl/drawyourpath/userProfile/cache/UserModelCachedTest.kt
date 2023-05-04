@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.arch.core.executor.testing.CountingTaskExecutorRule
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData

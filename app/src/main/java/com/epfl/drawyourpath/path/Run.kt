@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.pow
 
 /**
  * A class representing a run taken by a user.
@@ -58,11 +59,29 @@ class Run(
     }
 
     /**
-     * Calculates the calorie burn of the run based on the characteristics of the user.(not yes implemented)
+     * Calculates the calorie burn of the run based on the characteristics of the run.
      */
-    fun calculateCalorieBurn() {
-        calories = distance.toInt()
-        // TODO implement later based on the characteristics of the user
+    private fun calculateCalorieBurn() {
+        // We can compute the calories by using the MET (metabolic equivalent of task)
+        // The MET is the ratio of the work metabolic rate to the resting metabolic rate
+        // The resting metabolic rate is 1.0*kcal/(hours*kg)
+
+        // Sources :
+        //    Ainsworth, B. E., Haskell, W. L., Herrmann, S. D., Meckes, N.,
+        //    Bassett Jr, D. R., Tudor-Locke, C., ... & Leon, A. S. (2011).
+        //    2011 Compendium of Physical Activities: a second update of codes and MET values.
+        //    Medicine & science in sports & exercise, 43(8), 1575-1581.
+        // Links :
+        //    https://www.codinma.es/wp-content/uploads/2018/11/Second-compendium-METS-2011.pdf
+        //    https://cdn-links.lww.com/permalink/mss/a/mss_43_8_2011_06_13_ainsworth_202093_sdc1.pdf
+
+        // The MET is calculated with a 4th degree polynomial approximation of the
+        // MET values from the 2011 Compendium of Physical Activities
+        val met = 0.05506 * averageSpeed.pow(4) - 0.6525 * averageSpeed.pow(3) +
+            2.506 * averageSpeed.pow(2) - 0.1385 * averageSpeed.pow(1) + 1.486
+        val averageWeight = 70
+        val cal = met * averageWeight * duration / 3600
+        calories = cal.toInt()
     }
 
     private fun calculateDistance() {

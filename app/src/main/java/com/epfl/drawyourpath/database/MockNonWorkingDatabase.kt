@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.chat.Message
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.util.concurrent.CompletableFuture
@@ -11,6 +12,10 @@ import java.util.concurrent.CompletableFuture
  */
 class MockNonWorkingDatabase : Database() {
     override fun isUserInDatabase(userId: String): CompletableFuture<Boolean> {
+        return failedFuture()
+    }
+
+    override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
         return failedFuture()
     }
 
@@ -74,6 +79,32 @@ class MockNonWorkingDatabase : Database() {
         userId: String,
         distanceDrawing: Double,
         activityTimeDrawing: Double,
+    ): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun getTournamentUID(): String? {
+        return null
+    }
+
+    override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun addUserToTournament(
+        userId: String,
+        tournamentId: String,
+    ): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun removeUserFromTournament(
+        userId: String,
+        tournamentId: String,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }

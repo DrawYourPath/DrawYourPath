@@ -65,7 +65,13 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         tournamentPostsView = view.findViewById(R.id.display_community_tournaments_view)
         scroll = view.findViewById(R.id.community_nested_scroll_view)
 
-        tournament.setSample(TournamentModel.SampleTournamentModel(sampleWeekly(), sampleYourTournaments(), sampleDiscoveryTournaments()))
+        tournament.setSample(
+            TournamentModel.SampleTournamentModel(
+                sampleWeekly(),
+                sampleYourTournaments(),
+                sampleDiscoveryTournaments(),
+            ),
+        )
     }
 
     /**
@@ -113,7 +119,8 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             headlineHome.visibility = View.VISIBLE
             headlineDetailsLayout.visibility = View.GONE
             detailsLayout.visibility = View.GONE
-            tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
+            tournamentPostsView.adapter =
+                CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
             tournamentPostsView.invalidate()
             scroll.scrollTo(0, 0)
         }
@@ -132,11 +139,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         }
 
         val your = menu.addSubMenu("Your tournament")
-        for (t in tournament.getYourTournament("placeholder")) {
+        for (t in tournament.getYourTournaments("placeholder")) {
             createMenuItem(view, your, t)
         }
         val discover = menu.addSubMenu("Discover")
-        for (t in tournament.getDiscoverTournament("placeholder")) {
+        for (t in tournament.getDiscoverTournaments("placeholder")) {
             createMenuItem(view, discover, t)
         }
     }
@@ -145,7 +152,20 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         menu.add(getString(R.string.create_new_tournament))
             .setIcon(R.drawable.ic_add)
             .setOnMenuItemClickListener {
-                replaceFragment<TournamentCreationFragment>()
+                // Sends args for mock to tournament creation fragment, only used during testing
+                // When not testing, db and auth are null, so no args are passed to the
+                // TournamentCreationFragment.
+
+                // Get database and auth types from the activity's launching intent.
+                val db = activity?.intent?.getStringExtra("Database")
+                val auth = activity?.intent?.getStringExtra("Auth")
+                // Put the strings in the activity's intent as keys with values true in a bundle used
+                // by the TournamentCreationFragment to choose which database and auth to use.
+                val fragmentArgs = Bundle()
+                if (db != null) fragmentArgs.putBoolean(db, true)
+                if (auth != null) fragmentArgs.putBoolean(auth, true)
+                // Launches the fragment
+                replaceFragment<TournamentCreationFragment>(fragmentArgs)
                 true
             }
     }
@@ -167,8 +187,10 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     private fun menuItemListener(view: View, tournament: Tournament): Boolean {
         view.findViewById<TextView>(R.id.community_detail_name).text = tournament.name
         view.findViewById<TextView>(R.id.community_detail_description).text = tournament.description
-        view.findViewById<TextView>(R.id.community_detail_date).text = tournament.getStartOrEndDate()
-        tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getPostsFrom(tournament), false)
+        view.findViewById<TextView>(R.id.community_detail_date).text =
+            tournament.getStartOrEndDate()
+        tournamentPostsView.adapter =
+            CommunityTournamentPostViewAdapter(getPostsFrom(tournament), false)
         tournamentPostsView.invalidate()
         scroll.scrollTo(0, 0)
         headlineHome.visibility = View.GONE
@@ -194,7 +216,14 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      * @return the list of all pairs of tournament and posts
      */
     private fun getAllPostsFromAll(): List<Pair<Tournament, TournamentPost>> {
-        return getAllTournaments().flatMap { tournament -> tournament.posts.map { p -> Pair(tournament, p) } }
+        return getAllTournaments().flatMap { tournament ->
+            tournament.posts.map { p ->
+                Pair(
+                    tournament,
+                    p,
+                )
+            }
+        }
     }
 
     /**
@@ -207,18 +236,18 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         if (tournament.getWeeklyTournament() != null) {
             list.add(tournament.getWeeklyTournament()!!)
         }
-        list.addAll(tournament.getYourTournament("placeholder"))
-        list.addAll(tournament.getDiscoverTournament("placeholder"))
+        list.addAll(tournament.getYourTournaments("placeholder"))
+        list.addAll(tournament.getDiscoverTournaments("placeholder"))
         return list
     }
 
     /**
      * replace this fragment by another one
      */
-    private inline fun <reified F : Fragment> replaceFragment() {
+    private inline fun <reified F : Fragment> replaceFragment(fragmentArgs: Bundle? = null) {
         activity?.supportFragmentManager?.commit {
             setReorderingAllowed(true)
-            replace<F>(R.id.fragmentContainerView)
+            replace<F>(R.id.fragmentContainerView, args = fragmentArgs)
         }
     }
 
@@ -238,10 +267,13 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         )
 
         return Tournament(
+            "id1",
             "Weekly tournament: Star Path",
             "draw a star path",
+            "creator1",
             LocalDateTime.now().plusDays(3L),
             LocalDateTime.now().plusDays(4L),
+            listOf(),
             posts,
         )
     }
@@ -266,17 +298,23 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         )
         return mutableListOf(
             Tournament(
+                "id2",
                 "best tournament ever",
                 "draw whatever you want",
+                "creator2",
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
+                listOf(),
                 posts1,
             ),
             Tournament(
+                "id3",
                 "time square",
                 "draw a square",
+                "creator3",
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
+                listOf(),
                 posts,
             ),
         )
@@ -302,17 +340,23 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         )
         return mutableListOf(
             Tournament(
+                "id4",
                 "Discover the earth",
                 "draw the earth",
+                "creator4",
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
+                listOf(),
                 posts1,
             ),
             Tournament(
+                "id5",
                 "to the moon",
                 "draw the moon",
+                "creator5",
                 LocalDateTime.now().plusDays(3L),
                 LocalDateTime.now().plusDays(4L),
+                listOf(),
                 posts,
             ),
         )

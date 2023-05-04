@@ -7,16 +7,17 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.android.gms.maps.model.LatLng
-import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
 import kotlin.streams.toList
@@ -54,6 +55,26 @@ class MockDatabaseTest {
         val database = MockDatabase()
         val test = database.isUserInDatabase("ex").get()
         assertEquals(test, false)
+    }
+
+    /**
+     * Test if a tournamentId present in the database is returned as present
+     */
+    @Test
+    fun isTournamentInDatabasePresent() {
+        val database = MockDatabase()
+        val test = database.isTournamentInDatabase(database.mockTournament.id).get()
+        assertEquals(true, test)
+    }
+
+    /**
+     * Test is a tournamentId not present in the database is returned as not present.
+     */
+    @Test
+    fun isTournamentInDatabaseNotPresent() {
+        val database = MockDatabase()
+        val test = database.isTournamentInDatabase("NotAnId").get()
+        assertEquals(false, test)
     }
 
     /**
@@ -275,7 +296,7 @@ class MockDatabaseTest {
     @Test
     fun setDistanceGoalInvalid() {
         val database = MockDatabase()
-        val exception = Assert.assertThrows(java.util.concurrent.ExecutionException::class.java) {
+        assertThrows(java.util.concurrent.ExecutionException::class.java) {
             database.setGoals(userIdTest, UserGoals(distance = -1.00)).get()
         }
         assertEquals(
@@ -303,7 +324,7 @@ class MockDatabaseTest {
     @Test
     fun setActivityTimeGoalInvalid() {
         val database = MockDatabase()
-        val exception = Assert.assertThrows(Throwable::class.java) {
+        assertThrows(Throwable::class.java) {
             database.setGoals(userIdTest, UserGoals(activityTime = -1.0)).get()
         }
         assertEquals(
@@ -571,6 +592,201 @@ class MockDatabaseTest {
         )
         assertEquals(userAccount.getTotalNbOfPaths(), database.totalNbOfPathsTest + 1)
         */
+    }
+
+    /**
+     * Test if getTournamentUID() returns a new ID "every time" (by incrementing it by 1 for the mockDB)
+     */
+    @Test
+    fun getTournamentUIDReturnsANewID() {
+        val database = MockDatabase()
+        var currUID = database.getTournamentUID()
+        for (i: Int in 0..9) {
+            val newID = database.getTournamentUID()
+            assertEquals(currUID.toInt() + 1, newID.toInt())
+            currUID = newID
+        }
+    }
+
+    /**
+     * Test if addTournament() adds the tournament to the database.
+     */
+    @Test
+    fun addTournamentAddsNewTournamentToDatabase() {
+        val database = MockDatabase()
+        val newTournament = Tournament(
+            id = database.getTournamentUID(),
+            name = "testName",
+            description = "testDesc",
+            creatorId = "testCreator",
+            startDate = LocalDateTime.now().plusDays(2L),
+            endDate = LocalDateTime.now().plusDays(3L),
+        )
+        // check that the tournament is not stored beforehand
+        assertTrue(!database.tournaments.containsKey(newTournament.id))
+        // add the tournament
+        database.addTournament(newTournament).get()
+        // check that the tournament is stored with its id as key
+        assertTrue(database.tournaments.containsKey(newTournament.id))
+        assertEquals(newTournament, database.tournaments[newTournament.id])
+    }
+
+    /**
+     * Test if addTournament() replaces a tournament with same id (should never happen)
+     */
+    @Test
+    fun addNewTournamentWithExistingIdReplacesTournament() {
+        val database = MockDatabase()
+        val newTournament = Tournament(
+            id = database.mockTournament.id,
+            name = "testName",
+            description = "testDesc",
+            creatorId = "testCreator",
+            startDate = LocalDateTime.now().plusDays(2L),
+            endDate = LocalDateTime.now().plusDays(3L),
+        )
+        // check that the tournament is not the same beforehand
+        assertNotEquals(newTournament, database.tournaments[database.mockTournament.id])
+        // add  the tournament
+        database.addTournament(newTournament).get()
+        // check that the tournament has been replaced
+        assertEquals(newTournament, database.tournaments[database.mockTournament.id])
+    }
+
+    /**
+     * Test if removeTournament() removes correctly the tournament from the tournaments list
+     * and from the users' tournaments lists.
+     */
+    @Test
+    fun removeTournamentsRemovesTournamentFromGeneralAndUsersTournamentsFiles() {
+        val database = MockDatabase()
+        val tournamentToRemove = database.mockTournament.id
+        val tournamentsToRemoveParticipants = database.mockTournament.participants
+        // check that the tournament is in general list of tournaments
+        assertTrue(database.tournaments.containsKey(tournamentToRemove))
+        assertEquals(database.mockTournament, database.tournaments[tournamentToRemove])
+        // check that the participants have the tournament in their tournaments list
+        for (participantId in tournamentsToRemoveParticipants) {
+            assertTrue(database.users[participantId]!!.tournaments!!.contains(tournamentToRemove))
+        }
+        // remove the tournament
+        database.removeTournament(tournamentToRemove).get()
+        // check that the tournament is not in general list of tournaments
+        assertTrue(!database.tournaments.containsKey(tournamentToRemove))
+        // check that the participants don't have the tournament in their tournaments list
+        for (participantId in tournamentsToRemoveParticipants) {
+            assertTrue(!database.users[participantId]!!.tournaments!!.contains(tournamentToRemove))
+        }
+    }
+
+    /**
+     * Test if removeTournament() does nothing with non-existing tournamentID.
+     */
+    @Test
+    fun removeNonExistingTournamentDoesNothing() {
+        val database = MockDatabase()
+        val tournamentNumber = database.tournaments.size
+        val tournamentToRemove = "NotAnID"
+        // remove tournament
+        database.removeTournament(tournamentToRemove).get()
+        assertEquals(tournamentNumber, database.tournaments.size)
+    }
+
+    /**
+     * Test if adding a non-existing user to an existing tournament throws an error.
+     */
+    @Test
+    fun addingNonExistingUserToTournamentThrows() {
+        val database = MockDatabase()
+        val tournamentId = database.mockTournament.id
+        val userId = "NotAnID"
+        assertThrows(Throwable::class.java) {
+            database.addUserToTournament(userId, tournamentId).get()
+        }
+    }
+
+    /**
+     * Test if adding an existing user to a non-existing tournament throws an error.
+     */
+    @Test
+    fun addingUserToNonExistingTournamentThrows() {
+        val database = MockDatabase()
+        val tournamentId = "NotAnID"
+        val userId = database.mockUser.userId!!
+        assertThrows(Throwable::class.java) {
+            database.addUserToTournament(userId, tournamentId).get()
+        }
+    }
+
+    /**
+     * Test if adding a user to a tournament adds the user to the participants list of the tournament
+     * and adds the tournament to the tournaments' list of the user.
+     */
+    @Test
+    fun addingExistingUserToExistingTournamentWorks() {
+        val database = MockDatabase()
+        val tournamentId = database.MOCK_TOURNAMENTS[1].id
+        val userId = database.mockUser.userId!!
+        // check that user is not in tournament's participants
+        assertTrue(!database.tournaments[tournamentId]!!.participants.contains(userId))
+        // check that tournament is not in user's tournaments list
+        assertTrue(!database.users[userId]!!.tournaments!!.contains(tournamentId))
+        // add user to tournament
+        database.addUserToTournament(userId, tournamentId).get()
+        // check that user is in tournament's participants
+        assertTrue(database.tournaments[tournamentId]!!.participants.contains(userId))
+        // check that tournament is in user's tournaments list
+        assertTrue(database.users[userId]!!.tournaments!!.contains(tournamentId))
+    }
+
+    /**
+     * Test if adding a user to a tournament in which it already participates does nothing (and does not throw) as expected.
+     */
+    @Test
+    fun addingUserAlreadyInTournamentDoesNothing() {
+        val database = MockDatabase()
+        val tournamentId = database.MOCK_TOURNAMENTS[0].id
+        val numberParticipants = database.MOCK_TOURNAMENTS[0].participants.size
+        val userId = database.mockUser.userId!!
+        val numberTournamentsOfUser = database.mockUser.tournaments!!.size
+        // try to add user
+        database.addUserToTournament(userId, tournamentId).get()
+        // does not add a participant
+        assertEquals(numberParticipants, database.tournaments[tournamentId]!!.participants.size)
+        // does not add a tournament to the user
+        assertEquals(numberTournamentsOfUser, database.users[userId]!!.tournaments!!.size)
+    }
+
+    /**
+     * Test if removing a user from a tournament removes the user from the tournament's list of participants and
+     * removes the tournament from the user's tournaments list.
+     */
+    @Test
+    fun removingExistingUserFromExistingTournamentWorks() {
+        val database = MockDatabase()
+        val tournamentId = database.mockTournament.id
+        val userId = database.mockUser.userId!!
+        // check that user is in tournament's participants
+        assertTrue(database.tournaments[tournamentId]!!.participants.contains(userId))
+        // check that tournament is in user's tournaments list
+        assertTrue(database.users[userId]!!.tournaments!!.contains(tournamentId))
+        // remove user from tournament
+        database.removeUserFromTournament(userId, tournamentId)
+        // check that user is not in tournament's participants
+        assertTrue(!database.tournaments[tournamentId]!!.participants.contains(userId))
+        // check that tournament is not in user's tournaments list
+        assertTrue(!database.users[userId]!!.tournaments!!.contains(tournamentId))
+    }
+
+    /**
+     * Test if trying to remove a non-existing user from a non-existing tournament does not throw.
+     */
+    @Test
+    fun removingNonExistingUserFromNonExistingTournamentDoesNotThrow() {
+        val database = MockDatabase()
+        val tournamentId = "NotAnID"
+        val userId = "NotAnID"
+        database.removeUserFromTournament(userId, tournamentId).get()
     }
 
     /**
