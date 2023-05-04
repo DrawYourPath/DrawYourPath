@@ -23,10 +23,9 @@
         android:enabled="true"
         android:icon="@drawable/ic_history"
         android:title="@string/history_menu_item" />
-    <!-- Settings -->
+    <!-- Chat -->
     <item
-        android:id="@+id/preferences_menu_item"
-        android:enabled="true"
-        android:icon="@drawable/ic_settings"
-        android:title="@string/preferences_menu_item" />
+        android:id="@+id/chat_menu_item"
+        android:icon="@drawable/ic_chat"
+        android:title="@string/menu_chat" />
 </menu>

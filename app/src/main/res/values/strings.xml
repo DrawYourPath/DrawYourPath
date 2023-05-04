@@ -128,4 +128,17 @@
     <string name="calories_burned_kcal">CALORIES BURNED (KCAL)</string>
     <string name="end_time">END TIME</string>
     <string name="welcome_chat_message">Welcome to the %s conversation !</string>
+    <string name="hint_enter_message">enter message</string>
+    <string name="desc_send_image">send image</string>
+    <string name="desc_send_run">share run</string>
+    <string name="desc_send_message">send message</string>
+    <string name="menu_chat">chat</string>
+    <string name="settings">Settings</string>
+    <string name="time">Time:</string>
+    <string name="distance">Distance:</string>
+    <string name="speed">Speed:</string>
+    <string name="calories_burnt">Calories burnt:</string>
+    <string name="date">Date:</string>
+    <string name="senderName">Sender Name</string>
+    <string name="message_content_string">Message Content</string>
 </resources>

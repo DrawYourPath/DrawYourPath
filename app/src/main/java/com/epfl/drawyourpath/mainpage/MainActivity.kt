@@ -155,6 +155,10 @@ class MainActivity : AppCompatActivity() {
 
                 // Display challenge fragment
                 R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>()
+
+                // Display settings fragment
+
+                R.id.preferences_menu_item -> replaceFragment<PreferencesFragment>()
             }
             drawerLayout.close()
             true
@@ -178,9 +182,8 @@ class MainActivity : AppCompatActivity() {
                 // Display history fragment
                 R.id.history_menu_item -> replaceFragment<HistoryFragment>()
 
-                // Display settings fragment
-
-                R.id.preferences_menu_item -> replaceFragment<PreferencesFragment>()
+                // Display chat fragment
+                R.id.chat_menu_item -> replaceFragment<ChatFragment>()
             }
             true
         }
