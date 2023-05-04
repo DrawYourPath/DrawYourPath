@@ -56,13 +56,12 @@ class MainActivityTest {
         // Check fragment is history
         onView(withId(R.id.fragment_history)).check(matches(isDisplayed()))
 
-        // Go to settings
+        // Go to chats
 
-        onView(withId(R.id.preferences_menu_item)).perform(click())
+        onView(withId(R.id.chat_menu_item)).perform(click())
 
-        // Check fragment is settings
-        // see https://stackoverflow.com/questions/45172505/testing-android-preferencefragment-with-espresso
-        onView(withId(androidx.preference.R.id.recycler_view)).check(matches(isDisplayed()))
+        // Check fragment is chats
+        onView(withId(R.id.chat_list_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -73,7 +72,7 @@ class MainActivityTest {
         onView(withId(R.id.profile_button)).perform(click())
 
         // check username and email are correct
-        onView(withId(R.id.header_username)).check(matches(withText(database.mockUser.username)))
+        onView(withId(R.id.header_username)).check(matches(withText("albert")))
         onView(withId(R.id.header_email)).check(matches(withText(database.mockUser.email)))
     }
 
