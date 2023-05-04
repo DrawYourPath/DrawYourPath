@@ -22,7 +22,7 @@ class ChatFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_chat_list, container, false)
     }
@@ -53,4 +53,3 @@ class ChatFragment : Fragment() {
         chatRecyclerView.adapter = chatAdapter
     }
 }
-
