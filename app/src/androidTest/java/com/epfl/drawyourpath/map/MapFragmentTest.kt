@@ -29,7 +29,7 @@ class MapFragmentTest {
         val scenario = launchFragmentInContainer<MapFragment>(themeResId = R.style.Theme_Bootcamp) {
             MapFragment(focusedOnPosition = true, path = mockPath)
         }
-        //check that the map is displayed
+        // check that the map is displayed
         Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.fragment_draw_map))
@@ -45,7 +45,7 @@ class MapFragmentTest {
         val scenario = launchFragmentInContainer<MapFragment>(themeResId = R.style.Theme_Bootcamp) {
             MapFragment(focusedOnPosition = false, path = mockPath)
         }
-        //check that the map is displayed
+        // check that the map is displayed
         Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.fragment_draw_map))
@@ -61,7 +61,7 @@ class MapFragmentTest {
         val scenario = launchFragmentInContainer<MapFragment>(themeResId = R.style.Theme_Bootcamp) {
             MapFragment(focusedOnPosition = false, path = null)
         }
-        //check that the map is displayed
+        // check that the map is displayed
         Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.fragment_draw_map))

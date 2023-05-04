@@ -10,7 +10,6 @@ import com.epfl.Utils.drawyourpath.Utils.getCurrentDateTimeInEpochSeconds
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import java.time.Duration
 
 /**
  * This fragment is used to display a countdown to the user(3,2,1,GO).
@@ -27,12 +26,13 @@ class PathDrawingCountDownFragment(private val countdownDuration: Long = 4) : Fr
         // create the countdown timer of 4 seconds with a step of 1 second(4 seconds because 4 is not visible on the view at the beginning)
         createCountDown(countdownDuration)
     }
+
     /**
      * Helper function to create and lunch a countdown object
      * @param seconds duration in seconds of the countdown
      */
     private fun createCountDown(seconds: Long) {
-        object : CountDownTimer(1000*seconds, 100) {
+        object : CountDownTimer(1000 * seconds, 100) {
             override fun onTick(millisUntilFinished: Long) {
                 val seconds = (millisUntilFinished) / 1000
                 countDownText.text = if (seconds == 0L) "GO !" else seconds.toString()

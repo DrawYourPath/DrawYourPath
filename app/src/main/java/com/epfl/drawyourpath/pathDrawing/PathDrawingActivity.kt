@@ -8,8 +8,6 @@ import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
-import java.time.ZoneOffset
-import kotlin.math.roundToInt
 
 /**
  * This class is used to show the different fragments to draw a path(countdown, draw a path, see user performance, end view to return back to the menu)
