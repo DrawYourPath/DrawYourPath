@@ -67,7 +67,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
     }
 
     /**
-     * Initializes the RecyclerView with an empty adapter initially and sets up the layout manager.
+     * Initializes the RecyclerView with an empty adapter initially and sets up the layout manager
      */
     private fun initializeRecyclerView(view: View) {
         val recyclerView: RecyclerView = view.findViewById(R.id.friends_list)
