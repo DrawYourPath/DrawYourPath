@@ -77,6 +77,6 @@ class MessagesAdapter(private val messages: List<Message>) :
     }
 
     class RunPathMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        //TODO You can add views for displaying RunPath message content here
+        // TODO You can add views for displaying RunPath message content here
     }
 }
