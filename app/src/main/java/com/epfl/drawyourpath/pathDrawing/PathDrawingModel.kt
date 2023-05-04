@@ -2,8 +2,6 @@ package com.epfl.drawyourpath.pathDrawing
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -57,11 +55,13 @@ class PathDrawingModel : ViewModel() {
                             it.addPoint(point)
                             lastRunUpdate = getCurrentTime()
                         }
-                    }, oldRun.getStartTime(), if (getCurrentTime() <= oldRun.getStartTime()) {
+                    },
+                    oldRun.getStartTime(),
+                    if (getCurrentTime() <= oldRun.getStartTime()) {
                         oldRun.getStartTime() + 1
                     } else {
                         getCurrentTime()
-                    }
+                    },
                 )
             }
             _run.postValue(returnedRun)

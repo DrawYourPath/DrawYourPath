@@ -13,7 +13,7 @@ import com.epfl.drawyourpath.path.Run
  * This fragment is used to display a button to pause the drawing of a path.
  * @param run that will be displayed when we will be pause.
  */
-class PathDrawingPauseFragment(private val run: Run? =  null) : Fragment(R.layout.fragment_path_drawing_pause) {
+class PathDrawingPauseFragment(private val run: Run? = null) : Fragment(R.layout.fragment_path_drawing_pause) {
 
     private val pathDrawingModel: PathDrawingModel by activityViewModels()
 
