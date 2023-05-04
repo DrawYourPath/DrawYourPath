@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
+import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -18,15 +19,15 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Base64
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.HashMap
 
 class FirebaseKeys {
     companion object {
         // Database root entries
         const val USERS_ROOT = "users"
         const val USERNAMES_ROOT = "usernameToUid"
+        const val TOURNAMENTS_ROOT = "tournaments"
         const val CHATS_ROOT = "chats"
         const val CHATS_MEMBERS_ROOT = "chatsMembers"
         const val CHATS_MESSAGES_ROOT = "chatsMessages"
@@ -37,6 +38,7 @@ class FirebaseKeys {
         const val RUN_HISTORY = "runs"
         const val FRIENDS = "friends"
         const val DAILY_GOALS = "dailyGoals"
+        const val USER_TOURNAMENTS = "tournaments"
         const val USER_CHATS = "chats"
 
         // User profile keys sublevel
@@ -60,6 +62,9 @@ class FirebaseKeys {
         const val GOAL_HISTORY_PATHS = "paths"
         const val GOAL_HISTORY_TIME = "time"
 
+        // Tournaments keys
+        const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+
         // Chats keys top level
         const val CHAT_TITLE = "title"
         const val CHAT_LAST_MESSAGE = "lastMessage"
@@ -76,6 +81,7 @@ class FirebaseKeys {
  * The Firebase contains files:
  * -usernameToUserId: that link the username to a unique userId
  * -users: that contains users based on the UserModel defined by their userId
+ * -tournaments: that contains the different tournaments
  */
 class FirebaseDatabase : Database() {
     val database: DatabaseReference = Firebase.database.reference
@@ -94,6 +100,10 @@ class FirebaseDatabase : Database() {
 
     private fun nameMapping(username: String): DatabaseReference {
         return nameMappingRoot().child(username)
+    }
+
+    private fun tournamentsRoot(): DatabaseReference {
+        return database.child(FirebaseKeys.TOURNAMENTS_ROOT)
     }
 
     /**
@@ -171,6 +181,20 @@ class FirebaseDatabase : Database() {
         return future
     }
 
+    override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+
+        tournamentsRoot().get()
+            .addOnSuccessListener {
+                future.complete(it.value != null)
+            }
+            .addOnFailureListener {
+                future.completeExceptionally(it)
+            }
+
+        return future
+    }
+
     override fun getUsername(userId: String): CompletableFuture<String> {
         val future = CompletableFuture<String>()
 
@@ -227,19 +251,19 @@ class FirebaseDatabase : Database() {
         ilog("Setting username $username for userid $userId")
 
         // Checks for availability.
-        isUsernameAvailable(username).handle { isAvailable, exc ->
-            if (!isAvailable || exc != null) {
+        isUsernameAvailable(username).handle { isAvailable, exc1 ->
+            if (!isAvailable || exc1 != null) {
                 future.completeExceptionally(Error("Username already taken"))
                 return@handle
             }
 
             // Wanted username is available, we get the old username.
-            getUsername(userId).handle { pastUsername, exc ->
+            getUsername(userId).handle { pastUsername, exc2 ->
 
                 // Create a new mapping to the new username.
                 nameMapping(username).setValue(userId).addOnSuccessListener {
                     // If there is a past username.
-                    if (exc == null) {
+                    if (exc2 == null) {
                         // And remove the old one.
                         nameMapping(pastUsername).removeValue { _, _ ->
                             future.complete(Unit)
@@ -463,6 +487,83 @@ class FirebaseDatabase : Database() {
         return Utils.failedFuture(Error("Not implemented"))
     }
 
+    override fun getTournamentUID(): String? {
+        return database.child(FirebaseKeys.TOURNAMENTS_ROOT).push().key
+    }
+
+    override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // add the tournament to all tournaments
+        tournamentsRoot().updateChildren(mapOf(tournament.id to tournament))
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun removeTournament(tournamentId: String): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+
+        database.child("${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}")
+            .get()
+            .addOnSuccessListener { data ->
+                // get the list of all participants (list of ids)
+                val participantsIds = transformSnapshotKeysToStringList(data)
+                // prepare changes in database
+                // 1. remove the tournament from the list of tournaments of all participants
+                val changes: MutableMap<String, Any?> = participantsIds.associate {
+                    "${FirebaseKeys.USERS_ROOT}/$it/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to null
+                }.toMutableMap()
+                // 2. remove the tournament from the tournaments file
+                changes.put("${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId", null)
+                // do the changes
+                database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+            }
+            .addOnFailureListener { future.completeExceptionally(it) }
+
+        return future
+    }
+
+    override fun addUserToTournament(
+        userId: String,
+        tournamentId: String,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // check that the userId and tournamentId exist
+        isUserInDatabase(userId).thenCombine(isTournamentInDatabase(tournamentId)) { userExists, tournamentExists ->
+            if (!userExists) {
+                future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
+            } else if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId  $tournamentId doesn't exist."))
+            } else {
+                // if they exist, do the operation
+                val changes: MutableMap<String, Any?> = hashMapOf(
+                    "${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}/$userId" to true,
+                    "${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to true,
+                )
+                database.updateChildren(changes)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+            }
+        }
+        return future
+    }
+
+    override fun removeUserFromTournament(
+        userId: String,
+        tournamentId: String,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // this operation requires two deletions
+        val changes: MutableMap<String, Any?> = hashMapOf(
+            "${FirebaseKeys.TOURNAMENTS_ROOT}/$tournamentId/${FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS}/$userId" to null,
+            "${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to null,
+        )
+        database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
     override fun createChatConversation(
         name: String,
         membersList: List<String>,
@@ -597,7 +698,11 @@ class FirebaseDatabase : Database() {
         // add the message to the list of the messages of the conversation
         when (message.content.javaClass) {
             MessageContent.RunPath::class.java -> return addChatRunMessage(conversationId, message)
-            MessageContent.Picture::class.java -> return addChatPictureMessage(conversationId, message)
+            MessageContent.Picture::class.java -> return addChatPictureMessage(
+                conversationId,
+                message,
+            )
+
             MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
         }
         val future = CompletableFuture<Unit>()
@@ -613,7 +718,8 @@ class FirebaseDatabase : Database() {
         chatMessages(conversationId).child(messageId.toString()).removeValue()
             .addOnSuccessListener {
                 // check if we must update the preview
-                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).get()
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
+                    .child(messageId.toString()).get()
                     .addOnSuccessListener { data ->
                         if (data.value != null) {
                             val lastMessage = listOf<Pair<String, Any?>>(
@@ -644,13 +750,15 @@ class FirebaseDatabase : Database() {
         ).associate { entry -> entry }
         message(conversationId, messageId).updateChildren(newMessage)
             .addOnSuccessListener {
-                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).get().addOnSuccessListener { preview ->
-                    if (preview.value != null) {
-                        chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE).child(messageId.toString()).updateChildren(newMessage)
-                            .addOnSuccessListener { future.complete(Unit) }
-                            .addOnFailureListener { future.completeExceptionally(it) }
-                    }
-                }.addOnFailureListener { future.completeExceptionally(it) }
+                chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
+                    .child(messageId.toString()).get().addOnSuccessListener { preview ->
+                        if (preview.value != null) {
+                            chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
+                                .child(messageId.toString()).updateChildren(newMessage)
+                                .addOnSuccessListener { future.complete(Unit) }
+                                .addOnFailureListener { future.completeExceptionally(it) }
+                        }
+                    }.addOnFailureListener { future.completeExceptionally(it) }
             }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
@@ -692,9 +800,9 @@ class FirebaseDatabase : Database() {
                 activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toDouble(),
             ),
             picture = profile.child(FirebaseKeys.PICTURE).value as String?,
-            runs = transformRunsHistory(data.child(FirebaseKeys.RUN_HISTORY)),
-            dailyGoals = transformDataToDailyGoalList(data.child(FirebaseKeys.DAILY_GOALS)),
-            friendList = transformFriendsList(data.child(FirebaseKeys.FRIENDS)),
+            runs = transformRunsHistory(profile.child(FirebaseKeys.RUN_HISTORY)),
+            dailyGoals = transformDataToDailyGoalList(profile.child(FirebaseKeys.DAILY_GOALS)),
+            friendList = transformSnapshotKeysToStringList(profile.child(FirebaseKeys.FRIENDS)),
             chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
         )
     }
@@ -714,31 +822,26 @@ class FirebaseDatabase : Database() {
     }
 
     /**
-     * Helper function to obtain the friends list from the database of the user
-     * @param data the data snapshot containing the user List
-     * @return a list containing the userIds of the friends
+     * Helper function to obtain a list from the keys of a database snapshot.
+     * @param data the data snapshot to be converted to a list
+     * @return a list containing the keys of the snapshot
      */
-    private fun transformFriendsList(data: DataSnapshot?): List<String> {
+    private fun transformSnapshotKeysToStringList(data: DataSnapshot?): List<String> {
         if (data == null) {
-            Log.i(
-                FirebaseDatabase::class.java.name,
-                "Friend list is null. User has no friends.",
-            )
             return emptyList()
         }
+        val stringList = ArrayList<String>()
 
-        val friendListUserIds = ArrayList<String>()
-
-        for (friend in data.children) {
-            friendListUserIds.add(friend.key as String)
+        for (keyValue in data.children) {
+            stringList.add(keyValue.key as String)
         }
 
         Log.i(
             FirebaseDatabase::class.java.name,
-            String.format("User has %d friends.", friendListUserIds.size),
+            String.format("List has %d elements.", stringList.size),
         )
 
-        return friendListUserIds
+        return stringList
     }
 
     /**
@@ -1130,7 +1233,8 @@ class FirebaseDatabase : Database() {
      * @return a message correposnding to this data
      */
     private fun getMessageFromData(data: DataSnapshot): Message {
-        val dateStr: String = data.key ?: throw Exception("There content of this data not correspond to a message")
+        val dateStr: String =
+            data.key ?: throw Exception("There content of this data not correspond to a message")
         val date = dateStr.toLong()
         val sender = data.child(FirebaseKeys.CHAT_MESSAGE_SENDER).value as String
         val dataImage = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE)
@@ -1148,7 +1252,11 @@ class FirebaseDatabase : Database() {
             return Message(
                 id = date,
                 senderId = sender,
-                content = MessageContent.RunPath(transformRun(dataRun.children.toMutableList().get(0))!!),
+                content = MessageContent.RunPath(
+                    transformRun(
+                        dataRun.children.toMutableList().get(0),
+                    )!!,
+                ),
                 timestamp = date,
             )
         }

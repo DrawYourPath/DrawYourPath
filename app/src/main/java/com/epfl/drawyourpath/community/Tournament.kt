@@ -1,19 +1,24 @@
 package com.epfl.drawyourpath.community
 
+import com.google.firebase.database.Exclude
 import java.time.Clock
 import java.time.Duration
 import java.time.LocalDateTime
-import java.util.*
 
 /**
  * class representing tournaments that the user can take part in
  */
 data class Tournament(
+    val id: String,
     val name: String,
     val description: String,
+    val creatorId: String,
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
-    var posts: List<TournamentPost> = mutableListOf(),
+    @Exclude
+    val participants: List<String> = mutableListOf(),
+    @Exclude
+    val posts: List<TournamentPost> = mutableListOf(),
     var visibility: Visibility = Visibility.PUBLIC,
     // val result: List<User>?
 ) : java.io.Serializable {
@@ -23,6 +28,7 @@ data class Tournament(
      *
      * @return the resulting string
      */
+    @Exclude
     fun getStartOrEndDate(): String {
         val now = LocalDateTime.now(Clock.systemDefaultZone())
         if (now < startDate) {

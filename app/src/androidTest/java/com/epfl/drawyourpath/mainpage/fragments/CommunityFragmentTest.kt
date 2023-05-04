@@ -277,10 +277,13 @@ class CommunityFragmentTest {
      * sample tournaments
      */
     private val sampleWeekly = Tournament(
+        "WeeklyId",
         "Weekly tournament: Star Path",
         "draw a star path",
-        LocalDateTime.now().plusDays(3L),
+        "Anon1",
         LocalDateTime.now().plusDays(4L),
+        LocalDateTime.now().plusDays(3L),
+        listOf(),
         listOf(TournamentPost("xxDarkxx", sampleRun(), -13)),
     )
 
@@ -289,10 +292,13 @@ class CommunityFragmentTest {
      */
     private val sampleYourTournaments = mutableListOf(
         Tournament(
+            "YourId",
             "time square",
             "draw a square",
-            LocalDateTime.now().plusDays(3L),
+            "Anon2",
             LocalDateTime.now().plusDays(4L),
+            LocalDateTime.now().plusDays(3L),
+            listOf(),
             postsYour,
         ),
     )
@@ -302,17 +308,23 @@ class CommunityFragmentTest {
      */
     private val sampleDiscoveryTournaments = mutableListOf(
         Tournament(
+            "DiscoveryId1",
             "Discover the earth",
             "draw the earth",
-            LocalDateTime.now().plusDays(3L),
+            "Anon3",
             LocalDateTime.now().plusDays(4L),
+            LocalDateTime.now().plusDays(3L),
+            listOf(),
             postsDiscoverEarth,
         ),
         Tournament(
+            "DiscoveryId2",
             "to the moon",
             "draw the moon",
-            LocalDateTime.now().plusDays(3L),
+            "Anon4",
             LocalDateTime.now().plusDays(4L),
+            LocalDateTime.now().plusDays(3L),
+            listOf(),
             postsDiscoverMoon,
         ),
     )
