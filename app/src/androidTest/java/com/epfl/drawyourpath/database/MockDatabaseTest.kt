@@ -539,7 +539,7 @@ class MockDatabaseTest {
         // control the dailyGoal List
         val dailyGoals =
             database.users[userIdTest]!!.dailyGoals!!
-        assertEquals(dailyGoals.size, 2)
+        assertEquals(dailyGoals.size, 3)
 
         val added = dailyGoals.find { it.date.year == 2010 && it.date.month.value == 1 }!!
 

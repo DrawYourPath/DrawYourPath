@@ -9,7 +9,7 @@ import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
-import com.epfl.utils.drawyourpath.Utils
+import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -49,6 +49,15 @@ class MockDatabase : Database() {
                 date = LocalDate.of(2020, 1, 1),
                 expectedDistance = 10.0,
                 time = 10.0,
+            ),
+            DailyGoal(
+                paths = 1,
+                distance = 3.0,
+                expectedTime = 20.0,
+                expectedPaths = 10,
+                date = LocalDate.of(2022, 1, 1),
+                expectedDistance = 10.0,
+                time = 2.0,
             ),
         ),
         friendList = listOf("0", "1"),
