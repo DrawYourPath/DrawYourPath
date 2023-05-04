@@ -44,13 +44,18 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up QR code scanning
         view.findViewById<Button>(R.id.BT_ScanQR).setOnClickListener { onScanQRClicked() }
 
+        // Initialize the RecyclerView, ViewModel, and SearchView
         initializeRecyclerView(view)
         initializeViewModel(view)
         setUpSearchView(view)
     }
 
+    /**
+     * Initializes the RecyclerView with an empty adapter initially and sets up the layout manager.
+     */
     private fun initializeRecyclerView(view: View) {
         val recyclerView: RecyclerView = view.findViewById(R.id.friends_list)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -60,6 +65,9 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         recyclerView.adapter = friendsListAdapter
     }
 
+    /**
+     * Initializes the ViewModel and observes the LiveData for friends list updates.
+     */
     private fun initializeViewModel(view: View) {
         val currentUser =
             if (database is MockDatabase) {
@@ -79,6 +87,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
             val factory = FriendsViewModelFactory(userdata.userId!!, this.database)
             viewModel = ViewModelProvider(this, factory)[FriendsViewModel::class.java]
 
+            // Observe the friendsList LiveData from the ViewModel
             viewModel.friendsList.observe(viewLifecycleOwner) { friends ->
                 friendsListAdapter.updateFriendsList(friends)
             }
@@ -87,6 +96,9 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         }
     }
 
+    /**
+     * Sets up the SearchView and handles query text changes and query text submission.
+     */
     private fun setUpSearchView(view: View) {
         val searchView: SearchView = view.findViewById(R.id.friends_search_bar)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -102,6 +114,10 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         })
     }
 
+    /**
+     * Handles the username search functionality.
+     * Checks if the username is available, and if not, adds it as a potential friend.
+     */
     private fun handleUsernameSearch(query: String?) {
         if (query != null && query.isNotBlank()) {
             database.isUsernameAvailable(query).thenApply { isAvailable ->
@@ -127,6 +143,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                                 false,
                                             )
 
+                                            // Add the new friend to the list and update the UI
                                             viewModel.addPotentialFriend(newFriend)
                                         }
                                 } else {
@@ -143,15 +160,18 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         }
     }
 
+    /**
+     * Handles the QR code scanning and adding friends by their UID.
+     */
     private fun onScanQRClicked() {
         val mainActivity = requireActivity() as MainActivity
         mainActivity.scanQRCode()
             .thenApply {
                 if (it == null) {
-                    Toast.makeText(mainActivity, "Scan cancelled!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
                 } else {
                     database.addFriend(user.getUid(), it).thenAccept {
-                        Toast.makeText(mainActivity, "Friend added!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(mainActivity, "Friend added", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -170,3 +190,4 @@ class FriendsFragmentFactory(private val database: Database) : FragmentFactory()
         }
     }
 }
+
