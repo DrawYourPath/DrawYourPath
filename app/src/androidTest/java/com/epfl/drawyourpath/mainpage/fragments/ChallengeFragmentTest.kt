@@ -20,7 +20,7 @@ class ChallengeFragmentTest {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
-        Thread.sleep(250)
+        Thread.sleep(10)
     }
 
     /**
@@ -284,9 +284,6 @@ class ChallengeFragmentTest {
         scenario.close()
     }
 
-    // TODO: These tests are failing.
-    /*
-
     /**
      * test if the new time goal is correctly displayed when there is no today daily goal
      */
@@ -311,7 +308,6 @@ class ChallengeFragmentTest {
 
         scenario.close()
     }
-
 
     /**
      * test if the nb of paths is correctly displayed when there is today daily goal
@@ -381,7 +377,6 @@ class ChallengeFragmentTest {
         scenario.close()
     }
 
-
     /**
      * test if the time goal is correctly displayed when there is today daily goal
      */
@@ -439,7 +434,6 @@ class ChallengeFragmentTest {
 
         scenario.close()
     }
-     */
 
     /**
      * helper function to perform a replaceText inside a RecyclerView

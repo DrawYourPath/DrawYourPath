@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import android.util.Log
-import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
@@ -10,6 +9,8 @@ import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.utils.drawyourpath.Utils
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -25,7 +26,7 @@ class MockDatabase : Database() {
         goals = UserGoals(
             3,
             10.0,
-            20,
+            20.0,
         ),
         email = MockAuth.MOCK_USER.getEmail(),
         username = "MOCK_USER",
@@ -33,11 +34,11 @@ class MockDatabase : Database() {
         firstname = "testfirstnamemock",
         picture = "1234567890",
         runs = listOf(
-            /*Run(
+            Run(
                 startTime = 10,
                 endTime = 20,
-                path = Path()
-            )*/
+                path = Path(listOf(LatLng(46.51854301997813, 6.56237289547834))),
+            ),
         ),
         dailyGoals = listOf(
             DailyGoal(
@@ -63,7 +64,7 @@ class MockDatabase : Database() {
             goals = UserGoals(
                 10,
                 10.0,
-                20,
+                20.0,
             ),
             email = "test@test.test",
             username = "testusername",
@@ -96,7 +97,7 @@ class MockDatabase : Database() {
             goals = UserGoals(
                 3,
                 10.0,
-                20,
+                20.0,
             ),
             email = "test2@test.test",
             username = "testusername2",
@@ -130,7 +131,7 @@ class MockDatabase : Database() {
             goals = UserGoals(
                 10,
                 10.0,
-                20,
+                20.0,
             ),
             email = "test@test.test",
             username = "hugo",
@@ -164,7 +165,7 @@ class MockDatabase : Database() {
             goals = UserGoals(
                 10,
                 10.0,
-                20,
+                20.0,
             ),
             email = "test@test.test",
             username = "Hugo852",
@@ -416,7 +417,7 @@ class MockDatabase : Database() {
             return userDoesntExist()
         }
         // convert the bitmap to a byte array
-        return setUserData(userId, UserData(picture = Utils.encodePhoto(photo)))
+        return setUserData(userId, UserData(picture = Utils.encodePhotoToString(photo)))
     }
 
     private fun addFriendToUser(user: String, target: String) {
