@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.path
 
 import com.google.firebase.database.Exclude
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
