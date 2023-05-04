@@ -22,4 +22,8 @@
         </menu>
     </item>
 
+    <!-- Add the preferences item here -->
+    <item
+        android:id="@+id/preferences_menu_item"
+        android:title="@string/settings" />
 </menu>

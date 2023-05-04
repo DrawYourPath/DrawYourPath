@@ -116,4 +116,6 @@
     <string name="desc_send_image">send image</string>
     <string name="desc_send_run">share run</string>
     <string name="desc_send_message">send message</string>
+    <string name="menu_chat">chat</string>
+    <string name="settings">Settings</string>
 </resources>
