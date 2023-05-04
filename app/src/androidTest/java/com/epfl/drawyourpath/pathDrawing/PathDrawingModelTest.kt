@@ -67,5 +67,4 @@ class PathDrawingModelTest {
         @Suppress("UNCHECKED_CAST")
         return data as T
     }
-
 }
