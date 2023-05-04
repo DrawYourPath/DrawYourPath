@@ -15,7 +15,7 @@ import com.google.android.gms.maps.model.LatLng
 /**
  * This class is the adapter for the RecyclerView that displays the list of runs.
  */
-class RunsAdapter(private val runs: List<Run>) : RecyclerView.Adapter<RunsAdapter.ViewHolder>() {
+class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.past_run, parent, false)
@@ -59,5 +59,10 @@ class RunsAdapter(private val runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         val timeTakenTextView: TextView = itemView.findViewById(R.id.timeTakenTextView)
         val calorieTextView: TextView = itemView.findViewById(R.id.calorieTextView)
         val averageSpeedTextView: TextView = itemView.findViewById(R.id.averageSpeedTextView)
+    }
+
+    fun updateRunsData(newRuns: List<Run>) {
+        runs = newRuns
+        notifyDataSetChanged()
     }
 }
