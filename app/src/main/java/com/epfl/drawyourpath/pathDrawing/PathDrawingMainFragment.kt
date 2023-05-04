@@ -13,7 +13,7 @@ import com.epfl.drawyourpath.path.Run
  * @param run that the user had made(contains past performance and path)
  * @param isDrawing to know if the user is currently drawing a path or if the path is in pause state
  */
-class PathDrawingMainFragment(private val run: Run, private val isDrawing: Boolean) : Fragment(R.layout.fragment_path_drawing_main) {
+class PathDrawingMainFragment(private val run: Run? = null, private val isDrawing: Boolean) : Fragment(R.layout.fragment_path_drawing_main) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (isDrawing) {
@@ -50,7 +50,7 @@ class PathDrawingMainFragment(private val run: Run, private val isDrawing: Boole
      */
     private fun showMap() {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.path_drawing_main_map, MapFragment(focusedOnPosition = true, path = run.getPath()))
+        fragTransaction.replace(R.id.path_drawing_main_map, MapFragment(focusedOnPosition = true, path = run?.getPath()))
         fragTransaction.commit()
     }
 
@@ -59,7 +59,7 @@ class PathDrawingMainFragment(private val run: Run, private val isDrawing: Boole
      */
     private fun showPathPreview() {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.path_drawing_main_map, MapFragment(focusedOnPosition = false, path = run.getPath()))
+        fragTransaction.replace(R.id.path_drawing_main_map, MapFragment(focusedOnPosition = false, path = run?.getPath()))
         fragTransaction.commit()
     }
 

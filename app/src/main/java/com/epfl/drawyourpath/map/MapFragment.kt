@@ -9,14 +9,17 @@ import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.pathDrawing.PathDrawingModel
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.libraries.places.api.Places
 
@@ -28,6 +31,8 @@ import com.google.android.libraries.places.api.Places
  */
 class MapFragment(private val focusedOnPosition: Boolean = true, private val path: Path? = null) :
     Fragment(R.layout.fragment_map), OnMapReadyCallback {
+
+    private val pathDrawingModel: PathDrawingModel by activityViewModels()
 
     private var map: GoogleMap? = null
     private var lastKnownLocation: Location? = null
@@ -64,15 +69,15 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         updateLocationUI()
         // obtain the user position and move the camera in function of focusedOnPosition
         getDeviceLocation()
+        // setup the drawing on the map
+        setupDrawingOnMap(map)
         // focused on
         val pathReady = path != null && path.getPoints().isNotEmpty()
         if (pathReady && !focusedOnPosition) {
-            val middlePoint = path!!.getPoints().get(path.size() / 2)
-            moveCameraToPosition(location = middlePoint, zoom = DEFAULT_ZOOM)
-        }
-        if (pathReady) {
-            // add the path on the map if the run
-            drawPathOnMap(map, path!!)
+            val bounds = LatLngBounds.builder()
+            path!!.getPoints().map { bounds.include(it); Log.d("test", it.toString())}
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 5))
+            drawStaticPathOnMap(map, path)
         }
     }
 
@@ -81,24 +86,33 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param location where we want to move the camera
      * @param zoom apply to the camera
      */
-    private fun moveCameraToPosition(location: LatLng, zoom: Float) {
+    private fun moveCameraToPosition(location: LatLng, zoom: Float = DEFAULT_ZOOM) {
         map?.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(
                     location.latitude,
                     location.longitude,
                 ),
-                DEFAULT_ZOOM,
+                zoom,
             ),
         )
+    }
+
+    private fun setupDrawingOnMap(map: GoogleMap) {
+        val polyline = map.addPolyline(PolylineOptions().clickable(false))
+        pathDrawingModel.points.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty() && it.size > polyline.points.size) {
+                polyline.points = it
+            }
+        }
     }
 
     /**
      * Function used to add the polygon corresponding to the path on the map
      * @param map where the polygon will be displayed
-     * @param path will be drawed on the map
+     * @param path will be drawn on the map
      */
-    private fun drawPathOnMap(map: GoogleMap, path: Path) {
+    private fun drawStaticPathOnMap(map: GoogleMap, path: Path) {
         val listLng = ArrayList<LatLng>()
         for (coord in path.getPoints()) {
             listLng.add(LatLng(coord.latitude, coord.longitude))
@@ -184,12 +198,13 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
                         override fun onLocationResult(locationResult: LocationResult?) {
                             if (locationResult != null) {
                                 lastKnownLocation = locationResult.lastLocation
+                                val newLoc = LatLng(
+                                    locationResult.lastLocation.latitude,
+                                    locationResult.lastLocation.longitude,
+                                )
+                                pathDrawingModel.updateRun(newLoc)
                                 // move the camera if we focused the view on the user position or we initiate the map with a null path
                                 if ((mapInit && path == null) || focusedOnPosition) {
-                                    val newLoc = LatLng(
-                                        locationResult.lastLocation.latitude,
-                                        locationResult.lastLocation.longitude,
-                                    )
                                     moveCameraToPosition(location = newLoc, zoom = DEFAULT_ZOOM)
                                 }
                                 mapInit = false
@@ -200,7 +215,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
                             }
                         }
                     },
-                    Looper.getMainLooper(),
+                    Looper.myLooper(),
                 )
             }
         } catch (e: SecurityException) {

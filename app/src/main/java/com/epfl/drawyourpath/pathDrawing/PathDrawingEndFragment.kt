@@ -18,8 +18,9 @@ import com.epfl.drawyourpath.userProfile.cache.UserModelCached
  * the final performance data of the user and a button to return back to the main menu of the app).
  * @param run that contains the performance dta and the path made by the user
  */
-class PathDrawingEndFragment(private val run: Run) : Fragment(R.layout.fragment_path_drawing_end) {
+class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.fragment_path_drawing_end) {
     private val userCached: UserModelCached by activityViewModels()
+    private val pathDrawingModel: PathDrawingModel by activityViewModels()
 
     private lateinit var backMenuButton: Button
 
@@ -34,7 +35,9 @@ class PathDrawingEndFragment(private val run: Run) : Fragment(R.layout.fragment_
         // return back to the menu add and save the path back clicking and the back to menu button
         backMenuButton = view.findViewById(R.id.path_drawing_end_back_menu_button)
         backMenuButton.setOnClickListener {
-            returnBackToMenu()
+            userCached.addNewRun(pathDrawingModel.getRun()).thenApplyAsync {
+                returnBackToMenu()
+            }
         }
     }
 
@@ -43,7 +46,7 @@ class PathDrawingEndFragment(private val run: Run) : Fragment(R.layout.fragment_
      */
     private fun setupPathPreview() {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.path_drawing_end_map, MapFragment(focusedOnPosition = false, path = run.getPath()))
+        fragTransaction.replace(R.id.path_drawing_end_map, MapFragment(focusedOnPosition = false, path = run?.getPath()))
         fragTransaction.commit()
     }
 
