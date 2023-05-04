@@ -36,7 +36,7 @@ class HistoryFragmentTest {
         val point2 = LatLng(0.001, 0.001)
         val points = listOf(point1, point2)
         val path = Path(points)
-        val startTime = System.currentTimeMillis()
+        val startTime = 1683226596L
         val endTime = startTime + 10
         val run1 = Run(path, startTime, endTime)
         runs.add(run1)
@@ -45,8 +45,8 @@ class HistoryFragmentTest {
         val point4 = LatLng(0.05, 0.0)
         val points2 = listOf(point3, point4)
         val path2 = Path(points2)
-        val startTime2 = System.currentTimeMillis()
-        val endTime2 = startTime + 1000000
+        val startTime2 = 1683226963L
+        val endTime2 = startTime + 10000
         val run2 = Run(path2, startTime2, endTime2)
         runs.add(run2)
 
@@ -78,7 +78,7 @@ class HistoryFragmentTest {
                     } Km",
                 ),
             ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(ViewMatchers.withText("Time taken: ${run.getDuration()} minutes"))
+            Espresso.onView(ViewMatchers.withText("Time taken: ${run.getDuration() / 60} minutes"))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             Espresso.onView(ViewMatchers.withText("Calories burned: ${run.getCalories()} kcal"))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

@@ -16,8 +16,8 @@ import java.time.temporal.ChronoUnit
 
 class PathDrawingModel : ViewModel() {
 
-    private var returnedRun = Run(Path(), 0, 1)
-    private val _run: MutableLiveData<Run> = MutableLiveData(returnedRun)
+    private var resultingRun = Run(Path(), 0, 1)
+    private val _run: MutableLiveData<Run> = MutableLiveData(resultingRun)
     private var startTime: Long? = null
     private var pauseTime: Long? = null
     private var pauseDuration: Duration = Duration.ZERO
@@ -35,20 +35,31 @@ class PathDrawingModel : ViewModel() {
         }
     }
 
+    /**
+     * get the resulting run
+     * @return the run
+     */
     fun getRun(): Run {
-        return returnedRun
+        return resultingRun
     }
 
+    /**
+     * start the run
+     */
     fun startRun() {
-        returnedRun = Run(Path(), getAndSetStartTime(), startTime!! + 1)
-        _run.postValue(returnedRun)
+        resultingRun = Run(Path(), getAndSetStartTime(), startTime!! + 1)
+        _run.postValue(resultingRun)
         lastRunUpdate = startTime!!
         handler.post(updateHandler)
     }
 
+    /**
+     * update the run with a new point or just the time
+     * @param point the new point
+     */
     fun updateRun(point: LatLng?) {
         if (runHasStarted() && !isPaused()) {
-            returnedRun = returnedRun.let { oldRun ->
+            resultingRun = resultingRun.let { oldRun ->
                 Run(
                     oldRun.getPath().also {
                         if (getCurrentTime() - lastRunUpdate >= TIME_BETWEEN_UPDATES && point != null) {
@@ -64,10 +75,13 @@ class PathDrawingModel : ViewModel() {
                     },
                 )
             }
-            _run.postValue(returnedRun)
+            _run.postValue(resultingRun)
         }
     }
 
+    /**
+     * pause or resume the run
+     */
     fun pauseResumeRun() {
         if (!runHasStarted()) {
             throw Error("cannot pause before the run has started")

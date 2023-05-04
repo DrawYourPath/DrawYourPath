@@ -27,7 +27,7 @@ class PathDrawingPauseFragment(private val run: Run? = null) : Fragment(R.layout
                 pathDrawingModel.pauseResumeRun()
             }
             val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-            fragTransaction.replace(R.id.path_drawing_activity_content, PathDrawingMainFragment(isDrawing = false, run = run ?: pathDrawingModel.getRun()))
+            fragTransaction.replace(R.id.path_drawing_activity_content, PathDrawingMainFragment(isDrawing = false, run = run))
             fragTransaction.commit()
         }
     }

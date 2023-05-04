@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Run
@@ -14,6 +15,8 @@ import com.epfl.drawyourpath.path.Run
  * @param isDrawing to know if the user is currently drawing a path or if the path is in pause state
  */
 class PathDrawingMainFragment(private val run: Run? = null, private val isDrawing: Boolean) : Fragment(R.layout.fragment_path_drawing_main) {
+
+    private val pathDrawingModel: PathDrawingModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (isDrawing) {
@@ -59,7 +62,7 @@ class PathDrawingMainFragment(private val run: Run? = null, private val isDrawin
      */
     private fun showPathPreview() {
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.path_drawing_main_map, MapFragment(focusedOnPosition = false, path = run?.getPath()))
+        fragTransaction.replace(R.id.path_drawing_main_map, MapFragment(focusedOnPosition = false, path = run?.getPath() ?: pathDrawingModel.getRun().getPath()))
         fragTransaction.commit()
     }
 
