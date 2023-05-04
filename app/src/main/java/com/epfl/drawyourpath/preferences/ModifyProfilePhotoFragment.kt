@@ -90,7 +90,7 @@ class ModifyProfilePhotoFragment : Fragment(R.layout.fragment_modify_profile_pho
      */
     private fun initPhotoPreview(photoPreview: ImageView) {
         user.getUser().observe(viewLifecycleOwner) {
-            photoPreview.setImageBitmap(it.getProfilePhotoOrDefaultAsBitmap(resources))
+            photoPreview.setImageBitmap(it.profilePhoto(resources))
         }
         photoPreview.tag = R.drawable.profile_placholderpng
     }

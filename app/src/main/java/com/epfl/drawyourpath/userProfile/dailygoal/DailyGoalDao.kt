@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.userProfile.dailygoal
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.path.cache.PointsEntity
 import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.cache.GoalAndAchievements
@@ -101,21 +102,31 @@ interface DailyGoalDao {
     fun insertAllPoints(points: List<PointsEntity>)
 
     /**
-     * set a new distance goal to DailyGoal and User with the corresponding id and date
+     * set a new distance, time, path goal to DailyGoal and User with the corresponding id and date
      * @param userId the id of the user
      * @param date the date of the daily goal
-     * @param distanceGoal the new distance goal of the user
+     * @param goals the new goals of the user
      * @return the new daily goal
      */
     @Transaction
-    fun updateDistanceGoal(userId: String, date: Long, distanceGoal: Double): DailyGoalEntity {
-        updateDistanceGoalUser(userId, distanceGoal)
-        insertIfDailyGoalUpdateFailed(userId, date, updateDistanceGoalDailyGoal(userId, date, distanceGoal))
+    fun updateGoals(userId: String, date: Long, goals: UserGoals): DailyGoalEntity {
+        goals.distance?.apply {
+            updateDistanceGoalUser(userId, this)
+            insertIfDailyGoalUpdateFailed(userId, date, updateDistanceGoalDailyGoal(userId, date, this))
+        }
+        goals.activityTime?.apply {
+            updateTimeGoalUser(userId, this)
+            insertIfDailyGoalUpdateFailed(userId, date, updateTimeGoalDailyGoal(userId, date, this))
+        }
+        goals.paths?.toInt()?.apply {
+            updatePathsGoalUser(userId, this)
+            insertIfDailyGoalUpdateFailed(userId, date, updatePathsGoalDailyGoal(userId, date, this))
+        }
         return getDailyGoalByIdAndDate(userId, date)
     }
 
     /**
-     * should not be used: use [updateDistanceGoal] instead
+     * should not be used: use [updateGoals] instead
      * set a new distance goal to DailyGoal with the corresponding id and date
      * @param userId the id of the user
      * @param date the date of the daily goal
@@ -125,7 +136,7 @@ interface DailyGoalDao {
     fun updateDistanceGoalDailyGoal(userId: String, date: Long, distanceGoal: Double): Int
 
     /**
-     * should not be used: use [updateDistanceGoal] instead
+     * should not be used: use [updateGoals] instead
      * set a new distance goal to user with the corresponding id
      * @param id the id of the user
      * @param distanceGoal the new distance goal of the user
@@ -134,21 +145,7 @@ interface DailyGoalDao {
     fun updateDistanceGoalUser(id: String, distanceGoal: Double)
 
     /**
-     * set a new time goal to DailyGoal and User with the corresponding id and date
-     * @param userId the id of the user
-     * @param date the date of the daily goal
-     * @param timeGoal the new time goal of the user
-     * @return the new daily goal
-     */
-    @Transaction
-    fun updateTimeGoal(userId: String, date: Long, timeGoal: Double): DailyGoalEntity {
-        updateTimeGoalUser(userId, timeGoal)
-        insertIfDailyGoalUpdateFailed(userId, date, updateTimeGoalDailyGoal(userId, date, timeGoal))
-        return getDailyGoalByIdAndDate(userId, date)
-    }
-
-    /**
-     * should not be used: use [updateTimeGoal] instead
+     * should not be used: use [updateGoals] instead
      * set a new time goal to DailyGoal with the corresponding id and date
      * @param userId the id of the user
      * @param date the date of the daily goal
@@ -158,7 +155,7 @@ interface DailyGoalDao {
     fun updateTimeGoalDailyGoal(userId: String, date: Long, timeGoal: Double): Int
 
     /**
-     * should not be used: use [updateTimeGoal] instead
+     * should not be used: use [updateGoals] instead
      * set a new time goal to user with the corresponding id
      * @param id the id of the user
      * @param timeGoal the new time goal of the user
@@ -167,21 +164,7 @@ interface DailyGoalDao {
     fun updateTimeGoalUser(id: String, timeGoal: Double)
 
     /**
-     * set a new number of paths goal to DailyGoal and User with the corresponding id and date
-     * @param userId the id of the user
-     * @param date the date of the daily goal
-     * @param pathsGoal the new number of paths goal of the user
-     * @return the new daily goal
-     */
-    @Transaction
-    fun updatePathsGoal(userId: String, date: Long, pathsGoal: Int): DailyGoalEntity {
-        updatePathsGoalUser(userId, pathsGoal)
-        insertIfDailyGoalUpdateFailed(userId, date, updatePathsGoalDailyGoal(userId, date, pathsGoal))
-        return getDailyGoalByIdAndDate(userId, date)
-    }
-
-    /**
-     * should not be used: use [updatePathsGoal] instead
+     * should not be used: use [updateGoals] instead
      * set a new number of paths goal to DailyGoal with the corresponding id and date
      * @param userId the id of the user
      * @param date the date of the daily goal
@@ -191,7 +174,7 @@ interface DailyGoalDao {
     fun updatePathsGoalDailyGoal(userId: String, date: Long, pathsGoal: Int): Int
 
     /**
-     * should not be used: use [updatePathsGoal] instead
+     * should not be used: use [updateGoals] instead
      * set a new number of paths goal to user with the corresponding id
      * @param id the id of the user
      * @param pathsGoal the new number of paths goal of the user

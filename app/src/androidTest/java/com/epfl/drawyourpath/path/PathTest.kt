@@ -70,7 +70,7 @@ class PathTest {
         val path = Path()
         path.addPoint(LatLng(0.0, 0.0))
         path.addPoint(LatLng(0.0, 1.0))
-        assertEquals(111319.9, path.getDistance(), 500.0)
+        assertEquals(111319.9, path.getDistance(), 1.0)
     }
 
     @Test

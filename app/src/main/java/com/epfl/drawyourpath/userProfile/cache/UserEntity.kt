@@ -1,18 +1,12 @@
 package com.epfl.drawyourpath.userProfile.cache
 
-import android.annotation.SuppressLint
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.core.graphics.drawable.toBitmap
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.epfl.drawyourpath.R
-import java.io.ByteArrayOutputStream
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
+import com.epfl.drawyourpath.database.UserData
+import com.epfl.drawyourpath.userProfile.UserProfile
+import com.epfl.utils.drawyourpath.Utils
 
 @Entity(tableName = "User")
 data class UserEntity(
@@ -62,71 +56,27 @@ data class UserEntity(
     @ColumnInfo(name = "photo", typeAffinity = ColumnInfo.BLOB)
     val profilePhoto: ByteArray? = null,
 ) {
+    constructor(userData: UserData, alternativeUserId: String) : this(
+        userData.userId ?: alternativeUserId,
+        userData.username ?: "",
+        userData.email ?: "",
+        userData.firstname ?: "",
+        userData.surname ?: "",
+        userData.birthDate ?: 0,
+        userData.goals?.let { GoalAndAchievements(it) } ?: GoalAndAchievements(),
+        Utils.decodeStringAsByteArray(userData.picture),
+    )
 
-    /**
-     * Get the age of the user
-     * @return the age of the user
-     */
-    fun getAge(): Int {
-        return ChronoUnit.YEARS.between(getDateOfBirthAsLocalDate(), LocalDate.now()).toInt()
-    }
-
-    /**
-     * get the profile photo of the user or if none the default profile photo
-     * @param res the resources used to get the default profile photo
-     * @return the profile photo of the user or the default profile photo
-     */
-    @SuppressLint("UseCompatLoadingForDrawables")
-    fun getProfilePhotoOrDefaultAsBitmap(res: Resources): Bitmap {
-        if (profilePhoto == null) {
-            return res.getDrawable(R.drawable.profile_placholderpng, null).toBitmap()
-        }
-        return BitmapFactory.decodeByteArray(profilePhoto, 0, profilePhoto.size, BitmapFactory.Options())
-    }
-
-    /**
-     * get the profile photo of the user
-     * @return the profile photo of the user
-     */
-    fun getProfilePhotoAsBitmap(): Bitmap? {
-        if (profilePhoto == null) {
-            return null
-        }
-        return BitmapFactory.decodeByteArray(profilePhoto, 0, profilePhoto.size, BitmapFactory.Options())
-    }
-
-    /**
-     * get the date of birth of the user
-     * @return the date of birth of the user
-     */
-    fun getDateOfBirthAsLocalDate(): LocalDate {
-        return LocalDate.ofEpochDay(dateOfBirth)
-    }
-
-    companion object {
-        /**
-         * create a byteArray from a bitmap image
-         * @param image the bitmap
-         * @return the bytearray
-         */
-        fun fromBitmapToByteArray(image: Bitmap?): ByteArray? {
-            if (image == null) {
-                return null
-            }
-            val stream = ByteArrayOutputStream()
-            image.compress(Bitmap.CompressFormat.WEBP, 70, stream)
-            return stream.toByteArray()
-        }
-
-        /**
-         * create a Long from a LocalDate
-         * @param date the localDate
-         * @return the Long
-         */
-        fun fromLocalDateToLong(date: LocalDate): Long {
-            return date.toEpochDay()
-        }
-    }
+    constructor(userProfile: UserProfile) : this(
+        userProfile.userId,
+        userProfile.username,
+        userProfile.emailAddress,
+        userProfile.firstname,
+        userProfile.surname,
+        userProfile.birthDate.toEpochDay(),
+        GoalAndAchievements(userProfile.goals),
+        null,
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

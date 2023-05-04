@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.path
 
+import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.database.Exclude
@@ -54,23 +55,13 @@ class Path {
     }
 
     /**
-     * helper function to calculate distance between two points(in meters)
+     * helper function to calculate distance between two points (in meters)
      */
     private fun distance(point1: LatLng, point2: LatLng): Double {
-        val lat1 = point1.latitude
-        val lat2 = point2.latitude
-        val lon1 = point1.longitude
-        val lon2 = point2.longitude
-        val r = 6371e3 // metres
-        val a1 = lat1 * Math.PI / 180 // angle in radians
-        val a2 = lat2 * Math.PI / 180
-        val Da = (lat2 - lat1) * Math.PI / 180
-        val Dl = (lon2 - lon1) * Math.PI / 180
-        val a = Math.sin(Da / 2) * Math.sin(Da / 2) +
-            Math.cos(a1) * Math.cos(a2) *
-            Math.sin(Dl / 2) * Math.sin(Dl / 2)
-        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-        return r * c
+        // Calculate the distance on the WGS84 ellipsoid (for precision)
+        var result = FloatArray(1)
+        Location.distanceBetween(point1.latitude, point1.longitude, point2.latitude, point2.longitude, result)
+        return result[0].toDouble()
     }
 
     /**

@@ -25,7 +25,7 @@ class MainActivityTest {
     @Test
     fun firstFragmentIsDrawFragmentWhenNoSavedState() {
         // First fragment is DrawFragment
-        onView(withId(R.id.fragment_draw)).check(matches(isDisplayed()))
+        onView(withId(R.id.mapFragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -48,7 +48,7 @@ class MainActivityTest {
         onView(withId(R.id.draw_menu_item)).perform(click())
 
         // Check fragment is draw
-        onView(withId(R.id.fragment_draw)).check(matches(isDisplayed()))
+        onView(withId(R.id.mapFragment)).check(matches(isDisplayed()))
 
         // Go to history
         onView(withId(R.id.history_menu_item)).perform(click())

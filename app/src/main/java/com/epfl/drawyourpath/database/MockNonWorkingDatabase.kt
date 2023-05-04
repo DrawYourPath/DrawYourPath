@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.util.concurrent.CompletableFuture
@@ -73,6 +74,58 @@ class MockNonWorkingDatabase : Database() {
         userId: String,
         distanceDrawing: Double,
         activityTimeDrawing: Double,
+    ): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun createChatConversation(
+        name: String,
+        membersList: List<String>,
+        creatorId: String,
+        welcomeMessage: String,
+    ): CompletableFuture<String> {
+        return failedFuture()
+    }
+
+    override fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview> {
+        return failedFuture()
+    }
+
+    override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun getChatMemberList(conversationId: String): CompletableFuture<List<String>> {
+        return failedFuture()
+    }
+
+    override fun addChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun removeChatMember(userId: String, conversationId: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
+        return failedFuture()
+    }
+
+    override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun removeChatMessage(
+        conversationId: String,
+        messageId: Long,
+    ): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun modifyChatTextMessage(
+        conversationId: String,
+        messageId: Long,
+        message: String,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }

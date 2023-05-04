@@ -1,8 +1,12 @@
 package com.epfl.drawyourpath.path
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import org.junit.Test
+import java.text.SimpleDateFormat
+import java.util.*
 
 class RunTest {
 
@@ -48,6 +52,49 @@ class RunTest {
     }
 
     @Test
+    fun calculateStartTime() {
+        // create a run with a known timing
+        val point1 = LatLng(1.0, 2.0)
+        val point2 = LatLng(3.0, 4.0)
+        val points = listOf(point1, point2)
+        val path = Path(points)
+        val startTime = System.currentTimeMillis()
+        val endTime = startTime + 3000
+        val run = Run(path, startTime, endTime)
+        // check that start time is handled correctly
+        assertEquals(startTime, run.getStartTime())
+    }
+
+    @Test
+    fun calculateDate() {
+        // create a run with a known timing
+        val point1 = LatLng(1.0, 2.0)
+        val point2 = LatLng(3.0, 4.0)
+        val points = listOf(point1, point2)
+        val path = Path(points)
+        val startTime = System.currentTimeMillis()
+        val endTime = startTime + 3000
+        val run = Run(path, startTime, endTime)
+        // check that date is calculated correctly
+        val formatter = SimpleDateFormat("MMM d, yyyy HH:mm", Locale.getDefault())
+        assertEquals(formatter.format(Date(endTime)), run.getDate())
+    }
+
+    @Test
+    fun calculateEndTime() {
+        // create a run with a known timing
+        val point1 = LatLng(1.0, 2.0)
+        val point2 = LatLng(3.0, 4.0)
+        val points = listOf(point1, point2)
+        val path = Path(points)
+        val startTime = System.currentTimeMillis()
+        val endTime = startTime + 3000
+        val run = Run(path, startTime, endTime)
+        // check that end time is handled correctly
+        assertEquals(endTime, run.getEndTime())
+    }
+
+    @Test
     fun calculateAverageSpeed() {
         // create a run with known path and duration
         val point1 = LatLng(0.0, 0.0)
@@ -62,6 +109,26 @@ class RunTest {
     }
 
     @Test
+    fun calculateCalories() {
+        // create a run with known path and duration
+        val point1 = LatLng(0.0, 0.0)
+        val point2 = LatLng(0.1, 0.1)
+        val points = listOf(point1, point2)
+        val path = Path(points)
+
+        val met = 11.0
+        // Speed should be 7 mph to have a MET of 11.0
+        val speed = 7 / 2.23693629205440238
+        // That means we need to run for (distance / speed) seconds
+        val startTime = 0L
+        val endTime = (path.getDistance() / speed).toLong()
+        val run = Run(path, startTime, endTime)
+
+        val cal = met * 70 * run.getDuration() / 3600
+        assertEquals(cal, run.getCalories().toDouble(), cal / 50)
+    }
+
+    @Test
     fun calculateTimeForOneKilometer() {
         // create a run with known path and duration
         val point1 = LatLng(0.0, 0.0)
@@ -73,9 +140,27 @@ class RunTest {
         val run = Run(path, startTime, endTime)
 
         assertEquals(
-            (path.getDistance() / 3000) * 1000,
+            1000 / (path.getDistance() / 3000),
             run.getTimeForOneKilometer().toDouble(),
             1.0,
         )
+    }
+
+    @Test
+    fun calculatePath() {
+        // create a run with a known path
+        val point1 = LatLng(0.0, 0.0)
+        val point2 = LatLng(0.0, 1.0)
+        val points = listOf(point1, point2)
+        val path = Path(points)
+        val startTime = System.currentTimeMillis()
+        val endTime = startTime + 3000
+        val run = Run(path, startTime, endTime)
+        // check that path is handled correctly
+        assertEquals(2, run.getPath().size())
+        assertEquals(points, run.getPath().getPoints())
+        assertEquals(111319.9, path.getDistance(), 1.0)
+        assertTrue(path.getPolyline() is PolylineOptions)
+        assertEquals(points, path.getPolyline().points)
     }
 }
