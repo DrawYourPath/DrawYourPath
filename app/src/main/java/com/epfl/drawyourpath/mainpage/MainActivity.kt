@@ -176,8 +176,6 @@ class MainActivity : AppCompatActivity() {
                 // Display history fragment
                 R.id.history_menu_item -> replaceFragment<HistoryFragment>()
 
-
-
                 // Display chat fragment
                 R.id.chat_menu_item -> replaceFragment<ChatFragment>()
             }
