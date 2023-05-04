@@ -67,9 +67,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     // runs
-    private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
+    /*private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
         runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }
-    }
+    }*/
 
     /**
      * This function will create a new user
@@ -145,7 +145,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun getRunHistory(): LiveData<List<Run>> {
         checkCurrentUser()
-        return runHistory
+        return runCache.getAllRunsAndPoints(currentUserID!!).map { runAndPoints ->
+            runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }
+        }
     }
 
     /**
@@ -220,13 +222,15 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
         val future = CompletableFuture.supplyAsync {
-            val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run))
+            val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run), false)
             dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
         }
         future.thenComposeAsync {
             database.addDailyGoal(currentUserID!!, DailyGoal(it))
         }.thenComposeAsync {
             database.addRunToHistory(currentUserID!!, run)
+        }.thenApplyAsync {
+            runCache.runSynced(currentUserID!!, run.getStartTime())
         } /*.thenComposeAsync { TODO add again when in database
             database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
         }*/

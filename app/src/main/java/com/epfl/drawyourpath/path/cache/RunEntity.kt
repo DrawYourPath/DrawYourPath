@@ -19,18 +19,21 @@ data class RunEntity(
     @ColumnInfo("start_time") val startTime: Long,
 
     @ColumnInfo("end_time") val endTime: Long,
+
+    val sync: Boolean,
 ) {
     companion object {
         /**
          * transform a list of run into entities used in the cache
          * @param userId the user id
          * @param runs the list of runs to transform
+         * @param sync with the firebase
          * @return a list of pair of entities
          */
-        fun fromRunsToEntities(userId: String, runs: List<Run>): List<Pair<RunEntity, List<PointsEntity>>> {
+        fun fromRunsToEntities(userId: String, runs: List<Run>, sync: Boolean = true): List<Pair<RunEntity, List<PointsEntity>>> {
             return runs.map { run ->
                 Pair(
-                    RunEntity(userId, run.getStartTime(), run.getEndTime()),
+                    RunEntity(userId, run.getStartTime(), run.getEndTime(), sync),
                     run.getPath().getPoints().mapIndexed { index, point ->
                         PointsEntity(
                             userId,

@@ -15,6 +15,15 @@ interface RunDao {
     fun getAllRunsAndPoints(userId: String): LiveData<Map<RunEntity, List<PointsEntity>>>
 
     /**
+     * update to know if the run is synced with the firebase
+     * @param userId the user id
+     * @param runId the run id
+     * @param sync the syncing status
+     */
+    @Query("UPDATE Run SET sync = :sync WHERE user_id = :userId AND start_time = :runId")
+    fun runSynced(userId: String, runId: Long, sync: Boolean = true)
+
+    /**
      * delete the run from the room database
      * @param run the user to delete
      */
