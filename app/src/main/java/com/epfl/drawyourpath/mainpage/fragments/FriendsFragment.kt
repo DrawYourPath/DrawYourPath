@@ -28,7 +28,6 @@ import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
 import com.epfl.utils.drawyourpath.Utils
 
-
 class FriendsFragment(private val database: Database) : Fragment(R.layout.fragment_friends) {
     private lateinit var viewModel: FriendsViewModel
     private lateinit var friendsListAdapter: FriendsListAdapter
@@ -171,4 +170,3 @@ class FriendsFragmentFactory(private val database: Database) : FragmentFactory()
         }
     }
 }
-
