@@ -159,7 +159,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                                                 false,
                                             )
 
-
                                             // Add the new friend to the list and update the UI
                                             viewModel.addPotentialFriend(newFriend)
                                         }
