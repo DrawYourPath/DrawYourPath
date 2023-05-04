@@ -186,15 +186,11 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
                                 lastKnownLocation = locationResult.lastLocation
                                 // move the camera if we focused the view on the user position or we initiate the map with a null path
                                 if ((mapInit && path == null) || focusedOnPosition) {
-                                    map?.moveCamera(
-                                        CameraUpdateFactory.newLatLngZoom(
-                                            LatLng(
-                                                locationResult.lastLocation.latitude,
-                                                locationResult.lastLocation.longitude,
-                                            ),
-                                            DEFAULT_ZOOM,
-                                        ),
+                                    val newLoc = LatLng(
+                                        locationResult.lastLocation.latitude,
+                                        locationResult.lastLocation.longitude,
                                     )
+                                    moveCameraToPosition(location = newLoc, zoom = DEFAULT_ZOOM)
                                 }
                                 mapInit = false
                             } else {
