@@ -26,7 +26,7 @@ class PathDrawingActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG)
                 .show()
         }
-        setContentView(R.layout.fragment_path_drawing)
+        setContentView(R.layout.activity_path_drawing_actvity)
         // lunch and display the countdown fragment
         val fragTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         fragTransaction.add(R.id.path_drawing_activity_content, PathDrawingCountDownFragment(countdownDuration = countdownDuration)).commit()
