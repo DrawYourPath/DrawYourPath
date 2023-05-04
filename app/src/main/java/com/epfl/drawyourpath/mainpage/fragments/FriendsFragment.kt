@@ -78,7 +78,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
             // Initialize the ViewModel with the userModel
             val factory = FriendsViewModelFactory(userdata.userId!!, this.database)
-            viewModel = ViewModelProvider(this, factory)[FriendsViewModel::class.java]
+            viewModel = ViewModelProvider(requireActivity(), factory)[FriendsViewModel::class.java]
 
             // Update the adapter with the fetched data
             recyclerView.adapter = friendsListAdapter
