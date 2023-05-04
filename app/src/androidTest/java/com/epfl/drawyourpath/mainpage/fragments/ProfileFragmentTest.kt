@@ -38,12 +38,11 @@ class ProfileFragmentTest {
 
         launchFragment(targetUser.userId!!)
 
-        // Fails in CI only. Can't find the cause works perfectly locally.
-        // elementExists(R.id.TV_DaysStreak)
-        // elementExists(R.id.TV_AvgSpeed)
-        // elementExists(R.id.TV_ShapesDrawn)
-        // elementExists(R.id.TV_GoalsReached)
-        // elementExists(R.id.TV_TotalKilometers)
+        elementExists(R.id.TV_DaysStreak)
+        elementExists(R.id.TV_AvgSpeed)
+        elementExists(R.id.TV_ShapesDrawn)
+        elementExists(R.id.TV_GoalsReached)
+        elementExists(R.id.TV_TotalKilometers)
 
         onView(withId(R.id.IV_QRCode)).check(matches(isDisplayed()))
 
