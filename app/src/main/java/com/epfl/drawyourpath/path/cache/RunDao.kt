@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.path.cache
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao

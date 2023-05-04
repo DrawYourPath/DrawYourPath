@@ -150,7 +150,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             runHistory.postValue(
                 runCache.getAllRunsAndPoints(currentUserID!!).map {
                     RunEntity.fromEntityToRun(it.key, it.value)
-                }.sortedByDescending { it.getStartTime() }
+                }.sortedByDescending { it.getStartTime() },
             )
         }
         return runHistory
