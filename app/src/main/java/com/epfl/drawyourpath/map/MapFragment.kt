@@ -75,12 +75,13 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
             drawPathOnMap(map, path!!)
         }
     }
+
     /**
      * Function used to move the camera at a given location
      * @param location where we want to move the camera
      * @param zoom apply to the camera
      */
-    private fun moveCameraToPosition(location: LatLng, zoom: Float){
+    private fun moveCameraToPosition(location: LatLng, zoom: Float) {
         map?.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(
