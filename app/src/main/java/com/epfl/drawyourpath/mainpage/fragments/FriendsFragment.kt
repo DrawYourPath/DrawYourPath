@@ -148,10 +148,10 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
         mainActivity.scanQRCode()
             .thenApply {
                 if (it == null) {
-                    Toast.makeText(mainActivity, "Scan cancelled", Toast.LENGTH_LONG).show()
+                    Toast.makeText(mainActivity, "Scan cancelled!", Toast.LENGTH_LONG).show()
                 } else {
                     database.addFriend(user.getUid(), it).thenAccept {
-                        Toast.makeText(mainActivity, "Friend added", Toast.LENGTH_LONG).show()
+                        Toast.makeText(mainActivity, "Friend added!", Toast.LENGTH_LONG).show()
                     }
                 }
             }
