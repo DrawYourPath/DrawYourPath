@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.epfl.Utils.drawyourpath.Utils.getStringDistance
-import com.epfl.Utils.drawyourpath.Utils.getStringDuration
-import com.epfl.Utils.drawyourpath.Utils.getStringSpeed
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Run
+import com.epfl.utils.drawyourpath.Utils.getStringDistance
+import com.epfl.utils.drawyourpath.Utils.getStringDuration
+import com.epfl.utils.drawyourpath.Utils.getStringSpeed
 
 /**
  * Fragment used to displayed the performance of a user during a run(time, distance, average speed).

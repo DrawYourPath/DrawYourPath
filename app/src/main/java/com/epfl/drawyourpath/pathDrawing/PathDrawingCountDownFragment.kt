@@ -6,10 +6,10 @@ import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.epfl.Utils.drawyourpath.Utils.getCurrentDateTimeInEpochSeconds
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
+import com.epfl.utils.drawyourpath.Utils.getCurrentDateTimeInEpochSeconds
 
 /**
  * This fragment is used to display a countdown to the user(3,2,1,GO).

@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupProfileButton() {
         val profileImageButton: ImageButton = findViewById(R.id.profile_button)
         userCached.getUser().observe(this) {
-            profileImageButton.setImageBitmap(it.getProfilePhotoOrDefaultAsBitmap(resources))
+            profileImageButton.setImageBitmap(it.profilePhoto(resources))
         }
         drawerLayout = findViewById(R.id.drawerLayout)
         // Set a listener to open the drawer menu (we might want it on the right)

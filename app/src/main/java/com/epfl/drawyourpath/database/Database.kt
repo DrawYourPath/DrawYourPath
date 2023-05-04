@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
 data class UserGoals(
     val paths: Long? = null,
     val distance: Double? = null,
-    val activityTime: Long? = null,
+    val activityTime: Double? = null,
 )
 
 data class UserData(

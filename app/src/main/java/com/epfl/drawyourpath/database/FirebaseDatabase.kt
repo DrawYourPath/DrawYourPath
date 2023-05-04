@@ -3,12 +3,12 @@ package com.epfl.drawyourpath.database
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.utils.drawyourpath.Utils
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
@@ -319,7 +319,7 @@ class FirebaseDatabase : Database() {
 
     override fun setProfilePhoto(userId: String, photo: Bitmap): CompletableFuture<Unit> {
         // TODO: Use Firebase Storage.
-        return setUserData(userId, UserData(picture = Utils.encodePhoto(photo)))
+        return setUserData(userId, UserData(picture = Utils.encodePhotoToString(photo)))
     }
 
     override fun addFriend(
@@ -689,7 +689,7 @@ class FirebaseDatabase : Database() {
             goals = UserGoals(
                 paths = (goals.child(FirebaseKeys.GOAL_PATH).value as Number?)?.toLong(),
                 distance = (goals.child(FirebaseKeys.GOAL_DISTANCE).value as Number?)?.toDouble(),
-                activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toLong(),
+                activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toDouble(),
             ),
             picture = profile.child(FirebaseKeys.PICTURE).value as String?,
             runs = transformRunsHistory(data.child(FirebaseKeys.RUN_HISTORY)),
