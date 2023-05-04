@@ -922,7 +922,7 @@ class FirebaseDatabase : Database() {
         val future = CompletableFuture<Unit>()
 
         // updated the friendlist in the database
-        userRoot(currentUserId).child(FirebaseKeys.FRIENDS)
+        userRoot(currentUserId).child(FirebaseKeys.PROFILE).child(FirebaseKeys.FRIENDS)
             .child(friendUserId)
             .setValue(true)
             .addOnSuccessListener { future.complete(Unit) }
@@ -944,7 +944,7 @@ class FirebaseDatabase : Database() {
         val future = CompletableFuture<Unit>()
 
         // obtain the previous friendList
-        userRoot(currentUserId).child(FirebaseKeys.FRIENDS).child(removeUserId).removeValue()
+        userRoot(currentUserId).child(FirebaseKeys.PROFILE).child(FirebaseKeys.FRIENDS).child(removeUserId).removeValue()
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { err -> future.completeExceptionally(err) }
 
