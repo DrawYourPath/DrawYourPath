@@ -26,7 +26,7 @@ import com.epfl.drawyourpath.mainpage.fragments.helperClasses.Friend
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
-import com.epfl.utils.drawyourpath.Utils
+import com.epfl.drawyourpath.utils.Utils
 
 // TODO: Refactor this file
 

@@ -9,11 +9,12 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.epfl.Utils.drawyourpath.Utils
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.challenge.Statistics
 import com.epfl.drawyourpath.challenge.TrophyDialog
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.qrcode.generateQR
+import com.epfl.drawyourpath.utils.Utils
 import java.util.concurrent.CompletableFuture
 
 const val PROFILE_USER_ID_KEY = "userId"
@@ -78,33 +79,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         loadFriendsNames(userData.friendList ?: emptyList())
 
         if (userData.picture != null && userData.picture.isNotEmpty()) {
-            setUserImage(Utils.decodePhoto(userData.picture))
+            setUserImage(Utils.decodePhotoOrGetDefault(userData.picture, resources))
         }
 
-        setTotalKilometer(
-            dailyGoals.fold(0.0) {
-                    acc, dailyGoal ->
-                acc + dailyGoal.distance
-            }.toInt(),
-        )
-        setGoalsReached(
-            dailyGoals.fold(0) {
-                    acc, dailyGoal ->
-                acc + if (dailyGoal.wasReached()) 1 else 0
-            },
-        )
-        setAverageSpeed(
-            dailyGoals.fold(Pair(0.0, 0.0)) {
-                    acc, dailyGoal ->
-                Pair(acc.first + dailyGoal.distance, acc.second + dailyGoal.time)
-            }.let { if (it.second == 0.0) 0.0 else it.first / it.second }.toInt(),
-        )
-        setShapesDrawn(
-            dailyGoals.fold(0) {
-                    acc, dailyGoal ->
-                acc + dailyGoal.paths
-            },
-        )
+        setTotalKilometer(Statistics.getTotalDistance(dailyGoals).toInt())
+        setGoalsReached(Statistics.getReachedGoalsCount(dailyGoals))
+        setAverageSpeed(Statistics.getAverageSpeed(dailyGoals).toInt())
+        setShapesDrawn(Statistics.getShapeDrawnCount(dailyGoals))
 
         // TODO: Add these stats when we implemented them.
         setStreak(0)

@@ -18,7 +18,7 @@ import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.userProfile.UserProfile
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
-import com.epfl.utils.drawyourpath.Utils
+import com.epfl.drawyourpath.utils.Utils
 import java.time.LocalDate
 
 class UserGoalsInitFragment : Fragment(R.layout.fragment_user_goals_init) {
