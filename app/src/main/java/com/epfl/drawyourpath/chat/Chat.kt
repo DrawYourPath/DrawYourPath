@@ -96,7 +96,7 @@ data class Message(
 /**
  * A class representing a chat conversation.
  */
-class Chat: Serializable {
+class Chat : Serializable {
     /**
      * A mutable list of Message objects representing the messages in the chat.
      */
