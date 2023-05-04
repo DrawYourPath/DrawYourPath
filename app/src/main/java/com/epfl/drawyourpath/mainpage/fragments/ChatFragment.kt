@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
@@ -38,8 +40,14 @@ class ChatFragment : Fragment() {
         }
 
         chatAdapter = ChatAdapter(chatList) { selectedChat ->
-            // Handle chat item click here
-            // For example, navigate to the ChatDetailFragment and pass the selectedChat
+            // Create a new instance of ChatDetailFragment
+            val chatDetailFragment = ChatOpenFragment.newInstance(selectedChat)
+
+            // Replace the current fragment with the ChatDetailFragment
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView, chatDetailFragment)
+                .addToBackStack(null) // Add the transaction to the back stack
+                .commit()
         }
 
         chatRecyclerView.adapter = chatAdapter

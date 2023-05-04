@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.chat
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.path.Run
+import java.io.Serializable
 
 /**
  * A sealed class representing the content of a chat message.
@@ -95,7 +96,7 @@ data class Message(
 /**
  * A class representing a chat conversation.
  */
-class Chat {
+class Chat: Serializable {
     /**
      * A mutable list of Message objects representing the messages in the chat.
      */
