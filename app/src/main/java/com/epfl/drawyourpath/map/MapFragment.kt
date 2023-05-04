@@ -75,7 +75,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         val pathReady = path != null && path.getPoints().isNotEmpty()
         if (pathReady && !focusedOnPosition) {
             val bounds = LatLngBounds.builder()
-            path!!.getPoints().map { bounds.include(it); Log.d("test", it.toString())}
+            path!!.getPoints().map { bounds.include(it); Log.d("test", it.toString()) }
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 5))
             drawStaticPathOnMap(map, path)
         }
