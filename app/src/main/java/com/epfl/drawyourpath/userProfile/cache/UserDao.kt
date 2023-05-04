@@ -17,11 +17,20 @@ interface UserDao {
     @Query("SELECT * FROM User WHERE id = :id")
     fun getUserById(id: String): LiveData<UserEntity?>
 
+    /**
+     * insert user and its daily goals and runs
+     * @param user the user to insert
+     * @param dailyGoals the daily goals
+     * @param runs the runs
+     * @param points the points of the runs
+     */
     @Transaction
-    fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>, run: List<RunEntity>, points: List<PointsEntity>) {
-        insertUser(user)
+    fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>, runs: List<RunEntity>, points: List<PointsEntity>) {
+        if (update(user) == 0) {
+            insertUser(user)
+        }
         insertAllDailyGoal(dailyGoals)
-        insertAllRuns(run)
+        insertAllRuns(runs)
         insertAllPoints(points)
     }
 
@@ -29,15 +38,8 @@ interface UserDao {
      * insert a new user inside the room database and will replace if there is a conflict with the id
      * @param user the user to insert
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertUser(user: UserEntity)
-
-    /**
-     * insert a new user inside the room database and abort if it already exist inside the room database
-     * @param user the user to insert
-     */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertUserIfEmpty(user: UserEntity)
+    fun insertUser(user: UserEntity)
 
     /**
      * insert a new dailyGoal inside the room database and will replace if there is a conflict with the id and date
@@ -50,14 +52,14 @@ interface UserDao {
      * insert the runs inside the cache
      * @param runs the run
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAllRuns(runs: List<RunEntity>)
 
     /**6
      * insert the points inside the cache
      * @param points the points
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAllPoints(points: List<PointsEntity>)
 
     /**
@@ -65,7 +67,7 @@ interface UserDao {
      * @param user the user to update
      */
     @Update
-    fun update(user: UserEntity)
+    fun update(user: UserEntity): Int
 
     /**
      * set a new username to user with the corresponding id

@@ -1,7 +1,9 @@
 package com.epfl.drawyourpath.path
 
 import com.google.firebase.database.Exclude
-import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.pow
 
@@ -114,9 +116,8 @@ class Run(
      */
     @Exclude
     fun getDate(): String {
-        val date = Date(endTime)
-        val formatter = SimpleDateFormat("MMM d, yyyy HH:mm", Locale.getDefault())
-        return formatter.format(date)
+        val date = LocalDateTime.ofEpochSecond(startTime, 0, ZoneOffset.UTC)
+        return date.format(DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm"))
     }
 
     /**

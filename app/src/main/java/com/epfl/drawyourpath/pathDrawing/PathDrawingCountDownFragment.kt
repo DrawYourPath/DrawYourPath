@@ -6,10 +6,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.path.Path
-import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.utils.Utils.getCurrentDateTimeInEpochSeconds
 
 /**
  * This fragment is used to display a countdown to the user(3,2,1,GO).
@@ -17,6 +15,8 @@ import com.epfl.drawyourpath.utils.Utils.getCurrentDateTimeInEpochSeconds
  */
 class PathDrawingCountDownFragment(private val countdownDuration: Long = 4) : Fragment(R.layout.fragment_path_drawing_countdown) {
     private lateinit var countDownText: TextView
+
+    private val pathDrawingModel: PathDrawingModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -34,8 +34,8 @@ class PathDrawingCountDownFragment(private val countdownDuration: Long = 4) : Fr
     private fun createCountDown(seconds: Long) {
         object : CountDownTimer(1000 * seconds, 100) {
             override fun onTick(millisUntilFinished: Long) {
-                val seconds = (millisUntilFinished) / 1000
-                countDownText.text = if (seconds == 0L) "GO !" else seconds.toString()
+                val secondsRemaining = (millisUntilFinished) / 1000
+                countDownText.text = if (secondsRemaining == 0L) "GO !" else secondsRemaining.toString()
             }
 
             override fun onFinish() {
@@ -50,10 +50,10 @@ class PathDrawingCountDownFragment(private val countdownDuration: Long = 4) : Fr
      * Helper function to displayed the main draw fragment to begin to draw a path
      */
     private fun displayedMainDrawFragment() {
-        // initial run
-        val initRun = Run(path = Path(), startTime = getCurrentDateTimeInEpochSeconds(), endTime = getCurrentDateTimeInEpochSeconds() + 1)
+        // initialize run
+        pathDrawingModel.startRun()
         // lunch the fragment to draw a path
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragTransaction.replace(R.id.path_drawing_activity_content, PathDrawingMainFragment(isDrawing = true, run = initRun)).commit()
+        fragTransaction.replace(R.id.path_drawing_activity_content, PathDrawingMainFragment(isDrawing = true)).commit()
     }
 }
