@@ -42,7 +42,7 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         holder.dateTextView.text = run.getDate()
         holder.distanceTextView.text =
             "Distance: ${String.format("%.2f", run.getDistance() / 1000)} Km"
-        holder.timeTakenTextView.text = "Time taken: ${run.getDuration()} minutes"
+        holder.timeTakenTextView.text = "Time taken: ${run.getDuration() / 60} minutes"
         holder.calorieTextView.text = "Calories burned: ${run.getCalories()} kcal"
         holder.averageSpeedTextView.text =
             "Speed: ${String.format("%.2f", run.getAverageSpeed())} m/s"

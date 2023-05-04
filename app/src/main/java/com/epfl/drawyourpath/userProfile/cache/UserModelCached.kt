@@ -209,7 +209,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * TODO if no connection put run history inside cache then add it to database when connection
+     * TODO add run from cache to database when connection
      * add a new run to the run history and update the daily goal
      * @param run the run to add
      */
@@ -219,14 +219,18 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
-        return database.addRunToHistory(currentUserID!!, run)/*.thenComposeAsync { TODO add again when in database
-            database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
-        }*/.thenApplyAsync {
+        val future = CompletableFuture.supplyAsync {
             val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run))
             dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
-        }.thenComposeAsync {
-            database.addDailyGoal(currentUserID!!, DailyGoal(it))
         }
+        future.thenComposeAsync {
+            database.addDailyGoal(currentUserID!!, DailyGoal(it))
+        }.thenComposeAsync {
+            database.addRunToHistory(currentUserID!!, run)
+        }/*.thenComposeAsync { TODO add again when in database
+            database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
+        }*/
+        return future.thenApply {}
     }
 
     /**

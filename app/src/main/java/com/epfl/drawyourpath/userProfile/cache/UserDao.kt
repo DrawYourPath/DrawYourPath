@@ -50,14 +50,14 @@ interface UserDao {
      * insert the runs inside the cache
      * @param runs the run
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAllRuns(runs: List<RunEntity>)
 
     /**6
      * insert the points inside the cache
      * @param points the points
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAllPoints(points: List<PointsEntity>)
 
     /**

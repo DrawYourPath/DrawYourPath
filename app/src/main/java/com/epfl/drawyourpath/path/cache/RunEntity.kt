@@ -51,7 +51,7 @@ data class RunEntity(
          * @return the run
          */
         fun fromEntityToRun(runEntity: RunEntity, pointsEntity: List<PointsEntity>): Run {
-            return Run(Path(pointsEntity.map { LatLng(it.latitude, it.longitude) }), runEntity.startTime, runEntity.endTime)
+            return Run(Path(pointsEntity.sortedBy { it.index }.map { LatLng(it.latitude, it.longitude) }), runEntity.startTime, runEntity.endTime)
         }
     }
 }
