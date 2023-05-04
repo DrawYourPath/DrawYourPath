@@ -23,8 +23,8 @@ class PathDrawingDetailPerformanceFragmentTest {
     private val mockPath = Path(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0)))
     val date = LocalDate.of(2000, 1, 1).atTime(LocalTime.of(12, 0, 5)).toEpochSecond(ZoneOffset.UTC)
     private val mockRun = Run(path = mockPath, startTime = date, endTime = date + 75)
-    val expectedDistance = "111.19"
-    val expectedSpeed = "1482.6"
+    val expectedDistance = "111.32"
+    val expectedSpeed = "1484.26"
     val expectedTime = "00:01:15"
     val expectedStartTime = "12:00:05"
     val expectedEndTime = "12:01:20"
