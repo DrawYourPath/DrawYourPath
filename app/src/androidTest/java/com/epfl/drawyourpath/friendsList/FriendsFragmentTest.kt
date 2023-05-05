@@ -10,8 +10,6 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -21,7 +19,6 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
-import com.epfl.drawyourpath.qrcode.QRScannerActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -116,7 +113,7 @@ class FriendsFragmentTest {
     private fun addPermission(permissionStr: String) {
         getInstrumentation().uiAutomation.executeShellCommand(
             "pm grant ${getApplicationContext<Context>()
-                .packageName} android.permission.${permissionStr}"
+                .packageName} android.permission.$permissionStr",
         )
     }
 
