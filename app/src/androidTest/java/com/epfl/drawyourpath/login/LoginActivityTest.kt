@@ -340,4 +340,10 @@ class LoginActivityTest {
         Intents.release()
         scenario.close()
     }
+
+    @Test
+    fun getUserReturnsCurrentUser() {
+        FirebaseAuth.getUser()
+        FirebaseAuth().loginAnonymously { _, _ -> }
+    }
 }

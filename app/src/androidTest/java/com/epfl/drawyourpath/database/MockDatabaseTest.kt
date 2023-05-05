@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.database
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.test.core.app.ApplicationProvider
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
@@ -145,6 +146,50 @@ class MockDatabaseTest {
         assertEquals(database.unameToUid.contains(usernameTest), false)
         assertEquals(database.unameToUid["test"], userIdTest)
         assertEquals(database.users[userIdTest]!!.username, "test")
+    }
+
+    @Test
+    fun setUserDataForInvalidUserThrows() {
+        val database = MockDatabase()
+        assertThrows(Error::class.java) {
+            database.setUserData("NOT_EXISTING_USER", UserData())
+        }
+    }
+
+    @Test
+    fun setGoalsForInvalidUserThrows() {
+        val database = MockDatabase()
+        assertThrows(Error::class.java) {
+            database.setGoals("NOT_EXISTING_USER", UserGoals())
+        }
+        assertThrows(Error::class.java) {
+            database.addDailyGoal("NOT_EXISTING_USER", DailyGoal(0.0, 0.0, 1))
+        }
+    }
+
+    @Test
+    fun setProfilePhotoForInvalidUserThrows() {
+        val database = MockDatabase()
+        assertThrows(Error::class.java) {
+            database.setProfilePhoto("NOT_EXISTING_USER", Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+        }
+    }
+
+    @Test
+    fun runOperationsForInvalidUserThrows() {
+        val database = MockDatabase()
+        assertThrows(Error::class.java) {
+            database.addRunToHistory(
+                "NOT_EXISTING_USER",
+                Run(Path(emptyList()), 1000, 2000),
+            )
+        }
+        assertThrows(Error::class.java) {
+            database.removeRunFromHistory(
+                "NOT_EXISTING_USER",
+                Run(Path(emptyList()), 1000, 2000),
+            )
+        }
     }
 
     @Test
