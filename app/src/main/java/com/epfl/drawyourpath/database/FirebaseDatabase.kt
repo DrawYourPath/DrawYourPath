@@ -12,10 +12,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.io.ByteArrayOutputStream
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneOffset
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
