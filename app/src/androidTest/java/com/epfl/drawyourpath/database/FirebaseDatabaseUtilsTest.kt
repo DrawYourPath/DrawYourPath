@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.database
 
-import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -25,7 +24,6 @@ class FirebaseDatabaseUtilsTest {
 
     @Test
     fun transformDailyGoalsReturnsGoals() {
-
         val doubleSnapshot = mock(DataSnapshot::class.java)
         `when`(doubleSnapshot.getValue(Double::class.java)).thenReturn(12.0)
 
