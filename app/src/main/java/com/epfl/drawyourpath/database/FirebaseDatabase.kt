@@ -604,9 +604,9 @@ class FirebaseDatabase : Database() {
 
     override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        val data = listOf<Pair<String, Any?>>(
+        val data = mapOf(
             FirebaseKeys.CHAT_TITLE to newTitle,
-        ).associate { entry -> entry }
+        )
         chatPreview(conversationId).updateChildren(data)
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
@@ -616,10 +616,7 @@ class FirebaseDatabase : Database() {
     override fun getChatMemberList(conversationId: String): CompletableFuture<List<String>> {
         val future = CompletableFuture<List<String>>()
         chatMembers(conversationId).get().addOnSuccessListener { data ->
-            val members = ArrayList<String>()
-            for (elem in (data.value as Map<*, *>)) {
-                members.add(elem.key as String)
-            }
+            val members = (data.value as Map<*, *>).mapNotNull {it.key as String? }
             future.complete(members)
         }.addOnFailureListener { future.completeExceptionally(it) }
         return future
@@ -632,8 +629,7 @@ class FirebaseDatabase : Database() {
         newMember[userId] = true
         chatMembers(conversationId).updateChildren(newMember).addOnSuccessListener {
             // add the chat to the chat list of the user with userId
-            val newChat = HashMap<String, Any>()
-            newChat[conversationId] = true
+            val newChat = mapOf(conversationId to true)
             userProfile(userId).child(FirebaseKeys.USER_CHATS).updateChildren(newChat)
                 .addOnSuccessListener { future.complete(Unit) }
                 .addOnFailureListener { future.completeExceptionally(it) }
@@ -658,11 +654,7 @@ class FirebaseDatabase : Database() {
     override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
         val future = CompletableFuture<List<Message>>()
         chatMessages(conversationId).get().addOnSuccessListener { data ->
-            val listMessage = ArrayList<Message>()
-            // Log.println(Log.INFO,"", data.children.toMutableList().get(0).toString())
-            for (elem in data.children) {
-                listMessage.add(getMessageFromData(elem))
-            }
+            val listMessage = data.children.map {getMessageFromData(it) }
             future.complete(listMessage)
         }.addOnFailureListener { future.completeExceptionally(it) }
         return future
@@ -679,9 +671,7 @@ class FirebaseDatabase : Database() {
 
             MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
         }
-        val future = CompletableFuture<Unit>()
-        future.completeExceptionally(Error("No type found for the content of the message !"))
-        return future
+        return Utils.failedFuture(Error("No type found for the content of the message !"))
     }
 
     override fun removeChatMessage(
@@ -696,10 +686,10 @@ class FirebaseDatabase : Database() {
                     .child(messageId.toString()).get()
                     .addOnSuccessListener { data ->
                         if (data.value != null) {
-                            val lastMessage = listOf<Pair<String, Any?>>(
+                            val lastMessage = mapOf(
                                 FirebaseKeys.CHAT_MESSAGE_SENDER to data.child(FirebaseKeys.CHAT_MESSAGE_SENDER).value as String,
                                 FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT to "This message was deleted",
-                            ).associate { entry -> entry }
+                            )
                             chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
                                 .child(messageId.toString()).updateChildren(lastMessage)
                                 .addOnSuccessListener { future.complete(Unit) }
@@ -719,9 +709,9 @@ class FirebaseDatabase : Database() {
         message: String,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        val newMessage = listOf<Pair<String, Any?>>(
+        val newMessage = mapOf(
             FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT to message,
-        ).associate { entry -> entry }
+        )
         message(conversationId, messageId).updateChildren(newMessage)
             .addOnSuccessListener {
                 chatPreview(conversationId).child(FirebaseKeys.CHAT_LAST_MESSAGE)
