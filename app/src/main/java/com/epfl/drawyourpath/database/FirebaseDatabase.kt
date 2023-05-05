@@ -616,7 +616,7 @@ class FirebaseDatabase : Database() {
     override fun getChatMemberList(conversationId: String): CompletableFuture<List<String>> {
         val future = CompletableFuture<List<String>>()
         chatMembers(conversationId).get().addOnSuccessListener { data ->
-            val members = (data.value as Map<*, *>).mapNotNull {it.key as String? }
+            val members = (data.value as Map<*, *>).mapNotNull { it.key as String? }
             future.complete(members)
         }.addOnFailureListener { future.completeExceptionally(it) }
         return future
@@ -654,7 +654,7 @@ class FirebaseDatabase : Database() {
     override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
         val future = CompletableFuture<List<Message>>()
         chatMessages(conversationId).get().addOnSuccessListener { data ->
-            val listMessage = data.children.map {getMessageFromData(it) }
+            val listMessage = data.children.map { getMessageFromData(it) }
             future.complete(listMessage)
         }.addOnFailureListener { future.completeExceptionally(it) }
         return future
