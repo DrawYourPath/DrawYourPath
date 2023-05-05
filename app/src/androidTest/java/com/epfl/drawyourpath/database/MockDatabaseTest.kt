@@ -151,44 +151,44 @@ class MockDatabaseTest {
     @Test
     fun setUserDataForInvalidUserThrows() {
         val database = MockDatabase()
-        assertThrows(Error::class.java) {
-            database.setUserData("NOT_EXISTING_USER", UserData())
+        assertThrows(Throwable::class.java) {
+            database.setUserData("NOT_EXISTING_USER", UserData()).get()
         }
     }
 
     @Test
     fun setGoalsForInvalidUserThrows() {
         val database = MockDatabase()
-        assertThrows(Error::class.java) {
-            database.setGoals("NOT_EXISTING_USER", UserGoals())
+        assertThrows(Throwable::class.java) {
+            database.setGoals("NOT_EXISTING_USER", UserGoals()).get()
         }
-        assertThrows(Error::class.java) {
-            database.addDailyGoal("NOT_EXISTING_USER", DailyGoal(0.0, 0.0, 1))
+        assertThrows(Throwable::class.java) {
+            database.addDailyGoal("NOT_EXISTING_USER", DailyGoal(0.0, 0.0, 1)).get()
         }
     }
 
     @Test
     fun setProfilePhotoForInvalidUserThrows() {
         val database = MockDatabase()
-        assertThrows(Error::class.java) {
-            database.setProfilePhoto("NOT_EXISTING_USER", Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+        assertThrows(Throwable::class.java) {
+            database.setProfilePhoto("NOT_EXISTING_USER", Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)).get()
         }
     }
 
     @Test
     fun runOperationsForInvalidUserThrows() {
         val database = MockDatabase()
-        assertThrows(Error::class.java) {
+        assertThrows(Throwable::class.java) {
             database.addRunToHistory(
                 "NOT_EXISTING_USER",
                 Run(Path(emptyList()), 1000, 2000),
-            )
+            ).get()
         }
-        assertThrows(Error::class.java) {
+        assertThrows(Throwable::class.java) {
             database.removeRunFromHistory(
                 "NOT_EXISTING_USER",
                 Run(Path(emptyList()), 1000, 2000),
-            )
+            ).get()
         }
     }
 
