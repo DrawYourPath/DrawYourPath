@@ -223,4 +223,8 @@ object Utils {
         val roundSpeed: Double = (speed * 100.0).roundToInt() / 100.0
         return roundSpeed.toString()
     }
+
+    fun getCurrentDateAsEpoch(): Long {
+        return LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
+    }
 }
