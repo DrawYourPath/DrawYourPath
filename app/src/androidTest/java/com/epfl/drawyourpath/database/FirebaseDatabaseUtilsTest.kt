@@ -28,7 +28,7 @@ class FirebaseDatabaseUtilsTest {
         `when`(doubleSnapshot.getValue(Double::class.java)).thenReturn(12.0)
 
         val goal1 = mock(DataSnapshot::class.java)
-        `when`(goal1.key).thenReturn("123456")
+        `when`(goal1.key).thenReturn("1234567")
         `when`(goal1.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_DISTANCE)).thenReturn(doubleSnapshot)
         `when`(goal1.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_TIME)).thenReturn(doubleSnapshot)
         `when`(goal1.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_PATHS)).thenReturn(doubleSnapshot)
