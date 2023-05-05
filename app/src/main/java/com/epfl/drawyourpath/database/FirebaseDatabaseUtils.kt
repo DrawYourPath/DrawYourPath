@@ -72,7 +72,7 @@ object FirebaseDatabaseUtils {
     }
 
     /**
-     * Helper function to retrieve a run object from the database
+     * Helper function to retrieve a run object from the database.
      * @param data the datasnapshot containing the run
      * @return the run corresponding to the data
      */
