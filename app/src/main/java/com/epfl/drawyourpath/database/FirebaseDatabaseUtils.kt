@@ -10,6 +10,10 @@ import java.time.LocalDate
 
 object FirebaseDatabaseUtils {
 
+    private fun getNumber(snapshot: DataSnapshot?): Number? {
+        return snapshot?.value as Number?
+    }
+
     /**
      * Helper function to obtain the daily goal list from the database of the user
      * @param data the data snapshot containing the daily goal list
@@ -24,19 +28,17 @@ object FirebaseDatabaseUtils {
                 val date = LocalDate.ofEpochDay(it.key!!.toLong())
 
                 val expectedDistance: Double? =
-                    it.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_DISTANCE)
-                        .getValue(Double::class.java)
+                    getNumber(it.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_DISTANCE))?.toDouble()
                 val expectedTime: Double? =
-                    it.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_TIME)
-                        .getValue(Double::class.java)
+                    getNumber(it.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_TIME))?.toDouble()
                 val expectedPaths: Int? =
-                    (it.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_PATHS).value as Number?)?.toInt()
+                    getNumber(it.child(FirebaseKeys.GOAL_HISTORY_EXPECTED_PATHS))?.toInt()
                 val distance: Double? =
-                    it.child(FirebaseKeys.GOAL_HISTORY_DISTANCE).getValue(Double::class.java)
+                    getNumber(it.child(FirebaseKeys.GOAL_HISTORY_DISTANCE))?.toDouble()
                 val time: Double? =
-                    it.child(FirebaseKeys.GOAL_HISTORY_TIME).getValue(Double::class.java)
+                    getNumber(it.child(FirebaseKeys.GOAL_HISTORY_TIME))?.toDouble()
                 val paths: Int? =
-                    (it.child(FirebaseKeys.GOAL_HISTORY_PATHS).value as Number?)?.toInt()
+                    getNumber(it.child(FirebaseKeys.GOAL_HISTORY_PATHS))?.toInt()
 
                 DailyGoal(
                     expectedDistance = expectedDistance ?: 0.0,
@@ -57,7 +59,7 @@ object FirebaseDatabaseUtils {
      * @return a list containing the keys of the snapshot
      */
     fun getKeys(data: DataSnapshot?): List<String> {
-        return data?.children?.map { it.key as String } ?: emptyList()
+        return data?.children?.mapNotNull { it.key as String } ?: emptyList()
     }
 
     /**
@@ -78,20 +80,24 @@ object FirebaseDatabaseUtils {
      */
     fun transformRun(data: DataSnapshot?): Run? {
         val points = data?.child("path")?.child("points")?.children?.mapNotNull {
-            val lat = it.child("latitude").getValue(Double::class.java)
-            val lon = it.child("longitude").getValue(Double::class.java)
+            val lat = getNumber(it.child("latitude"))?.toDouble()
+            val lon = getNumber(it.child("longitude"))?.toDouble()
             if (lat != null && lon != null) {
                 LatLng(lat, lon)
             } else {
+                Log.w(this::class.java.name, "A coordinate was badly formatted.")
                 null
             }
         } ?: emptyList()
 
-        val startTime = data?.child("startTime")?.value as? Long
-        val endTime = data?.child("endTime")?.value as? Long
+        val startTime = getNumber(data?.child("startTime"))?.toLong()
+        val endTime = getNumber(data?.child("endTime"))?.toLong()
         if (startTime != null && endTime != null) {
             return Run(Path(points), startTime, endTime)
         }
+
+        Log.e(this::class.java.name, "Run time was null.")
+
         return null
     }
 
