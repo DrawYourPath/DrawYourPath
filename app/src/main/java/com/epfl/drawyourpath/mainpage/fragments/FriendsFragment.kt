@@ -3,9 +3,7 @@ package com.epfl.drawyourpath.mainpage.fragments
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
@@ -33,14 +31,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
     private lateinit var friendsListAdapter: FriendsListAdapter
     private lateinit var user: User
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        return inflater.inflate(R.layout.fragment_friends, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -55,6 +45,7 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
             launchLoginActivity(requireActivity())
             return
         }
+
         user = currentUser
 
         // Set up QR code scanning
