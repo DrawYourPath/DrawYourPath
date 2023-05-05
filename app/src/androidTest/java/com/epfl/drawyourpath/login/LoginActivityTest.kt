@@ -344,6 +344,12 @@ class LoginActivityTest {
     @Test
     fun getUserReturnsCurrentUser() {
         FirebaseAuth.getUser()
+        FirebaseAuth().clearListener()
+        FirebaseAuth().onAuthStateChanged { user, error -> }
+        FirebaseAuth().onAuthStateChanged { user, error -> }
         FirebaseAuth().loginAnonymously { _, _ -> }
+        FirebaseAuth.getUser()
+        FirebaseAuth().clearListener()
+        FirebaseAuth().signOut()
     }
 }
