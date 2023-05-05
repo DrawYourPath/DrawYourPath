@@ -12,6 +12,11 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.io.ByteArrayOutputStream
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneOffset
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class FirebaseKeys {
@@ -254,15 +259,19 @@ class FirebaseDatabase : Database() {
 
                 // Create a new mapping to the new username.
                 nameMapping(username).setValue(userId).addOnSuccessListener {
-                    // If there is a past username.
-                    if (exc2 == null) {
-                        // And remove the old one.
-                        nameMapping(pastUsername).removeValue { _, _ ->
-                            future.complete(Unit)
-                        }
-                    } else {
-                        future.complete(Unit)
-                    }
+                    // update the username in the user profile(username)
+                    userRoot(userId).child(FirebaseKeys.PROFILE).child(FirebaseKeys.USERNAME)
+                        .setValue(username).addOnSuccessListener {
+                            // If there is a past username.
+                            if (pastUsername != null) {
+                                // And remove the old one.
+                                nameMapping(pastUsername).removeValue { _, _ ->
+                                    future.complete(Unit)
+                                }
+                            } else {
+                                future.complete(Unit)
+                            }
+                        }.addOnFailureListener { future.completeExceptionally(it) }
                 }.addOnFailureListener {
                     future.completeExceptionally(Error("Failed to write new username"))
                 }
@@ -764,8 +773,8 @@ class FirebaseDatabase : Database() {
                 activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toDouble(),
             ),
             picture = profile.child(FirebaseKeys.PICTURE).value as String?,
-            runs = FirebaseDatabaseUtils.transformRuns(profile.child(FirebaseKeys.RUN_HISTORY)),
-            dailyGoals = FirebaseDatabaseUtils.transformDailyGoals(profile.child(FirebaseKeys.DAILY_GOALS)),
+            runs = FirebaseDatabaseUtils.transformRuns(data.child(FirebaseKeys.RUN_HISTORY)),
+            dailyGoals = FirebaseDatabaseUtils.transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
             friendList = FirebaseDatabaseUtils.getKeys(profile.child(FirebaseKeys.FRIENDS)),
             chatList = FirebaseDatabaseUtils.transformChatList(data.child(FirebaseKeys.USER_CHATS)),
         )
