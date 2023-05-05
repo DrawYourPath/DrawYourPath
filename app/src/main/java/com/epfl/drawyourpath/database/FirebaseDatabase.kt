@@ -262,7 +262,7 @@ class FirebaseDatabase : Database() {
 
                 // Create a new mapping to the new username.
                 nameMapping(username).setValue(userId).addOnSuccessListener {
-                    // update the username in the user profile
+                    // update the username in the user profile(username)
                     userRoot(userId).child(FirebaseKeys.PROFILE).child(FirebaseKeys.USERNAME)
                         .setValue(username).addOnSuccessListener {
                             // If there is a past username.
