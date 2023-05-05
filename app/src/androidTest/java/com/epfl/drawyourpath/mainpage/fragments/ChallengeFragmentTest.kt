@@ -16,13 +16,13 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
+import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import org.junit.Rule
 import org.junit.Test
 import java.util.*
 import java.util.concurrent.TimeUnit
-import com.epfl.drawyourpath.R
 
 // @RunWith(AndroidJUnit4::class)
 class ChallengeFragmentTest {
@@ -172,7 +172,7 @@ class ChallengeFragmentTest {
     }
 
     /*
-    
+
     /**
      * test if the tournaments are correctly displayed
      */
