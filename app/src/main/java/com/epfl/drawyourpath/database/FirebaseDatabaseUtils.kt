@@ -76,8 +76,8 @@ object FirebaseDatabaseUtils {
      * @param data the datasnapshot containing the run
      * @return the run corresponding to the data
      */
-    fun transformRun(data: DataSnapshot): Run? {
-        val points = data.child("path").child("points").children.mapNotNull {
+    fun transformRun(data: DataSnapshot?): Run? {
+        val points = data?.child("path")?.child("points")?.children?.mapNotNull {
             val lat = it.child("latitude").getValue(Double::class.java)
             val lon = it.child("longitude").getValue(Double::class.java)
             if (lat != null && lon != null) {
@@ -85,10 +85,10 @@ object FirebaseDatabaseUtils {
             } else {
                 null
             }
-        }
+        } ?: emptyList()
 
-        val startTime = data.child("startTime").value as? Long
-        val endTime = data.child("endTime").value as? Long
+        val startTime = data?.child("startTime")?.value as? Long
+        val endTime = data?.child("endTime")?.value as? Long
         if (startTime != null && endTime != null) {
             return Run(Path(points), startTime, endTime)
         }

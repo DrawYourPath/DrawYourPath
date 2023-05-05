@@ -9,4 +9,19 @@ class FirebaseDatabaseUtilsTest {
     fun transformDailyGoalsReturnsEmptyListWithNullSnapshot() {
         Assert.assertTrue(FirebaseDatabaseUtils.transformDailyGoals(null).isEmpty())
     }
+
+    @Test
+    fun getKeysOfNullSnapshotIsEmpty() {
+        Assert.assertEquals(FirebaseDatabaseUtils.getKeys(null).size, 0)
+    }
+
+    @Test
+    fun transformChatListOfNullSnapshotIsEmpty() {
+        Assert.assertEquals(FirebaseDatabaseUtils.transformChatList(null).size, 0)
+    }
+
+    @Test
+    fun transformRunReturnsNullForNullSnapshot() {
+        Assert.assertEquals(FirebaseDatabaseUtils.transformRun(null), null)
+    }
 }
