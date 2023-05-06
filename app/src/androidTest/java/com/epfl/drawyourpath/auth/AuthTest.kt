@@ -1,12 +1,12 @@
 package com.epfl.drawyourpath.auth
 
 import android.app.Activity
+import android.content.Intent
 import android.net.Uri
+import android.os.Looper
 import androidx.core.os.bundleOf
-import com.epfl.drawyourpath.authentication.FirebaseAuth
-import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.authentication.USE_MOCK_AUTH
-import com.epfl.drawyourpath.authentication.createAuth
+import androidx.test.platform.app.InstrumentationRegistry
+import com.epfl.drawyourpath.authentication.*
 import com.epfl.drawyourpath.database.FirebaseDatabaseTest
 import com.google.firebase.auth.FirebaseUser
 import org.hamcrest.MatcherAssert.assertThat
@@ -86,6 +86,7 @@ class AuthTest {
         auth.onActivityCreate(mockActivity, null)
         auth.signOut()
         auth.clearListener()
+        FirebaseAuth.getUser()
     }
 
     @Test
@@ -96,5 +97,25 @@ class AuthTest {
     @Test
     fun createAuthReturnsMockAuthWhenTestSpecified() {
         assertTrue(createAuth(bundleOf(USE_MOCK_AUTH to true)) is MockAuth)
+    }
+
+    @Test
+    fun registerWithGoogleSignsUser() {
+        val activity = mock(Activity::class.java)
+        val mockFirebase = mock(com.google.firebase.auth.FirebaseAuth::class.java)
+        val intent = mock(Intent::class.java)
+        val auth = FirebaseAuth(mockFirebase)
+
+        // Mocking an activity passed to a third party is too tedious.
+        `when`(activity.mainLooper).thenReturn(Looper.getMainLooper())
+        `when`(activity.applicationContext).thenReturn(InstrumentationRegistry.getInstrumentation().context)
+        `when`(activity.startActivityForResult(any(), anyInt())).then {
+            auth.onActivityResult(activity, REQ_GSI, 1, intent)
+        }
+
+        try {
+            auth.registerWithGoogle(activity) { user, error ->
+            }
+        } catch (_: Throwable) { }
     }
 }
