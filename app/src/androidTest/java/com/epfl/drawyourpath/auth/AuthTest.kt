@@ -1,7 +1,12 @@
 package com.epfl.drawyourpath.auth
 
+import android.app.Activity
 import android.net.Uri
+import androidx.core.os.bundleOf
 import com.epfl.drawyourpath.authentication.FirebaseAuth
+import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.authentication.USE_MOCK_AUTH
+import com.epfl.drawyourpath.authentication.createAuth
 import com.epfl.drawyourpath.database.FirebaseDatabaseTest
 import com.google.firebase.auth.FirebaseUser
 import org.hamcrest.MatcherAssert.assertThat
@@ -71,5 +76,25 @@ class AuthTest {
         assertThrows(Throwable::class.java) {
             convUser?.updatePassword("Foobar")?.get()
         }
+    }
+
+    @Test
+    fun emptyMockMethodsActAsExpected() {
+        val auth = MockAuth()
+        val mockActivity = mock(Activity::class.java)
+        auth.onActivityResult(mockActivity, 0, 0, null)
+        auth.onActivityCreate(mockActivity, null)
+        auth.signOut()
+        auth.clearListener()
+    }
+
+    @Test
+    fun createAuthReturnsFirebaseAuthWhenTestNotSpecified() {
+        assertTrue(createAuth(null) is FirebaseAuth)
+    }
+
+    @Test
+    fun createAuthReturnsMockAuthWhenTestSpecified() {
+        assertTrue(createAuth(bundleOf(USE_MOCK_AUTH to true)) is MockAuth)
     }
 }
