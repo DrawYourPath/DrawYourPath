@@ -6,8 +6,7 @@ import com.epfl.drawyourpath.database.FirebaseDatabaseTest
 import com.google.firebase.auth.FirebaseUser
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertThrows
+import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
 
@@ -40,7 +39,7 @@ class AuthTest {
 
     @Test
     fun convertNullUserReturnsNull() {
-        assertThat(FirebaseAuth.convertUser(null), `is`(null))
+        assertNull(FirebaseAuth.convertUser(null))
     }
 
     @Test
@@ -49,7 +48,7 @@ class AuthTest {
 
         val convUser = FirebaseAuth.convertUser(mockUser)
 
-        assertThat(convUser, isNotNull())
+        assertNotNull(convUser)
         assertThat(convUser?.getDisplayName(), `is`(testUser["displayName"]))
         assertThat(convUser?.getEmail(), `is`(testUser["email"]))
         assertThat(convUser?.getUid(), `is`(testUser["uid"]))
