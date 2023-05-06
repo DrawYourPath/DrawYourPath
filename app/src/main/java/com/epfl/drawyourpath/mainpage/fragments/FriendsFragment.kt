@@ -122,10 +122,9 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
      * Handles the username search functionality.
      * Checks if the username is available, and if not, adds it as a potential friend.
      */
-    private fun handleUsernameSearch(query: String?) {
+    fun handleUsernameSearch(query: String?) {
         if (query != null && query.isNotBlank()) {
             database.isUsernameAvailable(query).thenApply { isAvailable ->
-
                 if (isAvailable == true) {
                     Toast.makeText(
                         requireContext(),
@@ -134,15 +133,11 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
                     ).show()
                 } else {
                     database.getUserIdFromUsername(query).thenApply { userId ->
-                        Log.i("Friends", "Uid of $query is $userId")
                         database.getUserData(user.getUid())
                             .thenApply { loggedUserdata ->
-                                Log.i("Friends", "Here1!!!!!!!!")
                                 if (userId != loggedUserdata.userId!!) {
-                                    Log.i("Friends", "Here1.5!!!!!!!!")
                                     database.getUserData(userId)
                                         .thenApply { userdata ->
-                                            Log.i("Friends", "Here2!!!!!!!!")
                                             val newFriend = Friend(
                                                 userdata.userId!!,
                                                 userdata.username!!,

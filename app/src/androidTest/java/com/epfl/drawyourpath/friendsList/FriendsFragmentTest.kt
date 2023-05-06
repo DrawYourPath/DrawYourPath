@@ -72,7 +72,10 @@ class FriendsFragmentTest {
     fun clickUnfriendButtonAndCheckIfFriend1HasAddFriendButton() {
         val database = MockDatabase()
         val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
-            FriendsFragment(database)
+            val frag = FriendsFragment(database)
+            frag.handleUsernameSearch("MOCK_USER")
+            frag.handleUsernameSearch("INVALID_USER__")
+            frag
         }
 
         /*
