@@ -80,6 +80,7 @@ class FirebaseDatabaseTest {
         `when`(username.get()).thenReturn(mockTask(usernameSnapshot, databaseException))
         `when`(userProfile.child(FirebaseKeys.USERNAME)).thenReturn(username)
         `when`(userRoot.child(FirebaseKeys.PROFILE)).thenReturn(userProfile)
+        `when`(userRoot.updateChildren(any())).thenReturn(mockTask(null, databaseException))
         `when`(usersRoot.child(userData.userId!!)).thenReturn(userRoot)
         `when`(database.child(FirebaseKeys.USERS_ROOT)).thenReturn(usersRoot)
 
@@ -162,5 +163,49 @@ class FirebaseDatabaseTest {
         assertThrows(Throwable::class.java) {
             FirebaseDatabase(databaseRef).getUsername(user.userId!!).get()
         }
+    }
+
+    @Test
+    fun createUserCreatesUser() {
+        val userData = UserData(
+            userId = "uid",
+            birthDate = 10,
+            username = "uname",
+            surname = "surname",
+        )
+
+        val dbRef = mockDatabaseWithUser(userData)
+
+        FirebaseDatabase(dbRef).createUser(userData.userId!!, userData).get()
+    }
+
+    @Test
+    fun createUserWithFailingDatabaseThrows() {
+        val userData = UserData(
+            userId = "uid",
+            birthDate = 10,
+            username = "uname",
+            surname = "surname",
+        )
+
+        val dbRef = mockDatabaseWithUser(userData, Exception("error"))
+
+        assertThrows(Exception::class.java) {
+            FirebaseDatabase(dbRef).createUser(userData.userId!!, userData).get()
+        }
+    }
+
+    @Test
+    fun setUserDataSetsUserData() {
+        val userData = UserData(
+            userId = "uid",
+            birthDate = 10,
+            username = "uname",
+            surname = "surname",
+        )
+
+        val dbRef = mockDatabaseWithUser(userData)
+
+        FirebaseDatabase(dbRef).setUserData(userData.userId!!, userData).get()
     }
 }
