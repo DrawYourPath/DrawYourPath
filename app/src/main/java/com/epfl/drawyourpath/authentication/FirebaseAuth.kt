@@ -57,7 +57,7 @@ class FirebaseAuth : Auth {
         /**
          * Adapter for a FirebaseUser class to a User class.
          */
-        private fun convertUser(user: FirebaseUser?): User? {
+        fun convertUser(user: FirebaseUser?): User? {
             if (user == null) {
                 return null
             }

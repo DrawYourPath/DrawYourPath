@@ -26,31 +26,31 @@ class FirebaseDatabaseTest {
         return snap
     }
 
-    private fun mockTask(snapshot: DataSnapshot?, exception: Exception? = null): Task<DataSnapshot> {
-        return object : Task<DataSnapshot>() {
-            override fun addOnFailureListener(p0: OnFailureListener): Task<DataSnapshot> {
+    fun <T> mockTask(value: T?, exception: Exception? = null): Task<T> {
+        return object : Task<T>() {
+            override fun addOnFailureListener(p0: OnFailureListener): Task<T> {
                 if (exception != null) {
                     p0.onFailure(exception)
                 }
                 return this
             }
 
-            override fun addOnSuccessListener(p0: OnSuccessListener<in DataSnapshot>): Task<DataSnapshot> {
+            override fun addOnSuccessListener(p0: OnSuccessListener<in T>): Task<T> {
                 if (exception == null) {
-                    p0.onSuccess(snapshot)
+                    p0.onSuccess(value)
                 }
                 return this
             }
 
-            override fun addOnFailureListener(p0: Activity, p1: OnFailureListener): Task<DataSnapshot> = addOnFailureListener(p1)
+            override fun addOnFailureListener(p0: Activity, p1: OnFailureListener): Task<T> = addOnFailureListener(p1)
 
-            override fun addOnFailureListener(p0: Executor, p1: OnFailureListener): Task<DataSnapshot> = addOnFailureListener(p1)
+            override fun addOnFailureListener(p0: Executor, p1: OnFailureListener): Task<T> = addOnFailureListener(p1)
 
             override fun getException(): Exception? = exception
 
-            override fun getResult(): DataSnapshot = snapshot!!
+            override fun getResult(): T = value!!
 
-            override fun <X : Throwable?> getResult(p0: Class<X>): DataSnapshot = snapshot!!
+            override fun <X : Throwable?> getResult(p0: Class<X>): T = value!!
 
             override fun isCanceled(): Boolean = false
 
@@ -58,9 +58,9 @@ class FirebaseDatabaseTest {
 
             override fun isSuccessful(): Boolean = exception == null
 
-            override fun addOnSuccessListener(p0: Executor, p1: OnSuccessListener<in DataSnapshot>): Task<DataSnapshot> = addOnSuccessListener(p1)
+            override fun addOnSuccessListener(p0: Executor, p1: OnSuccessListener<in T>): Task<T> = addOnSuccessListener(p1)
 
-            override fun addOnSuccessListener(p0: Activity, p1: OnSuccessListener<in DataSnapshot>): Task<DataSnapshot> = addOnSuccessListener(p1)
+            override fun addOnSuccessListener(p0: Activity, p1: OnSuccessListener<in T>): Task<T> = addOnSuccessListener(p1)
         }
     }
 
