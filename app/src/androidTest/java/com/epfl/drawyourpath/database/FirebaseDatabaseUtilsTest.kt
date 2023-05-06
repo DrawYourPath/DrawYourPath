@@ -1,8 +1,12 @@
 package com.epfl.drawyourpath.database
 
+import android.graphics.Bitmap
+import com.epfl.drawyourpath.chat.Message
+import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import org.hamcrest.MatcherAssert.assertThat
@@ -15,11 +19,13 @@ import org.mockito.Mockito.`when`
 
 class FirebaseDatabaseUtilsTest {
 
-    private fun mockNumberSnapshot(value: Number?): DataSnapshot {
+    private fun <T> mockSnapshot(value: T?): DataSnapshot {
         val snap = mock(DataSnapshot::class.java)
         `when`(snap.value).thenReturn(value)
         return snap
     }
+
+    private fun mockNumberSnapshot(value: Number?): DataSnapshot = mockSnapshot(value)
 
     private fun mockDailyGoalSnapshot(dailyGoal: DailyGoal): DataSnapshot {
         // NOTE: Can't mock inside `thenReturn`.
@@ -74,6 +80,45 @@ class FirebaseDatabaseUtilsTest {
         val endTime = mockNumberSnapshot(run.getEndTime())
         `when`(snapshot.child("endTime")).thenReturn(endTime)
         `when`(snapshot.child("path")).thenReturn(path)
+
+        return snapshot
+    }
+
+    private fun mockMessage(message: Message): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        `when`(snapshot.key).thenReturn(message.id.toString())
+        val sendSnap = mockSnapshot(message.senderId)
+        `when`(snapshot.child(FirebaseKeys.CHAT_MESSAGE_SENDER)).thenReturn(sendSnap)
+
+        val image = mockSnapshot(
+            if (message.content is MessageContent.Picture) {
+                Utils.encodePhotoToString((message.content as MessageContent.Picture).image)
+            } else {
+                null
+            },
+        )
+        `when`(snapshot.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE)).thenReturn(image)
+
+        val run = if (message.content is MessageContent.RunPath) {
+            val runSubnode = mock(DataSnapshot::class.java)
+            val runs = listOf(mockRun((message.content as MessageContent.RunPath).run))
+            `when`(runSubnode.children).thenReturn(runs)
+            `when`(runSubnode.value).thenReturn(true)
+            runSubnode
+        } else {
+            mockSnapshot(null)
+        }
+        `when`(snapshot.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_RUN)).thenReturn(run)
+
+        val txt = mockSnapshot(
+            if (message.content is MessageContent.Text) {
+                (message.content as MessageContent.Text).text
+            } else {
+                null
+            },
+        )
+        `when`(snapshot.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT)).thenReturn(txt)
 
         return snapshot
     }
@@ -175,5 +220,65 @@ class FirebaseDatabaseUtilsTest {
         val transformedRuns = FirebaseDatabaseUtils.transformRuns(snapshot)
 
         assertThat(runs.size, `is`(transformedRuns.size))
+    }
+
+    @Test
+    fun transformTextMessageReturnsExpectedData() {
+        val message = Message(
+            id = 20,
+            senderId = "foobar",
+            content = MessageContent.Text("Hello World"),
+            timestamp = 20,
+        )
+
+        val transMessage = FirebaseDatabaseUtils.transformMessage(mockMessage(message))
+
+        assertThat(message.id, `is`(transMessage.id))
+        assertThat(message.content, `is`(transMessage.content))
+        assertThat(message.timestamp, `is`(transMessage.timestamp))
+        assertThat(message.senderId, `is`(transMessage.senderId))
+    }
+
+    @Test
+    fun transformRunMessageReturnsExpectedData() {
+        val message = Message(
+            id = 20,
+            senderId = "foobar",
+            content = MessageContent.RunPath(
+                Run(
+                    Path(
+                        listOf(
+                            LatLng(1.0, 1.0),
+                            LatLng(2.0, 2.0),
+                        ),
+                    ),
+                    1000,
+                    2000,
+                ),
+            ),
+            timestamp = 20,
+        )
+
+        val transMessage = FirebaseDatabaseUtils.transformMessage(mockMessage(message))
+
+        assertThat(message.id, `is`(transMessage.id))
+        assertThat(message.timestamp, `is`(transMessage.timestamp))
+        assertThat(message.senderId, `is`(transMessage.senderId))
+    }
+
+    @Test
+    fun transformRunPictureReturnsExpectedData() {
+        val message = Message(
+            id = 20,
+            senderId = "foobar",
+            content = MessageContent.Picture(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)),
+            timestamp = 20,
+        )
+
+        val transMessage = FirebaseDatabaseUtils.transformMessage(mockMessage(message))
+
+        assertThat(message.id, `is`(transMessage.id))
+        assertThat(message.timestamp, `is`(transMessage.timestamp))
+        assertThat(message.senderId, `is`(transMessage.senderId))
     }
 }

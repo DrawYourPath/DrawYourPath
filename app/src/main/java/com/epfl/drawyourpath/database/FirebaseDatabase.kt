@@ -76,8 +76,8 @@ class FirebaseKeys {
  * -users: that contains users based on the UserModel defined by their userId
  * -tournaments: that contains the different tournaments
  */
-class FirebaseDatabase : Database() {
-    val database: DatabaseReference = Firebase.database.reference
+class FirebaseDatabase(reference: DatabaseReference = Firebase.database.reference) : Database() {
+    val database: DatabaseReference = reference
 
     private fun userRoot(userId: String): DatabaseReference {
         return database.child(FirebaseKeys.USERS_ROOT).child(userId)
@@ -597,7 +597,7 @@ class FirebaseDatabase : Database() {
                 val preview = ChatPreview(
                     conversationId = conversationId,
                     title = data.child(FirebaseKeys.CHAT_TITLE).value as String?,
-                    lastMessage = getMessageFromData(
+                    lastMessage = FirebaseDatabaseUtils.transformMessage(
                         data.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList()[0],
                     ),
                 )
@@ -659,7 +659,7 @@ class FirebaseDatabase : Database() {
     override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
         val future = CompletableFuture<List<Message>>()
         chatMessages(conversationId).get().addOnSuccessListener { data ->
-            val listMessage = data.children.map { getMessageFromData(it) }
+            val listMessage = data.children.map { FirebaseDatabaseUtils.transformMessage(it) }
             future.complete(listMessage)
         }.addOnFailureListener { future.completeExceptionally(it) }
         return future
@@ -1041,50 +1041,6 @@ class FirebaseDatabase : Database() {
             }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
-    }
-
-    /**
-     * Helper function to transform some data into a message
-     * @param data datasnpshot that contains the data of the message
-     * @return a message correposnding to this data
-     */
-    private fun getMessageFromData(data: DataSnapshot): Message {
-        val dateStr: String =
-            data.key ?: throw Exception("There content of this data not correspond to a message")
-        val date = dateStr.toLong()
-        val sender = data.child(FirebaseKeys.CHAT_MESSAGE_SENDER).value as String
-        val dataImage = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE)
-        val dataRun = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_RUN)
-        val dataText = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT)
-        if (dataImage.value != null) {
-            return Message(
-                id = date,
-                senderId = sender,
-                content = MessageContent.Picture(Utils.decodePhoto(dataImage.value as String)!!),
-                timestamp = date,
-            )
-        }
-        if (dataRun.value != null) {
-            return Message(
-                id = date,
-                senderId = sender,
-                content = MessageContent.RunPath(
-                    FirebaseDatabaseUtils.transformRun(
-                        dataRun.children.toMutableList()[0],
-                    )!!,
-                ),
-                timestamp = date,
-            )
-        }
-        if (dataText.value != null) {
-            return Message(
-                id = date,
-                senderId = sender,
-                content = MessageContent.Text(dataText.value as String),
-                timestamp = date,
-            )
-        }
-        throw Error("The content of the message correspond to any type !")
     }
 
     private fun ilog(text: String) {

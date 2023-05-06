@@ -1,9 +1,12 @@
 package com.epfl.drawyourpath.database
 
 import android.util.Log
+import com.epfl.drawyourpath.chat.Message
+import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import java.time.LocalDate
@@ -108,5 +111,52 @@ object FirebaseDatabaseUtils {
      */
     fun transformChatList(data: DataSnapshot?): List<String> {
         return data?.children?.mapNotNull { it.key } ?: emptyList()
+    }
+
+    /**
+     * // TODO: We shouldn't throw when data is badly formatted.
+     * Helper function to transform some data into a message
+     * @param data datasnpshot that contains the data of the message
+     * @return a message correposnding to this data
+     */
+    fun transformMessage(data: DataSnapshot): Message {
+        val dateStr: String =
+            data.key ?: throw Exception("There content of this data not correspond to a message")
+        val date = dateStr.toLong()
+        val sender = data.child(FirebaseKeys.CHAT_MESSAGE_SENDER).value as String
+        val dataImage = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_IMAGE)
+        val dataRun = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_RUN)
+        val dataText = data.child(FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT)
+        if (dataImage.value != null) {
+            return Message(
+                id = date,
+                senderId = sender,
+                content = MessageContent.Picture(Utils.decodePhoto(dataImage.value as String)!!),
+                timestamp = date,
+            )
+        }
+        if (dataRun.value != null) {
+            return Message(
+                id = date,
+                senderId = sender,
+                content = MessageContent.RunPath(
+                    transformRun(
+                        dataRun.children.first(),
+                    )!!,
+                ),
+                timestamp = date,
+            )
+        }
+
+        if (dataText.value != null) {
+            return Message(
+                id = date,
+                senderId = sender,
+                content = MessageContent.Text(dataText.value as String),
+                timestamp = date,
+            )
+        }
+
+        throw Error("The content of the message correspond to any type !")
     }
 }
