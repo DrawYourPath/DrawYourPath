@@ -28,15 +28,15 @@ class MockDatabaseTest {
 
     private val userIdTest: String = MockAuth.MOCK_USER.getUid()
     private val userAuthTest: User = MockAuth.MOCK_USER
-    private val usernameTest: String = mockDatabase.mockUser.username!!
-    private val distanceGoalTest: Double = mockDatabase.mockUser.goals!!.distance!!
-    private val activityTimeGoalTest: Double = mockDatabase.mockUser.goals!!.activityTime!!.toDouble()
-    private val nbOfPathsGoalTest: Int = mockDatabase.mockUser.goals!!.paths!!.toInt()
-    private val firstnameTest = mockDatabase.mockUser.firstname!!
-    private val surnameTest = mockDatabase.mockUser.surname!!
+    private val usernameTest: String = MockDatabase.mockUser.username!!
+    private val distanceGoalTest: Double = MockDatabase.mockUser.goals!!.distance!!
+    private val activityTimeGoalTest: Double = MockDatabase.mockUser.goals!!.activityTime!!.toDouble()
+    private val nbOfPathsGoalTest: Int = MockDatabase.mockUser.goals!!.paths!!.toInt()
+    private val firstnameTest = MockDatabase.mockUser.firstname!!
+    private val surnameTest = MockDatabase.mockUser.surname!!
     private val takenUsername = mockDatabase.MOCK_USERS[1].username!!
-    private val dateOfBirthTest = mockDatabase.mockUser.birthDate!!
-    private val runHistoryTest = mockDatabase.mockUser.runs!!
+    private val dateOfBirthTest = MockDatabase.mockUser.birthDate!!
+    private val runHistoryTest = MockDatabase.mockUser.runs!!
 
     /**
      * Test if userId present in the database is given has present
@@ -757,7 +757,7 @@ class MockDatabaseTest {
     fun addingUserToNonExistingTournamentThrows() {
         val database = MockDatabase()
         val tournamentId = "NotAnID"
-        val userId = database.mockUser.userId!!
+        val userId = MockDatabase.mockUser.userId!!
         assertThrows(Throwable::class.java) {
             database.addUserToTournament(userId, tournamentId).get()
         }
@@ -771,7 +771,7 @@ class MockDatabaseTest {
     fun addingExistingUserToExistingTournamentWorks() {
         val database = MockDatabase()
         val tournamentId = database.MOCK_TOURNAMENTS[1].id
-        val userId = database.mockUser.userId!!
+        val userId = MockDatabase.mockUser.userId!!
         // check that user is not in tournament's participants
         assertTrue(!database.tournaments[tournamentId]!!.participants.contains(userId))
         // check that tournament is not in user's tournaments list
@@ -792,8 +792,8 @@ class MockDatabaseTest {
         val database = MockDatabase()
         val tournamentId = database.MOCK_TOURNAMENTS[0].id
         val numberParticipants = database.MOCK_TOURNAMENTS[0].participants.size
-        val userId = database.mockUser.userId!!
-        val numberTournamentsOfUser = database.mockUser.tournaments!!.size
+        val userId = MockDatabase.mockUser.userId!!
+        val numberTournamentsOfUser = MockDatabase.mockUser.tournaments!!.size
         // try to add user
         database.addUserToTournament(userId, tournamentId).get()
         // does not add a participant
@@ -810,7 +810,7 @@ class MockDatabaseTest {
     fun removingExistingUserFromExistingTournamentWorks() {
         val database = MockDatabase()
         val tournamentId = database.mockTournament.id
-        val userId = database.mockUser.userId!!
+        val userId = MockDatabase.mockUser.userId!!
         // check that user is in tournament's participants
         assertTrue(database.tournaments[tournamentId]!!.participants.contains(userId))
         // check that tournament is in user's tournaments list

@@ -315,7 +315,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val future = CompletableFuture<UserData>()
 
         userRoot(userId).get().addOnSuccessListener { data ->
-            future.complete(mapToUserData(data, userId))
+            future.complete(FirebaseDatabaseUtils.mapToUserData(data, userId))
         }.addOnFailureListener {
             future.completeExceptionally(it)
         }
@@ -744,36 +744,6 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
-    }
-
-    /**
-     * Helper function to convert a data snapshot to a userModel
-     * @param data data snapshot to convert
-     * @param userId of the user
-     * @return ta future that contains the user Model
-     */
-    private fun mapToUserData(data: DataSnapshot, userId: String): UserData {
-        val profile = data.child(FirebaseKeys.PROFILE)
-        val goals = data.child(FirebaseKeys.GOALS)
-
-        return UserData(
-            userId = userId,
-            username = profile.child(FirebaseKeys.USERNAME).value as String?,
-            firstname = profile.child(FirebaseKeys.FIRSTNAME).value as String?,
-            surname = profile.child(FirebaseKeys.SURNAME).value as String?,
-            birthDate = profile.child(FirebaseKeys.BIRTHDATE).value as Long?,
-            email = profile.child(FirebaseKeys.EMAIL).value as String?,
-            goals = UserGoals(
-                paths = (goals.child(FirebaseKeys.GOAL_PATH).value as Number?)?.toLong(),
-                distance = (goals.child(FirebaseKeys.GOAL_DISTANCE).value as Number?)?.toDouble(),
-                activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toDouble(),
-            ),
-            picture = profile.child(FirebaseKeys.PICTURE).value as String?,
-            runs = FirebaseDatabaseUtils.transformRuns(data.child(FirebaseKeys.RUN_HISTORY)),
-            dailyGoals = FirebaseDatabaseUtils.transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
-            friendList = FirebaseDatabaseUtils.getKeys(profile.child(FirebaseKeys.FRIENDS)),
-            chatList = FirebaseDatabaseUtils.transformChatList(data.child(FirebaseKeys.USER_CHATS)),
-        )
     }
 
     /**

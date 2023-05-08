@@ -173,7 +173,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         this.database = database
         // if database is mock then set user to a test user
         if (database is MockDatabase) {
-            setCurrentUser(database.mockUser.userId!!)
+            setCurrentUser(MockDatabase.mockUser.userId!!)
         }
     }
 

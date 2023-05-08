@@ -37,7 +37,7 @@ class AuthTest {
         `when`(user.phoneNumber).thenReturn(userData["phone"] as String?)
         `when`(user.photoUrl).thenReturn(uri)
         `when`(user.isAnonymous).thenReturn(userData["anon"] as Boolean?)
-        `when`(user.updatePassword(any())).thenReturn(FirebaseDatabaseTest().mockTask(null, opException))
+        `when`(user.updatePassword(any())).thenReturn(FirebaseDatabaseTest.mockTask(null, opException))
 
         return user
     }

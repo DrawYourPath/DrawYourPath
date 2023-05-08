@@ -159,4 +159,35 @@ object FirebaseDatabaseUtils {
 
         throw Error("The content of the message correspond to any type !")
     }
+
+
+    /**
+     * Helper function to convert a data snapshot to a userModel
+     * @param data data snapshot to convert
+     * @param userId of the user
+     * @return ta future that contains the user Model
+     */
+    fun mapToUserData(data: DataSnapshot, userId: String): UserData {
+        val profile = data.child(FirebaseKeys.PROFILE)
+        val goals = data.child(FirebaseKeys.GOALS)
+
+        return UserData(
+            userId = userId,
+            username = profile.child(FirebaseKeys.USERNAME).value as String?,
+            firstname = profile.child(FirebaseKeys.FIRSTNAME).value as String?,
+            surname = profile.child(FirebaseKeys.SURNAME).value as String?,
+            birthDate = profile.child(FirebaseKeys.BIRTHDATE).value as Long?,
+            email = profile.child(FirebaseKeys.EMAIL).value as String?,
+            picture = profile.child(FirebaseKeys.PICTURE).value as String?,
+            friendList = getKeys(profile.child(FirebaseKeys.FRIENDS)),
+            goals = UserGoals(
+                paths = (goals.child(FirebaseKeys.GOAL_PATH).value as Number?)?.toLong(),
+                distance = (goals.child(FirebaseKeys.GOAL_DISTANCE).value as Number?)?.toDouble(),
+                activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toDouble(),
+            ),
+            runs = transformRuns(data.child(FirebaseKeys.RUN_HISTORY)),
+            dailyGoals = transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
+            chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
+        )
+    }
 }

@@ -20,47 +20,87 @@ class FirebaseDatabaseTest {
         return FirebaseDatabase(database)
     }
 
-    private fun <T> mockSnapshot(value: T?): DataSnapshot {
-        val snap = mock(DataSnapshot::class.java)
-        `when`(snap.value).thenReturn(value)
-        return snap
-    }
 
-    fun <T> mockTask(value: T?, exception: Exception? = null): Task<T> {
-        return object : Task<T>() {
-            override fun addOnFailureListener(p0: OnFailureListener): Task<T> {
-                if (exception != null) {
-                    p0.onFailure(exception)
-                }
-                return this
+    companion object {
+        val nullSnapshot = mockNullSnapshot()
+
+        // Can't use mockSnapshot() directly to create the initial null snapshot because of recursion.
+        private fun mockNullSnapshot(): DataSnapshot {
+            val snap = mock(DataSnapshot::class.java)
+            `when`(snap.value).thenReturn(null)
+            `when`(snap.children).thenReturn(emptyList())
+            `when`(snap.child(any())).thenReturn(snap)
+            return snap
+        }
+
+        fun <T> mockSnapshot(value: T?): DataSnapshot {
+            val snap = mock(DataSnapshot::class.java)
+            `when`(snap.value).thenReturn(value)
+            `when`(snap.children).thenReturn(emptyList())
+            `when`(snap.child(any())).thenReturn(nullSnapshot)
+            return snap
+        }
+
+        fun <T> mockSnapshotPath(snapshot: DataSnapshot, path: String, value: T): DataSnapshot {
+            val child = mockSnapshot(value)
+            `when`(snapshot.child(path)).thenReturn(child)
+            return child
+        }
+
+        fun mockParent(children: Map<String, DataSnapshot>): DataSnapshot {
+            val parent = mock(DataSnapshot::class.java)
+            children.forEach {
+                `when`(parent.child(it.key)).thenReturn(it.value)
             }
+            `when`(parent.children).thenReturn(children.map { it.value })
+            `when`(parent.value).thenReturn(nullSnapshot)
+            return parent
+        }
 
-            override fun addOnSuccessListener(p0: OnSuccessListener<in T>): Task<T> {
-                if (exception == null) {
-                    p0.onSuccess(value)
+        fun <T> mockTask(value: T?, exception: Exception? = null): Task<T> {
+            return object : Task<T>() {
+                override fun addOnFailureListener(p0: OnFailureListener): Task<T> {
+                    if (exception != null) {
+                        p0.onFailure(exception)
+                    }
+                    return this
                 }
-                return this
+
+                override fun addOnSuccessListener(p0: OnSuccessListener<in T>): Task<T> {
+                    if (exception == null) {
+                        p0.onSuccess(value)
+                    }
+                    return this
+                }
+
+                override fun addOnFailureListener(p0: Activity, p1: OnFailureListener): Task<T> =
+                    addOnFailureListener(p1)
+
+                override fun addOnFailureListener(p0: Executor, p1: OnFailureListener): Task<T> =
+                    addOnFailureListener(p1)
+
+                override fun getException(): Exception? = exception
+
+                override fun getResult(): T = value!!
+
+                override fun <X : Throwable?> getResult(p0: Class<X>): T = value!!
+
+                override fun isCanceled(): Boolean = false
+
+                override fun isComplete(): Boolean = true
+
+                override fun isSuccessful(): Boolean = exception == null
+
+                override fun addOnSuccessListener(
+                    p0: Executor,
+                    p1: OnSuccessListener<in T>
+                ): Task<T> = addOnSuccessListener(p1)
+
+                override fun addOnSuccessListener(
+                    p0: Activity,
+                    p1: OnSuccessListener<in T>
+                ): Task<T> = addOnSuccessListener(p1)
             }
-
-            override fun addOnFailureListener(p0: Activity, p1: OnFailureListener): Task<T> = addOnFailureListener(p1)
-
-            override fun addOnFailureListener(p0: Executor, p1: OnFailureListener): Task<T> = addOnFailureListener(p1)
-
-            override fun getException(): Exception? = exception
-
-            override fun getResult(): T = value!!
-
-            override fun <X : Throwable?> getResult(p0: Class<X>): T = value!!
-
-            override fun isCanceled(): Boolean = false
-
-            override fun isComplete(): Boolean = true
-
-            override fun isSuccessful(): Boolean = exception == null
-
-            override fun addOnSuccessListener(p0: Executor, p1: OnSuccessListener<in T>): Task<T> = addOnSuccessListener(p1)
-
-            override fun addOnSuccessListener(p0: Activity, p1: OnSuccessListener<in T>): Task<T> = addOnSuccessListener(p1)
         }
     }
 
@@ -75,10 +115,29 @@ class FirebaseDatabaseTest {
         val username = mock(DatabaseReference::class.java)
         val usernameSnapshot = mockSnapshot(userData.username)
 
-        // TODO: mock more props for other tests
+        // Mock userdata entry
+        val userDataSnapshot = mockParent(mapOf(
+            FirebaseKeys.PROFILE to mockParent(mapOf(
+                FirebaseKeys.USERNAME to mockSnapshot(userData.username),
+                FirebaseKeys.EMAIL to mockSnapshot(userData.email),
+                FirebaseKeys.FIRSTNAME to mockSnapshot(userData.firstname),
+                FirebaseKeys.BIRTHDATE to mockSnapshot(userData.birthDate),
+                FirebaseKeys.SURNAME to mockSnapshot(userData.surname),
+                FirebaseKeys.BIRTHDATE to mockSnapshot(userData.birthDate),
+                FirebaseKeys.PICTURE to mockSnapshot(userData.picture),
+                FirebaseKeys.FRIENDS to mockSnapshot(null),
+            )),
+            FirebaseKeys.GOALS to mockSnapshot(null),
+            FirebaseKeys.DAILY_GOALS to mockSnapshot(null),
+            FirebaseKeys.RUN_HISTORY to mockSnapshot(null),
+            FirebaseKeys.USER_CHATS to mockSnapshot(null),
+        ))
 
+
+        // TODO: mock more props for other tests
         `when`(username.get()).thenReturn(mockTask(usernameSnapshot, databaseException))
         `when`(userProfile.child(FirebaseKeys.USERNAME)).thenReturn(username)
+        `when`(userRoot.get()).thenReturn(mockTask(userDataSnapshot, null))
         `when`(userRoot.child(FirebaseKeys.PROFILE)).thenReturn(userProfile)
         `when`(userRoot.updateChildren(any())).thenReturn(mockTask(null, databaseException))
         `when`(usersRoot.child(userData.userId!!)).thenReturn(userRoot)
@@ -176,7 +235,11 @@ class FirebaseDatabaseTest {
 
         val dbRef = mockDatabaseWithUser(userData)
 
-        FirebaseDatabase(dbRef).createUser(userData.userId!!, userData).get()
+        val db = FirebaseDatabase(dbRef)
+        db.createUser(userData.userId!!, userData).get()
+
+        val resData = db.getUsername(userData.userId!!).get()
+        assertThat(resData, `is`(userData.username))
     }
 
     @Test
@@ -206,6 +269,13 @@ class FirebaseDatabaseTest {
 
         val dbRef = mockDatabaseWithUser(userData)
 
-        FirebaseDatabase(dbRef).setUserData(userData.userId!!, userData).get()
+        val db = FirebaseDatabase(dbRef)
+
+        db.setUserData(userData.userId!!, userData).get()
+
+        val data = db.getUserData(userData.userId!!).get()
+
+        assertThat(data.birthDate, `is`(userData.birthDate))
+        assertThat(data.username, `is`(userData.username))
     }
 }

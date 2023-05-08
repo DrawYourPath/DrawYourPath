@@ -34,7 +34,7 @@ class ProfileFragmentTest {
     @Test
     fun overallLayoutMatchesExpectedContent() {
         val database = MockDatabase()
-        val targetUser = database.mockUser
+        val targetUser = MockDatabase.mockUser
 
         launchFragment(targetUser.userId!!)
 
@@ -63,7 +63,7 @@ class ProfileFragmentTest {
     @Test
     fun specifiedUserDataIsShownInLayout() {
         val database = MockDatabase()
-        val targetUser = database.mockUser
+        val targetUser = MockDatabase.mockUser
 
         launchFragment(targetUser.userId!!)
 
@@ -89,7 +89,7 @@ class ProfileFragmentTest {
     @Test
     fun errorIsShownWhenDatabaseIsUnavailable() {
         val database = MockDatabase()
-        val targetUser = database.mockUser
+        val targetUser = MockDatabase.mockUser
 
         launchFragment(userId = targetUser.userId!!, brokenDatabase = true)
         // Started failing in CI only.

@@ -31,7 +31,7 @@ class ChallengeFragmentTest {
     @get:Rule
     val executorRule = CountingTaskExecutorRule()
 
-    private var mockUser = MockDatabase().mockUser
+    private var mockUser = MockDatabase.mockUser
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val dailyGoal = DailyGoal.TEST_SAMPLE
 

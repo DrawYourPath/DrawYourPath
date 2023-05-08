@@ -19,51 +19,52 @@ import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 
 class MockDatabase : Database() {
-
-    val mockUser = UserData(
-        userId = MockAuth.MOCK_USER.getUid(),
-        birthDate = 220,
-        goals = UserGoals(
-            3,
-            10.0,
-            20.0,
-        ),
-        email = MockAuth.MOCK_USER.getEmail(),
-        username = "MOCK_USER",
-        surname = "testsurnamemock",
-        firstname = "testfirstnamemock",
-        picture = "1234567890",
-        runs = listOf(
-            Run(
-                startTime = 10,
-                endTime = 20,
-                path = Path(listOf(LatLng(46.51854301997813, 6.56237289547834))),
+    companion object {
+        val mockUser = UserData(
+            userId = MockAuth.MOCK_USER.getUid(),
+            birthDate = 220,
+            goals = UserGoals(
+                3,
+                10.0,
+                20.0,
             ),
-        ),
-        dailyGoals = listOf(
-            DailyGoal(
-                paths = 10,
-                distance = 10.0,
-                expectedTime = 10.0,
-                expectedPaths = 10,
-                date = LocalDate.of(2020, 1, 1),
-                expectedDistance = 10.0,
-                time = 10.0,
+            email = MockAuth.MOCK_USER.getEmail(),
+            username = "MOCK_USER",
+            surname = "testsurnamemock",
+            firstname = "testfirstnamemock",
+            picture = "1234567890",
+            runs = listOf(
+                Run(
+                    startTime = 10,
+                    endTime = 20,
+                    path = Path(listOf(LatLng(46.51854301997813, 6.56237289547834))),
+                ),
             ),
-            DailyGoal(
-                paths = 1,
-                distance = 3.0,
-                expectedTime = 20.0,
-                expectedPaths = 10,
-                date = LocalDate.of(2022, 1, 1),
-                expectedDistance = 10.0,
-                time = 2.0,
+            dailyGoals = listOf(
+                DailyGoal(
+                    paths = 10,
+                    distance = 10.0,
+                    expectedTime = 10.0,
+                    expectedPaths = 10,
+                    date = LocalDate.of(2020, 1, 1),
+                    expectedDistance = 10.0,
+                    time = 10.0,
+                ),
+                DailyGoal(
+                    paths = 1,
+                    distance = 3.0,
+                    expectedTime = 20.0,
+                    expectedPaths = 10,
+                    date = LocalDate.of(2022, 1, 1),
+                    expectedDistance = 10.0,
+                    time = 2.0,
+                ),
             ),
-        ),
-        friendList = listOf("0", "1"),
-        tournaments = listOf("0"),
-        chatList = listOf("0"),
-    )
+            friendList = listOf("0", "1"),
+            tournaments = listOf("0"),
+            chatList = listOf("0"),
+        )
+    }
 
     // Please keep this list with more than 3 users to have enough data for tournaments.
     val MOCK_USERS = listOf(
