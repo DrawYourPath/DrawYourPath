@@ -4,10 +4,16 @@ import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
+import com.epfl.drawyourpath.userProfile.cache.GoalAndAchievements
 import com.google.android.gms.maps.model.LatLng
+import com.google.mlkit.common.MlKitException
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.common.model.RemoteModelManager
+import com.google.mlkit.vision.digitalink.*
 import java.io.ByteArrayOutputStream
 import java.time.*
 import java.util.*
@@ -223,4 +229,66 @@ object Utils {
         val roundSpeed: Double = (speed * 100.0).roundToInt() / 100.0
         return roundSpeed.toString()
     }
+
+    /**
+     * Helper function to download an get the ML model
+     * @throw an error if download failed
+     * @return the ML model as a DigitalInkRecognitionModel
+     */
+    fun downloadModelML(): DigitalInkRecognitionModel {
+        var modelIdentifier: DigitalInkRecognitionModelIdentifier? = null
+        try {
+            modelIdentifier = DigitalInkRecognitionModelIdentifier.fromLanguageTag("zxx-Zsym-x-autodraw")
+        } catch (e: MlKitException) {
+            throw Error("The ML model identifier language tag failed to parse.")
+        }
+        if (modelIdentifier == null) {
+            throw Error("The ML model was not found.")
+        }
+
+        var model = DigitalInkRecognitionModel.builder(modelIdentifier!!).build()
+        val remoteModelManager = RemoteModelManager.getInstance()
+        if (!remoteModelManager.isModelDownloaded(model).result) {
+            remoteModelManager.download(model, DownloadConditions.Builder().build())
+                .addOnSuccessListener {
+                    Log.i("Utils", "Model downloaded")
+                }
+                .addOnFailureListener { e: Exception ->
+                    Log.e("Utils", "Error while downloading a model: $e")
+                }
+        }
+        return model
+    }
+
+    /**
+     * Helper function to evaluate the drawing given the model
+     * @param ink the drawing as an Ink
+     * @param model the ML model
+     * @return the result of the ML model as a MLDrawingResults
+     */
+    fun recognizeDrawingML(ink: Ink, model: DigitalInkRecognitionModel): MLDrawingResults? {
+        val recognizer: DigitalInkRecognizer =
+            DigitalInkRecognition.getClient(DigitalInkRecognizerOptions.builder(model).build())
+        var results: MLDrawingResults? = null
+        recognizer.recognize(ink)
+            .addOnSuccessListener { result: RecognitionResult ->
+                results = MLDrawingResults(result.candidates[0].text, result.candidates[0].score!!)
+            }
+            .addOnFailureListener { e: Exception ->
+                Log.e("Utils", "Error during recognition: $e")
+            }
+        return results
+    }
+
+    data class MLDrawingResults(
+        /**
+         * the classification of the drawing
+         */
+        val classification: String,
+
+        /**
+         * the score of the drawing
+         */
+        val score: Float,
+    )
 }
