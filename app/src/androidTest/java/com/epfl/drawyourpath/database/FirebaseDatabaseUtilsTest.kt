@@ -187,7 +187,7 @@ class FirebaseDatabaseUtilsTest {
     }
 
     @Test
-    fun transformRunReturnsExpectedRuns() {
+    fun transformRunsReturnExpectedRuns() {
         val runs = listOf(
             Run(
                 Path(
@@ -283,7 +283,7 @@ class FirebaseDatabaseUtilsTest {
     }
 
     @Test
-    fun transformRunsReturnExpectedRuns() {
+    fun mapToUserDataReturnsExpectedValue() {
         val userData = UserData(
             userId = "uid",
             username = "uname",
