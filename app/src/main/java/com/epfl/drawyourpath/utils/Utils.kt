@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
-import com.epfl.drawyourpath.userProfile.cache.GoalAndAchievements
 import com.google.android.gms.maps.model.LatLng
 import com.google.mlkit.common.MlKitException
 import com.google.mlkit.common.model.DownloadConditions
