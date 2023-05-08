@@ -103,6 +103,15 @@ class FirebaseDatabaseTest {
         }
     }
 
+    private fun mockEmptyDatabase(): DatabaseReference {
+        val database = mock(DatabaseReference::class.java)
+        `when`(database.child(any())).thenReturn(database)
+        `when`(database.get()).thenReturn(mockTask(nullSnapshot, null))
+        `when`(database.updateChildren(any())).thenReturn(mockTask(null, null))
+        `when`(database.removeValue()).thenReturn(mockTask(null, null))
+        return database
+    }
+
     private fun mockDatabaseWithUser(userData: UserData, databaseException: Exception? = null): DatabaseReference {
         val database = mock(DatabaseReference::class.java)
         val usersRoot = mock(DatabaseReference::class.java)
@@ -165,12 +174,9 @@ class FirebaseDatabaseTest {
 
     @Test
     fun isUserInDatabaseForNonExistingUserReturnsFalse() {
-        val user = UserData(
-            userId = "uid",
-        )
-        val databaseRef = mockDatabaseWithUser(user)
+        val databaseRef = mockEmptyDatabase()
 
-        val res = FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get()
+        val res = FirebaseDatabase(databaseRef).isUserInDatabase("uid").get()
 
         assertThat(res, `is`(false))
     }
