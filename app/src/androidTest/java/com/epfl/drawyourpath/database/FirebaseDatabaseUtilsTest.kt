@@ -217,7 +217,7 @@ class FirebaseDatabaseUtilsTest {
 
         `when`(snapshot.children).thenReturn(runsSnaps)
 
-        val transformedRuns = FirebaseDatabaseUtils.transformRuns(snapshot)
+        val transformedRuns = FirebaseDatabaseUtils.transformRunList(snapshot)
 
         assertThat(runs.size, `is`(transformedRuns.size))
     }

@@ -224,6 +224,10 @@ object Utils {
         return roundSpeed.toString()
     }
 
+    /**
+     * Gets the current epoch as a Long.
+     * @return The current epoch.
+     */
     fun getCurrentDateAsEpoch(): Long {
         return LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
     }

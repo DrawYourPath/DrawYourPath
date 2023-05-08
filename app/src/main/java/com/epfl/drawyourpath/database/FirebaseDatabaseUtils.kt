@@ -70,7 +70,7 @@ object FirebaseDatabaseUtils {
      * @param data the data snapshot containing the history
      * @return a list containing the history of the runs of the user
      */
-    fun transformRuns(data: DataSnapshot?): List<Run> {
+    fun transformRunList(data: DataSnapshot?): List<Run> {
         return data?.children?.mapNotNull {
             transformRun(it)
         } ?: emptyList()
@@ -184,7 +184,7 @@ object FirebaseDatabaseUtils {
                 distance = (goals.child(FirebaseKeys.GOAL_DISTANCE).value as Number?)?.toDouble(),
                 activityTime = (goals.child(FirebaseKeys.GOAL_TIME).value as Number?)?.toDouble(),
             ),
-            runs = transformRuns(data.child(FirebaseKeys.RUN_HISTORY)),
+            runs = transformRunList(data.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
             chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
         )
