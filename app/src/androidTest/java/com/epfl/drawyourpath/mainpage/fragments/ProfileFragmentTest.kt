@@ -38,6 +38,7 @@ class ProfileFragmentTest {
 
         launchFragment(targetUser.userId!!)
 
+        // TODO: fix this:
         // Fails in CI only. Can't find the cause works perfectly locally.
         // elementExists(R.id.TV_DaysStreak)
         // elementExists(R.id.TV_AvgSpeed)
