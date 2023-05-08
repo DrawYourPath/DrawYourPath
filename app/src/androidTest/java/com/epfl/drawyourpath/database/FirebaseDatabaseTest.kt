@@ -20,7 +20,6 @@ class FirebaseDatabaseTest {
         return FirebaseDatabase(database)
     }
 
-
     companion object {
         val nullSnapshot = mockNullSnapshot()
 
@@ -93,12 +92,12 @@ class FirebaseDatabaseTest {
 
                 override fun addOnSuccessListener(
                     p0: Executor,
-                    p1: OnSuccessListener<in T>
+                    p1: OnSuccessListener<in T>,
                 ): Task<T> = addOnSuccessListener(p1)
 
                 override fun addOnSuccessListener(
                     p0: Activity,
-                    p1: OnSuccessListener<in T>
+                    p1: OnSuccessListener<in T>,
                 ): Task<T> = addOnSuccessListener(p1)
             }
         }
@@ -116,23 +115,26 @@ class FirebaseDatabaseTest {
         val usernameSnapshot = mockSnapshot(userData.username)
 
         // Mock userdata entry
-        val userDataSnapshot = mockParent(mapOf(
-            FirebaseKeys.PROFILE to mockParent(mapOf(
-                FirebaseKeys.USERNAME to mockSnapshot(userData.username),
-                FirebaseKeys.EMAIL to mockSnapshot(userData.email),
-                FirebaseKeys.FIRSTNAME to mockSnapshot(userData.firstname),
-                FirebaseKeys.BIRTHDATE to mockSnapshot(userData.birthDate),
-                FirebaseKeys.SURNAME to mockSnapshot(userData.surname),
-                FirebaseKeys.BIRTHDATE to mockSnapshot(userData.birthDate),
-                FirebaseKeys.PICTURE to mockSnapshot(userData.picture),
-                FirebaseKeys.FRIENDS to mockSnapshot(null),
-            )),
-            FirebaseKeys.GOALS to mockSnapshot(null),
-            FirebaseKeys.DAILY_GOALS to mockSnapshot(null),
-            FirebaseKeys.RUN_HISTORY to mockSnapshot(null),
-            FirebaseKeys.USER_CHATS to mockSnapshot(null),
-        ))
-
+        val userDataSnapshot = mockParent(
+            mapOf(
+                FirebaseKeys.PROFILE to mockParent(
+                    mapOf(
+                        FirebaseKeys.USERNAME to mockSnapshot(userData.username),
+                        FirebaseKeys.EMAIL to mockSnapshot(userData.email),
+                        FirebaseKeys.FIRSTNAME to mockSnapshot(userData.firstname),
+                        FirebaseKeys.BIRTHDATE to mockSnapshot(userData.birthDate),
+                        FirebaseKeys.SURNAME to mockSnapshot(userData.surname),
+                        FirebaseKeys.BIRTHDATE to mockSnapshot(userData.birthDate),
+                        FirebaseKeys.PICTURE to mockSnapshot(userData.picture),
+                        FirebaseKeys.FRIENDS to mockSnapshot(null),
+                    ),
+                ),
+                FirebaseKeys.GOALS to mockSnapshot(null),
+                FirebaseKeys.DAILY_GOALS to mockSnapshot(null),
+                FirebaseKeys.RUN_HISTORY to mockSnapshot(null),
+                FirebaseKeys.USER_CHATS to mockSnapshot(null),
+            ),
+        )
 
         // TODO: mock more props for other tests
         `when`(username.get()).thenReturn(mockTask(usernameSnapshot, databaseException))

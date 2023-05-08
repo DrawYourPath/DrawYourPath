@@ -160,7 +160,6 @@ object FirebaseDatabaseUtils {
         throw Error("The content of the message correspond to any type !")
     }
 
-
     /**
      * Helper function to convert a data snapshot to a userModel
      * @param data data snapshot to convert

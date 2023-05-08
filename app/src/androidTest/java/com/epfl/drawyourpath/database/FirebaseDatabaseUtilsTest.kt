@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
@@ -292,22 +291,26 @@ class FirebaseDatabaseUtilsTest {
             email = "foobar",
         )
 
-        val userDataSnapshot = FirebaseDatabaseTest.mockParent(mapOf(
-            FirebaseKeys.PROFILE to FirebaseDatabaseTest.mockParent(mapOf(
-                FirebaseKeys.USERNAME to FirebaseDatabaseTest.mockSnapshot(userData.username),
-                FirebaseKeys.EMAIL to FirebaseDatabaseTest.mockSnapshot(userData.email),
-                FirebaseKeys.FIRSTNAME to FirebaseDatabaseTest.mockSnapshot(userData.firstname),
-                FirebaseKeys.BIRTHDATE to FirebaseDatabaseTest.mockSnapshot(userData.birthDate),
-                FirebaseKeys.SURNAME to FirebaseDatabaseTest.mockSnapshot(userData.surname),
-                FirebaseKeys.BIRTHDATE to FirebaseDatabaseTest.mockSnapshot(userData.birthDate),
-                FirebaseKeys.PICTURE to FirebaseDatabaseTest.mockSnapshot(userData.picture),
-                FirebaseKeys.FRIENDS to FirebaseDatabaseTest.mockSnapshot(null),
-            )),
-            FirebaseKeys.GOALS to FirebaseDatabaseTest.mockSnapshot(null),
-            FirebaseKeys.DAILY_GOALS to FirebaseDatabaseTest.mockSnapshot(null),
-            FirebaseKeys.RUN_HISTORY to FirebaseDatabaseTest.mockSnapshot(null),
-            FirebaseKeys.USER_CHATS to FirebaseDatabaseTest.mockSnapshot(null),
-        ))
+        val userDataSnapshot = FirebaseDatabaseTest.mockParent(
+            mapOf(
+                FirebaseKeys.PROFILE to FirebaseDatabaseTest.mockParent(
+                    mapOf(
+                        FirebaseKeys.USERNAME to FirebaseDatabaseTest.mockSnapshot(userData.username),
+                        FirebaseKeys.EMAIL to FirebaseDatabaseTest.mockSnapshot(userData.email),
+                        FirebaseKeys.FIRSTNAME to FirebaseDatabaseTest.mockSnapshot(userData.firstname),
+                        FirebaseKeys.BIRTHDATE to FirebaseDatabaseTest.mockSnapshot(userData.birthDate),
+                        FirebaseKeys.SURNAME to FirebaseDatabaseTest.mockSnapshot(userData.surname),
+                        FirebaseKeys.BIRTHDATE to FirebaseDatabaseTest.mockSnapshot(userData.birthDate),
+                        FirebaseKeys.PICTURE to FirebaseDatabaseTest.mockSnapshot(userData.picture),
+                        FirebaseKeys.FRIENDS to FirebaseDatabaseTest.mockSnapshot(null),
+                    ),
+                ),
+                FirebaseKeys.GOALS to FirebaseDatabaseTest.mockSnapshot(null),
+                FirebaseKeys.DAILY_GOALS to FirebaseDatabaseTest.mockSnapshot(null),
+                FirebaseKeys.RUN_HISTORY to FirebaseDatabaseTest.mockSnapshot(null),
+                FirebaseKeys.USER_CHATS to FirebaseDatabaseTest.mockSnapshot(null),
+            ),
+        )
 
         val resData = FirebaseDatabaseUtils.mapToUserData(userDataSnapshot, userData.userId!!)
 
