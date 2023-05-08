@@ -283,7 +283,7 @@ class FirebaseDatabaseUtilsTest {
     }
 
     @Test
-    fun mapToUserDataReturnsExpectedValue() {
+    fun transformRunsReturnExpectedRuns() {
         val userData = UserData(
             userId = "uid",
             username = "uname",
