@@ -21,7 +21,6 @@ class FirebaseDatabaseTest {
     }
 
     companion object {
-        val nullSnapshot = mockNullSnapshot()
 
         // Can't use mockSnapshot() directly to create the initial null snapshot because of recursion.
         private fun mockNullSnapshot(): DataSnapshot {
@@ -36,7 +35,8 @@ class FirebaseDatabaseTest {
             val snap = mock(DataSnapshot::class.java)
             `when`(snap.value).thenReturn(value)
             `when`(snap.children).thenReturn(emptyList())
-            `when`(snap.child(any())).thenReturn(nullSnapshot)
+            val child = mockNullSnapshot()
+            `when`(snap.child(any())).thenReturn(child)
             return snap
         }
 
@@ -52,7 +52,8 @@ class FirebaseDatabaseTest {
                 `when`(parent.child(it.key)).thenReturn(it.value)
             }
             `when`(parent.children).thenReturn(children.map { it.value })
-            `when`(parent.value).thenReturn(nullSnapshot)
+            val value = mockNullSnapshot()
+            `when`(parent.value).thenReturn(value)
             return parent
         }
 
@@ -106,7 +107,8 @@ class FirebaseDatabaseTest {
     private fun mockEmptyDatabase(): DatabaseReference {
         val database = mock(DatabaseReference::class.java)
         `when`(database.child(any())).thenReturn(database)
-        `when`(database.get()).thenReturn(mockTask(nullSnapshot, null))
+        val snapshot = mockNullSnapshot()
+        `when`(database.get()).thenReturn(mockTask(snapshot, null))
         `when`(database.updateChildren(any())).thenReturn(mockTask(null, null))
         `when`(database.removeValue()).thenReturn(mockTask(null, null))
         return database
