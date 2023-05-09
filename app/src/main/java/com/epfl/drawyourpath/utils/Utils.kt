@@ -234,11 +234,11 @@ object Utils {
      * @param coordinates The coordinates we want to convert
      * @return A Stroke object representing the coordinates in planar space.
      */
-    fun coordinatesToInk(coordinates: List<LatLng>): Stroke {
+    fun coordinatesToStroke(coordinates: List<LatLng>): Stroke {
         val builder = Stroke.builder()
 
         for (coordinate in coordinates) {
-            builder.addPoint(coordinateToInk(coordinate))
+            builder.addPoint(coordinateToPoint(coordinate))
         }
 
         return builder.build()
@@ -249,7 +249,7 @@ object Utils {
      * @param coordinate The coordinate we want to convert
      * @return A Point object representing the coordinate in planar space.
      */
-    fun coordinateToInk(coordinate: LatLng): Point {
+    fun coordinateToPoint(coordinate: LatLng): Point {
         val lat = Math.toRadians(coordinate.latitude)
         val long = Math.toRadians(coordinate.longitude)
         // Mercator projection formula
