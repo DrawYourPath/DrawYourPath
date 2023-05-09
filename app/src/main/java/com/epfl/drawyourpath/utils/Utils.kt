@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
-import com.epfl.drawyourpath.userProfile.cache.GoalAndAchievements
 import com.google.android.gms.maps.model.LatLng
 import com.google.mlkit.common.MlKitException
 import com.google.mlkit.common.model.DownloadConditions
@@ -232,7 +231,7 @@ object Utils {
 
     /**
      * Helper function to download an get the ML model
-     * @throw an error if download failed
+     * @throw an error if there is a problem with the download
      * @return the ML model as a DigitalInkRecognitionModel
      */
     fun downloadModelML(): DigitalInkRecognitionModel {
@@ -248,15 +247,21 @@ object Utils {
 
         var model = DigitalInkRecognitionModel.builder(modelIdentifier!!).build()
         val remoteModelManager = RemoteModelManager.getInstance()
-        if (!remoteModelManager.isModelDownloaded(model).result) {
-            remoteModelManager.download(model, DownloadConditions.Builder().build())
-                .addOnSuccessListener {
-                    Log.i("Utils", "Model downloaded")
+        remoteModelManager.isModelDownloaded(model)
+            .addOnSuccessListener() { is_downloaded: Boolean ->
+                if (!is_downloaded) {
+                    remoteModelManager.download(model, DownloadConditions.Builder().build())
+                        .addOnSuccessListener {
+                            Log.i("Utils", "Model downloaded")
+                        }
+                        .addOnFailureListener { e: Exception ->
+                            throw Error("Fail to download the model.")
+                        }
                 }
-                .addOnFailureListener { e: Exception ->
-                    Log.e("Utils", "Error while downloading a model: $e")
-                }
-        }
+            }
+            .addOnFailureListener { e: Exception ->
+                throw Error("The remote model manager could not verify if the model was downloaded.")
+            }
         return model
     }
 
@@ -264,31 +269,42 @@ object Utils {
      * Helper function to evaluate the drawing given the model
      * @param ink the drawing as an Ink
      * @param model the ML model
-     * @return the result of the ML model as a MLDrawingResults
+     * @throw an error if there is a problem while recognizing the drawing
+     * @return the result of the ML model as a MLDrawingResults, null if it could not classify
      */
-    fun recognizeDrawingML(ink: Ink, model: DigitalInkRecognitionModel): MLDrawingResults? {
+    fun recognizeDrawingML(ink: Ink, model: DigitalInkRecognitionModel): MLDrawingClassification? {
         val recognizer: DigitalInkRecognizer =
             DigitalInkRecognition.getClient(DigitalInkRecognizerOptions.builder(model).build())
-        var results: MLDrawingResults? = null
+        var classification: MLDrawingClassification? = null
         recognizer.recognize(ink)
             .addOnSuccessListener { result: RecognitionResult ->
-                results = MLDrawingResults(result.candidates[0].text, result.candidates[0].score!!)
+                if (result.candidates.size > 0) {
+                    // TODO : make a custom score for display
+                    // The raw score can be positive or negative, and the lower the better
+                    val customScore = result.candidates[0].score!!
+                    classification = MLDrawingClassification(result.candidates[0].text, result.candidates[0].score!!, customScore)
+                }
             }
             .addOnFailureListener { e: Exception ->
-                Log.e("Utils", "Error during recognition: $e")
+                throw Error("Error while recognizing the model.")
             }
-        return results
+        return classification
     }
 
-    data class MLDrawingResults(
+    data class MLDrawingClassification(
         /**
-         * the classification of the drawing
+         * the classification of the drawing (String describing the shape)
          */
         val classification: String,
 
         /**
-         * the score of the drawing
+         * the raw score of the drawing from the model
          */
-        val score: Float,
+        val rawScore: Float,
+
+        /**
+         * the score of the drawing modified for display
+         */
+        val customScore: Float,
     )
 }
