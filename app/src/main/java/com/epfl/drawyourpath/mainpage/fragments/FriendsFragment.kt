@@ -8,7 +8,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -184,5 +183,3 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
             }
     }
 }
-
-
