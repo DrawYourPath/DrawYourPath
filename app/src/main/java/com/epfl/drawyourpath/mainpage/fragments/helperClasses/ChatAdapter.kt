@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.database.ChatPreview
 
 class ChatAdapter(private val chatPreviews: List<ChatPreview>, private val clickListener: (ChatPreview) -> Unit) :
@@ -35,4 +34,3 @@ class ChatAdapter(private val chatPreviews: List<ChatPreview>, private val click
 
     override fun getItemCount() = chatPreviews.size
 }
-

@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,10 +14,6 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ChatAdapter
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
 import java.util.concurrent.CompletableFuture
 
 class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_chat_list) {
@@ -48,30 +43,29 @@ class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_
 
         val userId = currentUser.getUid()
 
-        //!!!!!!!!!!!!!testing adding a chats!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!testing adding a chats!!!!!!!!!!!!!!
 
         // You can replace these values with your actual userId and desired chat names and members
         /**
-        val chatNames = listOf("Chat 1", "Chat 2", "Chat 3")
-        val membersLists = listOf(
-            listOf(userId, "user2", "user3"),
-            listOf(userId, "user3", "user4"),
-            listOf(userId, "user4", "user5")
-        )
-        val welcomeMessage = "Welcome to the chat!"
+         val chatNames = listOf("Chat 1", "Chat 2", "Chat 3")
+         val membersLists = listOf(
+         listOf(userId, "user2", "user3"),
+         listOf(userId, "user3", "user4"),
+         listOf(userId, "user4", "user5")
+         )
+         val welcomeMessage = "Welcome to the chat!"
 
-        // Create the chat conversations
-        chatNames.forEachIndexed { index, chatName ->
-            val membersList = membersLists[index]
-            database.createChatConversation(chatName, membersList, userId, welcomeMessage)
-                .thenAccept { conversationId ->
-                    Log.d("ChatCreation", "Chat created with conversationId: $conversationId")
-                }
-        }
+         // Create the chat conversations
+         chatNames.forEachIndexed { index, chatName ->
+         val membersList = membersLists[index]
+         database.createChatConversation(chatName, membersList, userId, welcomeMessage)
+         .thenAccept { conversationId ->
+         Log.d("ChatCreation", "Chat created with conversationId: $conversationId")
+         }
+         }
 
-        **/
-        //!!!!!!!!!!!!!!!!!!end of testing!!!!!!!!!!!!!!!!!!!!
-
+         **/
+        // !!!!!!!!!!!!!!!!!!end of testing!!!!!!!!!!!!!!!!!!!!
 
         // Get user data and update chatList
         getUserChatPreviews(database, userId).thenAccept { chatPreviews ->
@@ -95,7 +89,6 @@ class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_
             }
         }
 
-
         chatRecyclerView.adapter = chatAdapter
     }
     fun getUserChatPreviews(database: Database, userId: String): CompletableFuture<List<ChatPreview>> {
@@ -112,7 +105,6 @@ class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_
                     }
             }
     }
-
 
     fun chatPreviewToChat(database: Database, chatPreview: ChatPreview): CompletableFuture<Chat> {
         val conversationId = chatPreview.conversationId

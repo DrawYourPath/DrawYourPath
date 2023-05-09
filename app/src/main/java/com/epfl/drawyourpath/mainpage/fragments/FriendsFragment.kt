@@ -47,7 +47,6 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
 
         user = currentUser
 
-
         // Set up QR code scanning
         view.findViewById<Button>(R.id.BT_ScanQR).setOnClickListener { onScanQRClicked() }
 
