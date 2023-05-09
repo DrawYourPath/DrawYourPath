@@ -124,6 +124,7 @@ class PhotoProfileInitFragment : Fragment(R.layout.fragment_photo_profile_init) 
             if (!isTest) {
                 val photoPicker =
                     Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                @Suppress("DEPRECATION")
                 startActivityForResult(photoPicker, requestCodeFrag)
             } else {
                 // affect a simple image in test scenario

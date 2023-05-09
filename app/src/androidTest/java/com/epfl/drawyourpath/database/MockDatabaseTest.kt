@@ -1069,7 +1069,7 @@ class MockDatabaseTest {
     fun removeChatMessageNotPreviewCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
-        val senderId = database.MOCK_USERS[0].userId!!
+        // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(1).timestamp
         database.removeChatMessage(conversationId, timestamp)
         // check the messages list
@@ -1085,7 +1085,7 @@ class MockDatabaseTest {
     fun removeChatMessageInPreviewCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
-        val senderId = database.MOCK_USERS[0].userId!!
+        // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(0).timestamp
         database.removeChatMessage(conversationId, timestamp)
         // check the messages list
@@ -1101,7 +1101,7 @@ class MockDatabaseTest {
     fun modifyChatTextMessageInPreviewCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
-        val senderId = database.MOCK_USERS[0].userId!!
+        // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(0).timestamp
         val newMessage = "edited message"
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
@@ -1118,7 +1118,7 @@ class MockDatabaseTest {
     fun modifyChatTextMessageNotPreviewCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
-        val senderId = database.MOCK_USERS[0].userId!!
+        // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(1).timestamp
         val newMessage = "edited message"
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
