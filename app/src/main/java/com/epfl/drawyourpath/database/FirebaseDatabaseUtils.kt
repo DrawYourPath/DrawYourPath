@@ -186,7 +186,8 @@ object FirebaseDatabaseUtils {
             ),
             runs = transformRunList(data.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
-            chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
+            chatList = transformChatList(profile.child(FirebaseKeys.USER_CHATS)),
+
         )
     }
 }

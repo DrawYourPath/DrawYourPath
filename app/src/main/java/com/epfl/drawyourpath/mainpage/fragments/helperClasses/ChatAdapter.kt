@@ -1,20 +1,22 @@
 package com.epfl.drawyourpath.mainpage.fragments.helperClasses
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.chat.Chat
+import com.epfl.drawyourpath.database.ChatPreview
 
-class ChatAdapter(private val chatList: List<Chat>, private val clickListener: (Chat) -> Unit) :
+class ChatAdapter(private val chatPreviews: List<ChatPreview>, private val clickListener: (ChatPreview) -> Unit) :
     RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
-    inner class ChatViewHolder(view: android.view.View) : RecyclerView.ViewHolder(view) {
+    inner class ChatViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val chatTitleTextView: TextView = view.findViewById(R.id.chatTitleTextView)
 
-        fun bind(chat: Chat, clickListener: (Chat) -> Unit) {
-            itemView.setOnClickListener { clickListener(chat) }
+        fun bind(chatPreview: ChatPreview, clickListener: (ChatPreview) -> Unit) {
+            itemView.setOnClickListener { clickListener(chatPreview) }
         }
     }
 
@@ -25,11 +27,12 @@ class ChatAdapter(private val chatList: List<Chat>, private val clickListener: (
     }
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
-        val chat = chatList[position]
-        val chatTitle = "Chat ${position + 1}" // Customize this to display the desired chat title
+        val chatPreview = chatPreviews[position]
+        val chatTitle = chatPreview.title ?: "Chat ${position + 1}" // Use the title from ChatPreview if available
         holder.chatTitleTextView.text = chatTitle
-        holder.bind(chat, clickListener)
+        holder.bind(chatPreview, clickListener)
     }
 
-    override fun getItemCount() = chatList.size
+    override fun getItemCount() = chatPreviews.size
 }
+
