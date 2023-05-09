@@ -2,8 +2,7 @@ package com.epfl.drawyourpath.utils
 
 import android.annotation.SuppressLint
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
@@ -14,10 +13,7 @@ import java.io.ByteArrayOutputStream
 import java.time.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import kotlin.math.cos
-import kotlin.math.ln
-import kotlin.math.roundToInt
-import kotlin.math.tan
+import kotlin.math.*
 
 /**
  * A class containing various utility functions.
@@ -255,5 +251,78 @@ object Utils {
         // Mercator projection formula
         val y = ln(tan(lat) + (1 / cos(lat)))
         return Point.create(long.toFloat(), y.toFloat())
+    }
+
+    /**
+     * Normalizes a stroke so that it fits in a 1:1 square.
+     * @note It isn't stretched.
+     * @param stroke The stroke to normalize.
+     * @param padding The padding applied between the borders and the points in percent.
+     * @return A stroke with all points inside fitting in [0;1].
+     */
+    fun normalizeStroke(stroke: Stroke, padding: Float = 0f): Stroke {
+        val points = stroke.points
+
+        // Finds the origin that fits all the points. (top left most corner)
+        val origin = points.fold(Pair(Float.MAX_VALUE, Float.MAX_VALUE)) { acc, point ->
+            Pair(
+                minOf(acc.first, point.x),
+                minOf(acc.second, point.y),
+            )
+        }
+
+        // Finds the biggest point (opposite of origin). (bottom right most corner)
+        val max = points.fold(Pair(0.0f, 0.0f)) { acc, point ->
+            Pair(
+                maxOf(acc.first, point.x),
+                maxOf(acc.second, point.y),
+            )
+        }
+
+        // The scale is the biggest distance between the origin and a coordinate.
+        val scale = max(max.first - origin.first, max.second - origin.second) + padding
+
+        // We pad the origin relatively to the scaling.
+        val paddedOrigin = Pair(
+            origin.first - scale * padding,
+            origin.second - scale * padding,
+        )
+
+        // Constructs the new stroke translated and scaled to fit in a 1:1 square
+        return Stroke.builder().also {
+            for (point in points) {
+                it.addPoint(
+                    Point.create(
+                        (point.x - paddedOrigin.first) / scale,
+                        (point.y - paddedOrigin.second) / scale,
+                    ),
+                )
+            }
+        }.build()
+    }
+
+    private val defaultPaint = Paint(Paint.ANTI_ALIAS_FLAG).also {
+        it.color = Color.BLACK
+        it.strokeWidth = 2f
+        it.strokeCap = Paint.Cap.ROUND
+    }
+
+    fun strokeToBitmap(stroke: Stroke, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        val normalizedStroke = normalizeStroke(stroke, 0.1f)
+
+        val points = normalizedStroke.points
+
+        points.zip(listOf(points[0]) + points).forEach {
+            canvas.drawLine(it.first.x, it.first.y, it.second.x, it.second.y, paint)
+        }
+
+        return bitmap
+    }
+
+    fun coordinatesToBitmap(coordinates: List<LatLng>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
+        return strokeToBitmap(coordinatesToStroke(coordinates), size, paint)
     }
 }
