@@ -13,11 +13,16 @@ import com.google.mlkit.common.MlKitException
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.vision.digitalink.*
+import com.google.mlkit.vision.digitalink.Ink.Point
+import com.google.mlkit.vision.digitalink.Ink.Stroke
 import java.io.ByteArrayOutputStream
 import java.time.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.math.cos
+import kotlin.math.ln
 import kotlin.math.roundToInt
+import kotlin.math.tan
 
 /**
  * A class containing various utility functions.
@@ -307,4 +312,40 @@ object Utils {
          */
         val customScore: Float,
     )
+
+    /**
+     * Gets the current epoch as a Long.
+     * @return The current epoch.
+     */
+    fun getCurrentDateAsEpoch(): Long {
+        return LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
+    }
+
+    /*
+     * Converts a list of LatLng to a stroke.
+     * @param coordinates The coordinates we want to convert
+     * @return A Stroke object representing the coordinates in planar space.
+     */
+    fun coordinatesToStroke(coordinates: List<LatLng>): Stroke {
+        val builder = Stroke.builder()
+
+        for (coordinate in coordinates) {
+            builder.addPoint(coordinateToPoint(coordinate))
+        }
+
+        return builder.build()
+    }
+
+    /**
+     * Converts a LatLng to a Point.
+     * @param coordinate The coordinate we want to convert
+     * @return A Point object representing the coordinate in planar space.
+     */
+    fun coordinateToPoint(coordinate: LatLng): Point {
+        val lat = Math.toRadians(coordinate.latitude)
+        val long = Math.toRadians(coordinate.longitude)
+        // Mercator projection formula
+        val y = ln(tan(lat) + (1 / cos(lat)))
+        return Point.create(long.toFloat(), y.toFloat())
+    }
 }

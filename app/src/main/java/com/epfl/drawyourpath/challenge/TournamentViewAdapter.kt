@@ -41,9 +41,9 @@ class TournamentViewAdapter(private val tournaments: List<Tournament>) :
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.name.text = "${tournaments[position].name}"
-        viewHolder.description.text = "${tournaments[position].description}"
-        viewHolder.date.text = "${tournaments[position].getStartOrEndDate()}"
+        viewHolder.name.text = tournaments[position].name
+        viewHolder.description.text = tournaments[position].description
+        viewHolder.date.text = tournaments[position].getStartOrEndDate()
     }
 
     // Return the size of the dataset (invoked by the layout manager)

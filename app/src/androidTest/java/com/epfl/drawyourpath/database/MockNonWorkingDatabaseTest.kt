@@ -13,7 +13,7 @@ class MockNonWorkingDatabaseTest {
     @Test
     fun everyFunctionShouldThrowError() {
         val mock = MockNonWorkingDatabase()
-        val mockUser = MockDatabase().mockUser
+        val mockUser = MockDatabase.mockUser
         val mockTournament = MockDatabase().mockTournament
         val mockChatPreview = MockDatabase().MOCK_CHAT_PREVIEWS[0]
         val mockChatMembers = MockDatabase().MOCK_CHAT_MEMBERS[0].membersList!!

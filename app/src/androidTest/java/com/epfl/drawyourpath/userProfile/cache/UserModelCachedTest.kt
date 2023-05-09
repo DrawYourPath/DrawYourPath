@@ -43,7 +43,7 @@ class UserModelCachedTest {
 
     private val user: UserModelCached = UserModelCached(applicationContext)
 
-    private val testUserModel = mockDataBase.mockUser
+    private val testUserModel = MockDatabase.mockUser
 
     private val newPicture: Bitmap = Bitmap.createBitmap(14, 14, Bitmap.Config.RGB_565)
 

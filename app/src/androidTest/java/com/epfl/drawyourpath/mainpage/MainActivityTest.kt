@@ -72,8 +72,8 @@ class MainActivityTest {
         onView(withId(R.id.profile_button)).perform(click())
 
         // check if username and email are correct
-        onView(withId(R.id.header_username)).check(matches(withText(database.mockUser.username)))
-        onView(withId(R.id.header_email)).check(matches(withText(database.mockUser.email)))
+        onView(withId(R.id.header_username)).check(matches(withText(MockDatabase.mockUser.username)))
+        onView(withId(R.id.header_email)).check(matches(withText(MockDatabase.mockUser.email)))
     }
 
     @Test

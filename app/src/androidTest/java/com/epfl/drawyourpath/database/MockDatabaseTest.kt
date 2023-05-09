@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.database
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.test.core.app.ApplicationProvider
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
@@ -27,15 +28,15 @@ class MockDatabaseTest {
 
     private val userIdTest: String = MockAuth.MOCK_USER.getUid()
     private val userAuthTest: User = MockAuth.MOCK_USER
-    private val usernameTest: String = mockDatabase.mockUser.username!!
-    private val distanceGoalTest: Double = mockDatabase.mockUser.goals!!.distance!!
-    private val activityTimeGoalTest: Double = mockDatabase.mockUser.goals!!.activityTime!!.toDouble()
-    private val nbOfPathsGoalTest: Int = mockDatabase.mockUser.goals!!.paths!!.toInt()
-    private val firstnameTest = mockDatabase.mockUser.firstname!!
-    private val surnameTest = mockDatabase.mockUser.surname!!
+    private val usernameTest: String = MockDatabase.mockUser.username!!
+    private val distanceGoalTest: Double = MockDatabase.mockUser.goals!!.distance!!
+    private val activityTimeGoalTest: Double = MockDatabase.mockUser.goals!!.activityTime!!.toDouble()
+    private val nbOfPathsGoalTest: Int = MockDatabase.mockUser.goals!!.paths!!.toInt()
+    private val firstnameTest = MockDatabase.mockUser.firstname!!
+    private val surnameTest = MockDatabase.mockUser.surname!!
     private val takenUsername = mockDatabase.MOCK_USERS[1].username!!
-    private val dateOfBirthTest = mockDatabase.mockUser.birthDate!!
-    private val runHistoryTest = mockDatabase.mockUser.runs!!
+    private val dateOfBirthTest = MockDatabase.mockUser.birthDate!!
+    private val runHistoryTest = MockDatabase.mockUser.runs!!
 
     /**
      * Test if userId present in the database is given has present
@@ -145,6 +146,50 @@ class MockDatabaseTest {
         assertEquals(database.unameToUid.contains(usernameTest), false)
         assertEquals(database.unameToUid["test"], userIdTest)
         assertEquals(database.users[userIdTest]!!.username, "test")
+    }
+
+    @Test
+    fun setUserDataForInvalidUserThrows() {
+        val database = MockDatabase()
+        assertThrows(Throwable::class.java) {
+            database.setUserData("NOT_EXISTING_USER", UserData()).get()
+        }
+    }
+
+    @Test
+    fun setGoalsForInvalidUserThrows() {
+        val database = MockDatabase()
+        assertThrows(Throwable::class.java) {
+            database.setGoals("NOT_EXISTING_USER", UserGoals()).get()
+        }
+        assertThrows(Throwable::class.java) {
+            database.addDailyGoal("NOT_EXISTING_USER", DailyGoal(0.0, 0.0, 1)).get()
+        }
+    }
+
+    @Test
+    fun setProfilePhotoForInvalidUserThrows() {
+        val database = MockDatabase()
+        assertThrows(Throwable::class.java) {
+            database.setProfilePhoto("NOT_EXISTING_USER", Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)).get()
+        }
+    }
+
+    @Test
+    fun runOperationsForInvalidUserThrows() {
+        val database = MockDatabase()
+        assertThrows(Throwable::class.java) {
+            database.addRunToHistory(
+                "NOT_EXISTING_USER",
+                Run(Path(emptyList()), 1000, 2000),
+            ).get()
+        }
+        assertThrows(Throwable::class.java) {
+            database.removeRunFromHistory(
+                "NOT_EXISTING_USER",
+                Run(Path(emptyList()), 1000, 2000),
+            ).get()
+        }
     }
 
     @Test
@@ -712,7 +757,7 @@ class MockDatabaseTest {
     fun addingUserToNonExistingTournamentThrows() {
         val database = MockDatabase()
         val tournamentId = "NotAnID"
-        val userId = database.mockUser.userId!!
+        val userId = MockDatabase.mockUser.userId!!
         assertThrows(Throwable::class.java) {
             database.addUserToTournament(userId, tournamentId).get()
         }
@@ -726,7 +771,7 @@ class MockDatabaseTest {
     fun addingExistingUserToExistingTournamentWorks() {
         val database = MockDatabase()
         val tournamentId = database.MOCK_TOURNAMENTS[1].id
-        val userId = database.mockUser.userId!!
+        val userId = MockDatabase.mockUser.userId!!
         // check that user is not in tournament's participants
         assertTrue(!database.tournaments[tournamentId]!!.participants.contains(userId))
         // check that tournament is not in user's tournaments list
@@ -747,8 +792,8 @@ class MockDatabaseTest {
         val database = MockDatabase()
         val tournamentId = database.MOCK_TOURNAMENTS[0].id
         val numberParticipants = database.MOCK_TOURNAMENTS[0].participants.size
-        val userId = database.mockUser.userId!!
-        val numberTournamentsOfUser = database.mockUser.tournaments!!.size
+        val userId = MockDatabase.mockUser.userId!!
+        val numberTournamentsOfUser = MockDatabase.mockUser.tournaments!!.size
         // try to add user
         database.addUserToTournament(userId, tournamentId).get()
         // does not add a participant
@@ -765,7 +810,7 @@ class MockDatabaseTest {
     fun removingExistingUserFromExistingTournamentWorks() {
         val database = MockDatabase()
         val tournamentId = database.mockTournament.id
-        val userId = database.mockUser.userId!!
+        val userId = MockDatabase.mockUser.userId!!
         // check that user is in tournament's participants
         assertTrue(database.tournaments[tournamentId]!!.participants.contains(userId))
         // check that tournament is in user's tournaments list
@@ -1024,7 +1069,7 @@ class MockDatabaseTest {
     fun removeChatMessageNotPreviewCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
-        val senderId = database.MOCK_USERS[0].userId!!
+        // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(1).timestamp
         database.removeChatMessage(conversationId, timestamp)
         // check the messages list
@@ -1040,7 +1085,7 @@ class MockDatabaseTest {
     fun removeChatMessageInPreviewCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
-        val senderId = database.MOCK_USERS[0].userId!!
+        // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(0).timestamp
         database.removeChatMessage(conversationId, timestamp)
         // check the messages list
@@ -1056,7 +1101,7 @@ class MockDatabaseTest {
     fun modifyChatTextMessageInPreviewCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
-        val senderId = database.MOCK_USERS[0].userId!!
+        // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(0).timestamp
         val newMessage = "edited message"
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
@@ -1073,7 +1118,7 @@ class MockDatabaseTest {
     fun modifyChatTextMessageNotPreviewCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
-        val senderId = database.MOCK_USERS[0].userId!!
+        // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(1).timestamp
         val newMessage = "edited message"
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
