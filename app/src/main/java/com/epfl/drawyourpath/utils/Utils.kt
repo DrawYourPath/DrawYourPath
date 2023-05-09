@@ -315,6 +315,12 @@ object Utils {
         it.strokeCap = Paint.Cap.ROUND
     }
 
+    /**
+     * Converts a stroke to a bitmap image representation.
+     * @param stroke The stroke we want to draw
+     * @param size The size of the bitmap in pixels
+     * @param paint The paint option used to draw the stroke.
+     */
     fun strokeToBitmap(stroke: Stroke, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -330,6 +336,12 @@ object Utils {
         return bitmap
     }
 
+    /**
+     * Converts a list of coordinates to a bitmap image representation.
+     * @param stroke The list of coordinates we want to draw
+     * @param size The size of the bitmap in pixels
+     * @param paint The paint option used to draw the list of coordinates.
+     */
     fun coordinatesToBitmap(coordinates: List<LatLng>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
         return strokeToBitmap(coordinatesToStroke(coordinates), size, paint)
     }

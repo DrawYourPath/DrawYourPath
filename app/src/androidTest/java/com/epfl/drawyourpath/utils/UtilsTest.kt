@@ -17,7 +17,7 @@ class UtilsTest {
     @Test
     fun checkEmailReturnsExpectedResult() {
         assertFalse(Utils.checkEmail("Invalid"))
-        assertFalse(Utils.checkEmail("valid@valid.org"))
+        assertTrue(Utils.checkEmail("valid@valid.org"))
     }
 
     @Test
