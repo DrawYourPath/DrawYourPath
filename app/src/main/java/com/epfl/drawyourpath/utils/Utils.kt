@@ -316,7 +316,7 @@ object Utils {
         val points = normalizedStroke.points
 
         points.zip(listOf(points[0]) + points).forEach {
-            canvas.drawLine(it.first.x, it.first.y, it.second.x, it.second.y, paint)
+            canvas.drawLine(it.first.x * size, it.first.y * size, it.second.x, it.second.y, paint)
         }
 
         return bitmap

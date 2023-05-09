@@ -5,10 +5,28 @@ import com.google.mlkit.vision.digitalink.Ink
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
 import org.hamcrest.Matchers.`is`
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneOffset
 
 class UtilsTest {
+
+    @Test
+    fun checkEmailReturnsExpectedResult() {
+        assertFalse(Utils.checkEmail("Invalid"))
+        assertFalse(Utils.checkEmail("valid@valid.org"))
+    }
+
+    @Test
+    fun getCurrentDateTimeInEpochSecondsReturnsExpectedResult() {
+        val prevTime = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
+        val currTime = Utils.getCurrentDateTimeInEpochSeconds()
+        assertTrue(currTime <= LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC))
+        assertTrue(prevTime <= currTime)
+    }
 
     @Test
     fun coordinateToInkReturnsExpectedValues() {
