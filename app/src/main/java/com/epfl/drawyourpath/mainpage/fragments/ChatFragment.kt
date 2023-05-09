@@ -43,7 +43,7 @@ class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_
 
         val userId = currentUser.getUid()
 
-        // !!!!!!!!!!!!!testing adding a chats!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!testing adding a chats!!!!!!!!!!!!!!
 
         // You can replace these values with your actual userId and desired chat names and members
         /**
