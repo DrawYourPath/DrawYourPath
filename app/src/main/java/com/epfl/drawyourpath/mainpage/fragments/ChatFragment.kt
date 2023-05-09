@@ -3,7 +3,6 @@ package com.epfl.drawyourpath.mainpage.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
@@ -43,5 +42,3 @@ class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_
         chatRecyclerView.adapter = chatAdapter
     }
 }
-
-
