@@ -52,7 +52,7 @@ class SettingsFragmentTest {
 
         onView(withId(R.id.BT_Apply)).perform(click())
         toastHasText("Not signed in.")
-        
+
         scenario.close()
     }
 
@@ -89,7 +89,7 @@ class SettingsFragmentTest {
             replaceText("NewP3ss\\/\\/0rdfoobar"),
         )
         toastHasText("Passwords don't match")
-        
+
         scenario.close()
     }
 
@@ -111,7 +111,7 @@ class SettingsFragmentTest {
             replaceText("NewP4ss\\/\\/0rd"),
         )
         toastHasText("Passwords updated")
-        
+
         scenario.close()
     }
 }
