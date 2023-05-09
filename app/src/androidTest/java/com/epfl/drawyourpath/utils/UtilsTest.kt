@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.utils
 
 import com.google.android.gms.maps.model.LatLng
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -11,7 +10,7 @@ class UtilsTest {
     fun coordinateToInkReturnsExpectedValues() {
         val coordinate = LatLng(1.0, 1.0)
 
-        val point =  Utils.coordinateToInk(coordinate)
+        val point = Utils.coordinateToInk(coordinate)
 
         assertTrue(point.x < Math.PI)
         assertTrue(point.x > 0.0)
