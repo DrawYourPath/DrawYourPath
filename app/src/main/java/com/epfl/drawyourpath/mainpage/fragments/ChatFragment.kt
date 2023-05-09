@@ -3,13 +3,15 @@ package com.epfl.drawyourpath.mainpage.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.chat.Chat
+import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ChatAdapter
 
-class ChatFragment : Fragment(R.layout.fragment_chat_list) {
+class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_chat_list) {
 
     private lateinit var chatRecyclerView: RecyclerView
     private lateinit var chatAdapter: ChatAdapter
@@ -41,3 +43,5 @@ class ChatFragment : Fragment(R.layout.fragment_chat_list) {
         chatRecyclerView.adapter = chatAdapter
     }
 }
+
+

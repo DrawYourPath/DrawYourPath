@@ -21,6 +21,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
+import com.epfl.drawyourpath.mainpage.fragments.helperClasses.CustomFragmentFactory
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
@@ -65,9 +66,10 @@ class MainActivity : AppCompatActivity() {
         // Create an instance of your database
         val database: Database = FirebaseDatabase()
 
-        // Create an instance of FriendsFragmentFactory and set it as the fragment factory
-        val friendsFragmentFactory = FriendsFragmentFactory(database)
-        supportFragmentManager.fragmentFactory = friendsFragmentFactory
+
+        //Set the fragment factory to the custom fragment factory to help initialise the chat and friends fragment with the database dependency
+        supportFragmentManager.fragmentFactory = CustomFragmentFactory(database)
+
 
         // Display the main fragment when no saved state
         if (savedInstanceState == null) {

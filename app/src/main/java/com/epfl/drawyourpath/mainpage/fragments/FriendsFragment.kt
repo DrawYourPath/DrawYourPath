@@ -184,11 +184,4 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
     }
 }
 
-class FriendsFragmentFactory(private val database: Database) : FragmentFactory() {
-    override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
-        return when (className) {
-            FriendsFragment::class.java.name -> FriendsFragment(database)
-            else -> super.instantiate(classLoader, className)
-        }
-    }
-}
+
