@@ -278,10 +278,10 @@ object Utils {
         var classification: MLDrawingClassification? = null
         recognizer.recognize(ink)
             .addOnSuccessListener { result: RecognitionResult ->
-                if (result.candidates.size > 0) {
-                    // TODO : make a custom score for display
+                if (result.candidates.isNotEmpty()) {
+                    // TODO : improve the custom score for display
                     // The raw score can be positive or negative, and the lower the better
-                    val customScore = result.candidates[0].score!!
+                    var customScore = result.candidates[0].score!!
                     classification = MLDrawingClassification(result.candidates[0].text, result.candidates[0].score!!, customScore)
                 }
             }
