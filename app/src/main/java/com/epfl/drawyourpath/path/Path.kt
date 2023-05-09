@@ -59,7 +59,7 @@ class Path {
      */
     private fun distance(point1: LatLng, point2: LatLng): Double {
         // Calculate the distance on the WGS84 ellipsoid (for precision)
-        var result = FloatArray(1)
+        val result = FloatArray(1)
         Location.distanceBetween(point1.latitude, point1.longitude, point2.latitude, point2.longitude, result)
         return result[0].toDouble()
     }

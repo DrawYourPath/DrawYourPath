@@ -18,13 +18,15 @@ import com.google.firebase.auth.GoogleAuthProvider
 import java.util.concurrent.CompletableFuture
 
 private const val REQ_ONE_TAP = 9993
-private const val REQ_GSI = 9994
+const val REQ_GSI = 9994
 
 const val USE_MOCK_AUTH = "useMockAuth"
 const val MOCK_AUTH_FAIL = "useMockAuthFailing"
 const val MOCK_FORCE_SIGNED = "useMockSigned"
 const val RESTORE_USER_IN_KEYCHAIN = "restoreUserInKeychain"
 const val ENABLE_ONETAP_SIGNIN = "enableOneTapSignIn"
+
+const val TEST_TOKEN = "593734550817-74svh08a2ram22m54eqvln88kecg3nr0.apps.googleusercontent.com"
 
 /**
  * Creates a auth object from a bundle. Allows to automatically parse data
@@ -49,15 +51,15 @@ fun createAuth(bundle: Bundle?, failing: Boolean = false, userInKeychain: Boolea
     }
 }
 
-class FirebaseAuth : Auth {
-    private val auth = FirebaseAuth.getInstance()
+class FirebaseAuth(instance: FirebaseAuth = FirebaseAuth.getInstance()) : Auth {
+    private val auth = instance
 
     companion object {
 
         /**
          * Adapter for a FirebaseUser class to a User class.
          */
-        private fun convertUser(user: FirebaseUser?): User? {
+        fun convertUser(user: FirebaseUser?): User? {
             if (user == null) {
                 return null
             }
@@ -132,6 +134,14 @@ class FirebaseAuth : Auth {
         return convertUser(FirebaseAuth.getInstance().currentUser)
     }
 
+    private fun getServerClientId(activity: Activity): String {
+        return try {
+            activity.getString(R.string.server_client_id)
+        } catch (_: Throwable) {
+            TEST_TOKEN
+        }
+    }
+
     override fun loginWithGoogle(activity: Activity, callback: AuthCallback) {
         // If an intent is still pending, we fails the sign in attemp.
         if (!setCurrCallback(callback)) {
@@ -140,7 +150,7 @@ class FirebaseAuth : Auth {
 
         // Creates the intent to launch the Google Sign-In flow.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(activity.getString(R.string.server_client_id))
+            .requestIdToken(getServerClientId(activity))
             .requestEmail()
             .build()
         val client = GoogleSignIn.getClient(activity, gso)
