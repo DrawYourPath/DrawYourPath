@@ -8,6 +8,7 @@ data class Milestone(
     val description: String,
     val date: LocalDate,
     val drawable: Int,
+    val dateAsString: String = Utils.getDateAsString(date),
 ) {
 
 

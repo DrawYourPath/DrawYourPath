@@ -16,15 +16,17 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.database.MockDatabase
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-// @RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class ChallengeFragmentTest {
 
     // TODO: Rewrite these tests

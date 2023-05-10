@@ -16,7 +16,6 @@
             android:layout_marginTop="5dp">
 
             <TextView
-                android:id="@+id/goals_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -41,18 +40,17 @@
             android:layout_marginTop="5dp">
 
             <TextView
-                android:id="@+id/tournaments_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="@string/tournaments"
+                android:text="@string/trophies"
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tournaments_view"
+                android:id="@+id/trophies_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
@@ -66,18 +64,17 @@
             android:layout_marginTop="5dp">
 
             <TextView
-                android:id="@+id/trophies_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="@string/trophies"
+                android:text="@string/milestones"
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/trophies_view"
+                android:id="@+id/milestones_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"

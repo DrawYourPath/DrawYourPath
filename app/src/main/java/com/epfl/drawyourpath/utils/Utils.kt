@@ -12,6 +12,7 @@ import com.google.mlkit.vision.digitalink.Ink.Point
 import com.google.mlkit.vision.digitalink.Ink.Stroke
 import java.io.ByteArrayOutputStream
 import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.math.cos
@@ -239,6 +240,15 @@ object Utils {
     }
 
     /**
+     * get the date as string with the format dd mm yyyy
+     * @param date the date to transform
+     * @return the formatted string
+     */
+    fun getDateAsString(date: LocalDate): String {
+        return date.format(DateTimeFormatter.ofPattern("dd MM uuuu"))
+    }
+
+    /**
      * Gets the current epoch as a Long.
      * @return The current epoch.
      */
@@ -246,7 +256,7 @@ object Utils {
         return LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
     }
 
-    /*
+    /**
      * Converts a list of LatLng to a stroke.
      * @param coordinates The coordinates we want to convert
      * @return A Stroke object representing the coordinates in planar space.
