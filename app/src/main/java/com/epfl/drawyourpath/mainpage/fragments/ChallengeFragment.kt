@@ -39,7 +39,6 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         setTrophiesView(view.findViewById(R.id.trophies_view))
 
         setMilestonesView(view.findViewById(R.id.milestones_view))
-
     }
 
     /**

@@ -22,7 +22,7 @@ data class Trophy(
                 "Most  Longest  greatest  Tournament  ever  of  all  times ................ : )",
                 "This  is  a  long  description,  really  really  long...... still not long enough.... maybe now it is long enough",
                 LocalDate.ofYearDay(20223, 89),
-                1
+                1,
             ),
         )
     }

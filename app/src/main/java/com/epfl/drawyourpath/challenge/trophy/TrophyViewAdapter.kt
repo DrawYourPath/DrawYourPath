@@ -63,5 +63,4 @@ class TrophyViewAdapter : RecyclerView.Adapter<TrophyViewAdapter.ViewHolder>() {
         this.trophies = trophies
         notifyItemRangeChanged(0, trophies.size)
     }
-
 }

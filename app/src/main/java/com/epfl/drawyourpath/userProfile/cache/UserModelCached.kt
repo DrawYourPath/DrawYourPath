@@ -170,7 +170,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      *
      * @return the [LiveData] of a list of [Trophy]
      */
-    fun getTrophies() : LiveData<List<Trophy>> {
+    fun getTrophies(): LiveData<List<Trophy>> {
         checkCurrentUser()
         return trophies
     }
@@ -180,7 +180,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      *
      * @return the [LiveData] of a list of [Milestone]
      */
-    fun getMilestones() : LiveData<List<Milestone>> {
+    fun getMilestones(): LiveData<List<Milestone>> {
         checkCurrentUser()
         return milestones
     }

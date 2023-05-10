@@ -58,5 +58,4 @@ class MilestoneViewAdapter : RecyclerView.Adapter<MilestoneViewAdapter.ViewHolde
         this.milestones = milestones
         notifyItemRangeChanged(0, milestones.size)
     }
-
 }
