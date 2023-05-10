@@ -10,7 +10,6 @@ data class Milestone(
     val drawable: Int,
 ) {
 
-
     constructor(enum: MilestoneEnum, date: LocalDate) : this (
         Utils.getStringFromALL_CAPS(enum.name),
         enum.description,

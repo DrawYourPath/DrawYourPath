@@ -2,9 +2,9 @@ package com.epfl.drawyourpath.challenge.milestone
 
 import com.epfl.drawyourpath.R
 
-enum class MilestoneEnum (
+enum class MilestoneEnum(
     val description: String,
-    val drawable: Int = R.drawable.achievements
+    val drawable: Int = R.drawable.achievements,
 ) {
     // TODO add more milestones
     THE_FIRST_KILOMETER("run a total of 1 kilometer"),
