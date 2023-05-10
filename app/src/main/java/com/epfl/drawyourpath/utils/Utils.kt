@@ -235,85 +235,6 @@ object Utils {
     }
 
     /**
-     * Helper function to download an get the ML model
-     * @throw an error if there is a problem with the download
-     * @return the ML model as a DigitalInkRecognitionModel
-     */
-    fun downloadModelML(): DigitalInkRecognitionModel {
-        var modelIdentifier: DigitalInkRecognitionModelIdentifier? = null
-        try {
-            modelIdentifier = DigitalInkRecognitionModelIdentifier.fromLanguageTag("zxx-Zsym-x-autodraw")
-        } catch (e: MlKitException) {
-            throw Error("The ML model identifier language tag failed to parse.")
-        }
-        if (modelIdentifier == null) {
-            throw Error("The ML model was not found.")
-        }
-
-        var model = DigitalInkRecognitionModel.builder(modelIdentifier!!).build()
-        val remoteModelManager = RemoteModelManager.getInstance()
-        remoteModelManager.isModelDownloaded(model)
-            .addOnSuccessListener() { is_downloaded: Boolean ->
-                if (!is_downloaded) {
-                    remoteModelManager.download(model, DownloadConditions.Builder().build())
-                        .addOnSuccessListener {
-                            Log.i("Utils", "Model downloaded")
-                        }
-                        .addOnFailureListener { e: Exception ->
-                            throw Error("Fail to download the model.")
-                        }
-                }
-            }
-            .addOnFailureListener { e: Exception ->
-                throw Error("The remote model manager could not verify if the model was downloaded.")
-            }
-        return model
-    }
-
-    /**
-     * Helper function to evaluate the drawing given the model
-     * @param ink the drawing as an Ink
-     * @param model the ML model
-     * @throw an error if there is a problem while recognizing the drawing
-     * @return the result of the ML model as a MLDrawingResults, null if it could not classify
-     */
-    fun recognizeDrawingML(ink: Ink, model: DigitalInkRecognitionModel): MLDrawingClassification? {
-        val recognizer: DigitalInkRecognizer =
-            DigitalInkRecognition.getClient(DigitalInkRecognizerOptions.builder(model).build())
-        var classification: MLDrawingClassification? = null
-        recognizer.recognize(ink)
-            .addOnSuccessListener { result: RecognitionResult ->
-                if (result.candidates.isNotEmpty()) {
-                    // TODO : improve the custom score for display
-                    // The raw score can be positive or negative, and the lower the better
-                    var customScore = result.candidates[0].score!!
-                    classification = MLDrawingClassification(result.candidates[0].text, result.candidates[0].score!!, customScore)
-                }
-            }
-            .addOnFailureListener { e: Exception ->
-                throw Error("Error while recognizing the model.")
-            }
-        return classification
-    }
-
-    data class MLDrawingClassification(
-        /**
-         * the classification of the drawing (String describing the shape)
-         */
-        val classification: String,
-
-        /**
-         * the raw score of the drawing from the model
-         */
-        val rawScore: Float,
-
-        /**
-         * the score of the drawing modified for display
-         */
-        val customScore: Float,
-    )
-
-    /**
      * Gets the current epoch as a Long.
      * @return The current epoch.
      */
@@ -321,7 +242,7 @@ object Utils {
         return LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
     }
 
-    /*
+    /**
      * Converts a list of LatLng to a stroke.
      * @param coordinates The coordinates we want to convert
      * @return A Stroke object representing the coordinates in planar space.
@@ -348,4 +269,91 @@ object Utils {
         val y = ln(tan(lat) + (1 / cos(lat)))
         return Point.create(long.toFloat(), y.toFloat())
     }
+
+    /**
+     * Helper function to download an get the ML model
+     * @return the ML model as a future of DigitalInkRecognitionModel
+     */
+    fun downloadModelML(): CompletableFuture<DigitalInkRecognitionModel> {
+        var result = CompletableFuture<DigitalInkRecognitionModel>()
+        var modelIdentifier: DigitalInkRecognitionModelIdentifier? = null
+        try {
+            modelIdentifier = DigitalInkRecognitionModelIdentifier.fromLanguageTag("zxx-Zsym-x-autodraw")
+        } catch (e: MlKitException) {
+            result.completeExceptionally(Error("The ML model identifier language tag failed to parse."))
+            return result
+        }
+        if (modelIdentifier == null) {
+            result.completeExceptionally(Error("The ML model was not found."))
+            return result
+        }
+
+        var model = DigitalInkRecognitionModel.builder(modelIdentifier!!).build()
+        val remoteModelManager = RemoteModelManager.getInstance()
+        remoteModelManager.isModelDownloaded(model)
+            .addOnSuccessListener() { is_downloaded: Boolean ->
+                if (!is_downloaded) {
+                    remoteModelManager.download(model, DownloadConditions.Builder().build())
+                        .addOnSuccessListener {
+                            Log.i("Utils", "Model downloaded")
+                            result.complete(model)
+                        }
+                        .addOnFailureListener { e: Exception ->
+                            result.completeExceptionally(Error("Fail to download the model."))
+                        }
+                } else {
+                    result.complete(model)
+                }
+            }
+            .addOnFailureListener { e: Exception ->
+                result.completeExceptionally(Error("The remote model manager could not verify if the model was downloaded."))
+            }
+        return result
+    }
+
+    /**
+     * Helper function to evaluate the drawing given the model
+     * @param ink the drawing as an Ink
+     * @param model the ML model
+     * @return the result of the ML model as a future of MLDrawingResults, null if it could not classify
+     */
+    fun recognizeDrawingML(ink: Ink, model: DigitalInkRecognitionModel): CompletableFuture<MLDrawingClassification> {
+        val recognizer: DigitalInkRecognizer =
+            DigitalInkRecognition.getClient(DigitalInkRecognizerOptions.builder(model).build())
+        var classificationML = CompletableFuture<MLDrawingClassification>()
+        recognizer.recognize(ink)
+            .addOnSuccessListener { result: RecognitionResult ->
+                if (result.candidates.isNotEmpty()) {
+                    // TODO : improve the custom score for display
+                    // The raw score can be positive or negative, and the lower the better
+                    var customScore = result.candidates[0].score!!
+                    classificationML.complete(
+                        MLDrawingClassification(result.candidates[0].text, result.candidates[0].score!!, customScore)
+                    )
+                } else {
+                    classificationML.complete(null)
+                }
+            }
+            .addOnFailureListener { e: Exception ->
+                classificationML.completeExceptionally(Error("Error while recognizing the model."))
+            }
+        return classificationML
+    }
+
+    data class MLDrawingClassification(
+        /**
+         * the classification of the drawing (String describing the shape)
+         */
+        val classification: String,
+
+        /**
+         * the raw score of the drawing from the model
+         */
+        val rawScore: Float,
+
+        /**
+         * the score of the drawing modified for display
+         */
+        val customScore: Float,
+    )
 }
