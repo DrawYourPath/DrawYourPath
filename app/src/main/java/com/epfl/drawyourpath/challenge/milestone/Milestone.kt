@@ -17,4 +17,8 @@ data class Milestone(
         date,
         enum.drawable,
     )
+
+    companion object {
+        val sample = MilestoneEnum.values().toList().map { Milestone(it, LocalDate.ofYearDay(2023, 105)) }
+    }
 }
