@@ -168,6 +168,15 @@ object Utils {
     }
 
     /**
+     * transform ALL_CAPS naming convention to a All caps
+     * @param ALL_CAPS the string to transform
+     * @return the formatted string
+     */
+    fun getStringFromALL_CAPS(ALL_CAPS: String): String {
+        return ALL_CAPS.replace("_", " ").lowercase().also { it.firstOrNull()?.uppercaseChar() }
+    }
+
+    /**
      * Get current date and time in epoch seconds
      * @return current date and time in epoch seconds
      */

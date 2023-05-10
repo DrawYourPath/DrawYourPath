@@ -120,8 +120,8 @@ class DailyGoalViewAdapter(
         val goal = getGoalToDouble(dailyGoal, position)
 
         viewHolder.progressText.text = getProgressText(position, context).format(currentProgress, goal)
-        viewHolder.progressBar.max = goal.toInt()
-        viewHolder.progressBar.progress = min(currentProgress.toInt(), goal.toInt())
+        viewHolder.progressBar.max = (goal * 100).toInt()
+        viewHolder.progressBar.progress = min((currentProgress * 100).toInt(), (goal * 100).toInt())
     }
 
     /**
