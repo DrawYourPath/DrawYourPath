@@ -11,7 +11,6 @@ data class Milestone(
     val dateAsString: String = Utils.getDateAsString(date),
 ) {
 
-
     constructor(enum: MilestoneEnum, date: LocalDate) : this (
         Utils.getStringFromALL_CAPS(enum.name),
         enum.description,
