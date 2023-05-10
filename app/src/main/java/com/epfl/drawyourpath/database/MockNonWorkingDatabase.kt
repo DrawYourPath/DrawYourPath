@@ -1,10 +1,10 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import java.util.concurrent.CompletableFuture
 
 /**

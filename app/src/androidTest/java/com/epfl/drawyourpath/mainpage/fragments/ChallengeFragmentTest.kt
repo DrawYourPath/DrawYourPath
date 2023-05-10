@@ -17,8 +17,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.database.MockDatabase
 import org.junit.Rule
 import org.junit.Test
 import java.util.*
