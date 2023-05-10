@@ -7,6 +7,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import com.epfl.drawyourpath.database.UserData
@@ -14,7 +15,6 @@ import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserProfile
-import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*

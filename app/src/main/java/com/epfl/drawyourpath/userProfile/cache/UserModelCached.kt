@@ -8,12 +8,12 @@ import androidx.lifecycle.*
 import androidx.room.Room
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.UserProfile
-import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
-import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
 import com.epfl.drawyourpath.utils.Utils
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture

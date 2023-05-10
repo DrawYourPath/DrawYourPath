@@ -1,8 +1,8 @@
 package com.epfl.drawyourpath.database
 
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.concurrent.CompletableFuture
