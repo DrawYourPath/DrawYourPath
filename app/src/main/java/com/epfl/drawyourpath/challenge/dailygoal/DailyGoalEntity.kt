@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.userProfile.dailygoal
+package com.epfl.drawyourpath.challenge.dailygoal
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

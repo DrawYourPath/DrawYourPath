@@ -6,7 +6,7 @@ import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database

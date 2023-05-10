@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.userProfile.dailygoal
+package com.epfl.drawyourpath.challenge.dailygoal
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

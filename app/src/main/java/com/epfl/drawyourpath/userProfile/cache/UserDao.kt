@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.epfl.drawyourpath.path.cache.PointsEntity
 import com.epfl.drawyourpath.path.cache.RunEntity
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
 
 @Dao
 interface UserDao {

@@ -1,6 +1,6 @@
 package com.epfl.drawyourpath.challenge
 
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 
 /**
  * Helper object to compute all kind of statistics.

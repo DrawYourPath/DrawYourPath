@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.challenge
+package com.epfl.drawyourpath.challenge.dailygoal
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,7 +11,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.lang.Integer.min
 import java.util.concurrent.CompletableFuture
 
