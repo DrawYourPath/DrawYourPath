@@ -15,13 +15,13 @@ data class Trophy(
 
     companion object {
         val sample = listOf(
-            Trophy("Star Shape", "draw a star with 5 branch", LocalDate.ofYearDay(20223, 92), 1),
-            Trophy("Discover the earth ", "draw the earth", LocalDate.ofYearDay(20223, 23), 3),
-            Trophy("ShapeSpear", "draw a spear on the map", LocalDate.ofYearDay(20223, 35), 2),
+            Trophy("Star Shape", "draw a star with 5 branches", LocalDate.ofYearDay(2023, 92), 1),
+            Trophy("Discover the earth ", "draw the earth", LocalDate.ofYearDay(2023, 23), 3),
+            Trophy("ShapeSpear", "draw a spear on the map", LocalDate.ofYearDay(2023, 35), 2),
             Trophy(
                 "Most  Longest  greatest  Tournament  ever  of  all  times ................ : )",
                 "This  is  a  long  description,  really  really  long...... still not long enough.... maybe now it is long enough",
-                LocalDate.ofYearDay(20223, 89),
+                LocalDate.ofYearDay(2023, 89),
                 1,
             ),
         )

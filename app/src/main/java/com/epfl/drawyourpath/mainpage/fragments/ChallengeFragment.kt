@@ -81,7 +81,7 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         user.getMilestones().observe(viewLifecycleOwner) {
             milestoneAdapter.update(it)
         }
-        milestoneView.layoutManager = GridLayoutManager(context, 3)
+        milestoneView.layoutManager = GridLayoutManager(context, 2)
         milestoneView.adapter = milestoneAdapter
     }
 
