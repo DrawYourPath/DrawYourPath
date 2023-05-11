@@ -12,7 +12,7 @@ object DigitalInk {
      * @return the ML model as a future of DigitalInkRecognitionModel
      */
     fun downloadModelML(
-        modelIdentifier: DigitalInkRecognitionModelIdentifier = DigitalInkRecognitionModelIdentifier.AUTODRAW
+        modelIdentifier: DigitalInkRecognitionModelIdentifier = DigitalInkRecognitionModelIdentifier.AUTODRAW,
     ): CompletableFuture<DigitalInkRecognitionModel> {
         var result = CompletableFuture<DigitalInkRecognitionModel>()
 
