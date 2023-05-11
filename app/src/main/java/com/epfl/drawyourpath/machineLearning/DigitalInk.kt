@@ -23,7 +23,7 @@ object DigitalInk {
                 if (!is_downloaded) {
                     remoteModelManager.download(model, DownloadConditions.Builder().build())
                         .addOnSuccessListener {
-                            Log.i("Utils", "Model downloaded")
+                            Log.i("DigitalInk", "Model downloaded")
                             result.complete(model)
                         }
                         .addOnFailureListener { e: Exception ->
