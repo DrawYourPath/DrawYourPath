@@ -4,14 +4,10 @@ import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
 import com.google.android.gms.maps.model.LatLng
-import com.google.mlkit.common.MlKitException
-import com.google.mlkit.common.model.DownloadConditions
-import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.vision.digitalink.*
 import com.google.mlkit.vision.digitalink.Ink.Point
 import com.google.mlkit.vision.digitalink.Ink.Stroke
@@ -269,91 +265,4 @@ object Utils {
         val y = ln(tan(lat) + (1 / cos(lat)))
         return Point.create(long.toFloat(), y.toFloat())
     }
-
-    /**
-     * Helper function to download an get the ML model
-     * @return the ML model as a future of DigitalInkRecognitionModel
-     */
-    fun downloadModelML(): CompletableFuture<DigitalInkRecognitionModel> {
-        var result = CompletableFuture<DigitalInkRecognitionModel>()
-        var modelIdentifier: DigitalInkRecognitionModelIdentifier? = null
-        try {
-            modelIdentifier = DigitalInkRecognitionModelIdentifier.fromLanguageTag("zxx-Zsym-x-autodraw")
-        } catch (e: MlKitException) {
-            result.completeExceptionally(Error("The ML model identifier language tag failed to parse."))
-            return result
-        }
-        if (modelIdentifier == null) {
-            result.completeExceptionally(Error("The ML model was not found."))
-            return result
-        }
-
-        var model = DigitalInkRecognitionModel.builder(modelIdentifier!!).build()
-        val remoteModelManager = RemoteModelManager.getInstance()
-        remoteModelManager.isModelDownloaded(model)
-            .addOnSuccessListener() { is_downloaded: Boolean ->
-                if (!is_downloaded) {
-                    remoteModelManager.download(model, DownloadConditions.Builder().build())
-                        .addOnSuccessListener {
-                            Log.i("Utils", "Model downloaded")
-                            result.complete(model)
-                        }
-                        .addOnFailureListener { e: Exception ->
-                            result.completeExceptionally(Error("Fail to download the model."))
-                        }
-                } else {
-                    result.complete(model)
-                }
-            }
-            .addOnFailureListener { e: Exception ->
-                result.completeExceptionally(Error("The remote model manager could not verify if the model was downloaded."))
-            }
-        return result
-    }
-
-    /**
-     * Helper function to evaluate the drawing given the model
-     * @param ink the drawing as an Ink
-     * @param model the ML model
-     * @return the result of the ML model as a future of MLDrawingResults, null if it could not classify
-     */
-    fun recognizeDrawingML(ink: Ink, model: DigitalInkRecognitionModel): CompletableFuture<MLDrawingClassification> {
-        val recognizer: DigitalInkRecognizer =
-            DigitalInkRecognition.getClient(DigitalInkRecognizerOptions.builder(model).build())
-        var classificationML = CompletableFuture<MLDrawingClassification>()
-        recognizer.recognize(ink)
-            .addOnSuccessListener { result: RecognitionResult ->
-                if (result.candidates.isNotEmpty()) {
-                    // TODO : improve the custom score for display
-                    // The raw score can be positive or negative, and the lower the better
-                    var customScore = result.candidates[0].score!!
-                    classificationML.complete(
-                        MLDrawingClassification(result.candidates[0].text, result.candidates[0].score!!, customScore)
-                    )
-                } else {
-                    classificationML.complete(null)
-                }
-            }
-            .addOnFailureListener { e: Exception ->
-                classificationML.completeExceptionally(Error("Error while recognizing the model."))
-            }
-        return classificationML
-    }
-
-    data class MLDrawingClassification(
-        /**
-         * the classification of the drawing (String describing the shape)
-         */
-        val classification: String,
-
-        /**
-         * the raw score of the drawing from the model
-         */
-        val rawScore: Float,
-
-        /**
-         * the score of the drawing modified for display
-         */
-        val customScore: Float,
-    )
 }
