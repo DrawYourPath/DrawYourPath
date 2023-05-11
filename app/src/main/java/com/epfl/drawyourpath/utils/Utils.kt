@@ -8,7 +8,6 @@ import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
 import com.google.android.gms.maps.model.LatLng
-import com.google.mlkit.vision.digitalink.*
 import com.google.mlkit.vision.digitalink.Ink.Point
 import com.google.mlkit.vision.digitalink.Ink.Stroke
 import java.io.ByteArrayOutputStream
