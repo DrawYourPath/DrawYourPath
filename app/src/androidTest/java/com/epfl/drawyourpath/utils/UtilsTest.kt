@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.utils
 
-
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
