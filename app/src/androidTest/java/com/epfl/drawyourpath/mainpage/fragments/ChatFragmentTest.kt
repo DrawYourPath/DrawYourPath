@@ -71,5 +71,3 @@ class ChatFragmentTest {
             .check(matches(hasDescendant(withId(R.id.chatTitleTextView))))
     }
 }
-
-

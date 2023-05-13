@@ -1,8 +1,5 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
-
-
-
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -10,8 +7,6 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.chat.Chat
-import com.epfl.drawyourpath.mainpage.fragments.helperClasses.MessagesAdapter
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -23,7 +18,7 @@ class ChatOpenFragmentTest {
     fun chatOpenFragmentIsDisplayed() {
         // Launch the ChatOpenFragment in a container
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // Verify if the ChatOpenFragment is displayed
@@ -35,7 +30,7 @@ class ChatOpenFragmentTest {
     fun messagesRecyclerViewIsDisplayed() {
         // Launch the ChatOpenFragment in a container
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // Verify if the messages RecyclerView is displayed
@@ -48,7 +43,7 @@ class ChatOpenFragmentTest {
     fun testTypingMessageUpdatesMessageEditText() {
         // Launch the ChatOpenFragment in a container
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // Type a message
@@ -64,7 +59,7 @@ class ChatOpenFragmentTest {
     fun testSendingMessageAddsMessageToRecyclerView() {
         // Launch the ChatOpenFragment in a container
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // Type a message
@@ -84,7 +79,7 @@ class ChatOpenFragmentTest {
     fun messageEditTextIsClearedAfterSendingMessage() {
         // Launch the ChatOpenFragment in a container
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // Type a message and send it
