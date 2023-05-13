@@ -55,10 +55,4 @@ class ChatFragmentTest {
             .perform(RecyclerViewActions.scrollToPosition<ChatAdapter.ChatViewHolder>(0))
             .check(matches(hasDescendant(withId(R.id.chatTitleTextView))))
     }
-
-
-
-
-
 }
-

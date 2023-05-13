@@ -1,8 +1,5 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
-
-
-
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -10,8 +7,6 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.chat.Chat
-import com.epfl.drawyourpath.mainpage.fragments.helperClasses.MessagesAdapter
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -21,7 +16,7 @@ class ChatOpenFragmentTest {
     @Test
     fun chatOpenFragmentIsDisplayed() {
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.chat_open_fragment)).check(matches(isDisplayed()))
@@ -30,7 +25,7 @@ class ChatOpenFragmentTest {
     @Test
     fun messagesRecyclerViewIsDisplayed() {
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.messagesRecyclerView))
@@ -40,7 +35,7 @@ class ChatOpenFragmentTest {
     @Test
     fun testTypingMessageUpdatesMessageEditText() {
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // Type a message
@@ -54,7 +49,7 @@ class ChatOpenFragmentTest {
     @Test
     fun testSendingMessageAddsMessageToRecyclerView() {
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         // Type a message
@@ -72,7 +67,7 @@ class ChatOpenFragmentTest {
     @Test
     fun messageEditTextIsClearedAfterSendingMessage() {
         val scenario = launchFragmentInContainer<ChatOpenFragment>(
-            themeResId = R.style.Theme_Bootcamp
+            themeResId = R.style.Theme_Bootcamp,
         )
 
         onView(withId(R.id.messageEditText)).perform(typeText("Test message"), closeSoftKeyboard())
@@ -81,4 +76,3 @@ class ChatOpenFragmentTest {
         onView(withId(R.id.messageEditText)).check(matches(withText("")))
     }
 }
-
