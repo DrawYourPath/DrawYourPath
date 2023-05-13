@@ -22,6 +22,8 @@ class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_
     private lateinit var chatAdapter: ChatAdapter
     private val chatList = mutableListOf<ChatPreview>()
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
