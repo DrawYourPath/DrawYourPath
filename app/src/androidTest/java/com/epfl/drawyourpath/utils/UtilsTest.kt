@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.utils
 
+import com.epfl.drawyourpath.utils.Utils.coordinatesToBitmap
 import com.google.android.gms.maps.model.LatLng
 import com.google.mlkit.vision.digitalink.Ink
 import org.hamcrest.MatcherAssert.assertThat
@@ -111,5 +112,14 @@ class UtilsTest {
             assertThat(it.first.x.toDouble(), `is`(closeTo(it.second.x.toDouble(), 0.001)))
             assertThat(it.first.y.toDouble(), `is`(closeTo(it.second.y.toDouble(), 0.001)))
         }
+    }
+
+    @Test
+    fun coordinatesToBitmapDoesNotThrow() {
+        coordinatesToBitmap(listOf(
+            LatLng(1.0, 1.0),
+            LatLng(2.0, 2.0),
+            LatLng(3.0, 3.0),
+        ))
     }
 }

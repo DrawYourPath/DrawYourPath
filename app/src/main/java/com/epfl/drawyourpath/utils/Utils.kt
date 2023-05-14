@@ -332,6 +332,8 @@ object Utils {
         }
     }
 
+    // Defaults paint used to draw strokes.
+    // Uses anti aliasing and draws rounded black strokes of width 2.
     private val defaultPaint = Paint(Paint.ANTI_ALIAS_FLAG).also {
         it.color = Color.BLACK
         it.strokeWidth = 2f
@@ -353,7 +355,7 @@ object Utils {
 
             // Associates idx (n) to (n + 1)
             points.zip(points.drop(1)).forEach {
-                canvas.drawLine(it.first.x * size, it.first.y * size, it.second.x, it.second.y, paint)
+                canvas.drawLine(it.first.x * size, it.first.y * size, it.second.x * size, it.second.y * size, paint)
             }
         }
 
