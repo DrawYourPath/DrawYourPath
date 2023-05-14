@@ -125,7 +125,7 @@ class RunTest {
         // That means we need to run for (distance / speed) seconds
         val startTime = 0L
         val endTime = (path.getDistance() / speed).toLong()
-        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = endTime-startTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = endTime - startTime)
 
         val cal = met * 70 * run.getDuration() / 3600
         assertEquals(cal, run.getCalories().toDouble(), cal / 50)
@@ -158,7 +158,7 @@ class RunTest {
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 3000
-        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = endTime-startTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = endTime - startTime)
         // check that path is handled correctly
         assertEquals(2, run.getPath().size())
         assertEquals(points, run.getPath().getPoints())

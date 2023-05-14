@@ -33,9 +33,9 @@ class PathDrawingCurrentPerformanceFragment(private val run: Run? = null) : Frag
         pathDrawingModel.run.observe(viewLifecycleOwner) {
             textDistance.text = getStringDistance(run?.getDistance() ?: it.getDistance())
             textTime.text = getStringDuration(run?.getDuration() ?: it.getDuration())
-            if((run?.getDuration() ?: it.getDuration()) == 0L){
+            if ((run?.getDuration() ?: it.getDuration()) == 0L) {
                 textSpeed.text = getStringSpeed(0.0)
-            }else{
+            } else {
                 textSpeed.text = getStringSpeed(run?.getAverageSpeed() ?: it.getAverageSpeed())
             }
         }

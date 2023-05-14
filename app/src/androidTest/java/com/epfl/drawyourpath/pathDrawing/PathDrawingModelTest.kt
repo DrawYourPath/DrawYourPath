@@ -40,7 +40,7 @@ class PathDrawingModelTest {
      * Check that the duration, endTime and start time (the duration during the pause is not take into account)
      */
     @Test
-    fun checkDurationDuringDrawing(){
+    fun checkDurationDuringDrawing() {
         val points = listOf(LatLng(46.52394457410412, 6.569600699830854), LatLng(46.52527331609736, 6.5719181283056285))
         val points2 = listOf(LatLng(47.52394457410412, 7.569600699830854), LatLng(47.52527331609736, 7.5719181283056285))
         val pathDrawingModel = PathDrawingModel()

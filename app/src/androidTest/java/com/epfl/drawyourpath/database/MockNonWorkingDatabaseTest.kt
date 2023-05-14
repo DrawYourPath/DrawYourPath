@@ -44,7 +44,7 @@ class MockNonWorkingDatabaseTest {
         mock.modifyChatTextMessage("", 0L, "").assertError(Unit)
         mock.setUserData("", UserData()).assertError(Unit)
         mock.addRunToHistory("", Run(Path(), 1, 9, 10)).assertError(Unit)
-        mock.removeRunFromHistory("", Run(Path(), 1, 9,10)).assertError(Unit)
+        mock.removeRunFromHistory("", Run(Path(), 1, 9, 10)).assertError(Unit)
         mock.addTournament(mockTournament).assertError(Unit)
         mock.removeTournament("").assertError(Unit)
         mock.addUserToTournament("", "").assertError(Unit)

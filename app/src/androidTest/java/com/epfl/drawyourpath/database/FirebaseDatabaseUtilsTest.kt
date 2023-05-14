@@ -3,7 +3,6 @@ package com.epfl.drawyourpath.database
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
-import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
@@ -187,7 +186,7 @@ class FirebaseDatabaseUtilsTest {
         Assert.assertEquals(FirebaseDatabaseUtils.transformRun(null), null)
     }
 
-    //TODO: uncomment his method when the run have been refactored
+    // TODO: uncomment his method when the run have been refactored
     /*@Test
     fun transformRunsReturnExpectedRuns() {
         val runs = listOf(
@@ -247,7 +246,7 @@ class FirebaseDatabaseUtilsTest {
         assertThat(message.senderId, `is`(transMessage.senderId))
     }
 
-    //TODO: uncomment this method when the run have been refactored in the database
+    // TODO: uncomment this method when the run have been refactored in the database
     /*@Test
     fun transformRunMessageReturnsExpectedData() {
         val message = Message(
