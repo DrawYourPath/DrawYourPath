@@ -105,9 +105,9 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
     private fun setupDrawingOnMap(map: GoogleMap) {
         pathDrawingModel.pointsSection.observe(viewLifecycleOwner) { listSection ->
             if (listSection.isNotEmpty()) {
-                for(section in listSection){
+                for (section in listSection) {
                     val polyline = map.addPolyline(PolylineOptions().clickable(false))
-                    if(section.isNotEmpty() && section.size > polyline.points.size){
+                    if (section.isNotEmpty() && section.size > polyline.points.size) {
                         polyline.points = section
                     }
                 }
@@ -121,7 +121,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param path will be drawn on the map
      */
     private fun drawStaticPathOnMap(map: GoogleMap, path: Path) {
-        for(polyline in path.getPolyline()){
+        for (polyline in path.getPolyline()) {
             map.addPolyline(polyline)
         }
     }

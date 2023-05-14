@@ -31,7 +31,7 @@ class RunTest {
         // create a run with a known path
         val point1 = LatLng(1.0, 2.0)
         val point2 = LatLng(3.0, 4.0)
-        val points = listOf( listOf(point1, point2))
+        val points = listOf(listOf(point1, point2))
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 3000

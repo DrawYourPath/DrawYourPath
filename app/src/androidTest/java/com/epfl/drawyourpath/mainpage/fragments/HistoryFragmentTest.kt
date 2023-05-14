@@ -43,7 +43,7 @@ class HistoryFragmentTest {
 
         val point3 = LatLng(0.0, 0.0)
         val point4 = LatLng(0.05, 0.0)
-        val points2 = listOf( listOf(point3, point4))
+        val points2 = listOf(listOf(point3, point4))
         val path2 = Path(points2)
         val startTime2 = 1683226963L
         val endTime2 = startTime + 10000

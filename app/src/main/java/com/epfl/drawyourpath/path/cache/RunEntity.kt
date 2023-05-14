@@ -3,10 +3,7 @@ package com.epfl.drawyourpath.path.cache
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import com.epfl.drawyourpath.path.Path
-import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserEntity
-import com.google.android.gms.maps.model.LatLng
 
 @Entity(
     tableName = "Run",
@@ -22,7 +19,7 @@ data class RunEntity(
 
     val sync: Boolean,
 ) {
-    //TODO: will be refactor since the structure of a path/run have changed
+    // TODO: will be refactor since the structure of a path/run have changed
     /*
     companion object {
         /**

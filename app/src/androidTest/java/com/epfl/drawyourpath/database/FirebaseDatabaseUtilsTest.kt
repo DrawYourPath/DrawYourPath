@@ -68,7 +68,7 @@ class FirebaseDatabaseUtilsTest {
 
         val path = mock(DataSnapshot::class.java)
         val pointsSnap = mock(DataSnapshot::class.java)
-        //TODO: refactor this when refactor the run in database
+        // TODO: refactor this when refactor the run in database
         /*val points = run.getPath().getPoints().map {
           mockPoint(it) }
 
@@ -197,7 +197,7 @@ class FirebaseDatabaseUtilsTest {
                             LatLng(1.0, 1.0),
                             LatLng(2.0, 2.0),
                         ),
-                    )
+                    ),
                 ),
                 1000,
                 2000,
@@ -208,7 +208,7 @@ class FirebaseDatabaseUtilsTest {
                         listOf(
                             LatLng(12.0, 12.0),
                             LatLng(22.0, 22.0),
-                        )
+                        ),
                     ),
                 ),
                 4000,
@@ -256,7 +256,7 @@ class FirebaseDatabaseUtilsTest {
                             listOf(
                                 LatLng(1.0, 1.0),
                                 LatLng(2.0, 2.0),
-                            )
+                            ),
                         ),
                     ),
                     1000,

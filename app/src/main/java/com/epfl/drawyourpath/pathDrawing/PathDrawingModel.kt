@@ -100,8 +100,7 @@ class PathDrawingModel : ViewModel() {
                         lastRunUpdate = getCurrentTime()
                     },
                     oldRun.getStartTime(),
-                    getCurrentTime()+1
-                    ,
+                    getCurrentTime() + 1,
                 )
             }
             _run.postValue(resultingRun)

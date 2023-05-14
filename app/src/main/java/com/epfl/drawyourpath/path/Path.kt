@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.path
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.database.Exclude
 import com.google.type.Color
@@ -25,10 +24,10 @@ class Path {
      * @param pointsSections the list of sections that composed the path
      */
     constructor(pointsSections: List<List<LatLng>>) {
-        pointsSections.forEachIndexed{ index, section ->
-            if(index == 0){
+        pointsSections.forEachIndexed { index, section ->
+            if (index == 0) {
                 this.pointsSections[index].addAll(section)
-            }else{
+            } else {
                 this.pointsSections.add(section.toMutableList())
             }
         }
@@ -64,7 +63,7 @@ class Path {
      * @param index of the section that we would like to retrieves the points
      */
     fun getPointsSection(index: Int): List<LatLng> {
-        if(index >= this.pointsSections.size){
+        if (index >= this.pointsSections.size) {
             throw Error("this index is greater than the number of section of this path.")
         }
         return pointsSections[index].toList()
@@ -82,7 +81,7 @@ class Path {
      */
     fun size(): Int {
         var size = 0
-        for(section in this.pointsSections){
+        for (section in this.pointsSections) {
             size += section.size
         }
         return size
@@ -92,8 +91,8 @@ class Path {
      * Return the number of points that composed the section at the given index
      * @param index of the section that we would like to know the number of points
      */
-    fun sizeOfSection(index: Int): Int{
-        if(index >= this.pointsSections.size){
+    fun sizeOfSection(index: Int): Int {
+        if (index >= this.pointsSections.size) {
             throw Error("this index is greater than the number of section of this path.")
         }
         return this.pointsSections[index].size
@@ -115,7 +114,7 @@ class Path {
     @Exclude
     fun getDistance(): Double {
         var distance = 0.0
-        this.pointsSections.forEachIndexed{index, elem ->
+        this.pointsSections.forEachIndexed { index, elem ->
             distance += getDistanceInSection(index)
         }
         return distance
@@ -125,9 +124,9 @@ class Path {
      * function that returns the distance in the section at the given index
      * @param index of the section that we would like to know the distance throw
      */
-    fun getDistanceInSection(index: Int): Double{
+    fun getDistanceInSection(index: Int): Double {
         var distance = 0.00
-        if(index >= this.pointsSections.size){
+        if (index >= this.pointsSections.size) {
             throw Error("this index is greater than the number of section of this path.")
         }
         val section = this.pointsSections[index]
@@ -143,17 +142,18 @@ class Path {
     @Exclude
     fun getPolyline(): List<PolylineOptions> {
         val list = mutableListOf<PolylineOptions>()
-        this.pointsSections.forEachIndexed{ index, _ ->
+        this.pointsSections.forEachIndexed { index, _ ->
             list.add(getPolylineInSection(index))
         }
         return list
     }
+
     /**
      * Return the polyline object representing the path of the section at the given index
      * @param index of the section that we would like to get the polyline object
      */
     fun getPolylineInSection(index: Int): PolylineOptions {
-        if(index >= this.pointsSections.size){
+        if (index >= this.pointsSections.size) {
             throw Error("this index is greater than the number of section of this path.")
         }
         // Create a new PolylineOptions object to define the appearance of the polyline.
