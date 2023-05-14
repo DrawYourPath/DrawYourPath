@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.path
 
 import com.google.firebase.database.Exclude
-import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -18,7 +17,7 @@ class Run(
     // val user: User,             //TODO add later
     private val path: Path, // represents the path taken by the user
     private val startTime: Long, // the timestamps of the run
-    private var duration: Long, //represent the duration of the run(in seconds)
+    private var duration: Long, // represent the duration of the run(in seconds)
     private val endTime: Long,
 ) {
 

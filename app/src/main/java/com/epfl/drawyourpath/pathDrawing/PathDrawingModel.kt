@@ -74,7 +74,7 @@ class PathDrawingModel : ViewModel() {
                     } else {
                         oldRun.getDuration()
                     },
-                    endTime = getCurrentDateTimeInEpochSeconds()
+                    endTime = getCurrentDateTimeInEpochSeconds(),
                 )
             }
             _run.postValue(resultingRun)
@@ -103,7 +103,7 @@ class PathDrawingModel : ViewModel() {
                     },
                     startTime = oldRun.getStartTime(),
                     duration = oldRun.getDuration(),
-                    endTime = getCurrentDateTimeInEpochSeconds()
+                    endTime = getCurrentDateTimeInEpochSeconds(),
                 )
             }
             _run.postValue(resultingRun)

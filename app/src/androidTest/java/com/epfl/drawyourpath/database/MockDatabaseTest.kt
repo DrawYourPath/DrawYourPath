@@ -479,7 +479,7 @@ class MockDatabaseTest {
         // Add a run with starting after the one in database
         val newRun1StartTime = 10 + 1e7.toLong()
         val newRun1 = Run(
-            Path(listOf( listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
             startTime = newRun1StartTime,
             duration = 2e6.toLong(),
             endTime = newRun1StartTime + 2e6.toLong(),
@@ -496,7 +496,7 @@ class MockDatabaseTest {
         // Add a run with starting time before the one in database
         val newRun2StartTime = 10 - 1e7.toLong()
         val newRun2 = Run(
-            Path(listOf( listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
             startTime = newRun2StartTime,
             duration = 2e6.toLong(),
             endTime = newRun2StartTime + 2e6.toLong(),
@@ -552,7 +552,7 @@ class MockDatabaseTest {
         val database = MockDatabase()
         val nonExistingStartingTime = 10 + 1e7.toLong()
         val nonExistingRun = Run(
-            Path(listOf( listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
             startTime = nonExistingStartingTime,
             duration = 2e6.toLong(),
             endTime = nonExistingStartingTime + 2e6.toLong(),
