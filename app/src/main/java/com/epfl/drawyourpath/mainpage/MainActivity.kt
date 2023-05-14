@@ -144,11 +144,7 @@ class MainActivity : AppCompatActivity() {
         drawerNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 // Display profile fragment
-                R.id.profile_menu_item -> replaceFragment<ProfileFragment>(
-                    bundleOf(
-                        PROFILE_USER_ID_KEY to userCached.getUserId(),
-                    ),
-                )
+                R.id.profile_menu_item -> openProfileForUser(userCached.getUserId() ?: "")
 
                 // Display stats fragment
                 R.id.stats_menu_item -> replaceFragment<StatsFragment>()
@@ -163,6 +159,14 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.close()
             true
         }
+    }
+
+    fun openProfileForUser(userId: String) {
+        replaceFragment<ProfileFragment>(
+            bundleOf(
+                PROFILE_USER_ID_KEY to userId,
+            ),
+        )
     }
 
     private fun setupBottomNavigationView() {

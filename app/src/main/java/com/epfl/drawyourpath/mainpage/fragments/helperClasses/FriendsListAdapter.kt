@@ -22,7 +22,10 @@ data class Friend(
  * The Friend parameter corresponds to the user that will be displayed in the friend list
  * The Boolean parameter corresponds to weather that user is currently a friend or not
  */
-class FriendsListAdapter(private val onAddOrRemoveFriendClicked: (Friend, Boolean) -> Unit) :
+class FriendsListAdapter(
+    private val onAddOrRemoveFriendClicked: (Friend, Boolean) -> Unit,
+    private val onFriendClicked: (Friend) -> Unit,
+) :
     RecyclerView.Adapter<FriendsListAdapter.FriendViewHolder>() {
 
     // This is the list of friends that the adapter will display.
@@ -39,6 +42,11 @@ class FriendsListAdapter(private val onAddOrRemoveFriendClicked: (Friend, Boolea
          */
         fun bind(friend: Friend) {
             name.text = friend.name
+
+            name.setOnClickListener {
+                onFriendClicked(friend)
+            }
+
             if (friend.profileImage != null) {
                 profileImage.setImageBitmap(friend.profileImage)
             } else {

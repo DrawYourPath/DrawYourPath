@@ -63,10 +63,14 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
     private fun initializeRecyclerView(view: View) {
         val recyclerView: RecyclerView = view.findViewById(R.id.friends_list)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        friendsListAdapter = FriendsListAdapter { friend, isFriend ->
+        friendsListAdapter = FriendsListAdapter({ friend, isFriend ->
             viewModel.addOrRemoveFriend(friend, isFriend)
-        }
+        }, { onFriendClicked(it) })
         recyclerView.adapter = friendsListAdapter
+    }
+
+    private fun onFriendClicked(friend: Friend) {
+        (activity as MainActivity?)?.openProfileForUser(friend.id)
     }
 
     /**
