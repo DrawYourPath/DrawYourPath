@@ -14,59 +14,57 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class FirebaseKeys {
-    companion object {
-        // Database root entries
-        const val USERS_ROOT = "users"
-        const val USERNAMES_ROOT = "usernameToUid"
-        const val TOURNAMENTS_ROOT = "tournaments"
-        const val CHATS_ROOT = "chats"
-        const val CHATS_MEMBERS_ROOT = "chatsMembers"
-        const val CHATS_MESSAGES_ROOT = "chatsMessages"
+object FirebaseKeys {
+    // Database root entries
+    const val USERS_ROOT = "users"
+    const val USERNAMES_ROOT = "usernameToUid"
+    const val TOURNAMENTS_ROOT = "tournaments"
+    const val CHATS_ROOT = "chats"
+    const val CHATS_MEMBERS_ROOT = "chatsMembers"
+    const val CHATS_MESSAGES_ROOT = "chatsMessages"
 
-        // User keys top level
-        const val PROFILE = "profile"
-        const val GOALS = "goals"
-        const val RUN_HISTORY = "runs"
-        const val FRIENDS = "friends"
-        const val DAILY_GOALS = "dailyGoals"
-        const val USER_TOURNAMENTS = "tournaments"
-        const val USER_CHATS = "chats"
+    // User keys top level
+    const val PROFILE = "profile"
+    const val GOALS = "goals"
+    const val RUN_HISTORY = "runs"
+    const val FRIENDS = "friends"
+    const val DAILY_GOALS = "dailyGoals"
+    const val USER_TOURNAMENTS = "tournaments"
+    const val USER_CHATS = "chats"
 
-        // User profile keys sublevel
-        const val USERNAME = "username"
-        const val FIRSTNAME = "firstname"
-        const val SURNAME = "surname"
-        const val BIRTHDATE = "birth"
-        const val EMAIL = "email"
-        const val PICTURE = "picture"
+    // User profile keys sublevel
+    const val USERNAME = "username"
+    const val FIRSTNAME = "firstname"
+    const val SURNAME = "surname"
+    const val BIRTHDATE = "birth"
+    const val EMAIL = "email"
+    const val PICTURE = "picture"
 
-        // User goal keys sublevel
-        const val GOAL_PATH = "paths"
-        const val GOAL_DISTANCE = "distance"
-        const val GOAL_TIME = "time"
+    // User goal keys sublevel
+    const val GOAL_PATH = "paths"
+    const val GOAL_DISTANCE = "distance"
+    const val GOAL_TIME = "time"
 
-        // Goals history list sublevels
-        const val GOAL_HISTORY_EXPECTED_DISTANCE = "expectedDistance"
-        const val GOAL_HISTORY_EXPECTED_PATHS = "expectedPaths"
-        const val GOAL_HISTORY_EXPECTED_TIME = "expectedTime"
-        const val GOAL_HISTORY_DISTANCE = "distance"
-        const val GOAL_HISTORY_PATHS = "paths"
-        const val GOAL_HISTORY_TIME = "time"
+    // Goals history list sublevels
+    const val GOAL_HISTORY_EXPECTED_DISTANCE = "expectedDistance"
+    const val GOAL_HISTORY_EXPECTED_PATHS = "expectedPaths"
+    const val GOAL_HISTORY_EXPECTED_TIME = "expectedTime"
+    const val GOAL_HISTORY_DISTANCE = "distance"
+    const val GOAL_HISTORY_PATHS = "paths"
+    const val GOAL_HISTORY_TIME = "time"
 
-        // Tournaments keys
-        const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+    // Tournaments keys
+    const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
 
-        // Chats keys top level
-        const val CHAT_TITLE = "title"
-        const val CHAT_LAST_MESSAGE = "lastMessage"
+    // Chats keys top level
+    const val CHAT_TITLE = "title"
+    const val CHAT_LAST_MESSAGE = "lastMessage"
 
-        // Chats messages keys to level
-        const val CHAT_MESSAGE_SENDER = "sender"
-        const val CHAT_MESSAGE_CONTENT_TEXT = "text"
-        const val CHAT_MESSAGE_CONTENT_IMAGE = "image"
-        const val CHAT_MESSAGE_CONTENT_RUN = "run"
-    }
+    // Chats messages keys to level
+    const val CHAT_MESSAGE_SENDER = "sender"
+    const val CHAT_MESSAGE_CONTENT_TEXT = "text"
+    const val CHAT_MESSAGE_CONTENT_IMAGE = "image"
+    const val CHAT_MESSAGE_CONTENT_RUN = "run"
 }
 
 /**

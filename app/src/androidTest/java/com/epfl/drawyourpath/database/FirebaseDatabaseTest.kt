@@ -8,7 +8,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThrows
+import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
 import java.util.concurrent.Executor
@@ -111,6 +111,19 @@ class FirebaseDatabaseTest {
         `when`(database.get()).thenReturn(mockTask(snapshot, null))
         `when`(database.updateChildren(any())).thenReturn(mockTask(null, null))
         `when`(database.removeValue()).thenReturn(mockTask(null, null))
+        return database
+    }
+
+    private fun mockDatabaseWithUsernameMapping(username: String, uid: String, exception: Exception? = null): DatabaseReference {
+        val database = mock(DatabaseReference::class.java)
+        val mapField = mock(DatabaseReference::class.java)
+        val usernameField = mock(DatabaseReference::class.java)
+        val uidSnapshot = mockSnapshot(uid)
+
+        `when`(database.child(FirebaseKeys.USERNAMES_ROOT)).thenReturn(mapField)
+        `when`(mapField.child(username)).thenReturn(usernameField)
+        `when`(usernameField.get()).thenReturn(mockTask(uidSnapshot, exception))
+
         return database
     }
 
@@ -287,5 +300,70 @@ class FirebaseDatabaseTest {
 
         assertThat(data.birthDate, `is`(userData.birthDate))
         assertThat(data.username, `is`(userData.username))
+    }
+
+    @Test
+    fun getUserIdFromUsernameReturnsCorrespondingId() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid)
+        val db = FirebaseDatabase(dbRef)
+
+        val dbuid = db.getUserIdFromUsername(username).get()
+
+        assertEquals(uid, dbuid)
+    }
+
+    @Test
+    fun getUserIdFromUsernameThrowsWhenUserDoesNotExist() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid)
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.getUserIdFromUsername("otheruname").get()
+        }
+    }
+
+    @Test
+    fun getUserIdFromUsernameForwardsExceptionFromDatabase() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid, Exception("Foobar"))
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.getUserIdFromUsername("otheruname").get()
+        }
+    }
+
+    @Test
+    fun isUsernameAvailableReturnsFalseWhenUnameIsTaken() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid)
+        val db = FirebaseDatabase(dbRef)
+
+        val dbUname = db.isUsernameAvailable(username).get()
+
+        assertFalse(dbUname)
+    }
+
+    @Test
+    fun setUsernameThrowsWhenUsernameIstaken() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid)
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.setUsername(uid, username).get()
+        }
     }
 }
