@@ -45,8 +45,4 @@ data class DailyGoal(
         entity.nbOfPathsProgress,
         LocalDate.ofEpochDay(entity.date),
     )
-
-    companion object {
-        val TEST_SAMPLE = DailyGoal(23.0, 86.0, 2, 17.6543, 39.01247, 1)
-    }
 }

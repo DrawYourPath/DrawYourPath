@@ -32,8 +32,6 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        checkTest()
-
         setDailyGoalView(view.findViewById(R.id.goals_view))
 
         setTrophiesView(view.findViewById(R.id.trophies_view))
@@ -83,18 +81,6 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         }
         milestoneView.layoutManager = GridLayoutManager(context, 2)
         milestoneView.adapter = milestoneAdapter
-    }
-
-    /**
-     * check if there is a test. If so then add a today daily goal
-     */
-    private fun checkTest() {
-        if (arguments?.getBoolean(TEST_EXTRA) == true) {
-            val mock = MockDatabase()
-            mock.addDailyGoal(MockAuth.MOCK_USER.getUid(), DailyGoal.TEST_SAMPLE).thenApply {
-                user.setDatabase(mock)
-            }
-        }
     }
 
     companion object {
