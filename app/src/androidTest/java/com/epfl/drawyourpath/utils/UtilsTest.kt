@@ -65,15 +65,17 @@ class UtilsTest {
     fun normalizedPointIsPlacedOnPadding() {
         val p1 = Ink.Point.create(2f, 2f)
 
-        val res = Utils.normalizeStroke(
-            Ink.Stroke.builder().also {
-                it.addPoint(p1)
-            }.build(),
+        val res = Utils.normalizeStrokes(
+            listOf(
+                Ink.Stroke.builder().also {
+                    it.addPoint(p1)
+                }.build(),
+            ),
             0.1f,
         )
 
-        assertThat(res.points[0].x.toDouble(), `is`(closeTo(0.1, 0.001)))
-        assertThat(res.points[0].y.toDouble(), `is`(closeTo(0.1, 0.001)))
+        assertThat(res[0].points[0].x.toDouble(), `is`(closeTo(0.1, 0.001)))
+        assertThat(res[0].points[0].y.toDouble(), `is`(closeTo(0.1, 0.001)))
     }
 
     @Test
@@ -94,16 +96,18 @@ class UtilsTest {
             Ink.Point.create(0.5f, 0.5f),
         )
 
-        val res = Utils.normalizeStroke(
-            Ink.Stroke.builder().also {
-                for (point in p) {
-                    it.addPoint(point)
-                }
-            }.build(),
+        val res = Utils.normalizeStrokes(
+            listOf(
+                Ink.Stroke.builder().also {
+                    for (point in p) {
+                        it.addPoint(point)
+                    }
+                }.build(),
+            ),
             0.0f,
         )
 
-        res.points.zip(expectedP).forEach {
+        res[0].points.zip(expectedP).forEach {
             assertThat(it.first.x.toDouble(), `is`(closeTo(it.second.x.toDouble(), 0.001)))
             assertThat(it.first.y.toDouble(), `is`(closeTo(it.second.y.toDouble(), 0.001)))
         }
