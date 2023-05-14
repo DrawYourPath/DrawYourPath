@@ -166,4 +166,89 @@ class RunTest {
         assertTrue(path.getPolyline() is List<PolylineOptions>)
         assertEquals(points[0], path.getPolyline()[0].points)
     }
+
+    /**
+     * Test if the distance per section in the return list is correct
+     */
+    @Test
+    fun calculateSectionsDistanceCorrectly(){
+        val path = Path()
+        path.addPointToLastSection(LatLng(0.0, 0.0))
+        path.addPointToLastSection(LatLng(0.0, 1.0))
+        path.addNewSection()
+        path.addPointToLastSection(LatLng(1.0, 1.0))
+        path.addPointToLastSection(LatLng(1.0, 2.0))
+        val run = Run(path, 1000, 1000, 2000)
+        assertEquals(2, run.getSectionsDistance().size)
+        assertEquals(111319.4, run.getSectionsDistance()[0], 0.1)
+        assertEquals(111302.6, run.getSectionsDistance()[1], 0.1)
+    }
+
+    /**
+     * Test if the time taken per section in the return list is correct
+     */
+    @Test
+    fun calculateSectionsTimeCorrectly(){
+        val path = Path()
+        path.addPointToLastSection(LatLng(0.0, 0.0))
+        path.addPointToLastSection(LatLng(0.0, 1.0))
+        path.addNewSection()
+        path.addPointToLastSection(LatLng(1.0, 1.0))
+        path.addPointToLastSection(LatLng(1.0, 2.0))
+        val run = Run(path, 1000, 4, 2000)
+        assertEquals(listOf(2L, 2L), run.getSectionsDuration())
+    }
+
+    /**
+     * Test if the average speed taken per section in the return list is correct
+     */
+    @Test
+    fun calculateSectionsAvgSpeedCorrectly(){
+        val path = Path()
+        path.addPointToLastSection(LatLng(0.0, 0.0))
+        path.addPointToLastSection(LatLng(0.0, 1.0))
+        path.addNewSection()
+        path.addPointToLastSection(LatLng(1.0, 1.0))
+        path.addPointToLastSection(LatLng(1.0, 2.0))
+        val run = Run(path, 1000, 4, 2000)
+        assertEquals(2, run.getSectionsAvgSpeed().size)
+        assertEquals(111319.4/2.0, run.getSectionsAvgSpeed()[0], 0.1)
+        assertEquals(111302.6/2.0, run.getSectionsAvgSpeed()[1], 0.1)
+    }
+
+    /**
+     * Test if the time taken for each kilometer in the return list is correct
+     */
+    @Test
+    fun calculateKilometersTimeCorrectly(){
+        val path = Path()
+        for (i in 0 until 130) {
+            path.addPointToLastSection(LatLng(0.0, 0.0))
+            path.addPointToLastSection(LatLng(0.0, 0.0001))
+        }
+        val distance = path.getDistance()
+        val time1 = (1000 * 260.0)/distance
+        val run = Run(path, 1000, 260, 2000)
+        assertEquals(2, run.getKilometersDuration().size)
+        assertEquals(time1.toFloat()/10, run.getKilometersDuration()[0].toFloat()/10, 0.1F)
+        assertEquals(time1.toFloat()/10, run.getKilometersDuration()[1].toFloat()/10, 0.1F)
+    }
+
+    /**
+     * Test if the avg speed taken for each kilometer in the return list is correct
+     */
+    @Test
+    fun calculateKilometersAvgSpeedCorrectly(){
+        val path = Path()
+        for (i in 0 until 130) {
+            path.addPointToLastSection(LatLng(0.0, 0.0))
+            path.addPointToLastSection(LatLng(0.0, 0.0001))
+        }
+        val distance = path.getDistance()
+        val time1 = (1000 * 260.0)/distance
+        val run = Run(path, 1000, 260, 2000)
+        assertEquals(2, run.getKilometersDuration().size)
+        assertEquals((1000.0/time1).toFloat() / 10, run.getKilometersAvgSpeed()[0].toFloat()/10, 0.1F)
+        assertEquals((1000.0/time1).toFloat() / 10, run.getKilometersAvgSpeed()[1].toFloat()/10, 0.1F)
+    }
 }

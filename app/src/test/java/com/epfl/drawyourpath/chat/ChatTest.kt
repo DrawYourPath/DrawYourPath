@@ -113,6 +113,6 @@ class ChatTest {
         Mockito.`when`(mockPath.getDistance()).thenReturn(1000.0)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 1000L * 60 * 10
-        return Run(mockPath, startTime, endTime)
+        return Run(path = mockPath, startTime = startTime, endTime = endTime, duration = endTime-startTime)
     }
 }
