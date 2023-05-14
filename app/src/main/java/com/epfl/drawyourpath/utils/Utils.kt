@@ -190,7 +190,7 @@ object Utils {
      */
     fun getStringDuration(time: Long): String {
         val duration = Duration.ofSeconds(time)
-        return String.format("%02d:%02d:%02d", duration.toHours(), duration.toMinutes(), duration.seconds)
+        return String.format("%02d:%02d:%02d", duration.toHours(), duration.toMinutes(), duration.seconds % 60)
     }
 
     /**
