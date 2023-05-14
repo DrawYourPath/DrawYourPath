@@ -8,14 +8,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalViewAdapter
 import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneViewAdapter
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.challenge.trophy.TrophyViewAdapter
-import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 

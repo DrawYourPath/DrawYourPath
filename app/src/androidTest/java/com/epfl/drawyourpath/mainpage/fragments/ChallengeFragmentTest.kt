@@ -18,7 +18,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.database.MockDatabase
 import org.junit.Rule
 import org.junit.Test
@@ -127,15 +126,15 @@ class ChallengeFragmentTest {
 
         // change value of distance
         onView(withId(R.id.goals_view)).perform(
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    0,
-                    replaceTextOnViewChild("", R.id.goal_display_edit_text),
-                ),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    0,
-                    pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
-                ),
-            )
+            actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                replaceTextOnViewChild("", R.id.goal_display_edit_text),
+            ),
+            actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
+            ),
+        )
 
         val distanceProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.goals!!.distance!!)
 
@@ -163,15 +162,15 @@ class ChallengeFragmentTest {
 
         // change value of time
         onView(withId(R.id.goals_view)).perform(
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    1,
-                    replaceTextOnViewChild("", R.id.goal_display_edit_text),
-                ),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    1,
-                    pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
-                ),
-            )
+            actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                1,
+                replaceTextOnViewChild("", R.id.goal_display_edit_text),
+            ),
+            actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                1,
+                pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
+            ),
+        )
 
         val timeProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, mockUser.goals!!.activityTime!!)
 
@@ -199,15 +198,15 @@ class ChallengeFragmentTest {
 
         // change value of path
         onView(withId(R.id.goals_view)).perform(
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    2,
-                    replaceTextOnViewChild("", R.id.goal_display_edit_text),
-                ),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    2,
-                    pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
-                ),
-            )
+            actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                2,
+                replaceTextOnViewChild("", R.id.goal_display_edit_text),
+            ),
+            actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                2,
+                pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
+            ),
+        )
 
         val pathProgressGoal = context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.goals!!.paths!!.toDouble())
 
