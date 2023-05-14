@@ -321,7 +321,7 @@ class UserModelCachedTest {
 
     private fun assertEqualPath(expected: Path, actual: Path) {
         expected.getPoints().forEachIndexed { index, section ->
-            section.forEachIndexed{ indexSection, latLng ->
+            section.forEachIndexed { indexSection, latLng ->
                 assertEquals(latLng.latitude, actual.getPoints()[index][indexSection].latitude, 0.00001)
                 assertEquals(latLng.longitude, actual.getPoints()[index][indexSection].longitude, 0.00001)
             }

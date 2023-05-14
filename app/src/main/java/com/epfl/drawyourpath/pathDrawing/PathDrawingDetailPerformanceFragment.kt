@@ -57,7 +57,11 @@ class PathDrawingDetailPerformanceFragment(private val run: Run? = null) : Fragm
         var time1km: Long = run.getTimeForOneKilometer()
         if (run.getTimeForOneKilometer() >= maxTime) { time1km = (maxTime - 1).toLong() }
         textTimePerKm.text = getStringDuration(time1km as Long)
-        textSpeed.text = getStringSpeed(run.getAverageSpeed())
+        if(run.getDuration() == 0L){
+            textSpeed.text = getStringSpeed(0.0)
+        }else{
+            textSpeed.text = getStringSpeed(run.getAverageSpeed())
+        }
         textCalories.text = run.getCalories().toString()
     }
 }
