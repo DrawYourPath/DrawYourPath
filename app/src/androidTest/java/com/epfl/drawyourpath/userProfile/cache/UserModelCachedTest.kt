@@ -59,7 +59,7 @@ class UserModelCachedTest {
         listOf(),
         listOf(
             Run(
-                Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))),
+                Path(listOf(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656)))),
                 100 + 10,
                 100 + 10 + 1286,
             ),
@@ -319,9 +319,11 @@ class UserModelCachedTest {
     }
 
     private fun assertEqualPath(expected: Path, actual: Path) {
-        expected.getPoints().forEachIndexed { index, latLng ->
-            assertEquals(latLng.latitude, actual.getPoints()[index].latitude, 0.00001)
-            assertEquals(latLng.longitude, actual.getPoints()[index].longitude, 0.00001)
+        expected.getPoints().forEachIndexed { index, section ->
+            section.forEachIndexed{ indexSection, latLng ->
+                assertEquals(latLng.latitude, actual.getPoints()[index][indexSection].latitude, 0.00001)
+                assertEquals(latLng.longitude, actual.getPoints()[index][indexSection].longitude, 0.00001)
+            }
         }
     }
 

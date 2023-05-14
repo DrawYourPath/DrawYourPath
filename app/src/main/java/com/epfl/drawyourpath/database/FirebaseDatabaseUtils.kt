@@ -82,6 +82,8 @@ object FirebaseDatabaseUtils {
      * @return the run corresponding to the data
      */
     fun transformRun(data: DataSnapshot?): Run? {
+        //TODO: THis function must be refectored with the new strcuture of a run and a path
+        /*
         val points = data?.child("path")?.child("points")?.children?.mapNotNull {
             val lat = getNumber(it.child("latitude"))?.toDouble()
             val lon = getNumber(it.child("longitude"))?.toDouble()
@@ -100,7 +102,7 @@ object FirebaseDatabaseUtils {
         }
 
         Log.e(this::class.java.name, "Run time was null.")
-
+        */
         return null
     }
 

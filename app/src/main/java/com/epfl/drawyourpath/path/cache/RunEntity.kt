@@ -22,6 +22,8 @@ data class RunEntity(
 
     val sync: Boolean,
 ) {
+    //TODO: will be refactor since the structure of a path/run have changed
+    /*
     companion object {
         /**
          * transform a list of run into entities used in the cache
@@ -57,4 +59,5 @@ data class RunEntity(
             return Run(Path(pointsEntity.sortedBy { it.index }.map { LatLng(it.latitude, it.longitude) }), runEntity.startTime, runEntity.endTime)
         }
     }
+    */
 }

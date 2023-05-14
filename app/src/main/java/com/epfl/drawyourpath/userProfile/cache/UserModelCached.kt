@@ -100,6 +100,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser(false)
         setUserId(userId)
         return database.getUserData(userId).thenApplyAsync { userData ->
+            //TODO:refactor run cache
+            /*
             val runs = RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
             userCache.insertAll(
                 UserEntity(userData, userId),
@@ -107,6 +109,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 runs.map { it.first },
                 runs.map { it.second }.flatten(),
             )
+            */
         }
     }
 
@@ -147,6 +150,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun getRunHistory(): LiveData<List<Run>> {
         checkCurrentUser()
+        //TODO: refactor run cache
+        /*
         CompletableFuture.supplyAsync {
             runHistory.postValue(
                 runCache.getAllRunsAndPoints(currentUserID!!).map {
@@ -154,6 +159,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 }.sortedByDescending { it.getStartTime() },
             )
         }
+        */
         return runHistory
     }
 
@@ -228,17 +234,19 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
+        //TODO: refactor run cache
+
         val future = CompletableFuture.supplyAsync {
-            val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run), false)
-            dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
+            //val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run), false)
+            //dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
         }
-        future.thenComposeAsync {
+        /*future.thenComposeAsync {
             database.addDailyGoal(currentUserID!!, DailyGoal(it))
         }.thenComposeAsync {
             database.addRunToHistory(currentUserID!!, run)
         }.thenApplyAsync {
             runCache.runSynced(currentUserID!!, run.getStartTime())
-        } /*.thenComposeAsync { TODO add again when in database
+        }.thenComposeAsync { TODO add again when in database
             database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
         }*/
         return future.thenApply {}

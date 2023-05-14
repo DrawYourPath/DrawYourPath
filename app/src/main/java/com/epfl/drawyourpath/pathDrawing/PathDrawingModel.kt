@@ -25,7 +25,7 @@ class PathDrawingModel : ViewModel() {
     private var timeIntervalPointAdded: Long = 1
 
     val run: LiveData<Run> = _run
-    val points: LiveData<List<LatLng>> = run.map { it.getPath().getPoints() }
+    val pointsSection: LiveData<List<List<LatLng>>> = run.map { it.getPath().getPoints() }
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -63,7 +63,7 @@ class PathDrawingModel : ViewModel() {
                 Run(
                     oldRun.getPath().also {
                         if (getCurrentTime() - lastRunUpdate >= timeIntervalPointAdded && point != null) {
-                            it.addPoint(point)
+                            it.addPointToLastSection(point)
                             lastRunUpdate = getCurrentTime()
                         }
                     },
@@ -93,6 +93,18 @@ class PathDrawingModel : ViewModel() {
             pauseDuration = pauseDuration.plus(getCurrentTime() - pauseTime!!, ChronoUnit.SECONDS)
             pauseTime = null
             handler.post(updateHandler)
+            resultingRun = resultingRun.let { oldRun ->
+                Run(
+                    oldRun.getPath().also {
+                        it.addNewSection()
+                        lastRunUpdate = getCurrentTime()
+                    },
+                    oldRun.getStartTime(),
+                    getCurrentTime()+1
+                    ,
+                )
+            }
+            _run.postValue(resultingRun)
         }
     }
 
