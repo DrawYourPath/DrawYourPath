@@ -1,26 +1,17 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.content.Context
-import android.os.Bundle
 import android.view.View
 import androidx.arch.core.executor.testing.CountingTaskExecutorRule
-import androidx.fragment.app.testing.FragmentScenario
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.pressImeActionButton
 import androidx.test.espresso.action.ViewActions.replaceText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import org.junit.Rule
-import org.junit.Test
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -42,7 +33,7 @@ class ChallengeFragmentTest {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
         Thread.sleep(10)
     }
-//TODO: uncomment this method when refactor the cache
+// TODO: uncomment this method when refactor the cache
 /*
 /**
  * test if the new distance goal is correctly displayed when there is no today daily goal
@@ -463,31 +454,31 @@ fun displayDistanceGoalOfTodayDailyGoal() {
  */
 
 /**
- * helper function to perform a replaceText inside a RecyclerView
- *
- * @param value the String to replace inside the editText
- * @param viewId the id of the editText inside the RecyclerView
- */
-private fun replaceTextOnViewChild(value: String, viewId: Int) = object : ViewAction {
-    override fun getConstraints() = null
+     * helper function to perform a replaceText inside a RecyclerView
+     *
+     * @param value the String to replace inside the editText
+     * @param viewId the id of the editText inside the RecyclerView
+     */
+    private fun replaceTextOnViewChild(value: String, viewId: Int) = object : ViewAction {
+        override fun getConstraints() = null
 
-    override fun getDescription() = "replace text on a child view with specified id."
+        override fun getDescription() = "replace text on a child view with specified id."
 
-    override fun perform(uiController: UiController, view: View) =
-        replaceText(value).perform(uiController, view.findViewById(viewId))
-}
+        override fun perform(uiController: UiController, view: View) =
+            replaceText(value).perform(uiController, view.findViewById(viewId))
+    }
 
 /**
- * helper function to perform a replaceText inside a RecyclerView
- *
- * @param viewId the id of the editText inside the RecyclerView
- */
-private fun pressImeActionButtonOnViewChild(viewId: Int) = object : ViewAction {
-    override fun getConstraints() = null
+     * helper function to perform a replaceText inside a RecyclerView
+     *
+     * @param viewId the id of the editText inside the RecyclerView
+     */
+    private fun pressImeActionButtonOnViewChild(viewId: Int) = object : ViewAction {
+        override fun getConstraints() = null
 
-    override fun getDescription() = "press Ime action button on a child view with specified id."
+        override fun getDescription() = "press Ime action button on a child view with specified id."
 
-    override fun perform(uiController: UiController, view: View) =
-        pressImeActionButton().perform(uiController, view.findViewById(viewId))
-}
+        override fun perform(uiController: UiController, view: View) =
+            pressImeActionButton().perform(uiController, view.findViewById(viewId))
+    }
 }
