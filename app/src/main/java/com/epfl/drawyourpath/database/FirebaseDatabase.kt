@@ -248,7 +248,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             }
 
             // Wanted username is available, we get the old username.
-            getUsername(userId).handle { pastUsername, exc2 ->
+            getUsername(userId).handle { pastUsername, _ ->
 
                 // Create a new mapping to the new username.
                 nameMapping(username).setValue(userId).addOnSuccessListener {
@@ -892,15 +892,14 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         // TODO: THis is implemented wrong. Futures don't work like that.
         //       Future.allOf() should be used.
         //       Also, we can batch all these operations in a single write.
-        // val future = CompletableFuture<Unit>()
-        // for (memberId in membersList) {
-        //     val data = mapOf(conversationId to true)
-        //     userProfile(memberId).child(FirebaseKeys.USER_CHATS).updateChildren(data)
-        //         .addOnSuccessListener { future.complete(Unit) }
-        //         .addOnFailureListener { future.completeExceptionally(it) }
-        // }
-        // return future
-        return Utils.failedFuture("Not implemented.")
+        val future = CompletableFuture<Unit>()
+        for (memberId in membersList) {
+            val data = mapOf(conversationId to true)
+            userProfile(memberId).child(FirebaseKeys.USER_CHATS).updateChildren(data)
+                .addOnSuccessListener { future.complete(Unit) }
+                .addOnFailureListener { future.completeExceptionally(it) }
+        }
+        return future
     }
 
     /**

@@ -12,6 +12,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
 import java.util.concurrent.Executor
+import java.util.concurrent.TimeUnit
 import kotlin.Exception
 
 class FirebaseDatabaseTest {
@@ -360,7 +361,7 @@ class FirebaseDatabaseTest {
         val db = FirebaseDatabase(dbRef)
 
         assertThrows(Throwable::class.java) {
-            db.getUserIdFromUsername("otheruname").get()
+            db.getUserIdFromUsername("otheruname").get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -372,7 +373,7 @@ class FirebaseDatabaseTest {
         val dbRef = mockDatabaseWithUsernameMapping(username, uid)
         val db = FirebaseDatabase(dbRef)
 
-        val dbUname = db.isUsernameAvailable(username).get()
+        val dbUname = db.isUsernameAvailable(username).get(100, TimeUnit.MILLISECONDS)
 
         assertFalse(dbUname)
     }
@@ -386,7 +387,7 @@ class FirebaseDatabaseTest {
         val db = FirebaseDatabase(dbRef)
 
         assertThrows(Throwable::class.java) {
-            db.setUsername(uid, username).get()
+            db.setUsername(uid, username).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -399,7 +400,7 @@ class FirebaseDatabaseTest {
         val db = FirebaseDatabase(dbRef)
 
         assertThrows(Throwable::class.java) {
-            db.setUsername(uid, username).get()
+            db.setUsername(uid, username).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -414,7 +415,7 @@ class FirebaseDatabaseTest {
                 listOf("user1", "user2"),
                 "user1",
                 "Welcome message",
-            ).get()
+            ).get(100, TimeUnit.MILLISECONDS)
         }
     }
 }
