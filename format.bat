@@ -1,1 +1,1 @@
-java -jar ./programs/ktlint.jar --disabled_rules no-wildcard-imports -F ./app/**.kt || true
+java -jar ./programs/ktlint.jar --disabled_rules no-wildcard-imports -F ./app/**.kt
