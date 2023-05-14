@@ -893,15 +893,17 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         conversationId: String,
         membersList: List<String>,
     ): CompletableFuture<Unit> {
-        val future = CompletableFuture<Unit>()
-        for (memberId in membersList) {
-            val data = mapOf(conversationId to true)
-            userProfile(memberId).child(FirebaseKeys.USER_CHATS).updateChildren(data)
-                .addOnSuccessListener { future.complete(Unit) }
-                .addOnFailureListener { future.completeExceptionally(it) }
-        }
-
-        return future
+        // TODO: THis is implemented wrong. Futures don't work like that.
+        //       Future.allOf() should be used.
+        // val future = CompletableFuture<Unit>()
+        // for (memberId in membersList) {
+        //     val data = mapOf(conversationId to true)
+        //     userProfile(memberId).child(FirebaseKeys.USER_CHATS).updateChildren(data)
+        //         .addOnSuccessListener { future.complete(Unit) }
+        //         .addOnFailureListener { future.completeExceptionally(it) }
+        // }
+        // return future
+        return Utils.failedFuture(Exception("Not implemented."))
     }
 
     /**
