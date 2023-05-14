@@ -7,6 +7,8 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
@@ -333,6 +335,8 @@ class MockDatabaseTest {
         assertEquals(user.goals?.distance ?: 0.0, distanceGoalTest, 0.001)
         assertEquals((user.goals?.activityTime ?: 0).toDouble(), activityTimeGoalTest, 0.001)
         assertEquals((user.goals?.paths ?: 0).toInt(), nbOfPathsGoalTest)
+        assertEquals(database.users[userIdTest]?.trophies, user.trophies)
+        assertEquals(database.users[userIdTest]?.milestones, user.milestones)
     }
 
     /**
@@ -447,6 +451,51 @@ class MockDatabaseTest {
             true,
         )
     }
+    /**
+     * Test that adding a trophy to incorrect user throw an error
+     */
+    @Test
+    fun addTrophyIncorrectUserId(){
+        val database = MockDatabase()
+
+        assertThrows(Exception::class.java){
+            database.addTrophy(Trophy("12", "name", "description", LocalDate.of(2000,2,21), 2), "incorrect").get()
+        }
+    }
+    /**
+     * Test that adding a trophy is correctly added
+     */
+    @Test
+    fun addTrophyCorrectly(){
+        val database = MockDatabase()
+        val trophy = Trophy("12", "name", "description", LocalDate.of(2000,2,21), 2)
+        val userId = database.MOCK_USERS[0].userId!!
+        database.addTrophy(trophy, userId).get()
+        assertEquals(listOf(trophy), database.users[userId]?.trophies)
+    }
+
+    /**
+     * Test that adding a milestone to incorrect user throw an error
+     */
+    @Test
+    fun addMilestoneIncorrectUserId(){
+        val database = MockDatabase()
+
+        assertThrows(Exception::class.java){
+            database.addMilestone(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000,2,21), "incorrect").get()
+        }
+    }
+    /**
+     * Test that adding a milestone is correctly added
+     */
+    @Test
+    fun addMilestoneCorrectly(){
+        val database = MockDatabase()
+        val userId = database.MOCK_USERS[0].userId!!
+        database.addMilestone(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000,2,21), userId).get()
+        assertEquals(listOf(MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000,2,21))), database.users[userId]?.milestones)
+    }
+
 
     /**
      * Test if removing a friend to the friendsList is correctly removed
@@ -618,25 +667,6 @@ class MockDatabaseTest {
             added.paths,
             1,
         )
-    }
-
-    /**
-     * Test if the achievements are update correctly
-     */
-    @Test
-    fun updateUserAchievementsCorrect() {
-        val database = MockDatabase()
-        /*
-        database.updateUserAchievements(userIdTest, 10.0, 50.0).get()
-        val userAccount = database.users[database.userIdTest]!!
-        assertEquals(userAccount.getTotalDistance(), database.totalDistanceTest + 10.0, 0.001)
-        assertEquals(
-            userAccount.getTotalActivityTime(),
-            database.totalActivityTimeTest + 50.0,
-            0.001,
-        )
-        assertEquals(userAccount.getTotalNbOfPaths(), database.totalNbOfPathsTest + 1)
-        */
     }
 
     /**

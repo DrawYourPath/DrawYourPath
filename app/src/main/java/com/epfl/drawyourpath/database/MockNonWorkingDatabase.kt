@@ -2,9 +2,13 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.Milestone
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Run
+import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -75,10 +79,14 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun updateUserAchievements(
-        userId: String,
-        distanceDrawing: Double,
-        activityTimeDrawing: Double,
+    override fun addTrophy(trophy: Trophy, userId: String): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun addMilestone(
+        milestone: MilestoneEnum,
+        date: LocalDate,
+        userId: String
     ): CompletableFuture<Unit> {
         return failedFuture()
     }
