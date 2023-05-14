@@ -104,13 +104,36 @@ class FirebaseDatabaseTest {
         }
     }
 
+    /**
+     * Mocks a database that returns a `null` snapshot on all nodes.
+     */
     private fun mockEmptyDatabase(): DatabaseReference {
         val database = mock(DatabaseReference::class.java)
         `when`(database.child(any())).thenReturn(database)
         val snapshot = mockNullSnapshot()
+        `when`(database.push()).thenReturn(database)
+        `when`(database.key).thenReturn("db_key_mock")
         `when`(database.get()).thenReturn(mockTask(snapshot, null))
         `when`(database.updateChildren(any())).thenReturn(mockTask(null, null))
         `when`(database.removeValue()).thenReturn(mockTask(null, null))
+        return database
+    }
+
+    /**
+     * Mocks a database that always fail at all operations.
+     */
+    private fun mockFailingDatabase(): DatabaseReference {
+        val exception = Exception("Failing db")
+        val database = mock(DatabaseReference::class.java)
+
+        `when`(database.child(any())).thenReturn(database)
+
+        `when`(database.push()).thenReturn(database)
+        `when`(database.key).thenReturn("db_key_mock")
+        `when`(database.get()).thenReturn(mockTask(null, exception))
+        `when`(database.setValue(any())).thenReturn(mockTask(null, exception))
+        `when`(database.updateChildren(any())).thenReturn(mockTask(null, exception))
+        `when`(database.removeValue()).thenReturn(mockTask(null, exception))
         return database
     }
 
@@ -364,6 +387,34 @@ class FirebaseDatabaseTest {
 
         assertThrows(Throwable::class.java) {
             db.setUsername(uid, username).get()
+        }
+    }
+
+    @Test
+    fun setUsernameForwardsDatabaseException() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockFailingDatabase()
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.setUsername(uid, username).get()
+        }
+    }
+
+    @Test
+    fun createChatConversationForwardsDatabaseException() {
+        val dbRef = mockFailingDatabase()
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.createChatConversation(
+                "name",
+                listOf("user1", "user2"),
+                "user1",
+                "Welcome message",
+            ).get()
         }
     }
 }
