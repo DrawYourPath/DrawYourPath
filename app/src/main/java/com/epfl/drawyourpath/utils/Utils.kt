@@ -174,7 +174,16 @@ object Utils {
      * @return the formatted string
      */
     fun getStringFromALL_CAPS(ALL_CAPS: String): String {
-        return ALL_CAPS.replace("_", " ").lowercase().also { it.firstOrNull()?.uppercaseChar() }
+        return ALL_CAPS.replace("_", " ").lowercase().let { value -> value.replaceFirstChar { it.uppercaseChar() } }
+    }
+
+    /**
+     * transform All caps to ALL_CAPS naming convention
+     * @param value the string to transform
+     * @return the formatted string
+     */
+    fun getALL_CAPSFromString(value: String): String {
+        return value.uppercase().replace(" ", "_")
     }
 
     /**

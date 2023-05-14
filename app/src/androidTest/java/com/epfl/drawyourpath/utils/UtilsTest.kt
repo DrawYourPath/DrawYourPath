@@ -40,4 +40,18 @@ class UtilsTest {
 
         assertThat(ps.points, `is`(listOf(p1, p2)))
     }
+
+    @Test
+    fun getStringFromALL_CAPSConvertToString() {
+        val ALL_CAPS = "THIS_IS_ALL_CAPS"
+        val value = "This is all caps"
+        assertThat(Utils.getStringFromALL_CAPS(ALL_CAPS), `is`(value))
+    }
+
+    @Test
+    fun getALL_CAPSFromStringConvertToALL_CAPS() {
+        val ALL_CAPS = "THIS_IS_ALL_CAPS"
+        val value = "This is all caps"
+        assertThat(Utils.getALL_CAPSFromString(value), `is`(ALL_CAPS))
+    }
 }
