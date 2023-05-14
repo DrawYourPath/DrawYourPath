@@ -23,7 +23,7 @@ class RunTest {
         val startTime = System.currentTimeMillis()
         val endTime = startTime - 1000 // end time is before start time
 
-        Run(path, startTime, endTime)
+        Run(path = path, startTime = startTime, endTime = endTime, duration = 10)
     }
 
     @Test
@@ -35,7 +35,7 @@ class RunTest {
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 3000
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = 10)
         // check that distance is calculated correctly
         assertEquals(path.getDistance(), run.getDistance())
     }
@@ -49,7 +49,7 @@ class RunTest {
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 3000
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = 3000)
         // check that duration is calculated correctly
         assertEquals(3000L, run.getDuration())
     }
@@ -63,7 +63,7 @@ class RunTest {
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 3000
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = 3000)
         // check that start time is handled correctly
         assertEquals(startTime, run.getStartTime())
     }
@@ -77,7 +77,7 @@ class RunTest {
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 3000
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = 3000)
         // check that date is calculated correctly
         val date = LocalDateTime.ofEpochSecond(startTime, 0, ZoneOffset.UTC)
         assertEquals(date.format(DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm")), run.getDate())
@@ -92,7 +92,7 @@ class RunTest {
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 3000
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = 3000)
         // check that end time is handled correctly
         assertEquals(endTime, run.getEndTime())
     }
@@ -106,7 +106,7 @@ class RunTest {
         val path = Path(points)
         val startTime = 0L
         val endTime = 3000L
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = 3000)
 
         assertEquals(path.getDistance() / 3000, run.getAverageSpeed(), 0.1)
     }
@@ -125,7 +125,7 @@ class RunTest {
         // That means we need to run for (distance / speed) seconds
         val startTime = 0L
         val endTime = (path.getDistance() / speed).toLong()
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = endTime-startTime)
 
         val cal = met * 70 * run.getDuration() / 3600
         assertEquals(cal, run.getCalories().toDouble(), cal / 50)
@@ -140,7 +140,7 @@ class RunTest {
         val path = Path(points)
         val startTime = 0L
         val endTime = 3000L
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = 3000)
 
         assertEquals(
             1000 / (path.getDistance() / 3000),
@@ -158,12 +158,12 @@ class RunTest {
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 3000
-        val run = Run(path, startTime, endTime)
+        val run = Run(path = path, startTime = startTime, endTime = endTime, duration = endTime-startTime)
         // check that path is handled correctly
         assertEquals(2, run.getPath().size())
         assertEquals(points, run.getPath().getPoints())
         assertEquals(111319.9, path.getDistance(), 1.0)
         assertTrue(path.getPolyline() is List<PolylineOptions>)
-        assertEquals(points, path.getPolyline()[0].points)
+        assertEquals(points[0], path.getPolyline()[0].points)
     }
 }

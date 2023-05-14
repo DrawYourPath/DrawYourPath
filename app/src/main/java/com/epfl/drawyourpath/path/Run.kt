@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.path
 
 import com.google.firebase.database.Exclude
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -17,15 +18,15 @@ class Run(
     // val user: User,             //TODO add later
     private val path: Path, // represents the path taken by the user
     private val startTime: Long, // the timestamps of the run
+    private var duration: Long, //represent the duration of the run(in seconds)
     private val endTime: Long,
 ) {
 
     init {
-        if (endTime <= startTime) {
+        if (endTime < startTime) {
             throw IllegalArgumentException("End time must be greater than start time")
         }
         calculateDistance()
-        calculateDuration()
         calculateAverageSpeed()
         calculateTimeForOneKilometer()
         calculateCalorieBurn()
@@ -33,9 +34,6 @@ class Run(
 
     // the distance of the run (in meters)
     private var distance: Double = 0.0
-
-    // the duration of the run (in seconds)
-    private var duration: Long = 0L
 
     // the average speed of the run (in meters per second)
     private var averageSpeed: Double = 0.0
@@ -52,10 +50,6 @@ class Run(
 
     private fun calculateAverageSpeed() {
         averageSpeed = distance / duration
-    }
-
-    private fun calculateDuration() {
-        duration = endTime - startTime
     }
 
     /**

@@ -38,7 +38,7 @@ class HistoryFragmentTest {
         val path = Path(points)
         val startTime = 1683226596L
         val endTime = startTime + 10
-        val run1 = Run(path, startTime, endTime)
+        val run1 = Run(path, startTime, 10, endTime)
         runs.add(run1)
 
         val point3 = LatLng(0.0, 0.0)
@@ -47,7 +47,7 @@ class HistoryFragmentTest {
         val path2 = Path(points2)
         val startTime2 = 1683226963L
         val endTime2 = startTime + 10000
-        val run2 = Run(path2, startTime2, endTime2)
+        val run2 = Run(path2, startTime2, 10000, endTime2)
         runs.add(run2)
 
         scenario.onFragment { fragment ->

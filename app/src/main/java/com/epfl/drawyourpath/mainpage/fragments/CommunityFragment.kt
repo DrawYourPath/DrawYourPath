@@ -372,6 +372,6 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val path = Path(listOf( points))
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 10
-        return Run(path, startTime, endTime)
+        return Run(path = path, startTime = startTime, endTime = endTime, duration = 10)
     }
 }

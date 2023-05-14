@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.database
 
+import android.R
 import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.drawyourpath.authentication.MockAuth
@@ -37,6 +38,7 @@ class MockDatabase : Database() {
                 Run(
                     startTime = 10,
                     endTime = 20,
+                    duration = 10,
                     path = Path(listOf( listOf(LatLng(46.51854301997813, 6.56237289547834)))),
                 ),
             ),
@@ -86,6 +88,7 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
@@ -119,6 +122,7 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
@@ -153,6 +157,7 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
@@ -187,6 +192,7 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(

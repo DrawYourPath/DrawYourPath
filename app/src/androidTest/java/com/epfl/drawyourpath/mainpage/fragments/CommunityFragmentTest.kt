@@ -342,7 +342,7 @@ class CommunityFragmentTest {
         val path = Path(points)
         val startTime = System.currentTimeMillis()
         val endTime = startTime + 10
-        return Run(path, startTime, endTime)
+        return Run(path, startTime, 10, endTime)
     }
 
     /**

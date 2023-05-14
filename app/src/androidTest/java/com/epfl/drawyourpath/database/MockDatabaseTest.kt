@@ -181,13 +181,13 @@ class MockDatabaseTest {
         assertThrows(Throwable::class.java) {
             database.addRunToHistory(
                 "NOT_EXISTING_USER",
-                Run(Path(emptyList()), 1000, 2000),
+                Run(Path(emptyList()), startTime = 1000, duration = 1000, endTime = 2000),
             ).get()
         }
         assertThrows(Throwable::class.java) {
             database.removeRunFromHistory(
                 "NOT_EXISTING_USER",
-                Run(Path(emptyList()), 1000, 2000),
+                Run(Path(emptyList()), startTime = 1000, duration = 1000, endTime = 2000),
             ).get()
         }
     }
@@ -480,8 +480,9 @@ class MockDatabaseTest {
         val newRun1StartTime = 10 + 1e7.toLong()
         val newRun1 = Run(
             Path(listOf( listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
-            newRun1StartTime,
-            newRun1StartTime + 2e6.toLong(),
+            startTime = newRun1StartTime,
+            duration = 2e6.toLong(),
+            endTime = newRun1StartTime + 2e6.toLong(),
         )
         val expectedHistory = arrayListOf(newRun1).also { it.addAll(database.users[userIdTest]!!.runs!!) }.also { it.reverse() }
 
@@ -496,8 +497,9 @@ class MockDatabaseTest {
         val newRun2StartTime = 10 - 1e7.toLong()
         val newRun2 = Run(
             Path(listOf( listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
-            newRun2StartTime,
-            newRun2StartTime + 2e6.toLong(),
+            startTime = newRun2StartTime,
+            duration = 2e6.toLong(),
+            endTime = newRun2StartTime + 2e6.toLong(),
         )
         database.addRunToHistory(userIdTest, newRun2).get()
 
@@ -551,8 +553,9 @@ class MockDatabaseTest {
         val nonExistingStartingTime = 10 + 1e7.toLong()
         val nonExistingRun = Run(
             Path(listOf( listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
-            nonExistingStartingTime,
-            nonExistingStartingTime + 2e6.toLong(),
+            startTime = nonExistingStartingTime,
+            duration = 2e6.toLong(),
+            endTime = nonExistingStartingTime + 2e6.toLong(),
         )
         database.removeRunFromHistory(userIdTest, nonExistingRun)
 
@@ -1046,6 +1049,7 @@ class MockDatabaseTest {
                 startTime = 10,
                 endTime = 20,
                 path = Path(),
+                duration = 10,
             ),
             date,
         )
