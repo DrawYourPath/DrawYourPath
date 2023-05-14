@@ -198,7 +198,6 @@ class ChallengeFragmentTest {
         scenario.close()
     }
 
-
     /*@Test
     fun modifyDistanceGoalDisplayNewDistanceGoal() {
         val scenario = FragmentScenario.launchInContainer(
