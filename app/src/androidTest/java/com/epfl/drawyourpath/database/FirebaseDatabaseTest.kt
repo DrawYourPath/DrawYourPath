@@ -206,7 +206,7 @@ class FirebaseDatabaseTest {
         )
         val databaseRef = mockDatabaseWithUser(user)
 
-        val res = FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get()
+        val res = FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get(100, TimeUnit.MILLISECONDS)
 
         assertThat(res, `is`(true))
     }
@@ -215,7 +215,7 @@ class FirebaseDatabaseTest {
     fun isUserInDatabaseForNonExistingUserReturnsFalse() {
         val databaseRef = mockEmptyDatabase()
 
-        val res = FirebaseDatabase(databaseRef).isUserInDatabase("uid").get()
+        val res = FirebaseDatabase(databaseRef).isUserInDatabase("uid").get(100, TimeUnit.MILLISECONDS)
 
         assertThat(res, `is`(false))
     }
@@ -229,7 +229,7 @@ class FirebaseDatabaseTest {
         val databaseRef = mockDatabaseWithUser(user, Exception("Foobar"))
 
         assertThrows(Throwable::class.java) {
-            FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get()
+            FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -241,7 +241,7 @@ class FirebaseDatabaseTest {
         )
         val databaseRef = mockDatabaseWithUser(user)
 
-        val res = FirebaseDatabase(databaseRef).getUsername(user.userId!!).get()
+        val res = FirebaseDatabase(databaseRef).getUsername(user.userId!!).get(100, TimeUnit.MILLISECONDS)
 
         assertThat(res, `is`(user.username))
     }
@@ -254,7 +254,7 @@ class FirebaseDatabaseTest {
         val databaseRef = mockDatabaseWithUser(user)
 
         assertThrows(Throwable::class.java) {
-            FirebaseDatabase(databaseRef).getUsername(user.userId!!).get()
+            FirebaseDatabase(databaseRef).getUsername(user.userId!!).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -267,7 +267,7 @@ class FirebaseDatabaseTest {
         val databaseRef = mockDatabaseWithUser(user, Exception("Foobar"))
 
         assertThrows(Throwable::class.java) {
-            FirebaseDatabase(databaseRef).getUsername(user.userId!!).get()
+            FirebaseDatabase(databaseRef).getUsername(user.userId!!).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -283,9 +283,9 @@ class FirebaseDatabaseTest {
         val dbRef = mockDatabaseWithUser(userData)
 
         val db = FirebaseDatabase(dbRef)
-        db.createUser(userData.userId!!, userData).get()
+        db.createUser(userData.userId!!, userData).get(100, TimeUnit.MILLISECONDS)
 
-        val resData = db.getUsername(userData.userId!!).get()
+        val resData = db.getUsername(userData.userId!!).get(100, TimeUnit.MILLISECONDS)
         assertThat(resData, `is`(userData.username))
     }
 
@@ -301,7 +301,7 @@ class FirebaseDatabaseTest {
         val dbRef = mockDatabaseWithUser(userData, Exception("error"))
 
         assertThrows(Exception::class.java) {
-            FirebaseDatabase(dbRef).createUser(userData.userId!!, userData).get()
+            FirebaseDatabase(dbRef).createUser(userData.userId!!, userData).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -318,9 +318,9 @@ class FirebaseDatabaseTest {
 
         val db = FirebaseDatabase(dbRef)
 
-        db.setUserData(userData.userId!!, userData).get()
+        db.setUserData(userData.userId!!, userData).get(100, TimeUnit.MILLISECONDS)
 
-        val data = db.getUserData(userData.userId!!).get()
+        val data = db.getUserData(userData.userId!!).get(100, TimeUnit.MILLISECONDS)
 
         assertThat(data.birthDate, `is`(userData.birthDate))
         assertThat(data.username, `is`(userData.username))
@@ -334,7 +334,7 @@ class FirebaseDatabaseTest {
         val dbRef = mockDatabaseWithUsernameMapping(username, uid)
         val db = FirebaseDatabase(dbRef)
 
-        val dbuid = db.getUserIdFromUsername(username).get()
+        val dbuid = db.getUserIdFromUsername(username).get(100, TimeUnit.MILLISECONDS)
 
         assertEquals(uid, dbuid)
     }
@@ -348,7 +348,7 @@ class FirebaseDatabaseTest {
         val db = FirebaseDatabase(dbRef)
 
         assertThrows(Throwable::class.java) {
-            db.getUserIdFromUsername("otheruname").get()
+            db.getUserIdFromUsername("otheruname").get(100, TimeUnit.MILLISECONDS)
         }
     }
 
