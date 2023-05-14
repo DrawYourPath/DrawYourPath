@@ -553,7 +553,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val conversationId: String? = pushedPostRef.key
 
         if (conversationId == null) {
-            return Utils.failedFuture(Exception("Error in the generation of the conversation id !"))
+            return Utils.failedFuture("Error in the generation of the conversation id !")
         } else {
             val date = Utils.getCurrentDateAsEpoch()
             return initChatPreview(
@@ -673,7 +673,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
 
             MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
         }
-        return Utils.failedFuture(Error("No type found for the content of the message !"))
+        return Utils.failedFuture("No type found for the content of the message !")
     }
 
     override fun removeChatMessage(
@@ -842,11 +842,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        val data = HashMap<String, Any>()
-        for (member in membersList) {
-            data[member] = true
-        }
-
+        val data = membersList.associateWith { true }
         chatMembers(conversationId).updateChildren(data)
             .addOnSuccessListener {
                 future.complete(Unit)
@@ -895,6 +891,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     ): CompletableFuture<Unit> {
         // TODO: THis is implemented wrong. Futures don't work like that.
         //       Future.allOf() should be used.
+        //       Also, we can batch all these operations in a single write.
         // val future = CompletableFuture<Unit>()
         // for (memberId in membersList) {
         //     val data = mapOf(conversationId to true)
@@ -903,7 +900,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         //         .addOnFailureListener { future.completeExceptionally(it) }
         // }
         // return future
-        return Utils.failedFuture(Exception("Not implemented."))
+        return Utils.failedFuture("Not implemented.")
     }
 
     /**
