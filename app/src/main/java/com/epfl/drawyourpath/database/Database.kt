@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
-import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
@@ -53,7 +52,7 @@ data class ChatMessages(
 )
 
 data class MilestoneData(
-    val milestone: MilestoneEnum? =null,
+    val milestone: MilestoneEnum? = null,
     val date: LocalDate? = null,
 )
 
@@ -183,7 +182,7 @@ abstract class Database {
      * @param tropy to be stored in the database
      * @return a future to indicate if the trophy was correctly added to the user profile on the database
      */
-    abstract  fun addTrophy(trophy : Trophy, userId: String): CompletableFuture<Unit>
+    abstract fun addTrophy(trophy: Trophy, userId: String): CompletableFuture<Unit>
 
     /**
      * This function is used to add a milestone to the user profile of the user on the database
@@ -192,6 +191,7 @@ abstract class Database {
      * @return a future to indicate if the milestone was correctly added to the user profile on the database
      */
     abstract fun addMilestone(milestone: MilestoneEnum, date: LocalDate, userId: String): CompletableFuture<Unit>
+
     /**
      * Function used to get a unique ID for a new tournament. Never fails (because client side).
      * @return a unique ID or null if the operation failed.

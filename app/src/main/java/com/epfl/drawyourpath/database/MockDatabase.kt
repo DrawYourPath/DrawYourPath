@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
-import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
@@ -65,10 +64,10 @@ class MockDatabase : Database() {
             ),
             friendList = listOf("0", "1"),
             trophies = listOf(
-                Trophy(tournamentId = "0", tournamentName = "tournament0", tournamentDescription = "description0", date = LocalDate.of(2000,2,20), ranking = 1)
+                Trophy(tournamentId = "0", tournamentName = "tournament0", tournamentDescription = "description0", date = LocalDate.of(2000, 2, 20), ranking = 1),
             ),
             milestones = listOf(
-                MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000,2,20))
+                MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 20)),
             ),
             tournaments = listOf("0"),
             chatList = listOf("0"),
@@ -535,7 +534,7 @@ class MockDatabase : Database() {
     override fun addMilestone(
         milestone: MilestoneEnum,
         date: LocalDate,
-        userId: String
+        userId: String,
     ): CompletableFuture<Unit> {
         if (!users.contains(userId)) {
             return userDoesntExist()

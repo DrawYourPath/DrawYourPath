@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
-import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
@@ -360,12 +359,12 @@ class FirebaseDatabaseUtilsTest {
      * Test if a given trophy is correctly transform to the correct hashmap
      */
     @Test
-    fun transformTrophyToDataCorrectly(){
-        val trophy = Trophy(tournamentId = "123", tournamentName = "tournament", tournamentDescription = "description", date = LocalDate.of(2000, 2,20), ranking = 3)
+    fun transformTrophyToDataCorrectly() {
+        val trophy = Trophy(tournamentId = "123", tournamentName = "tournament", tournamentDescription = "description", date = LocalDate.of(2000, 2, 20), ranking = 3)
         val expectedMap = hashMapOf<String, Any>(
             FirebaseKeys.TROPHY_TOURNAMENT_NAME to "tournament",
             FirebaseKeys.TROPHY_TOURNAMENT_DESCRIPTION to "description",
-            FirebaseKeys.TROPHY_DATE to LocalDate.of(2000,2,20).toEpochDay(),
+            FirebaseKeys.TROPHY_DATE to LocalDate.of(2000, 2, 20).toEpochDay(),
             FirebaseKeys.TROPHY_RANKING to 3,
         )
         assertEquals(expectedMap, transformTrophyToData(trophy))
@@ -395,7 +394,7 @@ class FirebaseDatabaseUtilsTest {
     fun transformTrophiesReturnsTrophies() {
         val trophies = listOf(
             Trophy("123", "tournament1", "description1", LocalDate.of(2000, 2, 20), 3),
-            Trophy("345", "tournament2", "description2", LocalDate.of(2000,2,21), 2),
+            Trophy("345", "tournament2", "description2", LocalDate.of(2000, 2, 21), 2),
         )
 
         val trophySnapshot = trophies.map { mockTrophiesSnapshot(it) }
@@ -412,11 +411,11 @@ class FirebaseDatabaseUtilsTest {
      * Test if a given milestone is correctly transform to the correct hashmap
      */
     @Test
-    fun transformMilestoneToDataCorrectly(){
+    fun transformMilestoneToDataCorrectly() {
         val expectedMap = hashMapOf<String, Any>(
-            "THE_FIRST_KILOMETER" to LocalDate.of(2000,2,20).toEpochDay(),
+            "THE_FIRST_KILOMETER" to LocalDate.of(2000, 2, 20).toEpochDay(),
         )
-        assertEquals(expectedMap, transformMilestoneToData(MilestoneEnum.THE_FIRST_KILOMETER, LocalDate.of(2000,2,20)))
+        assertEquals(expectedMap, transformMilestoneToData(MilestoneEnum.THE_FIRST_KILOMETER, LocalDate.of(2000, 2, 20)))
     }
 
     /**
@@ -436,15 +435,14 @@ class FirebaseDatabaseUtilsTest {
         assertThat(FirebaseDatabaseUtils.transformMilestoneFromData(snapshot).isEmpty(), `is`(true))
     }
 
-
     /**
      * Test that transform a data snapshot that contains milestones return the correct list of milestones
      */
     @Test
     fun transformMilestonesReturnsMilestones() {
         val milestonesData = listOf(
-            MilestoneData(milestone = MilestoneEnum.THE_FIRST_KILOMETER, date = LocalDate.of(2000,2,20)),
-            MilestoneData(milestone = MilestoneEnum.HUNDRED_KILOMETERS, date = LocalDate.of(2000,2,21)),
+            MilestoneData(milestone = MilestoneEnum.THE_FIRST_KILOMETER, date = LocalDate.of(2000, 2, 20)),
+            MilestoneData(milestone = MilestoneEnum.HUNDRED_KILOMETERS, date = LocalDate.of(2000, 2, 21)),
         )
 
         val milestoneSnapshot = milestonesData.map { mockMilestonesSnapshot(it) }

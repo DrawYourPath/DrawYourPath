@@ -3,7 +3,6 @@ package com.epfl.drawyourpath.database
 import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
-import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
@@ -430,7 +429,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun addTrophy(trophy: Trophy, userId: String): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        //this is how the data is store in the database:
+        // this is how the data is store in the database:
         // trophies = {
         //      tournamentId = {
         //          tournamentName = Value
@@ -438,10 +437,10 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         //          date = LocalDate
         //          ranking = Value
         //      }
-        //}
-        //transform the trophy into data
+        // }
+        // transform the trophy into data
         val trophyData = transformTrophyToData(trophy)
-        //add the trophy to the database
+        // add the trophy to the database
         userRoot(userId).child(FirebaseKeys.TROPHIES)
             .child(trophy.tournamentId)
             .updateChildren(trophyData)
@@ -453,17 +452,17 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun addMilestone(
         milestone: MilestoneEnum,
         date: LocalDate,
-        userId: String
+        userId: String,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
-        //this is how the data is store in the database:
+        // this is how the data is store in the database:
         // milestones = {
         //      milestone1 = date,
         //      milestone2 = date,
-        //}
-        //transform the milestone into data
+        // }
+        // transform the milestone into data
         val milestoneData = transformMilestoneToData(milestone, date)
-        //add the milestone to the database
+        // add the milestone to the database
         userRoot(userId).child(FirebaseKeys.MILESTONES)
             .updateChildren(milestoneData)
             .addOnSuccessListener { future.complete(Unit) }

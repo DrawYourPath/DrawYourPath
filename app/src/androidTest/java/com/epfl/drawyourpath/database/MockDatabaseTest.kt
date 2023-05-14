@@ -451,24 +451,26 @@ class MockDatabaseTest {
             true,
         )
     }
+
     /**
      * Test that adding a trophy to incorrect user throw an error
      */
     @Test
-    fun addTrophyIncorrectUserId(){
+    fun addTrophyIncorrectUserId() {
         val database = MockDatabase()
 
-        assertThrows(Exception::class.java){
-            database.addTrophy(Trophy("12", "name", "description", LocalDate.of(2000,2,21), 2), "incorrect").get()
+        assertThrows(Exception::class.java) {
+            database.addTrophy(Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2), "incorrect").get()
         }
     }
+
     /**
      * Test that adding a trophy is correctly added
      */
     @Test
-    fun addTrophyCorrectly(){
+    fun addTrophyCorrectly() {
         val database = MockDatabase()
-        val trophy = Trophy("12", "name", "description", LocalDate.of(2000,2,21), 2)
+        val trophy = Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2)
         val userId = database.MOCK_USERS[0].userId!!
         database.addTrophy(trophy, userId).get()
         assertEquals(listOf(trophy), database.users[userId]?.trophies)
@@ -478,24 +480,24 @@ class MockDatabaseTest {
      * Test that adding a milestone to incorrect user throw an error
      */
     @Test
-    fun addMilestoneIncorrectUserId(){
+    fun addMilestoneIncorrectUserId() {
         val database = MockDatabase()
 
-        assertThrows(Exception::class.java){
-            database.addMilestone(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000,2,21), "incorrect").get()
+        assertThrows(Exception::class.java) {
+            database.addMilestone(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21), "incorrect").get()
         }
     }
+
     /**
      * Test that adding a milestone is correctly added
      */
     @Test
-    fun addMilestoneCorrectly(){
+    fun addMilestoneCorrectly() {
         val database = MockDatabase()
         val userId = database.MOCK_USERS[0].userId!!
-        database.addMilestone(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000,2,21), userId).get()
-        assertEquals(listOf(MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000,2,21))), database.users[userId]?.milestones)
+        database.addMilestone(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21), userId).get()
+        assertEquals(listOf(MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21))), database.users[userId]?.milestones)
     }
-
 
     /**
      * Test if removing a friend to the friendsList is correctly removed

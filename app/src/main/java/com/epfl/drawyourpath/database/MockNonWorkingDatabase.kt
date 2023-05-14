@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
-import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
@@ -86,7 +85,7 @@ class MockNonWorkingDatabase : Database() {
     override fun addMilestone(
         milestone: MilestoneEnum,
         date: LocalDate,
-        userId: String
+        userId: String,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }

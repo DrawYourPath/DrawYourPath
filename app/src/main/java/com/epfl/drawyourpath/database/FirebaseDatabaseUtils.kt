@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.database
 
 import android.util.Log
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
-import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
@@ -195,6 +194,7 @@ object FirebaseDatabaseUtils {
             chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
         )
     }
+
     /**
      * Helper function to transform a trophy object into an object to store in the database
      * The tournament id is not take into account since is used as a key for the trophy in the database.
@@ -270,7 +270,7 @@ object FirebaseDatabaseUtils {
 
                 MilestoneData(
                     milestone = MilestoneEnum.valueOf(milestone),
-                    date = LocalDate.ofEpochDay(dateLong)
+                    date = LocalDate.ofEpochDay(dateLong),
                 )
             }
         } ?: emptyList()
