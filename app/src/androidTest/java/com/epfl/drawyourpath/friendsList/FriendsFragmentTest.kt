@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -17,6 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.mainpage.IS_TEST_KEY
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
 import org.junit.Rule
@@ -66,6 +66,8 @@ class FriendsFragmentTest {
         }
 
         // onView(withText("friend1")).check(matches(isDisplayed()))
+
+        scenario.close()
     }
 
     @Test
@@ -87,6 +89,8 @@ class FriendsFragmentTest {
         onView(withText("friend1")).check(matches(isDisplayed()))
         onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
          */
+
+        scenario.close()
     }
 
     @Test
@@ -111,6 +115,8 @@ class FriendsFragmentTest {
         onView(withText("friend1")).check(matches(isDisplayed()))
         onView(withId(R.id.add_friend_button)).check(matches(isDisplayed()))
         */
+
+        scenario.close()
     }
 
     private fun addPermission(permissionStr: String) {
@@ -122,22 +128,36 @@ class FriendsFragmentTest {
 
     @Test
     fun clickOnScanQROpensScanningActivity() {
-        // TODO: uncomment once the UserModel doesn't crash during tests
         Intents.init()
 
         GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
         addPermission("CAMERA")
         addPermission("FLASHLIGHT")
 
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+        val intent = Intent(getApplicationContext(), MainActivity::class.java)
         val scenario: ActivityScenario<MainActivity> = launch(intent)
 
         onView(withId(R.id.friends_menu_item)).perform(click())
-        // onView(withId(R.id.BT_ScanQR)).perform(click())
+        onView(withId(R.id.BT_ScanQR)).perform(click())
 
         // Permission screen blocks the test
         // intended(hasComponent(QRScannerActivity::class.java.name))
 
+        scenario.close()
+
         Intents.release()
+    }
+
+    @Test
+    fun clickOnFriendsOpenProfileFragment() {
+        val intent = Intent(getApplicationContext(), MainActivity::class.java)
+        intent.putExtra(IS_TEST_KEY, true)
+
+        val scenario: ActivityScenario<MainActivity> = launch(intent)
+        onView(withId(R.id.friends_menu_item)).perform(click())
+
+        onView(withText("testusername")).perform(click())
+
+        scenario.close()
     }
 }

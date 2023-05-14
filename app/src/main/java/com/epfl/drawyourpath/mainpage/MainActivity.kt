@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -32,6 +33,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.database.ktx.database
 import java.util.concurrent.CompletableFuture
 
+const val IS_TEST_KEY = "isTest"
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
 const val SCAN_QR_REQ_CODE = 8233
 
@@ -49,6 +51,8 @@ class MainActivity : AppCompatActivity() {
 
     private val userCached: UserModelCached by viewModels()
 
+    private var isTest = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -61,6 +65,10 @@ class MainActivity : AppCompatActivity() {
         setupProfileButton()
         setupDrawerNavigationView()
         setupBottomNavigationView()
+
+        isTest = intent.getBooleanExtra(IS_TEST_KEY, false)
+
+        Log.i("MainActivity", "Is Testing: $isTest")
 
         // Create an instance of your database
         val database: Database = FirebaseDatabase()
@@ -196,7 +204,11 @@ class MainActivity : AppCompatActivity() {
     private inline fun <reified F : Fragment> replaceFragment(args: Bundle? = null) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace(R.id.fragmentContainerView, F::class.java, args)
+            replace(
+                R.id.fragmentContainerView,
+                F::class.java,
+                bundleOf(IS_TEST_KEY to isTest).also { it.putAll(args ?: bundleOf()) },
+            )
         }
     }
 
