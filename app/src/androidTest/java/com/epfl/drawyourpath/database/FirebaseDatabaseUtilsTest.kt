@@ -189,7 +189,7 @@ class FirebaseDatabaseUtilsTest {
 
     @Test
     fun transformRunsReturnsEmptyListForEmptySnapshot() {
-        assertEquals(FirebaseDatabaseUtils.transformRunList(null).size, `is`(0))
+        assertEquals(FirebaseDatabaseUtils.transformRunList(null).size, 0)
     }
 
     @Test
