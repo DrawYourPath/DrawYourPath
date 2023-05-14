@@ -82,8 +82,4 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
         milestoneView.layoutManager = GridLayoutManager(context, 2)
         milestoneView.adapter = milestoneAdapter
     }
-
-    companion object {
-        const val TEST_EXTRA = "test_challenge_fragment"
-    }
 }

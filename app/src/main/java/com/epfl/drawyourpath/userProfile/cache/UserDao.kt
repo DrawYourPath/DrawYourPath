@@ -26,7 +26,7 @@ interface UserDao {
      */
     @Transaction
     fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>, runs: List<RunEntity>, points: List<PointsEntity>) {
-        if (update(user) == 0) {
+        if (update(user) != 1) {
             insertUser(user)
         }
         insertAllDailyGoal(dailyGoals)
@@ -38,7 +38,7 @@ interface UserDao {
      * insert a new user inside the room database and will replace if there is a conflict with the id
      * @param user the user to insert
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUser(user: UserEntity)
 
     /**

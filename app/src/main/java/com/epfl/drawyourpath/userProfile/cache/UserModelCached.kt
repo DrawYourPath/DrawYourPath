@@ -75,10 +75,10 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }
     }*/
 
-    // trophies TODO remove placeholder
+    // trophies TODO remove sample
     private val trophies: MutableLiveData<List<Trophy>> = MutableLiveData(Trophy.sample)
 
-    // milestones TODO remove placeholder
+    // milestones TODO remove sample
     private val milestones: MutableLiveData<List<Milestone>> = MutableLiveData(Milestone.sample)
 
     /**
