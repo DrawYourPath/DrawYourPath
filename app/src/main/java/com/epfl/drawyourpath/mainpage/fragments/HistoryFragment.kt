@@ -34,7 +34,6 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         userModelCached.getRunHistory().observe(viewLifecycleOwner) {
             runsAdapter.updateRunsData(it)
         }

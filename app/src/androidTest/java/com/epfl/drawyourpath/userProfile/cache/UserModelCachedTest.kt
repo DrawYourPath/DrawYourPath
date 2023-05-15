@@ -80,6 +80,7 @@ class UserModelCachedTest {
         counting.drainTasks(timeout.toInt(), TimeUnit.SECONDS)
         Thread.sleep(10)
     }
+
     @Test
     fun getCorrectUserFromGetter() {
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
@@ -354,5 +355,4 @@ class UserModelCachedTest {
         @Suppress("UNCHECKED_CAST")
         return data as T
     }
-
 }

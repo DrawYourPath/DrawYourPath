@@ -40,7 +40,7 @@ data class RunEntity(
             return runs.map { run ->
                 Pair(
                     RunEntity(userId, run.getStartTime(), run.getEndTime(), run.getDuration(), sync),
-                    fromPathToEntity(userId, run.getStartTime(), run.getPath())
+                    fromPathToEntity(userId, run.getStartTime(), run.getPath()),
                 )
             }
         }
@@ -68,7 +68,10 @@ data class RunEntity(
          */
         fun fromEntityToRun(runEntity: RunEntity, pointsEntity: List<PointsEntity>): Run {
             return Run(
-                fromEntityToPath(pointsEntity.filter { it.runId == runEntity.startTime }), runEntity.startTime, runEntity.duration, runEntity.endTime
+                fromEntityToPath(pointsEntity.filter { it.runId == runEntity.startTime }),
+                runEntity.startTime,
+                runEntity.duration,
+                runEntity.endTime,
             )
         }
 
@@ -85,5 +88,4 @@ data class RunEntity(
             return Path(points)
         }
     }
-
 }
