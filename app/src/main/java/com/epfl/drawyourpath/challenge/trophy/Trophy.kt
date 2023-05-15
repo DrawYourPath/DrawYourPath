@@ -18,14 +18,7 @@ data class Trophy(
         val sample = listOf(
             Trophy("id1", "Star Shape", "draw a star with 5 branches", LocalDate.ofYearDay(2023, 92), 1),
             Trophy("id2", "ShapeSpear", "draw a spear on the map", LocalDate.ofYearDay(2023, 35), 2),
-            Trophy(
-                "id3",
-                "Most  Longest  greatest  Tournament  ever  of  all  times ................ : )",
-                "This  is  a  long  description,  really  really  long...... still not long enough.... maybe now it is long enough",
-                LocalDate.ofYearDay(2023, 89),
-                1,
-            ),
-            Trophy("id4", "Discover the earth ", "draw the earth", LocalDate.ofYearDay(2023, 23), 3),
+            Trophy("id4", "Discover the earth", "draw the earth", LocalDate.ofYearDay(2023, 23), 3),
         )
     }
 }
