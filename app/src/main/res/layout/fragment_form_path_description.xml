@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center|top"
+    android:id="@+id/form_path_description_fragment"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/formDescriptionPath"
+        android:text="@string/form_recognized_on_the_path_drawn"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scorePath"
+        android:text="@string/score_of_the_form_recognized"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="@string/ml_form_recognition_description"
+        android:justificationMode="inter_word"
+        android:textStyle="italic"
+        android:textSize="10sp"
+        android:layout_margin="5dp"/>
+</LinearLayout>
