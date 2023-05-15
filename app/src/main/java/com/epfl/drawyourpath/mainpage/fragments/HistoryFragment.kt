@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,8 @@ import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 class HistoryFragment : Fragment(R.layout.fragment_history) {
 
     private lateinit var runsAdapter: RunsAdapter
+
+    private val userModelCached: UserModelCached by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,9 +35,9 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val userModelCached: UserModelCached by activityViewModels()
 
         userModelCached.getRunHistory().observe(viewLifecycleOwner) {
+            Log.d("test", it.toString())
             runsAdapter.updateRunsData(it)
         }
     }
