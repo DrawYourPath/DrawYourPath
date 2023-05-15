@@ -368,21 +368,20 @@ class ChallengeFragmentTest {
         override fun getDescription() = "press Ime action button on a child view with specified id."
 
         override fun perform(uiController: UiController, view: View) = pressImeActionButton().perform(uiController, view.findViewById(viewId))
-
     }
 
     private fun scrollTo(): ViewAction = actionWithAssertions(ScrollToAction())
 
     private class ScrollToAction(
-        private val original: androidx.test.espresso.action.ScrollToAction = androidx.test.espresso.action.ScrollToAction()
+        private val original: androidx.test.espresso.action.ScrollToAction = androidx.test.espresso.action.ScrollToAction(),
     ) : ViewAction by original {
 
         override fun getConstraints(): Matcher<View> = anyOf(
             allOf(
                 withEffectiveVisibility(Visibility.VISIBLE),
-                isDescendantOfA(isAssignableFrom(NestedScrollView::class.java))),
-            original.constraints
+                isDescendantOfA(isAssignableFrom(NestedScrollView::class.java)),
+            ),
+            original.constraints,
         )
     }
-
 }
