@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,6 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         userModelCached.getRunHistory().observe(viewLifecycleOwner) {
-            Log.d("test", it.toString())
             runsAdapter.updateRunsData(it)
         }
     }

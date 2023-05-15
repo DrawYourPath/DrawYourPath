@@ -148,14 +148,12 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun getRunHistory(): LiveData<List<Run>> {
         checkCurrentUser()
         CompletableFuture.supplyAsync {
-            val run = runCache.getAllRunsAndPoints(currentUserID!!).map {
-                RunEntity.fromEntityToRun(it.key, it.value)
-            }.sortedByDescending { it.getStartTime() }
-            Log.d("test in usermodel cache", run.toString())
             runHistory.postValue(
-                run,
+                runCache.getAllRunsAndPoints(currentUserID!!).map {
+                    RunEntity.fromEntityToRun(it.key, it.value)
+                }.sortedByDescending { it.getStartTime() },
             )
-        }.exceptionally { Log.d("test", it.stackTraceToString()) }
+        }
         return runHistory
     }
 
