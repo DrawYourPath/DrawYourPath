@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
 class MapFragmentTest {
-    private val mockPath = Path(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0)))
+    private val mockPath = Path(listOf(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0))))
 
     @get:Rule
     var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
