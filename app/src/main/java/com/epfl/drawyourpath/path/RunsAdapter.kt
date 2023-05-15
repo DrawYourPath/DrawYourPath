@@ -47,7 +47,7 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         holder.calorieTextView.text = "Calories burned: ${run.getCalories()} kcal"
         holder.averageSpeedTextView.text =
             "Speed: ${String.format("%.2f", run.getAverageSpeed())} m/s"
-        holder.itemView.setOnClickListener{
+        holder.itemView.setOnClickListener {
             Toast.makeText(holder.itemView.context, "lol", Toast.LENGTH_SHORT).show()
         }
     }
