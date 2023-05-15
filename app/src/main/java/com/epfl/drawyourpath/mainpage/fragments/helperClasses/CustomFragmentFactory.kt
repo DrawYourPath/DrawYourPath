@@ -3,7 +3,6 @@ package com.epfl.drawyourpath.mainpage.fragments.helperClasses
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.mainpage.fragments.ChatFragment
 import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
 
 /**
@@ -26,7 +25,7 @@ class CustomFragmentFactory(private val database: Database) : FragmentFactory() 
      */
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
-            //Add other fragments that require a database argument here
+            // Add other fragments that require a database argument here
             FriendsFragment::class.java.name -> FriendsFragment(database)
             else -> super.instantiate(classLoader, className)
         }
