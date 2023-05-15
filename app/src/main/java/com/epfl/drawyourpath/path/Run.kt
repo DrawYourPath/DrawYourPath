@@ -22,7 +22,7 @@ class Run(
 
     init {
         if (endTime < startTime) {
-            throw IllegalArgumentException("End time must be greater than start time")
+            throw IllegalArgumentException("End time must be greater than or equal to start time")
         }
         calculateDistance()
         calculateAverageSpeed()
@@ -152,7 +152,7 @@ class Run(
     }
 
     /**
-     * This function returns the distance of each sections of the path(in order of the drawing)
+     * This function returns the distance (in meters) of each sections of the path(in order of the drawing)
      */
     fun getSectionsDistance(): List<Double> {
         val list = mutableListOf<Double>()
@@ -163,7 +163,7 @@ class Run(
     }
 
     /**
-     * This function returns the time taken to draw each section of the path(in order of the drawing)
+     * This function returns the time (in seconds) taken to draw each section of the path(in order of the drawing)
      * We consider that each seconds a points is added to a section.
      */
     fun getSectionsDuration(): List<Long> {
@@ -190,7 +190,7 @@ class Run(
     }
 
     /**
-     * Function used to get the time taken by the user to throw each kilometer
+     * Function used to get the time (in seconds) taken by the user to throw each kilometer
      */
     fun getKilometersDuration(): List<Long> {
         val step: Int = (path.size() / duration).toInt()
@@ -212,7 +212,7 @@ class Run(
     }
 
     /**
-     * Function used to get the average speed taken by the user to throw each kilometer
+     * Function used to get the average speed taken by the user to throw each kilometer in m/s
      */
     fun getKilometersAvgSpeed(): List<Double> {
         return getKilometersDuration().map { t -> 1000.0 / t }

@@ -10,7 +10,7 @@ import com.google.type.Color
 class Path {
     /**
      * private mutable list to store the sections of the paths, and a section is composed of a list of points.
-     * A new section is begin each time the user made a pause during his drawing activity.
+     * A new section is added each time the user made a pause during his drawing activity.
      */
     private val pointsSections: MutableList<MutableList<LatLng>> = mutableListOf(mutableListOf<LatLng>())
 
@@ -80,11 +80,7 @@ class Path {
      * Return the number of points in the path.
      */
     fun size(): Int {
-        var size = 0
-        for (section in this.pointsSections) {
-            size += section.size
-        }
-        return size
+        return pointsSections.flatten().size
     }
 
     /**
@@ -121,7 +117,7 @@ class Path {
     }
 
     /**
-     * function that returns the distance in the section at the given index
+     * function that returns the distance in meters in the section at the given index
      * @param index of the section that we would like to know the distance throw
      */
     fun getDistanceInSection(index: Int): Double {
