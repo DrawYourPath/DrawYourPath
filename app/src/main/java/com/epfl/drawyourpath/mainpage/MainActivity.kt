@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         // Create an instance of your database
         val database: Database = FirebaseDatabase()
 
-        // Set the fragment factory to the custom fragment factory to help initialise the chat and friends fragment with the database dependency
+        // Set the fragment factory to the custom fragment factory to help initialise the friends fragment with the database dependency
         supportFragmentManager.fragmentFactory = CustomFragmentFactory(database)
 
         // Display the main fragment when no saved state

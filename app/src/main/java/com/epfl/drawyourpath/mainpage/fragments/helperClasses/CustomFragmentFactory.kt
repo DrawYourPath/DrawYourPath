@@ -26,7 +26,7 @@ class CustomFragmentFactory(private val database: Database) : FragmentFactory() 
      */
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
-            ChatFragment::class.java.name -> ChatFragment(database)
+            //Add other fragments that require a database argument here
             FriendsFragment::class.java.name -> FriendsFragment(database)
             else -> super.instantiate(classLoader, className)
         }

@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.mainpage.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
@@ -14,9 +15,10 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ChatAdapter
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.util.concurrent.CompletableFuture
 
-class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_chat_list) {
+class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
 
     private lateinit var chatRecyclerView: RecyclerView
     private lateinit var chatAdapter: ChatAdapter
@@ -24,6 +26,10 @@ class ChatFragment(private val database: Database) : Fragment(R.layout.fragment_
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Get the database instance
+        val userModelCached: UserModelCached by activityViewModels()
+        val database = userModelCached.getDatabase()
 
         chatRecyclerView = view.findViewById(R.id.chatListRecyclerView)
         chatRecyclerView.layoutManager = LinearLayoutManager(requireContext())

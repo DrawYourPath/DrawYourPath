@@ -266,6 +266,14 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
+     * This function will return the database
+     * @return the database
+     */
+    fun getDatabase(): Database {
+        return database
+    }
+
+    /**
      * check if the current user is normal otherwise it is a mock test
      * @param checkIfNull check if the user is null or not
      */
