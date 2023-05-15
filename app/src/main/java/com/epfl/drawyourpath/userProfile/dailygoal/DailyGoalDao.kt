@@ -54,7 +54,7 @@ interface DailyGoalDao {
     @Transaction
     fun addRunAndUpdateProgress(userId: String, date: Long, progress: UserGoals, run: RunEntity, points: List<PointsEntity>): DailyGoalEntity {
         addTotalProgressUser(userId, progress.distance ?: 0.0, progress.activityTime ?: 0.0, progress.paths?.toInt() ?: 0)
-        insertIfDailyGoalUpdateFailed(userId, date, addProgressDailyGoal(userId, date,progress.distance ?: 0.0, progress.activityTime ?: 0.0, progress.paths?.toInt() ?: 0), progress)
+        insertIfDailyGoalUpdateFailed(userId, date, addProgressDailyGoal(userId, date, progress.distance ?: 0.0, progress.activityTime ?: 0.0, progress.paths?.toInt() ?: 0), progress)
         insertRun(run)
         insertAllPoints(points)
         return getDailyGoalByIdAndDate(userId, date)

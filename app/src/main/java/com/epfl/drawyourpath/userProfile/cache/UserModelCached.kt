@@ -241,7 +241,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             database.addRunToHistory(currentUserID!!, run)
         }.thenApplyAsync {
             runCache.runSynced(currentUserID!!, run.getStartTime())
-        }/*.thenComposeAsync { TODO add again when in database
+        } /*.thenComposeAsync { TODO add again when in database
             database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
         }*/
         return future.thenApply {}
