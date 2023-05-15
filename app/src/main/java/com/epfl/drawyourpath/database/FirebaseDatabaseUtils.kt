@@ -82,7 +82,7 @@ object FirebaseDatabaseUtils {
      * @return the run corresponding to the data
      */
     fun transformRun(data: DataSnapshot?): Run? {
-        val sections = data?.child("path")?.child("points")?.children?.mapNotNull {section ->
+        val sections = data?.child("path")?.child("points")?.children?.mapNotNull { section ->
             section.children.mapNotNull { point ->
                 val lat = getNumber(point.child("latitude"))?.toDouble()
                 val lon = getNumber(point.child("longitude"))?.toDouble()
@@ -107,7 +107,7 @@ object FirebaseDatabaseUtils {
                 duration,
                 endTime,
                 predictedShape,
-                similarityScore
+                similarityScore,
             )
         }
 
