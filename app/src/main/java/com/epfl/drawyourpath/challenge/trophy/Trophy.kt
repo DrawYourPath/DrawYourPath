@@ -25,6 +25,7 @@ data class Trophy(
                 LocalDate.ofYearDay(2023, 89),
                 1,
             ),
+            Trophy("id4", "Discover the earth ", "draw the earth", LocalDate.ofYearDay(2023, 23), 3),
         )
     }
 }
