@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
@@ -46,6 +47,9 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         holder.calorieTextView.text = "Calories burned: ${run.getCalories()} kcal"
         holder.averageSpeedTextView.text =
             "Speed: ${String.format("%.2f", run.getAverageSpeed())} m/s"
+        holder.itemView.setOnClickListener{
+            Toast.makeText(holder.itemView.context, "lol", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun getItemCount(): Int {
