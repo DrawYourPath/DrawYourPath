@@ -1,11 +1,9 @@
 package com.epfl.drawyourpath.mainpage.fragments.runStats
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 
 /**
@@ -19,7 +17,7 @@ class FormPathDescriptionFragment(private val formName: String, private val scor
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //init the view elements with the parameters of the fragments
+        // init the view elements with the parameters of the fragments
         initViewElements(view)
     }
 
@@ -27,7 +25,7 @@ class FormPathDescriptionFragment(private val formName: String, private val scor
      * Helper function to init the different elements of the view.
      * @param view where the different elements are displayed
      */
-    private fun initViewElements(view: View){
+    private fun initViewElements(view: View) {
         this.formDescriptionText = view.findViewById(R.id.formDescriptionPath)
         this.formDescriptionText.text = "${getString(R.string.form_recognized_on_the_path_drawn)} $formName"
         this.scoreText = view.findViewById(R.id.scorePath)

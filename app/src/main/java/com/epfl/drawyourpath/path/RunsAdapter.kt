@@ -6,15 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.runStats.RunInfoStatsFragment
-import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.utils.Utils.getStaticMapUrl
 import com.google.android.gms.maps.model.LatLng
 
@@ -55,7 +52,7 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         holder.itemView.setOnClickListener {
             val activity: MainActivity = holder.itemView.context as MainActivity
             val fragTransaction: FragmentTransaction = activity.supportFragmentManager.beginTransaction()
-            fragTransaction.replace(R.id.fragmentContainerView,  RunInfoStatsFragment(run = run)).commit()
+            fragTransaction.replace(R.id.fragmentContainerView, RunInfoStatsFragment(run = run)).commit()
         }
     }
 

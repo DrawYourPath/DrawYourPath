@@ -1,13 +1,9 @@
 package com.epfl.drawyourpath.mainpage.fragments.runStats
 
-import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
-import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -20,14 +16,14 @@ import com.github.mikephil.charting.data.LineDataSet
  * @param titleAxe2 title of the second axe
  */
 class GraphFromListFragment(private val map: Map<Double, Double>, private val titleAxe1: String, private val titleAxe2: String) : Fragment(R.layout.fragment_graph_from_list) {
-    private lateinit var graphView : LineChart
+    private lateinit var graphView: LineChart
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         this.graphView = view.findViewById(R.id.graphFromList)
         val entries = ArrayList<Entry>()
 
-        map.forEach{key, value ->
+        map.forEach { key, value ->
             entries.add(Entry(key.toFloat(), value.toFloat()))
         }
 
