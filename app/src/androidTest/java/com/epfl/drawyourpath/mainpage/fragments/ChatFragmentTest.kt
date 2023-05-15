@@ -24,7 +24,7 @@ class ChatFragmentTest {
     fun testChatFragmentisDisplayed() {
         // Go to chats
         onView(withId(R.id.chat_menu_item)).perform(click())
-        // wait for the fragment to load
+        // wait for the fragment to load!
         Thread.sleep(1000)
         // Check fragment is chats
         onView(withId(R.id.chat_list_fragment)).check(matches(isDisplayed()))
