@@ -8,7 +8,7 @@ import com.epfl.drawyourpath.path.cache.PointsEntity
 import com.epfl.drawyourpath.path.cache.RunDao
 import com.epfl.drawyourpath.path.cache.RunEntity
 
-@Database(entities = [UserEntity::class, DailyGoalEntity::class, RunEntity::class, PointsEntity::class], version = 5)
+@Database(entities = [UserEntity::class, DailyGoalEntity::class, RunEntity::class, PointsEntity::class], version = 6)
 abstract class UserDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 

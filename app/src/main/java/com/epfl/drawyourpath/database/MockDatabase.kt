@@ -37,7 +37,8 @@ class MockDatabase : Database() {
                 Run(
                     startTime = 10,
                     endTime = 20,
-                    path = Path(listOf(LatLng(46.51854301997813, 6.56237289547834))),
+                    duration = 10,
+                    path = Path(listOf(listOf(LatLng(46.51854301997813, 6.56237289547834)))),
                 ),
             ),
             dailyGoals = listOf(
@@ -86,6 +87,7 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
@@ -119,6 +121,7 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
@@ -153,6 +156,7 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
@@ -187,6 +191,7 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
