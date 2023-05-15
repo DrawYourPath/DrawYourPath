@@ -311,6 +311,8 @@ class ChallengeFragmentTest {
 
         onView(withId(R.id.trophies_view)).perform(scrollTo())
 
+        waitUntilAllThreadAreDone()
+
         for (trophy in Trophy.sample) {
             onView(withId(R.id.trophies_view)).check(matches(hasDescendant(withText(trophy.tournamentName))))
                 .check(matches(hasDescendant(withText(trophy.tournamentDescription))))
@@ -331,6 +333,8 @@ class ChallengeFragmentTest {
         )
 
         onView(withId(R.id.milestones_view)).perform(scrollTo())
+
+        waitUntilAllThreadAreDone()
 
         for (milestone in Milestone.sample) {
             onView(withId(R.id.milestones_view)).check(matches(hasDescendant(withText(milestone.name))))
