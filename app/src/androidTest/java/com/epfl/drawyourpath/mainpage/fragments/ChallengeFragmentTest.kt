@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.arch.core.executor.testing.CountingTaskExecutorRule
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -12,13 +13,16 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.contrib.RecyclerViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.MockDatabase
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.anyOf
 import org.hamcrest.core.StringContains.containsString
 import org.junit.Rule
 import org.junit.Test
@@ -309,8 +313,7 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        // for some reason CI does not want to display all of them
-        for (trophy in Trophy.sample.subList(0, 1)) {
+        Trophy.sample.forEach { trophy ->
             onView(withText(trophy.tournamentName)).perform(scrollTo())
             onView(withId(R.id.trophies_view)).check(matches(hasDescendant(withText(trophy.tournamentName))))
                 .check(matches(hasDescendant(withText(trophy.tournamentDescription))))
@@ -330,7 +333,7 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        for (milestone in Milestone.sample) {
+        Milestone.sample.forEach { milestone ->
             onView(withText(milestone.name)).perform(scrollTo())
             onView(withId(R.id.milestones_view)).check(matches(hasDescendant(withText(milestone.name))))
                 .check(matches(hasDescendant(withText(milestone.description))))
@@ -365,5 +368,21 @@ class ChallengeFragmentTest {
         override fun getDescription() = "press Ime action button on a child view with specified id."
 
         override fun perform(uiController: UiController, view: View) = pressImeActionButton().perform(uiController, view.findViewById(viewId))
+
     }
+
+    private fun scrollTo(): ViewAction = actionWithAssertions(ScrollToAction())
+
+    private class ScrollToAction(
+        private val original: androidx.test.espresso.action.ScrollToAction = androidx.test.espresso.action.ScrollToAction()
+    ) : ViewAction by original {
+
+        override fun getConstraints(): Matcher<View> = anyOf(
+            allOf(
+                withEffectiveVisibility(Visibility.VISIBLE),
+                isDescendantOfA(isAssignableFrom(NestedScrollView::class.java))),
+            original.constraints
+        )
+    }
+
 }
