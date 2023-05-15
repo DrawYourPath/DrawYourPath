@@ -309,11 +309,8 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        onView(withId(R.id.trophies_view)).perform(scrollTo())
-
-        waitUntilAllThreadAreDone()
-
         for (trophy in Trophy.sample) {
+            onView(withText(trophy.tournamentName)).perform(scrollTo())
             onView(withId(R.id.trophies_view)).check(matches(hasDescendant(withText(trophy.tournamentName))))
                 .check(matches(hasDescendant(withText(trophy.tournamentDescription))))
                 .check(matches(hasDescendant(withText(containsString(trophy.dateAsString)))))
@@ -332,11 +329,8 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        onView(withId(R.id.milestones_view)).perform(scrollTo())
-
-        waitUntilAllThreadAreDone()
-
         for (milestone in Milestone.sample) {
+            onView(withText(milestone.name)).perform(scrollTo())
             onView(withId(R.id.milestones_view)).check(matches(hasDescendant(withText(milestone.name))))
                 .check(matches(hasDescendant(withText(milestone.description))))
                 .check(matches(hasDescendant(withText(containsString(milestone.dateAsString)))))
