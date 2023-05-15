@@ -27,19 +27,18 @@ class GraphFromListFragment(private val map: Map<Double, Double>, private val ti
             entries.add(Entry(key.toFloat(), value.toFloat()))
         }
 
-        val vl = LineDataSet(entries, titleAxe2)
+        val listPoints = LineDataSet(entries, "$titleAxe2 in function of the $titleAxe1")
 
-        vl.setDrawValues(false)
-        vl.setDrawFilled(true)
-        vl.lineWidth = 3f
+        listPoints.setDrawValues(false)
+        listPoints.setDrawFilled(true)
+        listPoints.lineWidth = 3f
 
-        graphView.data = LineData(vl)
-
+        graphView.data = LineData(listPoints)
         graphView.axisRight.isEnabled = false
 
         graphView.setTouchEnabled(true)
         graphView.setPinchZoom(true)
 
-        graphView.description.text = titleAxe1
+        graphView.description.text = ""
     }
 }
