@@ -1,11 +1,36 @@
 package com.epfl.drawyourpath.userProfile.cache
 
+import android.app.Application
+import android.graphics.Bitmap
+import androidx.arch.core.executor.testing.CountingTaskExecutorRule
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.test.core.app.ApplicationProvider
+import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.database.MockNonWorkingDatabase
+import com.epfl.drawyourpath.database.UserData
+import com.epfl.drawyourpath.database.UserGoals
+import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.userProfile.UserProfile
+import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.utils.Utils
+import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
+import java.time.LocalDate
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
-// @RunWith(JUnit4::class)
+@RunWith(JUnit4::class)
 class UserModelCachedTest {
-    // TODO: Uncomment the test whene the cache of the run have been refactored
-    /*
+
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
@@ -55,6 +80,7 @@ class UserModelCachedTest {
         counting.drainTasks(timeout.toInt(), TimeUnit.SECONDS)
         Thread.sleep(10)
     }
+
     @Test
     fun getCorrectUserFromGetter() {
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
@@ -256,9 +282,6 @@ class UserModelCachedTest {
         newDistanceGoal: Double = expected.goals!!.distance!!,
         newTimeGoal: Double = expected.goals!!.activityTime!!,
         newPathGoal: Int = expected.goals!!.paths!!.toInt(),
-        /*addDistanceProgress: Double = 0.0,
-        addTimeProgress: Double = 0.0,
-        addPathProgress: Int = 0,*/
     ) {
         assertEquals(expected.userId!!, actual.userId)
         assertEquals(newUsername, actual.username)
@@ -269,20 +292,6 @@ class UserModelCachedTest {
         assertEquals(newDistanceGoal, actual.goals.distanceGoal, 0.0)
         assertEquals(newTimeGoal, actual.goals.activityTimeGoal, 0.0)
         assertEquals(newPathGoal, actual.goals.pathsGoal)
-        /*assertEquals( TODO add this back when it is implemented
-            expected.getTotalDistance() + addDistanceProgress,
-            actual.goalAndAchievements.totalDistance,
-            0.001,
-        )
-        assertEquals(
-            expected.getTotalActivityTime() + addTimeProgress,
-            actual.goalAndAchievements.totalActivityTime,
-            0.001,
-        )
-        assertEquals(
-            expected.getTotalNbOfPaths() + addPathProgress,
-            actual.goalAndAchievements.totalNbOfPaths,
-        ) */
     }
 
     private fun assertEqualRun(expected: List<Run>, actual: List<Run>) {
@@ -329,5 +338,4 @@ class UserModelCachedTest {
         @Suppress("UNCHECKED_CAST")
         return data as T
     }
-    */
 }

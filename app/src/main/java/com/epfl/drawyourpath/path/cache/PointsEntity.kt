@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 
 @Entity(
     tableName = "Points",
-    primaryKeys = ["user_id", "run_id", "index"],
+    primaryKeys = ["user_id", "run_id", "section", "index"],
     foreignKeys = [ForeignKey(entity = RunEntity::class, parentColumns = ["user_id", "start_time"], childColumns = ["user_id", "run_id"], onDelete = ForeignKey.CASCADE)],
 )
 data class PointsEntity(
@@ -15,6 +15,8 @@ data class PointsEntity(
 
     @ColumnInfo("run_id")
     val runId: Long,
+
+    val section: Int,
 
     val index: Int,
 
