@@ -75,7 +75,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         val pathReady = path != null && path.getPoints().isNotEmpty()
         if (pathReady && !focusedOnPosition) {
             val bounds = LatLngBounds.builder()
-            path!!.getPoints().map { bounds.include(it); Log.d("test", it.toString()) }
+            path!!.getPoints().flatten().map { bounds.include(it); Log.d("test", it.toString()) }
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 5))
             drawStaticPathOnMap(map, path)
         }
@@ -103,10 +103,14 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param map the map
      */
     private fun setupDrawingOnMap(map: GoogleMap) {
-        val polyline = map.addPolyline(PolylineOptions().clickable(false))
-        pathDrawingModel.points.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty() && it.size > polyline.points.size) {
-                polyline.points = it
+        pathDrawingModel.pointsSection.observe(viewLifecycleOwner) { listSection ->
+            if (listSection.isNotEmpty()) {
+                for (section in listSection) {
+                    val polyline = map.addPolyline(PolylineOptions().clickable(false))
+                    if (section.isNotEmpty() && section.size > polyline.points.size) {
+                        polyline.points = section
+                    }
+                }
             }
         }
     }
@@ -117,11 +121,9 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param path will be drawn on the map
      */
     private fun drawStaticPathOnMap(map: GoogleMap, path: Path) {
-        val listLng = ArrayList<LatLng>()
-        for (coord in path.getPoints()) {
-            listLng.add(LatLng(coord.latitude, coord.longitude))
+        for (polyline in path.getPolyline()) {
+            map.addPolyline(polyline)
         }
-        map.addPolyline(PolylineOptions().clickable(false).addAll(listLng))
     }
 
     /**
