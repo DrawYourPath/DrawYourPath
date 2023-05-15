@@ -282,9 +282,6 @@ class UserModelCachedTest {
         newDistanceGoal: Double = expected.goals!!.distance!!,
         newTimeGoal: Double = expected.goals!!.activityTime!!,
         newPathGoal: Int = expected.goals!!.paths!!.toInt(),
-        /*addDistanceProgress: Double = 0.0,
-        addTimeProgress: Double = 0.0,
-        addPathProgress: Int = 0,*/
     ) {
         assertEquals(expected.userId!!, actual.userId)
         assertEquals(newUsername, actual.username)
@@ -295,20 +292,6 @@ class UserModelCachedTest {
         assertEquals(newDistanceGoal, actual.goals.distanceGoal, 0.0)
         assertEquals(newTimeGoal, actual.goals.activityTimeGoal, 0.0)
         assertEquals(newPathGoal, actual.goals.pathsGoal)
-        /*assertEquals( TODO add this back when it is implemented
-            expected.getTotalDistance() + addDistanceProgress,
-            actual.goalAndAchievements.totalDistance,
-            0.001,
-        )
-        assertEquals(
-            expected.getTotalActivityTime() + addTimeProgress,
-            actual.goalAndAchievements.totalActivityTime,
-            0.001,
-        )
-        assertEquals(
-            expected.getTotalNbOfPaths() + addPathProgress,
-            actual.goalAndAchievements.totalNbOfPaths,
-        ) */
     }
 
     private fun assertEqualRun(expected: List<Run>, actual: List<Run>) {
