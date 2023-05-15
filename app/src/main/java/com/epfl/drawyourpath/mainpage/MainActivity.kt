@@ -17,19 +17,15 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
-import com.epfl.drawyourpath.path.Path
-import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_KEY
 import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import java.util.concurrent.CompletableFuture
@@ -78,21 +74,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupNotifications()
-
-        /*
-        val db = FirebaseDatabase()
-        val auth = FirebaseAuth()
-        val sampleRun = Run(
-            Path(listOf(listOf(LatLng(43.3, 44.3), LatLng(44.3, 45.3)), listOf(LatLng(40.8, 41.3), LatLng(41.5, 42.8)))),
-            System.currentTimeMillis()/1000,
-            2000,
-            System.currentTimeMillis()/1000 + 3000,
-            predictedShape = "cross",
-            similarityScore = 0.9
-        )
-
-        db.addRunToHistory(auth.getUser()!!.getUid(), sampleRun)
-        */
     }
 
     /**

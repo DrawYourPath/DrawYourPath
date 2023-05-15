@@ -92,7 +92,6 @@ class Run(
     /**
      * Returns the duration of the run (in seconds)
      */
-    @Exclude
     fun getDuration(): Long {
         return duration
     }
