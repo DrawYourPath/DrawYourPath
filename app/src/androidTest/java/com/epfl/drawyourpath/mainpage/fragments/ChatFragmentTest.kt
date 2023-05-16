@@ -174,7 +174,6 @@ class ChatFragmentTest {
         onView(withText("testusername")).check(matches(isDisplayed()))
     }
 
-
     @Test
     fun testSelectingUserInPopupCreatesNewChat() {
         // Go to chats
@@ -201,7 +200,6 @@ class ChatFragmentTest {
             assertEquals(initialItemCount + 1, newItemCount)
         }
     }
-
 
     @Test
     fun testNewChatItemIsVisible() {
