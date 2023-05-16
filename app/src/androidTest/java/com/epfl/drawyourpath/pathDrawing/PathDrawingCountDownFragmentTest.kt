@@ -56,7 +56,7 @@ class PathDrawingCountDownFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Thread.sleep(1002)
+        Thread.sleep(1005)
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_main_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         scenario.close()
