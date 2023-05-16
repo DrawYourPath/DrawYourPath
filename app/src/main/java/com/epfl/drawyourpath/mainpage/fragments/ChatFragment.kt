@@ -7,10 +7,6 @@ import android.view.View
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.liveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
@@ -121,9 +117,6 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
 
         chatRecyclerView.adapter = chatAdapter
 
-
-
-
         // Get user data
         val userAccountFuture = database.getUserData(userId)
 
@@ -183,7 +176,6 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
                 null
             }
         }
-
     }
     fun getUserChatPreviews(database: Database, userId: String): CompletableFuture<List<ChatPreview>> {
         return database.getUserData(userId)
@@ -215,5 +207,3 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
         }
     }
 }
-
-
