@@ -69,7 +69,7 @@ class FirebaseDatabaseUtilsTest {
         val pointsSnap = section.map {
             mockPoint(it)
         }
-        `when` (snapshot.children).thenReturn(pointsSnap)
+        `when`(snapshot.children).thenReturn(pointsSnap)
 
         return snapshot
     }
