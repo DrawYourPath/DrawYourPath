@@ -296,7 +296,7 @@ object Utils {
         }
         // Check if finished, otherwise solve recursively
         if (distMax > epsilon) {
-            reducedPointList.addAll(reduceSection(section.subList(0, indexMax+1), epsilon))
+            reducedPointList.addAll(reduceSection(section.subList(0, indexMax + 1), epsilon))
             reducedPointList.addAll(reduceSection(section.subList(indexMax, section.size), epsilon))
         } else {
             reducedPointList.add(section.first())
