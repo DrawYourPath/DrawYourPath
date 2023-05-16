@@ -7,7 +7,6 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -104,7 +103,7 @@ class PathDrawingEndFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.display_calories_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(mockRun.getCalories().toString())))
 
-        //check that the form recognized and the score are displayed
+        // check that the form recognized and the score are displayed
         Espresso.onView(ViewMatchers.withId(R.id.form_path_description_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.formDescriptionPath))

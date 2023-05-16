@@ -8,15 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.machineLearning.DigitalInk
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.runStats.FormPathDescriptionFragment
 import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
-import com.epfl.drawyourpath.utils.Utils
-import com.google.android.gms.maps.model.LatLng
-import com.google.mlkit.vision.digitalink.Ink
 
 /**
  * This fragment will be displayed at the end of a creation of a path (that will be displayed a preview of the path on the map,
@@ -37,7 +33,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
         // display the preview of the path
         setupPathPreview()
 
-        //display the form recognized by the ML model
+        // display the form recognized by the ML model
         setupPathDescription()
 
         // return back to the menu add and save the path back clicking and the back to menu button
