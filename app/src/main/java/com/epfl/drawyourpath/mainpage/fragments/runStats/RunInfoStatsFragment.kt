@@ -252,7 +252,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         val columnText = getString(R.string.segment)
         val lineText = getString(R.string.average_speed_in_m_s)
         fragTransaction.replace(R.id.contentPreviewRunInfo, GraphFromListFragment(map = mapSpeed, titleAxe1 = columnText, titleAxe2 = lineText)).commit()
-        // show a table containing the average speed in function of the section
+        // show a table containing the average speed in function of the sections
         val fragTransaction2: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         val mapString = hashMapOf<String, String>()
         listSpeed.forEachIndexed { index, elem ->
