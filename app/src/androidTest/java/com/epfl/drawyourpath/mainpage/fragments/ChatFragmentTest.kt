@@ -1,6 +1,11 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -10,6 +15,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ChatAdapter
+import junit.framework.TestCase.assertEquals
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.Matcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -100,4 +108,55 @@ class ChatFragmentTest {
         onView(withId(R.id.chatListRecyclerView))
             .perform(RecyclerViewActions.actionOnItemAtPosition<ChatAdapter.ChatViewHolder>(0, click()))
     }
+
+    @Test
+    fun testChatListItemDeleteButtonIsVisibleAndClickable() {
+        // Go to chats
+        onView(withId(R.id.chat_menu_item)).perform(click())
+
+        // Check if the delete button of the first chat item in the list is visible and clickable
+        onView(withId(R.id.chatListRecyclerView))
+            .perform(RecyclerViewActions.scrollToPosition<ChatAdapter.ChatViewHolder>(0))
+            .check(matches(hasDescendant(allOf(withId(R.id.deleteButton), isDisplayed(), isClickable()))))
+    }
+
+    @Test
+    fun testClickingDeleteButtonRemovesChatItemFromRecyclerView() {
+        // Go to chats
+        onView(withId(R.id.chat_menu_item)).perform(click())
+
+        // Get the initial number of chat items
+        var initialItemCount = 0
+        onView(withId(R.id.chatListRecyclerView)).check { view, _ ->
+            initialItemCount = (view as RecyclerView).adapter?.itemCount ?: 0
+        }
+
+        // Click the delete button of the first chat item in the list
+        onView(withId(R.id.chatListRecyclerView))
+            .perform(RecyclerViewActions.actionOnItemAtPosition<ChatAdapter.ChatViewHolder>(0, clickChildViewWithId(R.id.deleteButton)))
+
+        // Check if the number of chat items is reduced
+        onView(withId(R.id.chatListRecyclerView)).check { view, _ ->
+            val newItemCount = (view as RecyclerView).adapter?.itemCount ?: 0
+            assertEquals(initialItemCount - 1, newItemCount)
+        }
+    }
+
+    private fun clickChildViewWithId(id: Int): ViewAction {
+        return object : ViewAction {
+            override fun getConstraints(): Matcher<View> {
+                return allOf(isDisplayed(), isAssignableFrom(ViewGroup::class.java))
+            }
+
+            override fun getDescription(): String {
+                return "Click on a child view with specified id."
+            }
+
+            override fun perform(uiController: UiController, view: View) {
+                val v = view.findViewById<View>(id)
+                v.performClick()
+            }
+        }
+    }
+
 }

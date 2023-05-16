@@ -80,20 +80,34 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
             chatAdapter.notifyDataSetChanged()
         }
 
-        chatAdapter = ChatAdapter(chatList) { selectedChatPreview ->
-            chatPreviewToChat(database, selectedChatPreview).thenAccept { chat ->
-                // Create a new instance of ChatDetailFragment
-                val chatDetailFragment = ChatOpenFragment.newInstance(chat)
+        chatAdapter = ChatAdapter(
+            chatList,
+            { selectedChatPreview ->
+                chatPreviewToChat(database, selectedChatPreview).thenAccept { chat ->
+                    // Create a new instance of ChatDetailFragment
+                    val chatDetailFragment = ChatOpenFragment.newInstance(chat)
 
-                // Replace the current fragment with the ChatDetailFragment
-                requireActivity().runOnUiThread {
-                    requireActivity().supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainerView, chatDetailFragment)
-                        .addToBackStack(null) // Add the transaction to the back stack
-                        .commit()
+                    // Replace the current fragment with the ChatDetailFragment
+                    requireActivity().runOnUiThread {
+                        requireActivity().supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragmentContainerView, chatDetailFragment)
+                            .addToBackStack(null) // Add the transaction to the back stack
+                            .commit()
+                    }
                 }
+            },
+            { selectedChatPreviewToDelete ->
+                // Delete the chat conversation
+                database.removeChatMember(userId, selectedChatPreviewToDelete.conversationId!!).thenAccept(){
+                    // Remove the deleted chat from chatList and notify the adapter
+                    chatList.remove(selectedChatPreviewToDelete)
+                    requireActivity().runOnUiThread {
+                        chatAdapter.notifyDataSetChanged()
+                    }
+                }
+
             }
-        }
+        )
 
         chatRecyclerView.adapter = chatAdapter
     }
