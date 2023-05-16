@@ -16,7 +16,6 @@ class ChatAdapter(private val chatPreviews: List<ChatPreview>, private val click
         val chatTitleTextView: TextView = view.findViewById(R.id.chatTitleTextView)
         val deleteButton: Button = view.findViewById(R.id.deleteButton)
 
-
         fun bind(chatPreview: ChatPreview, clickListener: (ChatPreview) -> Unit, deleteListener: (ChatPreview) -> Unit) {
             itemView.setOnClickListener { clickListener(chatPreview) }
             deleteButton.setOnClickListener { deleteListener(chatPreview) }

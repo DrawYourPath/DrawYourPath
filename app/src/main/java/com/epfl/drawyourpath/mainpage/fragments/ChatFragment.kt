@@ -98,15 +98,14 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
             },
             { selectedChatPreviewToDelete ->
                 // Delete the chat conversation
-                database.removeChatMember(userId, selectedChatPreviewToDelete.conversationId!!).thenAccept(){
+                database.removeChatMember(userId, selectedChatPreviewToDelete.conversationId!!).thenAccept() {
                     // Remove the deleted chat from chatList and notify the adapter
                     chatList.remove(selectedChatPreviewToDelete)
                     requireActivity().runOnUiThread {
                         chatAdapter.notifyDataSetChanged()
                     }
                 }
-
-            }
+            },
         )
 
         chatRecyclerView.adapter = chatAdapter
