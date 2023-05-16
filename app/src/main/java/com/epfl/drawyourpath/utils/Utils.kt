@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
+import com.epfl.drawyourpath.path.Path
 import com.google.android.gms.maps.model.LatLng
 import com.google.mlkit.vision.digitalink.Ink.Point
 import com.google.mlkit.vision.digitalink.Ink.Stroke
@@ -263,5 +264,49 @@ object Utils {
         // Mercator projection formula
         val y = ln(tan(lat) + (1 / cos(lat)))
         return Point.create(long.toFloat(), y.toFloat())
+    }
+
+    fun reducePath(path: Path, maxError: Double = 0.01): Path {
+        val avgSegmentLength = path.getDistance() / path.size()
+        val epsilon = maxError * avgSegmentLength
+        var reducedPoints = mutableListOf(listOf<LatLng>())
+
+        for (section in path.getPoints()) {
+            reducedPoints.add(reduceSection(section, epsilon))
+        }
+        return Path(reducedPoints.toList())
+    }
+
+    fun reduceSection(section: List<LatLng>, epsilon: Double): List<LatLng> {
+        var reducedPointList = mutableListOf<LatLng>()
+        // Check for trivial cases
+        if (section.size <= 2) {
+            reducedPointList.addAll(section)
+            return reducedPointList.toList()
+        }
+        // Find index and distance of maximal distance to the segment
+        var distMax = 0.0
+        var indexMax = 0
+        for (i in 1 until section.size - 1) {
+            val dist = distanceToSegment(section[i], section.first(), section.last())
+            if (dist > distMax) {
+                distMax = dist
+                indexMax = i
+            }
+        }
+        // Check if finished, otherwise solve recursively
+        if (distMax > epsilon) {
+            reducedPointList.addAll(reduceSection(section.subList(0, indexMax+1), epsilon))
+            reducedPointList.addAll(reduceSection(section.subList(indexMax, section.size), epsilon))
+        } else {
+            reducedPointList.add(section.first())
+            reducedPointList.add(section.last())
+        }
+        return reducedPointList.toList()
+    }
+
+    private fun distanceToSegment(point: LatLng, start: LatLng, end: LatLng): Double {
+        // TODO : Compute distance of point to segment
+        return 0.0
     }
 }
