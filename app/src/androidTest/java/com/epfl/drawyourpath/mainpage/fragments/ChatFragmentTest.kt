@@ -43,7 +43,7 @@ class ChatFragmentTest {
 
     @Test
     fun testChatListRecyclerViewisVisible() {
-        // Go to chats
+        // Go to chats!
         onView(withId(R.id.chat_menu_item)).perform(click())
 
         // Check if chatListRecyclerView is visible
