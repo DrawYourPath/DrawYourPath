@@ -15,7 +15,6 @@ import org.junit.runners.JUnit4
 class FormPathsDescriptionFragmentTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
-
     /**
      * Check the score recognized and the score gives to this form are correctly displayed on this fragment.
      */

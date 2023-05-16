@@ -66,7 +66,7 @@ class TableFromListFragment(private val map: Map<String, String>, private val co
         var i = 0
         map.forEach { key, value ->
             val row = TableRow(context)
-            row.id = ID_ROW_VALUE+i
+            row.id = ID_ROW_VALUE + i
             // for the key
             val text1 = TextView(context)
             text1.text = key
@@ -84,12 +84,12 @@ class TableFromListFragment(private val map: Map<String, String>, private val co
             text2.id = ID_VALUE_INIT + i
             row.addView(text2)
             this.tableView.addView(row)
-            i+=1
+            i += 1
         }
     }
 
-    //id for the test
-    companion object{
+    // id for the test
+    companion object {
         val ID_ROW_TITLE = "IDRowTitle".hashCode()
         val ID_COLUMN_TITLE_1 = "IDTitleColumn1".hashCode()
         val ID_COLUMN_TITLE_2 = "IDTitleColumn2".hashCode()
