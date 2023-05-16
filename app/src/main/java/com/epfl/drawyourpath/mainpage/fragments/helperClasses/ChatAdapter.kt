@@ -46,6 +46,6 @@ class ChatAdapter(
         holder.bind(chatPreview, clickListener, deleteListener) // Binds the chat preview to the ViewHolder
     }
 
-    // Returns the total number of chat previews in the list
+    // Returns the total number of chat previews in the list!
     override fun getItemCount() = chatPreviews.size
 }
