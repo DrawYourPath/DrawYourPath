@@ -3,12 +3,14 @@ package com.epfl.drawyourpath.mainpage.fragments
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,6 +19,7 @@ import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ChatAdapter
 import junit.framework.TestCase.assertEquals
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.anything
 import org.hamcrest.Matcher
 import org.junit.Rule
 import org.junit.Test
@@ -157,5 +160,69 @@ class ChatFragmentTest {
                 v.performClick()
             }
         }
+    }
+
+    @Test
+    fun testAddChatButtonOpensPopup() {
+        // Go to chats
+        onView(withId(R.id.chat_menu_item)).perform(click())
+
+        // Click the add chat button
+        onView(withId(R.id.addChatButton)).perform(click())
+        Thread.sleep(1000)
+        // Check if the popup is displayed
+        onView(withText("testusername")).check(matches(isDisplayed()))
+    }
+
+
+    @Test
+    fun testSelectingUserInPopupCreatesNewChat() {
+        // Go to chats
+        onView(withId(R.id.chat_menu_item)).perform(click())
+
+        // Get the initial number of chat items
+        var initialItemCount = 0
+        onView(withId(R.id.chatListRecyclerView)).check { view, _ ->
+            initialItemCount = (view as RecyclerView).adapter?.itemCount ?: 0
+        }
+
+        // Click the add chat button
+        onView(withId(R.id.addChatButton)).perform(click())
+
+        // Click the first user item in the popup list
+        onData(anything())
+            .inRoot(isPlatformPopup())
+            .atPosition(0)
+            .perform(click())
+
+        // Check if a new chat item has been added to the chat list
+        onView(withId(R.id.chatListRecyclerView)).check { view, _ ->
+            val newItemCount = (view as RecyclerView).adapter?.itemCount ?: 0
+            assertEquals(initialItemCount + 1, newItemCount)
+        }
+    }
+
+
+    @Test
+    fun testNewChatItemIsVisible() {
+        // Go to chats
+        onView(withId(R.id.chat_menu_item)).perform(click())
+
+        // Click the add chat button
+        onView(withId(R.id.addChatButton)).perform(click())
+
+        // Click the first user item in the popup list
+        onData(anything())
+            .inRoot(isPlatformPopup())
+            .atPosition(0)
+            .perform(click())
+
+        // Scroll to the last chat item in the list
+        onView(withId(R.id.chatListRecyclerView))
+            .perform(RecyclerViewActions.scrollToPosition<ChatAdapter.ChatViewHolder>(Integer.MAX_VALUE))
+
+        // Check if the last chat item in the list is visible
+        onView(withId(R.id.chatListRecyclerView))
+            .check(matches(hasDescendant(withId(R.id.chatTitleTextView))))
     }
 }
