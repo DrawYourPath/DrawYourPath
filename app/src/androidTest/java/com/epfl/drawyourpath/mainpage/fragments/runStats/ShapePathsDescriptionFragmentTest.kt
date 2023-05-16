@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-class FormPathsDescriptionFragmentTest {
+class ShapePathsDescriptionFragmentTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
     /**
@@ -21,21 +21,21 @@ class FormPathsDescriptionFragmentTest {
     @Test
     fun correctFormScoreDisplayed() {
         val scenario =
-            launchFragmentInContainer<FormPathDescriptionFragment>(themeResId = R.style.Theme_Bootcamp) {
-                FormPathDescriptionFragment(formName = "square", score = 2)
+            launchFragmentInContainer<ShapePathDescriptionFragment>(themeResId = R.style.Theme_Bootcamp) {
+                ShapePathDescriptionFragment(formName = "square", score = 2)
             }
         // check that the fragment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.form_path_description_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         // check the form displayed
         Espresso.onView(ViewMatchers.withId(R.id.formDescriptionPath))
-            .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.form_recognized_on_the_path_drawn)} square")))
+            .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.shape_recognized_on_the_path_drawn)} square")))
         // check the score displayed
         Espresso.onView(ViewMatchers.withId(R.id.scorePath))
-            .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.score_of_the_form_recognized)} 2")))
+            .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.score_of_the_shape_recognized)} 2")))
         // check the description text displayed
         Espresso.onView(ViewMatchers.withId(R.id.descriptionTextFormDescription))
-            .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.ml_form_recognition_description))))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.ml_shape_recognition_description))))
         scenario.close()
     }
 }

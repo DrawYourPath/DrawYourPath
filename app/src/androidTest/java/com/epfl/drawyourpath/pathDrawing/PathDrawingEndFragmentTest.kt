@@ -107,11 +107,11 @@ class PathDrawingEndFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.form_path_description_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.formDescriptionPath))
-            .check(ViewAssertions.matches(ViewMatchers.withSubstring(context.getString(R.string.form_recognized_on_the_path_drawn))))
+            .check(ViewAssertions.matches(ViewMatchers.withSubstring(context.getString(R.string.shape_recognized_on_the_path_drawn))))
         Espresso.onView(ViewMatchers.withId(R.id.scorePath))
-            .check(ViewAssertions.matches(ViewMatchers.withSubstring(context.getString(R.string.score_of_the_form_recognized))))
+            .check(ViewAssertions.matches(ViewMatchers.withSubstring(context.getString(R.string.score_of_the_shape_recognized))))
         Espresso.onView(ViewMatchers.withId(R.id.descriptionTextFormDescription))
-            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.ml_form_recognition_description))))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.ml_shape_recognition_description))))
 
         // check that the stop and resume buttons are displayed
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_end_back_menu_button))

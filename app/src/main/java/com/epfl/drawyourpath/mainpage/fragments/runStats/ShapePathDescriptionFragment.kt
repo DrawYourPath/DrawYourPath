@@ -11,7 +11,7 @@ import com.epfl.drawyourpath.R
  * @param formName the name of the form recognized on the path
  * @param score the core gove to the form recognized
  */
-class FormPathDescriptionFragment(private val formName: String, private val score: Int) : Fragment(R.layout.fragment_form_path_description) {
+class ShapePathDescriptionFragment(private val formName: String, private val score: Int) : Fragment(R.layout.fragment_form_path_description) {
     private lateinit var formDescriptionText: TextView
     private lateinit var scoreText: TextView
 
@@ -27,8 +27,8 @@ class FormPathDescriptionFragment(private val formName: String, private val scor
      */
     private fun initViewElements(view: View) {
         this.formDescriptionText = view.findViewById(R.id.formDescriptionPath)
-        this.formDescriptionText.text = "${getString(R.string.form_recognized_on_the_path_drawn)} $formName"
+        this.formDescriptionText.text = "${getString(R.string.shape_recognized_on_the_path_drawn)} $formName"
         this.scoreText = view.findViewById(R.id.scorePath)
-        this.scoreText.text = "${getString(R.string.score_of_the_form_recognized)} $score"
+        this.scoreText.text = "${getString(R.string.score_of_the_shape_recognized)} $score"
     }
 }

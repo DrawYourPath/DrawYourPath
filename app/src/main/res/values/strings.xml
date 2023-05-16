@@ -144,9 +144,9 @@
     <string name="path_drawn">Path Drawn</string>
     <string name="changeRightButton"><![CDATA[>]]></string>
     <string name="global_stats">Global Stats</string>
-    <string name="ml_form_recognition_description">Remark : The form description and score, given below, are given by an automatic form recognition Machine Learning model.</string>
-    <string name="form_recognized_on_the_path_drawn">- Form recognized on the Path drawn :</string>
-    <string name="score_of_the_form_recognized">- Score of the form recognized :</string>
+    <string name="ml_shape_recognition_description">Remark : The shape description and score, given below, are given by an automatic form recognition Machine Learning model.</string>
+    <string name="shape_recognized_on_the_path_drawn">- Shape recognized on the Path drawn :</string>
+    <string name="score_of_the_shape_recognized">- Score of the shape recognized :</string>
     <string name="average_speed_per_km">Avg Speed per Km</string>
     <string name="duration_per_km">Duration per Km</string>
     <string name="distance_per_segment">Distance per Segment</string>

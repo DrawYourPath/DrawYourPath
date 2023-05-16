@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
-import com.epfl.drawyourpath.mainpage.fragments.runStats.FormPathDescriptionFragment
+import com.epfl.drawyourpath.mainpage.fragments.runStats.ShapePathDescriptionFragment
 import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
@@ -53,7 +53,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
             requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(
             R.id.path_drawing_end_form_description,
-            FormPathDescriptionFragment(formName = "displayed soon, please wait...", score = 0),
+            ShapePathDescriptionFragment(formName = "displayed soon, please wait...", score = 0),
         ).commit()
         // TODO:will be change later when the form and score will be store
         // lunch the fragment to display the score and the form recognized

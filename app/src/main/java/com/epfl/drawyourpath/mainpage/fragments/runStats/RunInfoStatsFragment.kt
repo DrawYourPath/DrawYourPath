@@ -96,7 +96,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
             requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction2.replace(
             R.id.contentDescriptionRunInfo,
-            FormPathDescriptionFragment(formName = "displayed soon, please wait...", score = 0),
+            ShapePathDescriptionFragment(formName = "displayed soon, please wait...", score = 0),
         ).commit()
         // TODO:will be change later when the form and score will be store
         // lunch the fragment to display the core and the form recognized
@@ -117,7 +117,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
                         requireActivity().supportFragmentManager.beginTransaction()
                     fragTransaction2.replace(
                         R.id.contentDescriptionRunInfo,
-                        FormPathDescriptionFragment(formName = elem.candidates[0].text, score = elem.candidates[0].score!!.toInt()),
+                        ShapePathDescriptionFragment(formName = elem.candidates[0].text, score = elem.candidates[0].score!!.toInt()),
                     ).commit()
                 }
             }
