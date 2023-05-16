@@ -28,7 +28,6 @@ class GraphFromListFragment(private val map: Map<Double, Double>, private val ti
         }
 
         val listPoints = LineDataSet(entries, "$titleAxe2 in function of the $titleAxe1")
-
         listPoints.setDrawValues(false)
         listPoints.setDrawFilled(true)
         listPoints.lineWidth = 3f
