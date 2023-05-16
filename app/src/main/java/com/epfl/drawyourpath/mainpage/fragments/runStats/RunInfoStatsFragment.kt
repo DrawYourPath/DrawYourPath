@@ -96,9 +96,9 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
             requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction2.replace(
             R.id.contentDescriptionRunInfo,
-            FormPathDescriptionFragment(formName = "displayed soon, please wait...", score = 0)
+            FormPathDescriptionFragment(formName = "displayed soon, please wait...", score = 0),
         ).commit()
-        //TODO:will be change later when the form and score will be store
+        // TODO:will be change later when the form and score will be store
         // lunch the fragment to display the core and the form recognized
         DigitalInk.downloadModelML().thenAccept { it ->
             val ink = Ink.builder()
@@ -111,13 +111,13 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
                 ink.addStroke(stroke)
             }
 
-            DigitalInk.recognizeDrawingML(ink.build(), it).thenAccept {elem->
-                if(currentStateView == RunInfoStatesEnum.PATH_DRAWN) {
+            DigitalInk.recognizeDrawingML(ink.build(), it).thenAccept { elem ->
+                if (currentStateView == RunInfoStatesEnum.PATH_DRAWN) {
                     val fragTransaction2: FragmentTransaction =
                         requireActivity().supportFragmentManager.beginTransaction()
                     fragTransaction2.replace(
                         R.id.contentDescriptionRunInfo,
-                        FormPathDescriptionFragment(formName = elem.candidates[0].text, score = elem.candidates[0].score!!.toInt())
+                        FormPathDescriptionFragment(formName = elem.candidates[0].text, score = elem.candidates[0].score!!.toInt()),
                     ).commit()
                 }
             }

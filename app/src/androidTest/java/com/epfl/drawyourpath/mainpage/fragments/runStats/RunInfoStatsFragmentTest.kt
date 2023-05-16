@@ -34,6 +34,7 @@ class RunInfoStatsFragmentTest {
     private val mockPath = Path(listOf(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0))))
     private val date = LocalDate.of(2000, 1, 1).atTime(LocalTime.of(12, 0, 5)).toEpochSecond(ZoneOffset.UTC)
     private val mockRun = Run(path = mockPath, startTime = date, endTime = date + 75, duration = 75)
+
     /**
      * Test that clicking on a run displayed more info on this run in run info stats fragment
      */
@@ -48,7 +49,7 @@ class RunInfoStatsFragmentTest {
         // Go to history
         Espresso.onView(ViewMatchers.withId(R.id.history_menu_item)).perform(ViewActions.click())
 
-        //click on a run
+        // click on a run
         Espresso.onView(ViewMatchers.withId(R.id.run_item_layout)).perform(ViewActions.click())
 
         // Check fragment the fragment the displays run info is displayed
@@ -74,8 +75,8 @@ class RunInfoStatsFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.path_drawn))))
         // check that the map is displayed
-       Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
-           .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.mapFragment))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         // check the description of the form and the score is displayed
         Espresso.onView(ViewMatchers.withId(R.id.form_path_description_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -95,7 +96,7 @@ class RunInfoStatsFragmentTest {
         // check that the fragment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.run_info_stats_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        //PATH DRAWN DISPLAYED
+        // PATH DRAWN DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.path_drawn))))
@@ -108,7 +109,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
-        //GLOBAL STATS DISPLAYED
+        // GLOBAL STATS DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.global_stats))))
@@ -121,7 +122,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
-        //AVERAGE SPEED PER KM DISPLAYED
+        // AVERAGE SPEED PER KM DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.average_speed_per_km))))
@@ -140,7 +141,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
-        //DURATION PER KM DISPLAYED
+        // DURATION PER KM DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.duration_per_km))))
@@ -159,7 +160,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
-        //DISTANCE PER SEGMENT DISPLAYED
+        // DISTANCE PER SEGMENT DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.distance_per_segment))))
@@ -178,7 +179,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
-        //DURATION PER SEGMENT DISPLAYED
+        // DURATION PER SEGMENT DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.duration_per_segment))))
@@ -197,7 +198,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
-        //AVERAGE SPEED PER SEGMENT DISPLAYED
+        // AVERAGE SPEED PER SEGMENT DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.average_speed_per_segment))))
@@ -216,7 +217,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
-        //PATH DRAWN DISPLAYED
+        // PATH DRAWN DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.path_drawn))))
@@ -242,7 +243,7 @@ class RunInfoStatsFragmentTest {
         // check that the fragment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.run_info_stats_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        //PATH DRAWN DISPLAYED
+        // PATH DRAWN DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.path_drawn))))
@@ -255,7 +256,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
-        //AVERAGE SPEED PER SEGMENT DISPLAYED
+        // AVERAGE SPEED PER SEGMENT DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.average_speed_per_segment))))
@@ -274,7 +275,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
-        //DURATION PER SEGMENT DISPLAYED
+        // DURATION PER SEGMENT DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.duration_per_segment))))
@@ -293,7 +294,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
-        //DISTANCE PER SEGMENT DISPLAYED
+        // DISTANCE PER SEGMENT DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.distance_per_segment))))
@@ -312,7 +313,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
-        //DURATION PER KM DISPLAYED
+        // DURATION PER KM DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.duration_per_km))))
@@ -331,7 +332,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
-        //AVERAGE SPEED PER KM DISPLAYED
+        // AVERAGE SPEED PER KM DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.average_speed_per_km))))
@@ -350,7 +351,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
-        //GLOBAL STATS DISPLAYED
+        // GLOBAL STATS DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.global_stats))))
@@ -363,7 +364,7 @@ class RunInfoStatsFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
-        //PATH DRAWN DISPLAYED
+        // PATH DRAWN DISPLAYED
         // check the title text displayed
         Espresso.onView(ViewMatchers.withId(R.id.titleRunInfo))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.path_drawn))))

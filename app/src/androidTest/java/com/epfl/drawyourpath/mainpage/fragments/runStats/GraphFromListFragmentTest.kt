@@ -15,7 +15,6 @@ import org.junit.runners.JUnit4
 class GraphFromListFragmentTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
-
     /**
      * Check that the graph displayed is correctyl displayed
      */
