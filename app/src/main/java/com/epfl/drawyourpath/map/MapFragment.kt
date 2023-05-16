@@ -75,7 +75,8 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         val pathReady = path != null && path.getPoints().isNotEmpty()
         if (pathReady && !focusedOnPosition) {
             val bounds = LatLngBounds.builder()
-            path!!.getPoints().forEach { bounds.include(it) }
+            path!!.getPoints().flatten().forEach { bounds.include(it) }
+
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 5))
             drawStaticPathOnMap(map, path)
         }
@@ -103,10 +104,14 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param map the map
      */
     private fun setupDrawingOnMap(map: GoogleMap) {
-        val polyline = map.addPolyline(PolylineOptions().clickable(false))
-        pathDrawingModel.points.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty() && it.size > polyline.points.size) {
-                polyline.points = it
+        pathDrawingModel.pointsSection.observe(viewLifecycleOwner) { listSection ->
+            if (listSection.isNotEmpty()) {
+                for (section in listSection) {
+                    val polyline = map.addPolyline(PolylineOptions().clickable(false))
+                    if (section.isNotEmpty() && section.size > polyline.points.size) {
+                        polyline.points = section
+                    }
+                }
             }
         }
     }
@@ -117,8 +122,9 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param path will be drawn on the map
      */
     private fun drawStaticPathOnMap(map: GoogleMap, path: Path) {
-        val listLng = path.getPoints().map { LatLng(it.latitude, it.longitude) }
-        map.addPolyline(PolylineOptions().clickable(false).addAll(listLng))
+        for (polyline in path.getPolyline()) {
+            map.addPolyline(polyline)
+        }
     }
 
     /**

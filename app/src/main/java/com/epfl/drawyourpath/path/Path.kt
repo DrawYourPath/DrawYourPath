@@ -8,50 +8,90 @@ import com.google.type.Color
 
 // Define a Path class that represents a runner's path.
 class Path {
+    /**
+     * private mutable list to store the sections of the paths, and a section is composed of a list of points.
+     * A new section is added each time the user made a pause during his drawing activity.
+     */
+    private val pointsSections: MutableList<MutableList<LatLng>> = mutableListOf(mutableListOf<LatLng>())
 
     /**
-     * Constructor that creates an empty path.
+     * Constructor that creates an empty path, composed of one empty section.
      */
     constructor()
 
     /**
-     * Constructor that creates a path from a list of points.
+     * Constructor that creates a path from a list of sections composed of multiple points.
+     * @param pointsSections the list of sections that composed the path
      */
-    constructor(points: List<LatLng>) {
-        this.points.addAll(points)
+    constructor(inPointsSections: List<List<LatLng>>) {
+        inPointsSections.forEachIndexed { index, section ->
+            if (index == 0) {
+                pointsSections[index].addAll(section)
+            } else {
+                pointsSections.add(section.toMutableList())
+            }
+        }
     }
 
     /**
-     * private mutable list to store the path as a collection of points.
+     * Add a point to the last section of the path(so this function doesn't create a new section in the path).
+     * This function is used when the user is currently drawing without restarting a drawing just after a pause.
+     * @param point the point that we want to add to the last section.
      */
-    private val points = mutableListOf<LatLng>()
-
-    /**
-     * Add a point to the path's list of points(at the end of the list).
-     */
-    fun addPoint(point: LatLng) {
-        points.add(point)
+    fun addPointToLastSection(point: LatLng) {
+        this.pointsSections[this.pointsSections.lastIndex].add(point)
     }
 
     /**
-     * Return an immutable list of the path's points.
+     * This function is used to create a new section in a path.
+     * This function is used when the user resume his run just after a pause in his drawing session.
      */
-    fun getPoints(): List<LatLng> {
-        return points.toList()
+    fun addNewSection() {
+        this.pointsSections.add(mutableListOf())
     }
 
     /**
-     * Clear the path's list of points.
+     * Return an immutable list of the path composed of multiple section, and section is composed of multiple points.
+     * A new section of path have been created each time the user has made a pause.
+     */
+    fun getPoints(): List<List<LatLng>> {
+        return pointsSections.toList()
+    }
+
+    /**
+     * Return an immutable list of the points that composed the section at the given index.
+     * @param index of the section that we would like to retrieves the points
+     */
+    fun getPointsSection(index: Int): List<LatLng> {
+        if (index >= this.pointsSections.size) {
+            throw Error("this index is greater than the number of section of this path.")
+        }
+        return pointsSections[index].toList()
+    }
+
+    /**
+     * Clear the path's list of section composed of points.
      */
     fun clear() {
-        points.clear()
+        pointsSections.clear()
     }
 
     /**
      * Return the number of points in the path.
      */
     fun size(): Int {
-        return points.size
+        return pointsSections.flatten().size
+    }
+
+    /**
+     * Return the number of points that composed the section at the given index
+     * @param index of the section that we would like to know the number of points
+     */
+    fun sizeOfSection(index: Int): Int {
+        if (index >= this.pointsSections.size) {
+            throw Error("this index is greater than the number of section of this path.")
+        }
+        return this.pointsSections[index].size
     }
 
     /**
@@ -69,25 +109,51 @@ class Path {
      */
     @Exclude
     fun getDistance(): Double {
-        var distance = 0.0
-        for (i in 0 until points.size - 1) {
-            distance += distance(points[i], points[i + 1])
+        return pointsSections.foldIndexed(0.0) { index, acc, _ ->
+            acc + getDistanceInSection(index)
+        }
+    }
+
+    /**
+     * function that returns the distance in meters in the section at the given index
+     * @param index of the section that we would like to know the distance throw
+     */
+    fun getDistanceInSection(index: Int): Double {
+        var distance = 0.00
+        if (index >= this.pointsSections.size) {
+            throw Error("this index is greater than the number of section of this path.")
+        }
+        val section = this.pointsSections[index]
+        for (i in 0 until section.size - 1) {
+            distance += distance(section[i], section[i + 1])
         }
         return distance
     }
 
     /**
-     * Return a Polyline object representing the path.
+     * Return a list of Polyline object representing the path(each polyline represent a section).
      */
     @Exclude
-    fun getPolyline(): PolylineOptions {
+    fun getPolyline(): List<PolylineOptions> =
+        List(pointsSections.size) { index ->
+            getPolylineInSection(index)
+        }
+
+    /**
+     * Return the polyline object representing the path of the section at the given index
+     * @param index of the section that we would like to get the polyline object
+     */
+    fun getPolylineInSection(index: Int): PolylineOptions {
+        if (index >= this.pointsSections.size) {
+            throw Error("this index is greater than the number of section of this path.")
+        }
         // Create a new PolylineOptions object to define the appearance of the polyline.
         val polylineOptions = PolylineOptions()
         polylineOptions.color(Color.BLUE_FIELD_NUMBER)
         polylineOptions.width(10f)
 
         // Loop through the list of points and add them to the PolylineOptions object.
-        for (point in points) {
+        for (point in this.pointsSections[index]) {
             polylineOptions.add(point)
         }
 

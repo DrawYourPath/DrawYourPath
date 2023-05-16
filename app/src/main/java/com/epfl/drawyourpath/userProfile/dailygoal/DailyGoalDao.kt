@@ -46,17 +46,15 @@ interface DailyGoalDao {
      * add the run and update the progress of the dailyGoal and total progress of the User
      * @param userId the user id
      * @param date the date of the progress
-     * @param distance the distance to add
-     * @param time the time to add
-     * @param paths the number of paths to add
+     * @param progress the progress to add
      * @param run the run to add
      * @param points the path of the run
      * @return the new daily goal
      */
     @Transaction
-    fun addRunAndUpdateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int, run: RunEntity, points: List<PointsEntity>): DailyGoalEntity {
-        addTotalProgressUser(userId, distance, time, paths)
-        insertIfDailyGoalUpdateFailed(userId, date, addProgressDailyGoal(userId, date, distance, time, paths), distance, time, paths)
+    fun addRunAndUpdateProgress(userId: String, date: Long, progress: UserGoals, run: RunEntity, points: List<PointsEntity>): DailyGoalEntity {
+        addTotalProgressUser(userId, progress.distance ?: 0.0, progress.activityTime ?: 0.0, progress.paths?.toInt() ?: 0)
+        insertIfDailyGoalUpdateFailed(userId, date, addProgressDailyGoal(userId, date, progress.distance ?: 0.0, progress.activityTime ?: 0.0, progress.paths?.toInt() ?: 0), progress)
         insertRun(run)
         insertAllPoints(points)
         return getDailyGoalByIdAndDate(userId, date)
@@ -200,11 +198,9 @@ interface DailyGoalDao {
      * @param userId the user id
      * @param date the date
      * @param updated the number of rows updated
-     * @param distance the progress distance to add
-     * @param time the time progress to add
-     * @param paths the paths progress to add
+     * @param progress the progress to add
      */
-    private fun insertIfDailyGoalUpdateFailed(userId: String, date: Long, updated: Int, distance: Double = 0.0, time: Double = 0.0, paths: Int = 0) {
+    private fun insertIfDailyGoalUpdateFailed(userId: String, date: Long, updated: Int, progress: UserGoals = UserGoals()) {
         if (updated == 0) {
             val goalAndProgress = getGoalAndTotalProgress(userId)
             insertDailyGoal(
@@ -214,9 +210,9 @@ interface DailyGoalDao {
                     goalAndProgress.distanceGoal,
                     goalAndProgress.activityTimeGoal,
                     goalAndProgress.nbOfPathsGoal,
-                    distance,
-                    time,
-                    paths,
+                    progress.distance ?: 0.0,
+                    progress.activityTime ?: 0.0,
+                    progress.paths?.toInt() ?: 0,
                 ),
             )
         }

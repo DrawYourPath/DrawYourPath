@@ -228,9 +228,10 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
+
         val future = CompletableFuture.supplyAsync {
             val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run), false)
-            dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
+            dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, UserGoals(1, distanceInKilometer, timeInMinute), runs[0].first, runs[0].second)
         }
         future.thenComposeAsync {
             database.addDailyGoal(currentUserID!!, DailyGoal(it))
@@ -238,9 +239,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             database.addRunToHistory(currentUserID!!, run)
         }.thenApplyAsync {
             runCache.runSynced(currentUserID!!, run.getStartTime())
-        } /*.thenComposeAsync { TODO add again when in database
-            database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
-        }*/
+        }
         return future.thenApply {}
     }
 

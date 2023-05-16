@@ -3,11 +3,9 @@ package com.epfl.drawyourpath.database
 import android.util.Log
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
-import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
-import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import java.time.LocalDate
 
@@ -82,6 +80,8 @@ object FirebaseDatabaseUtils {
      * @return the run corresponding to the data
      */
     fun transformRun(data: DataSnapshot?): Run? {
+        // TODO: THis function must be refectored with the new strcuture of a run and a path
+        /*
         val points = data?.child("path")?.child("points")?.children?.mapNotNull {
             val lat = getNumber(it.child("latitude"))?.toDouble()
             val lon = getNumber(it.child("longitude"))?.toDouble()
@@ -100,7 +100,7 @@ object FirebaseDatabaseUtils {
         }
 
         Log.e(this::class.java.name, "Run time was null.")
-
+        */
         return null
     }
 
