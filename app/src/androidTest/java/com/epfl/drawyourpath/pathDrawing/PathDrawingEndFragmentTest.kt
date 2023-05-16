@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.pathDrawing
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
@@ -27,6 +28,7 @@ class PathDrawingEndFragmentTest {
     private val mockPath = Path(listOf(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0))))
     val date = LocalDate.of(2000, 1, 1).atTime(LocalTime.of(12, 0, 5)).toEpochSecond(ZoneOffset.UTC)
     private val mockRun = Run(path = mockPath, startTime = date, endTime = date + 75, duration = 75)
+    private val context = ApplicationProvider.getApplicationContext<Context>()
     val expectedDistance = "111.32"
     val expectedSpeed = "1484.26"
     val expectedTime = "00:01:15"
@@ -100,6 +102,16 @@ class PathDrawingEndFragmentTest {
         // check calories displayed
         Espresso.onView(ViewMatchers.withId(R.id.display_calories_detail_performance))
             .check(ViewAssertions.matches(ViewMatchers.withText(mockRun.getCalories().toString())))
+
+        // check that the form recognized and the score are displayed
+        Espresso.onView(ViewMatchers.withId(R.id.form_path_description_fragment))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.formDescriptionPath))
+            .check(ViewAssertions.matches(ViewMatchers.withSubstring(context.getString(R.string.shape_recognized_on_the_path_drawn))))
+        Espresso.onView(ViewMatchers.withId(R.id.scorePath))
+            .check(ViewAssertions.matches(ViewMatchers.withSubstring(context.getString(R.string.score_of_the_shape_recognized))))
+        Espresso.onView(ViewMatchers.withId(R.id.descriptionTextFormDescription))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.ml_shape_recognition_description))))
 
         // check that the stop and resume buttons are displayed
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_end_back_menu_button))
