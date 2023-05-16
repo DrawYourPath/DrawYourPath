@@ -220,7 +220,7 @@ object Utils {
         return LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
     }
 
-    /*
+    /**
      * Converts a list of LatLng to a stroke.
      * @param coordinates The coordinates we want to convert
      * @return A Stroke object representing the coordinates in planar space.

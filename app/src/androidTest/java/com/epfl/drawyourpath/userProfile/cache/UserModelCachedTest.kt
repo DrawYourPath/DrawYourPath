@@ -59,8 +59,9 @@ class UserModelCachedTest {
         listOf(),
         listOf(
             Run(
-                Path(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656))),
+                Path(listOf(listOf(LatLng(46.518493105924385, 6.561726074747257), LatLng(46.50615811055845, 6.620565690839656)))),
                 100 + 10,
+                duration = 1286,
                 100 + 10 + 1286,
             ),
         ),
@@ -281,9 +282,6 @@ class UserModelCachedTest {
         newDistanceGoal: Double = expected.goals!!.distance!!,
         newTimeGoal: Double = expected.goals!!.activityTime!!,
         newPathGoal: Int = expected.goals!!.paths!!.toInt(),
-        /*addDistanceProgress: Double = 0.0,
-        addTimeProgress: Double = 0.0,
-        addPathProgress: Int = 0,*/
     ) {
         assertEquals(expected.userId!!, actual.userId)
         assertEquals(newUsername, actual.username)
@@ -294,20 +292,6 @@ class UserModelCachedTest {
         assertEquals(newDistanceGoal, actual.goals.distanceGoal, 0.0)
         assertEquals(newTimeGoal, actual.goals.activityTimeGoal, 0.0)
         assertEquals(newPathGoal, actual.goals.pathsGoal)
-        /*assertEquals( TODO add this back when it is implemented
-            expected.getTotalDistance() + addDistanceProgress,
-            actual.goalAndAchievements.totalDistance,
-            0.001,
-        )
-        assertEquals(
-            expected.getTotalActivityTime() + addTimeProgress,
-            actual.goalAndAchievements.totalActivityTime,
-            0.001,
-        )
-        assertEquals(
-            expected.getTotalNbOfPaths() + addPathProgress,
-            actual.goalAndAchievements.totalNbOfPaths,
-        ) */
     }
 
     private fun assertEqualRun(expected: List<Run>, actual: List<Run>) {
@@ -319,9 +303,11 @@ class UserModelCachedTest {
     }
 
     private fun assertEqualPath(expected: Path, actual: Path) {
-        expected.getPoints().forEachIndexed { index, latLng ->
-            assertEquals(latLng.latitude, actual.getPoints()[index].latitude, 0.00001)
-            assertEquals(latLng.longitude, actual.getPoints()[index].longitude, 0.00001)
+        expected.getPoints().forEachIndexed { index, section ->
+            section.forEachIndexed { indexSection, latLng ->
+                assertEquals(latLng.latitude, actual.getPoints()[index][indexSection].latitude, 0.00001)
+                assertEquals(latLng.longitude, actual.getPoints()[index][indexSection].longitude, 0.00001)
+            }
         }
     }
 
