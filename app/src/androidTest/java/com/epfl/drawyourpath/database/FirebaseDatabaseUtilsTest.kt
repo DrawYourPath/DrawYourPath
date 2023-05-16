@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.database
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
+import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
@@ -62,25 +63,46 @@ class FirebaseDatabaseUtilsTest {
         return snapshot
     }
 
+    private fun mockSection(section: List<LatLng>): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        val pointsSnap = section.map {
+            mockPoint(it)
+        }
+        `when` (snapshot.children).thenReturn(pointsSnap)
+
+        return snapshot
+    }
+
     private fun mockRun(run: Run): DataSnapshot {
         val snapshot = mock(DataSnapshot::class.java)
 
         val path = mock(DataSnapshot::class.java)
-        val pointsSnap = mock(DataSnapshot::class.java)
-        // TODO: refactor this when refactor the run in database
-        /*val points = run.getPath().getPoints().map {
-          mockPoint(it) }
+        val pathPoints = mock(DataSnapshot::class.java)
+        val sectionsSnap = run.getPath().getPoints().map {
+            mockSection(it)
+        }
 
-        `when`(path.child("points")).thenReturn(pointsSnap)
-        `when`(pointsSnap.children).thenReturn(points)
+        `when`(path.child("points")).thenReturn(pathPoints)
+        `when`(pathPoints.children).thenReturn(sectionsSnap)
+
+        `when`(snapshot.child("path")).thenReturn(path)
 
         val startTime = mockNumberSnapshot(run.getStartTime())
         `when`(snapshot.child("startTime")).thenReturn(startTime)
 
+        val duration = mockNumberSnapshot(run.getDuration())
+        `when`(snapshot.child("duration")).thenReturn(duration)
+
         val endTime = mockNumberSnapshot(run.getEndTime())
         `when`(snapshot.child("endTime")).thenReturn(endTime)
-        `when`(snapshot.child("path")).thenReturn(path)
-        */
+
+        val predictedShape = mockSnapshot(run.predictedShape)
+        `when`(snapshot.child("predictedShape")).thenReturn(predictedShape)
+
+        val similarityScore = mockNumberSnapshot(run.similarityScore)
+        `when`(snapshot.child("similarityScore")).thenReturn(similarityScore)
+
         return snapshot
     }
 
@@ -186,29 +208,35 @@ class FirebaseDatabaseUtilsTest {
         Assert.assertEquals(FirebaseDatabaseUtils.transformRun(null), null)
     }
 
-    // TODO: uncomment his method when the run have been refactored
-    /*@Test
-    fun transformRunsReturnExpectedRuns() {
+    @Test
+    fun transformRunListReturnExpectedRunsInOrder() {
         val runs = listOf(
             Run(
                 Path(
                     listOf(
                         listOf(
                             LatLng(1.0, 1.0),
-                            LatLng(2.0, 2.0),
+                            LatLng(2.1, 2.0),
+                        ),
+                        listOf(
+                            LatLng(3.0, 3.0),
+                            LatLng(0.0, 3.1),
                         ),
                     ),
                 ),
                 startTime = 1000,
                 duration = 1000,
-                endTime = 2000
+                endTime = 2000,
+                predictedShape = "Cat",
+                similarityScore = 0.9,
             ),
             Run(
                 Path(
                     listOf(
                         listOf(
                             LatLng(12.0, 12.0),
-                            LatLng(22.0, 22.0),
+                            LatLng(31.98, -98.45),
+                            LatLng(4.0, -4.0),
                         ),
                     ),
                 ),
@@ -227,7 +255,7 @@ class FirebaseDatabaseUtilsTest {
         val transformedRuns = FirebaseDatabaseUtils.transformRunList(snapshot)
 
         assertThat(runs.size, `is`(transformedRuns.size))
-    }*/
+    }
 
     @Test
     fun transformTextMessageReturnsExpectedData() {
@@ -246,8 +274,7 @@ class FirebaseDatabaseUtilsTest {
         assertThat(message.senderId, `is`(transMessage.senderId))
     }
 
-    // TODO: uncomment this method when the run have been refactored in the database
-    /*@Test
+    @Test
     fun transformRunMessageReturnsExpectedData() {
         val message = Message(
             id = 20,
@@ -275,7 +302,7 @@ class FirebaseDatabaseUtilsTest {
         assertThat(message.id, `is`(transMessage.id))
         assertThat(message.timestamp, `is`(transMessage.timestamp))
         assertThat(message.senderId, `is`(transMessage.senderId))
-    }*/
+    }
 
     @Test
     fun transformRunPictureReturnsExpectedData() {
