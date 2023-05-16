@@ -15,7 +15,7 @@ import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
 /**
- * This fragment will be displayed at the end of a creation of a path (that will be displayed a preview of the path on the map,
+ * This fragment will be displayed at the end of the path's creation (that will be displayed a preview of the path on the map,
  * the final performance data of the user and a button to return back to the main menu of the app).
  * @param run that contains the performance dta and the path made by the user
  */
