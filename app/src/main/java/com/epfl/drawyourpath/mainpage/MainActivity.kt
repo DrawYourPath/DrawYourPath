@@ -14,6 +14,7 @@ import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
+import com.epfl.drawyourpath.pathDrawing.PathDrawingContainerFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_KEY
 import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         setupNotifications()
 
-        replaceFragment<MainFragment>()
+        setupFragment()
     }
 
     /**
@@ -88,6 +89,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFragment() {
+        val runTest = intent.getBooleanExtra(EXTRA_DRAW_TEST, false)
+        if (runTest) {
+            replaceFragment<PathDrawingContainerFragment>()
+        } else {
+            replaceFragment<MainFragment>()
+        }
+    }
+
     private fun setupNotifications() {
         val useMockReminder = intent.getBooleanExtra(USE_MOCK_CHALLENGE_REMINDER, false)
         NotificationsHelper(applicationContext).setupNotifications(useMockReminder)
@@ -127,5 +137,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_USER_ID = "extra_user_id"
+        const val EXTRA_DRAW_TEST = "extra_draw_test"
     }
 }

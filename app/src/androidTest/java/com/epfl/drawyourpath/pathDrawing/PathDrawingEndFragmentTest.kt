@@ -1,12 +1,17 @@
 package com.epfl.drawyourpath.pathDrawing
 
 import android.Manifest
+import android.content.Intent
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
@@ -36,13 +41,17 @@ class PathDrawingEndFragmentTest {
     /**
      * Test that clicking on the back to menu button show the main app menu
      */
-    /*@Test
+    @Test
     fun checkThatClickingOnBackMenuButtonShowMainAppActivity() {
-        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
-            PathDrawingContainerFragment(1L)
-        }
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            MainActivity::class.java,
+        )
+        intent.putExtra(MainActivity.EXTRA_DRAW_TEST, true)
+        val t: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
+
         // wait that the countdown passed
-        Thread.sleep(1001)
+        Thread.sleep(4005)
         // click on pause button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .perform(ViewActions.click())
@@ -55,8 +64,8 @@ class PathDrawingEndFragmentTest {
         // check that the main menu activity is displayed
         Espresso.onView(ViewMatchers.withId(R.id.drawerLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        scenario.close()
-    }*/
+        t.close()
+    }
 
     /**
      * Test that the information displayed on the end drawing fragment are correct for the given run.
