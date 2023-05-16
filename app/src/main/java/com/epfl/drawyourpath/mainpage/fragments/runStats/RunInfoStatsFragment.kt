@@ -110,7 +110,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
                 val stroke = Utils.coordinatesToStroke(listCoord)
                 ink.addStroke(stroke)
             }
-            
+
             DigitalInk.recognizeDrawingML(ink.build(), it).thenAccept {elem->
                 if(currentStateView == RunInfoStatesEnum.PATH_DRAWN) {
                     val fragTransaction2: FragmentTransaction =
@@ -205,7 +205,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         listDistance.forEachIndexed { index, elem ->
             mapDistance.put((index + 1).toDouble(), elem)
         }
-        val columnText = getString(R.string.section)
+        val columnText = getString(R.string.segment)
         val lineText = getString(R.string.distance_in_m)
         fragTransaction.replace(R.id.contentPreviewRunInfo, GraphFromListFragment(map = mapDistance, titleAxe1 = columnText, titleAxe2 = lineText)).commit()
         // show a table containing the distance in function of the section
@@ -231,7 +231,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         listDuration.forEachIndexed { index, elem ->
             mapDuration.put((index + 1).toDouble(), elem.toDouble())
         }
-        val columnText = getString(R.string.section)
+        val columnText = getString(R.string.segment)
         val lineText = getString(R.string.duration_in_s)
         fragTransaction.replace(R.id.contentPreviewRunInfo, GraphFromListFragment(map = mapDuration, titleAxe1 = columnText, titleAxe2 = lineText)).commit()
         // show a table containing the duration in function of the section
@@ -257,7 +257,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         listSpeed.forEachIndexed { index, elem ->
             mapSpeed.put((index + 1).toDouble(), elem)
         }
-        val columnText = getString(R.string.section)
+        val columnText = getString(R.string.segment)
         val lineText = getString(R.string.average_speed_in_m_s)
         fragTransaction.replace(R.id.contentPreviewRunInfo, GraphFromListFragment(map = mapSpeed, titleAxe1 = columnText, titleAxe2 = lineText)).commit()
         // show a table containing the average speed in function of the section

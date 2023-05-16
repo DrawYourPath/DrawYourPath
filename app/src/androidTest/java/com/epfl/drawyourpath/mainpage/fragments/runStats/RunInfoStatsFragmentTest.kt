@@ -10,7 +10,6 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
@@ -132,6 +131,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with speed per km is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.distance_in_km))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_speed_in_m_s))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
@@ -145,6 +150,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with duration per km is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.distance_in_km))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.duration_in_s))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
@@ -158,6 +169,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with distance per segment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.segment))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.distance_in_m))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
@@ -171,6 +188,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with duration per segment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.segment))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.duration_in_s))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
@@ -184,6 +207,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with speed per segment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.segment))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_speed_in_m_s))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeRightRunInfo))
             .perform(ViewActions.click())
@@ -236,6 +265,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with speed per segment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.segment))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_speed_in_m_s))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
@@ -249,6 +284,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with duration per segment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.segment))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.duration_in_s))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
@@ -262,6 +303,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with distance per segment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.segment))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.distance_in_m))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
@@ -275,6 +322,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with duration per km is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.distance_in_km))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.duration_in_s))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())
@@ -288,6 +341,12 @@ class RunInfoStatsFragmentTest {
         // check that the table with speed per km is displayed
         Espresso.onView(ViewMatchers.withId(R.id.table_from_list_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // check the column1 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_1))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.distance_in_km))))
+        // check the column2 title is display
+        Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_speed_in_m_s))))
 
         Espresso.onView(ViewMatchers.withId(R.id.changeLeftRunInfo))
             .perform(ViewActions.click())

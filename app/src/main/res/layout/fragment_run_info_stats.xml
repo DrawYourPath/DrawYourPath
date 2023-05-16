@@ -33,7 +33,7 @@
             android:id="@+id/titleRunInfo"
             android:textStyle="bold"
             android:textAlignment="center"
-            android:textSize="24sp" />
+            android:textSize="18sp" />
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
