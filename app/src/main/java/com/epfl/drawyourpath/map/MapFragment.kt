@@ -9,14 +9,10 @@ import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.mainpage.fragments.runStats.GraphFromListFragment
-import com.epfl.drawyourpath.mainpage.fragments.runStats.TableFromListFragment
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.pathDrawing.PathDrawingModel
-import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -125,7 +121,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param path will be drawn on the map
      */
     private fun drawStaticPathOnMap(map: GoogleMap, path: Path) {
-        for(section in path.getPoints()){
+        for (section in path.getPoints()) {
             val polyline = map.addPolyline(PolylineOptions().clickable(false))
             if (section.isNotEmpty() && section.size > polyline.points.size) {
                 polyline.points = section
