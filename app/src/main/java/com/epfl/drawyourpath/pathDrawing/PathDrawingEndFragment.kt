@@ -1,14 +1,14 @@
 package com.epfl.drawyourpath.pathDrawing
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.mainpage.MainActivity
+import com.epfl.drawyourpath.mainpage.fragments.MainFragment
 import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
@@ -36,6 +36,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
         backMenuButton = view.findViewById(R.id.path_drawing_end_back_menu_button)
         backMenuButton.setOnClickListener {
             userCached.addNewRun(pathDrawingModel.getRun()).thenApplyAsync {
+                pathDrawingModel.clearRun()
                 returnBackToMenu()
             }
         }
@@ -63,8 +64,9 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
      * Helper function to return back to the main menu of the app
      */
     private fun returnBackToMenu() {
-        val intent = Intent(activity, MainActivity::class.java)
-        intent.putExtra(MainActivity.EXTRA_USER_ID, userCached.getUserId())
-        this.startActivity(intent)
+        requireActivity().supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace(R.id.main_fragment_container_view, MainFragment::class.java, null)
+        }
     }
 }

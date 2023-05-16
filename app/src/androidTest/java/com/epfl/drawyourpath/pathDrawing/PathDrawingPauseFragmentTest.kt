@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.pathDrawing
 
 import android.Manifest
 import android.content.Intent
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -25,12 +26,10 @@ class PathDrawingPauseFragmentTest {
      */
     @Test
     fun checkThatClickingOnPauseButtonShowMainFragmentInNonStateDrawing() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
-        )
-        intent.putExtra(PathDrawingActivity.EXTRA_COUNTDOWN_DURATION, 1L)
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            PathDrawingContainerFragment(1L)
+        }
+
         // wait that the countdown passed
         Thread.sleep(1001)
         // click on stop button
@@ -46,6 +45,6 @@ class PathDrawingPauseFragmentTest {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_resume_stop_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        t.close()
+        scenario.close()
     }
 }

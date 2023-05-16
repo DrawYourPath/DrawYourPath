@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.pathDrawing
 
 import android.Manifest
 import android.content.Intent
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -24,11 +25,9 @@ class PathDrawingCountDownFragmentTest {
      */
     @Test
     fun testThatTheCountdownIsDisplayedCorrectly() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
-        )
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            PathDrawingContainerFragment()
+        }
 
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -46,7 +45,7 @@ class PathDrawingCountDownFragmentTest {
         Thread.sleep(1000)
         Espresso.onView(ViewMatchers.withId(R.id.countdown_text))
             .check(ViewAssertions.matches(ViewMatchers.withText("GO !")))
-        t.close()
+        scenario.close()
     }
 
     /**
@@ -54,18 +53,15 @@ class PathDrawingCountDownFragmentTest {
      */
     @Test
     fun testThatTheTransitionIsMadeAfterCountDown() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
-        )
-        intent.putExtra(PathDrawingActivity.EXTRA_COUNTDOWN_DURATION, 1L)
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            PathDrawingContainerFragment(1L)
+        }
 
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Thread.sleep(1002)
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_main_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        t.close()
+        scenario.close()
     }
 }

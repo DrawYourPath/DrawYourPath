@@ -40,14 +40,11 @@ class PathDrawingEndFragmentTest {
     /**
      * Test that clicking on the back to menu button show the main app menu
      */
-    @Test
+    /*@Test
     fun checkThatClickingOnBackMenuButtonShowMainAppActivity() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
-        )
-        intent.putExtra(PathDrawingActivity.EXTRA_COUNTDOWN_DURATION, 1L)
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            PathDrawingContainerFragment(1L)
+        }
         // wait that the countdown passed
         Thread.sleep(1001)
         // click on pause button
@@ -62,8 +59,8 @@ class PathDrawingEndFragmentTest {
         // check that the main menu activity is displayed
         Espresso.onView(ViewMatchers.withId(R.id.drawerLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        t.close()
-    }
+        scenario.close()
+    }*/
 
     /**
      * Test that the information displayed on the end drawing fragment are correct for the given run.

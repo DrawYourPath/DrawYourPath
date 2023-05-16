@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.pathDrawing
 
 import android.Manifest
 import android.content.Intent
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -25,12 +26,9 @@ class PathDrawingResumeStopFragmentTest {
      */
     @Test
     fun checkThatClickingOnResumeButtonShowMainFragmentInStateDrawing() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
-        )
-        intent.putExtra(PathDrawingActivity.EXTRA_COUNTDOWN_DURATION, 1L)
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            PathDrawingContainerFragment(1L)
+        }
         // wait that the countdown passed
         Thread.sleep(1001)
         // click on stop button
@@ -49,7 +47,7 @@ class PathDrawingResumeStopFragmentTest {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        t.close()
+        scenario.close()
     }
 
     /**
@@ -57,12 +55,9 @@ class PathDrawingResumeStopFragmentTest {
      */
     @Test
     fun checkThatClickingOnStopButtonShowEndDrawingFragment() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
-        )
-        intent.putExtra(PathDrawingActivity.EXTRA_COUNTDOWN_DURATION, 1L)
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            PathDrawingContainerFragment(1L)
+        }
         // wait that the countdown passed
         Thread.sleep(1001)
         // click on pause button
@@ -81,6 +76,6 @@ class PathDrawingResumeStopFragmentTest {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_end_back_menu_button))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        t.close()
+        scenario.close()
     }
 }
