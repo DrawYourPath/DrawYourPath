@@ -50,7 +50,7 @@ class ChatFragmentTest {
 
     @Test
     fun testChatListItemIsVisible() {
-        // Go to chats
+        // Go to chats!
         onView(withId(R.id.chat_menu_item)).perform(click())
 
         // Check if the first chat item in the list is visible
