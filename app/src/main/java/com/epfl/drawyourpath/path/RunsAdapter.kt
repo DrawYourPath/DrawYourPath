@@ -45,6 +45,8 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         holder.calorieTextView.text = "Calories burned: ${run.getCalories()} kcal"
         holder.averageSpeedTextView.text =
             "Speed: ${String.format("%.2f", run.getAverageSpeed())} m/s"
+        holder.shapeRecognizedTextView.text = "Shape: ${run.predictedShape}"
+        holder.shapeScoreTextView.text = "Score: ${String.format("%.2f", run.similarityScore)}"
     }
 
     override fun getItemCount(): Int {
@@ -58,6 +60,8 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         val timeTakenTextView: TextView = itemView.findViewById(R.id.timeTakenTextView)
         val calorieTextView: TextView = itemView.findViewById(R.id.calorieTextView)
         val averageSpeedTextView: TextView = itemView.findViewById(R.id.averageSpeedTextView)
+        val shapeRecognizedTextView: TextView = itemView.findViewById(R.id.shapeTextView)
+        val shapeScoreTextView: TextView = itemView.findViewById(R.id.scoreTextView)
     }
 
     fun updateRunsData(newRuns: List<Run>) {

@@ -18,6 +18,8 @@ class Run(
     private val startTime: Long, // the timestamps of the run
     private var duration: Long, // represent the duration of the run(in seconds)
     private val endTime: Long,
+    val predictedShape: String = "None", // the shape predicted by the ML model
+    val similarityScore: Double = 0.0, // the score of similarity with the predicted shape
 ) {
 
     init {

@@ -20,10 +20,16 @@ data class RunEntity(
     @ColumnInfo("start_time")
     val startTime: Long,
 
+    val duration: Long,
+
     @ColumnInfo("end_time")
     val endTime: Long,
 
-    val duration: Long,
+    @ColumnInfo("shape")
+    val predictedShape: String,
+
+    @ColumnInfo("score")
+    val similarityScore: Double,
 
     val sync: Boolean,
 ) {
@@ -39,7 +45,7 @@ data class RunEntity(
         fun fromRunsToEntities(userId: String, runs: List<Run>, sync: Boolean = true): List<Pair<RunEntity, List<PointsEntity>>> {
             return runs.map { run ->
                 Pair(
-                    RunEntity(userId, run.getStartTime(), run.getEndTime(), run.getDuration(), sync),
+                    RunEntity(userId, run.getStartTime(), run.getDuration(), run.getEndTime(), run.predictedShape, run.similarityScore, sync),
                     fromPathToEntity(userId, run.getStartTime(), run.getPath()),
                 )
             }
@@ -72,6 +78,8 @@ data class RunEntity(
                 runEntity.startTime,
                 runEntity.duration,
                 runEntity.endTime,
+                runEntity.predictedShape,
+                runEntity.similarityScore,
             )
         }
 
