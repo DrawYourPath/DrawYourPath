@@ -531,7 +531,7 @@ class MockDatabaseTest {
         val newRun = Run(
             Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
             10,
-             1e6.toLong(),
+            1e6.toLong(),
             1e6.toLong() + 10,
         )
         database.addRunToHistory(userIdTest, newRun)
