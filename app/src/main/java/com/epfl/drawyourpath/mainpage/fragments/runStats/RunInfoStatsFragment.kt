@@ -267,7 +267,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
  */
 private enum class RunInfoStatesEnum(val index: Int) {
     PATH_DRAWN(0), GLOBAL_STATS(1), AVERAGE_SPEED_KM(2), DURATION_KM(3), DISTANCE_SEGMENT(4), DURATION_SEGMENT(
-        5
+        5,
     ),
-    AVERAGE_SPEED_SEGMENT(6)
+    AVERAGE_SPEED_SEGMENT(6),
 }
