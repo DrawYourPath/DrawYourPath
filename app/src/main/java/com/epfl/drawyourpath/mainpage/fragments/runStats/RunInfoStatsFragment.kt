@@ -31,7 +31,8 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         // init the elements of the view
         initViewElements(view)
         // at the initial state display the path drawn information
-        showPathDrawn()
+        this.currentStateView = RunInfoStatesEnum.PATH_DRAWN
+        show()
         // defined the transition of the right button
         rightTransitionButton()
         // defined the transition of the left button
@@ -43,15 +44,10 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      */
     private fun rightTransitionButton() {
         this.changeRightButton.setOnClickListener {
-            when (currentStateView) {
-                RunInfoStatesEnum.PATH_DRAWN -> showGlobalStats()
-                RunInfoStatesEnum.GLOBAL_STATS -> showAverageSpeedKm()
-                RunInfoStatesEnum.AVERAGE_SPEED_KM -> showDurationKm()
-                RunInfoStatesEnum.DURATION_KM -> showDistanceSegment()
-                RunInfoStatesEnum.DISTANCE_SEGMENT -> showDurationSegment()
-                RunInfoStatesEnum.DURATION_SEGMENT -> showAverageSpeedSegment()
-                RunInfoStatesEnum.AVERAGE_SPEED_SEGMENT -> showPathDrawn()
-            }
+            val newIndex =
+                Math.floorMod(this.currentStateView.index + 1, RunInfoStatesEnum.values().size)
+            this.currentStateView = RunInfoStatesEnum.values()[newIndex]
+            show()
         }
     }
 
@@ -60,15 +56,25 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      */
     private fun leftTransitionButton() {
         this.changeLeftButton.setOnClickListener {
-            when (currentStateView) {
-                RunInfoStatesEnum.PATH_DRAWN -> showAverageSpeedSegment()
-                RunInfoStatesEnum.GLOBAL_STATS -> showPathDrawn()
-                RunInfoStatesEnum.AVERAGE_SPEED_KM -> showGlobalStats()
-                RunInfoStatesEnum.DURATION_KM -> showAverageSpeedKm()
-                RunInfoStatesEnum.DISTANCE_SEGMENT -> showDurationKm()
-                RunInfoStatesEnum.DURATION_SEGMENT -> showDistanceSegment()
-                RunInfoStatesEnum.AVERAGE_SPEED_SEGMENT -> showDurationSegment()
-            }
+            val newIndex =
+                Math.floorMod(this.currentStateView.index - 1, RunInfoStatesEnum.values().size)
+            this.currentStateView = RunInfoStatesEnum.values()[newIndex]
+            show()
+        }
+    }
+
+    /**
+     * Helper function to show the correct information's in the view in function of the current state of the RunInfoStetEnum
+     */
+    private fun show() {
+        when (currentStateView) {
+            RunInfoStatesEnum.PATH_DRAWN -> showPathDrawn()
+            RunInfoStatesEnum.GLOBAL_STATS -> showGlobalStats()
+            RunInfoStatesEnum.AVERAGE_SPEED_KM -> showAverageSpeedKm()
+            RunInfoStatesEnum.DURATION_KM -> showDurationKm()
+            RunInfoStatesEnum.DISTANCE_SEGMENT -> showDistanceSegment()
+            RunInfoStatesEnum.DURATION_SEGMENT -> showDurationSegment()
+            RunInfoStatesEnum.AVERAGE_SPEED_SEGMENT -> showAverageSpeedSegment()
         }
     }
 
@@ -86,8 +92,6 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      * Helper function to adapt the view to display the path drawn on the map and show the score gives by the ML model below
      */
     private fun showPathDrawn() {
-        // update the state of the view
-        this.currentStateView = RunInfoStatesEnum.PATH_DRAWN
         this.titleText.text = getString(R.string.path_drawn)
         // lunch the fragment to display the map with the path
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -128,8 +132,6 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      * Helper function to adapt the view to display the global stats of the user during his drawing session.
      */
     private fun showGlobalStats() {
-        // update the state of the view
-        this.currentStateView = RunInfoStatesEnum.GLOBAL_STATS
         this.titleText.text = getString(R.string.global_stats)
         // lunch the fragment to display the map with the path
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -143,8 +145,6 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      * Helper function to adapt the view to display a graph and a table to display the average speed per km.
      */
     private fun showAverageSpeedKm() {
-        // update the state of the view
-        this.currentStateView = RunInfoStatesEnum.AVERAGE_SPEED_KM
         this.titleText.text = getString(R.string.average_speed_per_km)
         // show a graph of the speed in function of the kilometers
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -169,8 +169,6 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      * Helper function to adapt the view to display a graph and a table to display the durations per km.
      */
     private fun showDurationKm() {
-        // update the state of the view
-        this.currentStateView = RunInfoStatesEnum.DURATION_KM
         this.titleText.text = getString(R.string.duration_per_km)
         // show a graph of the duration in function of the kilometers
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -195,8 +193,6 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      * Helper function to adapt the view to display a graph and a table to display the distance per segment.
      */
     private fun showDistanceSegment() {
-        // update the state of the view
-        this.currentStateView = RunInfoStatesEnum.DISTANCE_SEGMENT
         this.titleText.text = getString(R.string.distance_per_segment)
         // show a graph of the distance in function of the section
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -221,8 +217,6 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      * Helper function to adapt the view to display a graph and a table to display the duration per segment.
      */
     private fun showDurationSegment() {
-        // update the state of the view
-        this.currentStateView = RunInfoStatesEnum.DURATION_SEGMENT
         this.titleText.text = getString(R.string.duration_per_segment)
         // show a graph of the duration in function of the section
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -247,8 +241,6 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
      * Helper function to adapt the view to display a graph and a table to display the average speed per segment.
      */
     private fun showAverageSpeedSegment() {
-        // update the state of the view
-        this.currentStateView = RunInfoStatesEnum.AVERAGE_SPEED_SEGMENT
         this.titleText.text = getString(R.string.average_speed_per_segment)
         // show a graph of the average speed in function of the section
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -271,8 +263,11 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
 }
 
 /**
- * This enum is used to defined the different state of the info/stats fragment to display differents information in function of this state
+ * This enum is used to defined the different state of the info/stats fragment to display different information in function of this state
  */
-private enum class RunInfoStatesEnum {
-    PATH_DRAWN, GLOBAL_STATS, AVERAGE_SPEED_KM, DURATION_KM, DISTANCE_SEGMENT, DURATION_SEGMENT, AVERAGE_SPEED_SEGMENT
+private enum class RunInfoStatesEnum(val index: Int) {
+    PATH_DRAWN(0), GLOBAL_STATS(1), AVERAGE_SPEED_KM(2), DURATION_KM(3), DISTANCE_SEGMENT(4), DURATION_SEGMENT(
+        5
+    ),
+    AVERAGE_SPEED_SEGMENT(6)
 }
