@@ -1,12 +1,34 @@
 package com.epfl.drawyourpath.utils
 
+import com.epfl.drawyourpath.utils.Utils.coordinatesToBitmap
+import com.epfl.drawyourpath.utils.Utils.getBiggestPoint
+import com.epfl.drawyourpath.utils.Utils.getSmallestPoint
 import com.google.android.gms.maps.model.LatLng
+import com.google.mlkit.vision.digitalink.Ink
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.closeTo
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneOffset
 
 class UtilsTest {
+
+    @Test
+    fun checkEmailReturnsExpectedResult() {
+        assertFalse(Utils.checkEmail("Invalid"))
+        assertTrue(Utils.checkEmail("valid@valid.org"))
+    }
+
+    @Test
+    fun getCurrentDateTimeInEpochSecondsReturnsExpectedResult() {
+        val prevTime = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
+        val currTime = Utils.getCurrentDateTimeInEpochSeconds()
+        assertTrue(currTime <= LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC))
+        assertTrue(prevTime <= currTime)
+    }
 
     @Test
     fun coordinateToInkReturnsExpectedValues() {
@@ -29,6 +51,36 @@ class UtilsTest {
     }
 
     @Test
+    fun getBiggestPointReturnsTheBiggestPoint() {
+        val biggest = getBiggestPoint(
+            Ink.Stroke.builder().also {
+                it.addPoint(Ink.Point.create(0f, 0f))
+                it.addPoint(Ink.Point.create(10f, 0f))
+                it.addPoint(Ink.Point.create(0f, 20f))
+                it.addPoint(Ink.Point.create(5f, 5f))
+            }.build(),
+        )
+
+        assertEquals(biggest.x, 10f)
+        assertEquals(biggest.y, 20f)
+    }
+
+    @Test
+    fun getSmallestPointReturnsTheSmallestPoint() {
+        val smallest = getSmallestPoint(
+            Ink.Stroke.builder().also {
+                it.addPoint(Ink.Point.create(2f, 0f))
+                it.addPoint(Ink.Point.create(10f, 2f))
+                it.addPoint(Ink.Point.create(0f, 20f))
+                it.addPoint(Ink.Point.create(5f, 5f))
+            }.build(),
+        )
+
+        assertEquals(smallest.x, 0f)
+        assertEquals(smallest.y, 0f)
+    }
+
+    @Test
     fun pointOrderIsConservedWhenConvertingCoordinates() {
         val c1 = LatLng(1.0, 1.0)
         val c2 = LatLng(2.0, 2.0)
@@ -39,5 +91,68 @@ class UtilsTest {
         val ps = Utils.coordinatesToStroke(listOf(c1, c2))
 
         assertThat(ps.points, `is`(listOf(p1, p2)))
+    }
+
+    @Test
+    fun normalizedPointIsPlacedOnPadding() {
+        val p1 = Ink.Point.create(2f, 2f)
+
+        val res = Utils.normalizeStrokes(
+            listOf(
+                Ink.Stroke.builder().also {
+                    it.addPoint(p1)
+                }.build(),
+            ),
+            0.1f,
+        )
+
+        assertThat(res[0].points[0].x.toDouble(), `is`(closeTo(0.1, 0.001)))
+        assertThat(res[0].points[0].y.toDouble(), `is`(closeTo(0.1, 0.001)))
+    }
+
+    @Test
+    fun normalizedPointsMatchExpectedValues() {
+        val p = listOf(
+            Ink.Point.create(2f, 2f),
+            Ink.Point.create(4f, 2f),
+            Ink.Point.create(2f, 4f),
+            Ink.Point.create(4f, 4f),
+            Ink.Point.create(3f, 3f),
+        )
+
+        val expectedP = listOf(
+            Ink.Point.create(0f, 0f),
+            Ink.Point.create(1f, 0f),
+            Ink.Point.create(0f, 1f),
+            Ink.Point.create(1f, 1f),
+            Ink.Point.create(0.5f, 0.5f),
+        )
+
+        val res = Utils.normalizeStrokes(
+            listOf(
+                Ink.Stroke.builder().also {
+                    for (point in p) {
+                        it.addPoint(point)
+                    }
+                }.build(),
+            ),
+            0.0f,
+        )
+
+        res[0].points.zip(expectedP).forEach {
+            assertThat(it.first.x.toDouble(), `is`(closeTo(it.second.x.toDouble(), 0.001)))
+            assertThat(it.first.y.toDouble(), `is`(closeTo(it.second.y.toDouble(), 0.001)))
+        }
+    }
+
+    @Test
+    fun coordinatesToBitmapDoesNotThrow() {
+        coordinatesToBitmap(
+            listOf(
+                LatLng(1.0, 1.0),
+                LatLng(2.0, 2.0),
+                LatLng(3.0, 3.0),
+            ),
+        )
     }
 }
