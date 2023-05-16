@@ -16,7 +16,7 @@ class ChatAdapter(
     // Listener that is called when a chat preview is clicked
     private val clickListener: (ChatPreview) -> Unit,
     // Listener that is called when the delete button is clicked for a chat preview
-    private val deleteListener: (ChatPreview) -> Unit
+    private val deleteListener: (ChatPreview) -> Unit,
 ) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     // ViewHolder provides a reference to the views for each chat preview in the item list
@@ -26,7 +26,7 @@ class ChatAdapter(
 
         // Binds the chat preview to the ViewHolder and sets the click and delete listeners
         fun bind(chatPreview: ChatPreview, clickListener: (ChatPreview) -> Unit, deleteListener: (ChatPreview) -> Unit) {
-            itemView.setOnClickListener { clickListener(chatPreview) }  // Sets the click listener for the chat preview
+            itemView.setOnClickListener { clickListener(chatPreview) } // Sets the click listener for the chat preview
             deleteButton.setOnClickListener { deleteListener(chatPreview) } // Sets the delete listener for the chat preview
         }
     }
@@ -41,9 +41,9 @@ class ChatAdapter(
     // Binds the data to the ViewHolder
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val chatPreview = chatPreviews[position]
-        val chatTitle = chatPreview.title ?: "Chat ${position + 1}"  // If the chat preview has no title, default to "Chat #"
-        holder.chatTitleTextView.text = chatTitle  // Sets the chat title
-        holder.bind(chatPreview, clickListener, deleteListener)  // Binds the chat preview to the ViewHolder
+        val chatTitle = chatPreview.title ?: "Chat ${position + 1}" // If the chat preview has no title, default to "Chat #"
+        holder.chatTitleTextView.text = chatTitle // Sets the chat title
+        holder.bind(chatPreview, clickListener, deleteListener) // Binds the chat preview to the ViewHolder
     }
 
     // Returns the total number of chat previews in the list

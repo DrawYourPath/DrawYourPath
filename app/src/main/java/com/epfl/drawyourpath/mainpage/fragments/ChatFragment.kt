@@ -145,12 +145,12 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
                                 chatName,
                                 membersList,
                                 userId,
-                                welcomeMessage
+                                welcomeMessage,
                             )
                                 .thenAccept { conversationId ->
                                     Log.d(
                                         "ChatCreation",
-                                        "Chat created with conversationId: $conversationId"
+                                        "Chat created with conversationId: $conversationId",
                                     )
 
                                     // Create a new ChatPreview object for the newly created chat
@@ -160,7 +160,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
                                         0L,
                                         userId,
                                         welcomeMessageContent,
-                                        System.currentTimeMillis()
+                                        System.currentTimeMillis(),
                                     )
                                     val newChatPreview =
                                         ChatPreview(conversationId, chatName, welcomeMessage)
@@ -183,7 +183,6 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
         }
     }
 
-
     /**
      * This function fetches the list of ChatPreview objects associated with a user from the database.
      *
@@ -193,7 +192,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
      */
     fun getUserChatPreviews(
         database: Database,
-        userId: String
+        userId: String,
     ): CompletableFuture<List<ChatPreview>> {
         // Return a CompletableFuture that fetches the user data from the database
         return database.getUserData(userId)
@@ -215,7 +214,6 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
                     }
             }
     }
-
 
     /**
      * This function converts a ChatPreview object to a full Chat object.
