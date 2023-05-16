@@ -28,7 +28,7 @@ class PathDrawingPauseFragmentTest {
         }
 
         // wait that the countdown passed
-        Thread.sleep(1001)
+        Thread.sleep(1005)
         // click on stop button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .perform(ViewActions.click())
