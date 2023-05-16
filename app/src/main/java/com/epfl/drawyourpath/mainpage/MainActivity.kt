@@ -173,6 +173,7 @@ class MainActivity : AppCompatActivity() {
         replaceFragment<ProfileFragment>(
             bundleOf(
                 PROFILE_USER_ID_KEY to userId,
+                PROFILE_TEST_KEY to isTest,
             ),
         )
     }

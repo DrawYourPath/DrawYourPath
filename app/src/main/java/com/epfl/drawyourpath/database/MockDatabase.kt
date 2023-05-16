@@ -102,6 +102,7 @@ class MockDatabase : Database() {
                 ),
             ),
             tournaments = listOf("0", "1"),
+            friendList = listOf(MockAuth.MOCK_USER.getUid()),
         ),
         UserData(
             userId = "1",
