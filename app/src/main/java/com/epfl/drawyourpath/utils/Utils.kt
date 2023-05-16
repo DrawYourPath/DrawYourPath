@@ -255,8 +255,8 @@ object Utils {
      */
     fun getSmallestPoint(strokes: List<Stroke>): Point =
         strokes.fold(Pair(Float.MAX_VALUE, Float.MAX_VALUE)) { acc, stroke ->
-            getSmallestPoint(stroke).let {
-                Pair(min(acc.first, it.x), min(acc.second, it.y))
+            stroke.points.fold(acc) { acc2, point ->
+                Pair(min(acc2.first, point.x), min(acc2.second, point.y))
             }
         }.let { Point.create(it.first, it.second) }
 
@@ -266,10 +266,7 @@ object Utils {
      * @return The smallest coordinate for the stroke.
      */
     fun getSmallestPoint(stroke: Stroke): Point =
-        stroke.points.fold(Pair(Float.MAX_VALUE, Float.MAX_VALUE)) {
-                acc, point ->
-            Pair(min(acc.first, point.x), min(acc.second, point.y))
-        }.let { Point.create(it.first, it.second) }
+        getSmallestPoint(listOf(stroke))
 
     /**
      * Gets the biggest coordinates independently.
@@ -278,8 +275,8 @@ object Utils {
      */
     fun getBiggestPoint(strokes: List<Stroke>): Point =
         strokes.fold(Pair(0f, 0f)) { acc, stroke ->
-            getBiggestPoint(stroke).let {
-                Pair(max(acc.first, it.x), max(acc.second, it.y))
+            stroke.points.fold(acc) { acc2, point ->
+                Pair(max(acc2.first, point.x), max(acc2.second, point.y))
             }
         }.let { Point.create(it.first, it.second) }
 
@@ -289,10 +286,7 @@ object Utils {
      * @return The biggest coordinate for the stroke.
      */
     fun getBiggestPoint(stroke: Stroke): Point =
-        stroke.points.fold(Pair(0f, 0f)) {
-                acc, point ->
-            Pair(max(acc.first, point.x), max(acc.second, point.y))
-        }.let { Point.create(it.first, it.second) }
+        getBiggestPoint(listOf(stroke))
 
     /**
      * Normalizes strokes so that it fits in a 1:1 square.

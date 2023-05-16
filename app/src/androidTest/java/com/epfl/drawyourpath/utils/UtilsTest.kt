@@ -1,13 +1,14 @@
 package com.epfl.drawyourpath.utils
 
 import com.epfl.drawyourpath.utils.Utils.coordinatesToBitmap
+import com.epfl.drawyourpath.utils.Utils.getBiggestPoint
+import com.epfl.drawyourpath.utils.Utils.getSmallestPoint
 import com.google.android.gms.maps.model.LatLng
 import com.google.mlkit.vision.digitalink.Ink
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import java.time.LocalDate
 import java.time.LocalTime
@@ -47,6 +48,36 @@ class UtilsTest {
         val stroke = Utils.coordinatesToStroke(emptyList())
 
         assertTrue(stroke.points.isEmpty())
+    }
+
+    @Test
+    fun getBiggestPointReturnsTheBiggestPoint() {
+        val biggest = getBiggestPoint(
+            Ink.Stroke.builder().also {
+                it.addPoint(Ink.Point.create(0f, 0f))
+                it.addPoint(Ink.Point.create(10f, 0f))
+                it.addPoint(Ink.Point.create(0f, 20f))
+                it.addPoint(Ink.Point.create(5f, 5f))
+            }.build(),
+        )
+
+        assertEquals(biggest.x, 10f)
+        assertEquals(biggest.y, 20f)
+    }
+
+    @Test
+    fun getSmallestPointReturnsTheSmallestPoint() {
+        val smallest = getSmallestPoint(
+            Ink.Stroke.builder().also {
+                it.addPoint(Ink.Point.create(2f, 0f))
+                it.addPoint(Ink.Point.create(10f, 2f))
+                it.addPoint(Ink.Point.create(0f, 20f))
+                it.addPoint(Ink.Point.create(5f, 5f))
+            }.build(),
+        )
+
+        assertEquals(smallest.x, 0f)
+        assertEquals(smallest.y, 0f)
     }
 
     @Test
