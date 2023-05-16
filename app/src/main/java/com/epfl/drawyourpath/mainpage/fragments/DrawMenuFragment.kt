@@ -28,5 +28,4 @@ class DrawMenuFragment : Fragment(R.layout.fragment_draw_menu) {
             }
         }
     }
-
 }

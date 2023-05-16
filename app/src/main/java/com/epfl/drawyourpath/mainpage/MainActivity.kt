@@ -14,7 +14,6 @@ import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
-import com.epfl.drawyourpath.pathDrawing.PathDrawingContainerFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_KEY
 import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
@@ -43,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         setupNotifications()
 
         replaceFragment<MainFragment>()
-
     }
 
     /**

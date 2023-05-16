@@ -16,7 +16,5 @@ class PathDrawingContainerFragment(private val countdownDuration: Long = 4) : Fr
 
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.add(R.id.path_drawing_activity_content, PathDrawingCountDownFragment(countdownDuration = countdownDuration)).commit()
-
     }
-
 }

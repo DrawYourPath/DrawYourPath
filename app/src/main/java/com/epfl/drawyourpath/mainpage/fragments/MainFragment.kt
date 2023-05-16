@@ -1,16 +1,11 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -19,15 +14,10 @@ import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
-import com.epfl.drawyourpath.mainpage.SCAN_QR_REQ_CODE
 import com.epfl.drawyourpath.preferences.PreferencesFragment
-import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
-import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_KEY
-import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import java.util.concurrent.CompletableFuture
 
 class MainFragment : Fragment(R.layout.fragment_main) {
 
@@ -60,7 +50,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             bottomNavigationView.selectedItemId = R.id.draw_menu_item
             replaceFragment<DrawMenuFragment>()
         }
-
     }
 
     private fun setupTopBar(view: View) {
@@ -143,5 +132,4 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             replace(R.id.fragmentContainerView, F::class.java, args)
         }
     }
-
 }

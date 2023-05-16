@@ -1,12 +1,8 @@
 package com.epfl.drawyourpath.pathDrawing
 
 import android.Manifest
-import android.content.Intent
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
