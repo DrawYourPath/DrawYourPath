@@ -1,11 +1,11 @@
 package com.epfl.drawyourpath.database
 
 import android.util.Log
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot

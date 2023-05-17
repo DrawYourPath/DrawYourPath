@@ -165,6 +165,24 @@ object Utils {
     }
 
     /**
+     * transform ALL_CAPS naming convention to a All caps
+     * @param ALL_CAPS the string to transform
+     * @return the formatted string
+     */
+    fun getStringFromALL_CAPS(ALL_CAPS: String): String {
+        return ALL_CAPS.replace("_", " ").lowercase().let { value -> value.replaceFirstChar { it.uppercaseChar() } }
+    }
+
+    /**
+     * transform All caps to ALL_CAPS naming convention
+     * @param value the string to transform
+     * @return the formatted string
+     */
+    fun getALL_CAPSFromString(value: String): String {
+        return value.uppercase().replace(" ", "_")
+    }
+
+    /**
      * Get current date and time in epoch seconds
      * @return current date and time in epoch seconds
      */
@@ -210,6 +228,15 @@ object Utils {
     fun getStringSpeed(speed: Double): String {
         val roundSpeed: Double = (speed * 100.0).roundToInt() / 100.0
         return roundSpeed.toString()
+    }
+
+    /**
+     * get the date as string with the format dd mm yyyy
+     * @param date the date to transform
+     * @return the formatted string
+     */
+    fun getDateAsString(date: LocalDate): String {
+        return date.format(DateTimeFormatter.ofPattern("dd MM uuuu"))
     }
 
     /**
