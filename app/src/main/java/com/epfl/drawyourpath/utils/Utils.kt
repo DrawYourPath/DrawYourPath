@@ -270,7 +270,7 @@ object Utils {
      * @param maxError The max error percentage relative to the average segment length
      * @return A similar Path with the least useful points removed.
      */
-    fun reducePath(path: Path, maxError: Double = 0.01): Path {
+    fun reducePath(path: Path, maxError: Float = 0.01F): Path {
         val reducedPoints = mutableListOf(listOf<LatLng>())
         // Check for trivial cases
         if (path.size() <= 2) {
@@ -278,7 +278,7 @@ object Utils {
         }
 
         val nbSegments = path.getPoints().filter { section -> section.size > 1 }.size
-        val epsilon = maxError * path.getDistance() / nbSegments
+        val epsilon = maxError * path.getDistance().toFloat() / nbSegments
         for (section in path.getPoints()) {
             reducedPoints.add(reduceSection(section, epsilon))
         }
@@ -291,7 +291,7 @@ object Utils {
      * @param epsilon The min distance to keep the point on the section
      * @return A similar segment with the least useful points removed.
      */
-    fun reduceSection(section: List<LatLng>, epsilon: Double): List<LatLng> {
+    fun reduceSection(section: List<LatLng>, epsilon: Float): List<LatLng> {
         val reducedPointList = mutableListOf<LatLng>()
         // Check for trivial cases
         if (section.size <= 2) {
@@ -314,35 +314,59 @@ object Utils {
     }
 
     /**
-     * Compute the distances between each point the segment (described by start and end)
+     * Compute the distances between each point the segment (described by start and end).
      * @param points The points we want to calculate the distance with
      * @param start The starting point of the segment
      * @param end The end point of the segment
      * @return The distance between each point and the segment.
      */
-    private fun distancesToSegment(points: List<LatLng>, start: LatLng, end: LatLng): List<Double> {
-        val results = FloatArray(0)
-        Location.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude, results)
-        val segmentLength = results[0]
-
+    private fun distancesToSegment(points: List<LatLng>, start: LatLng, end: LatLng): List<Float> {
         // Translate to put the start at the origin
         val newEnd = LatLng(end.latitude - start.latitude, end.longitude - start.longitude)
         // Consider the angle in the plane perpendicular to the x axis in spherical coordinates
         val anglePlane = atan2(sin(newEnd.latitude), cos(newEnd.latitude) * sin(newEnd.longitude))
-        val angleRotation = (PI / 2) - anglePlane
 
-        var distances = mutableListOf<Double>()
-        for (i in 1 until points.size - 1) {
-            // Translate to put the start at the origin : point -> point - start
-            var newPoint = LatLng(
-                points[i].latitude - points.first().latitude,
-                points[i].longitude - points.first().longitude,
+        var distances = mutableListOf<Float>()
+        for (point in points) {
+            // Translate to put the start at the origin and rotate to put the segment on the equator
+            val newPoint = rotateXAxis(
+                point.latitude - start.latitude,
+                point.longitude - start.longitude,
+                -anglePlane
             )
-            // Rotate around the origin to have the end with longitude 0
-            val finalLon = newPoint.latitude * sin(angleRotation) + newPoint.longitude * cos(angleRotation)
-            // The distance is the absolute value of the longitude
-            distances.add(finalLon.absoluteValue)
+            // Compute the distance to the segment
+            val results = FloatArray(3)
+            Location.distanceBetween(0.0, 0.0, 0.0, point.longitude, results)
+            var pointDistance = results[0]
+            Location.distanceBetween(start.latitude, start.longitude, point.latitude, point.longitude, results)
+            pointDistance = min(pointDistance, results[0])
+            Location.distanceBetween(end.latitude, end.longitude, point.latitude, point.longitude, results)
+            pointDistance = min(pointDistance, results[0])
+            // Store the result
+            distances.add(pointDistance)
         }
-        return distances
+        return distances.toList()
+    }
+
+    /**
+     * Compute the rotation around the X axis given the latitude and longitude.
+     * @param latitude The latitude of the input point
+     * @param longitude The longitude of the input point
+     * @param angle The angle of rotation (in radians)
+     * @return The point after applying the rotation.
+     */
+    private fun rotateXAxis(latitude: Double, longitude: Double, angle: Double): LatLng {
+        // Transform to 3D coordinates
+        val x = cos(latitude) * cos(longitude)
+        val y = cos(latitude) * sin(longitude)
+        val z = sin(longitude)
+        // Apply rotation
+        val newX = x
+        val newY = cos(angle) * y - sin(angle) * z
+        val newZ = sin(angle) * y + cos(angle) * z
+        // Transform back to latitude and longitude
+        val newLat = asin(newZ)
+        val newLon = atan2(newY, newX)
+        return LatLng(newLat, newLon)
     }
 }
