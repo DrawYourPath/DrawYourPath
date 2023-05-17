@@ -228,7 +228,7 @@ abstract class Database {
      * @return a future that contains the tournament if successful, or an exception.
      */
     abstract fun getTournament(
-        tournamentId: String
+        tournamentId: String,
     ): CompletableFuture<Tournament>
 
     /**
