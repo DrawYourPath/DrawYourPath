@@ -555,7 +555,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
         val future = CompletableFuture<Tournament>()
         // Check that the tournament exists
-        isTournamentInDatabase(tournamentId).thenApply {tournamentExists ->
+        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
             if (!tournamentExists) {
                 future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
             } else {

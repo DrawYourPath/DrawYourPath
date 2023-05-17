@@ -854,7 +854,7 @@ class MockDatabaseTest {
      */
     @Test
     fun getTournamentThatExistsReturnsTheTournament() {
-        val database= MockDatabase()
+        val database = MockDatabase()
         val expectedTournament = database.mockTournament
         val expectedTournamentId = expectedTournament.id
         assertEquals(expectedTournament, database.getTournament(expectedTournamentId).get())
