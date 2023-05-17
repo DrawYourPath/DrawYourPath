@@ -109,6 +109,10 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
+    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
+        return failedFuture()
+    }
+
     override fun createChatConversation(
         name: String,
         membersList: List<String>,

@@ -3,6 +3,8 @@ package com.epfl.drawyourpath.database
 import android.util.Log
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
+import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
@@ -10,6 +12,7 @@ import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 object FirebaseDatabaseUtils {
 
@@ -116,6 +119,26 @@ object FirebaseDatabaseUtils {
     }
 
     /**
+     * Helper function to obtain the posts of a tournament from the database
+     * @param data the data snapshot containing the posts
+     * @return a list containing the posts of the tournament
+     */
+    fun transformPostList(data: DataSnapshot?): List<TournamentPost> {
+        return data?.children?.mapNotNull {
+            transformPost(it)
+        } ?: emptyList()
+    }
+
+    /**
+     * Helper function to obtain a post from a database snapshot
+     * @param data the data snapshot containing the post
+     * @return the post, or null if an error occurred
+     */
+    fun transformPost(data: DataSnapshot?): TournamentPost? {
+        return data?.value as TournamentPost?
+    }
+
+    /**
      * Helper function to obtain the chats list from the database of the user
      * @param data the data snapshot containing the chats List
      * @return a list containing the conversationId of all the chats where the user is present
@@ -198,6 +221,39 @@ object FirebaseDatabaseUtils {
             runs = transformRunList(data.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
             chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
+        )
+    }
+
+    /**
+     * Helper function to convert a data snapshot to a tournament
+     * @param data the data snapshot containing the tournament
+     * @return the tournament, or null if an error occurred
+     */
+    fun mapToTournament(data: DataSnapshot): Tournament? {
+        val id = data.child(FirebaseKeys.TOURNAMENT_ID).value as String?
+        val name = data.child(FirebaseKeys.TOURNAMENT_NAME).value as String?
+        val description = data.child(FirebaseKeys.TOURNAMENT_DESCRIPTION).value as String?
+        val creatorId = data.child(FirebaseKeys.TOURNAMENT_CREATOR_ID).value as String?
+        val startDate = data.child(FirebaseKeys.TOURNAMENT_START_DATE).value as LocalDateTime?
+        val endDate = data.child(FirebaseKeys.TOURNAMENT_END_DATE).value as LocalDateTime?
+        val participants = getKeys(data.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
+        val posts = transformPostList(data.child(FirebaseKeys.TOURNAMENT_POSTS))
+        val visibility = data.child(FirebaseKeys.TOURNAMENT_VISIBILITY).value as Tournament.Visibility?
+
+        if (id == null || name == null || description == null || creatorId == null || startDate == null
+            || endDate == null || visibility == null) {
+            return null
+        }
+        return Tournament(
+            id,
+            name,
+            description,
+            creatorId,
+            startDate,
+            endDate,
+            participants,
+            posts,
+            visibility
         )
     }
 }

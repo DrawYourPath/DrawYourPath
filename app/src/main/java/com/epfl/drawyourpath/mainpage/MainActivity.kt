@@ -17,17 +17,23 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
+import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_KEY
 import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
@@ -74,6 +80,49 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupNotifications()
+
+        /*
+        val point1 = LatLng(0.0, 0.0)
+        val point2 = LatLng(0.001, 0.001)
+        val points = listOf(point1, point2)
+        val path = Path(listOf(points))
+        val startTime = System.currentTimeMillis()
+        val endTime = startTime + 10
+        val sampleRun = Run(
+            path = path,
+            startTime = startTime,
+            endTime = endTime,
+            duration = 10,
+            predictedShape = "cat"
+            similarityScore = 0.5,
+        )
+
+        val posts1 = mutableListOf(
+            TournamentPost("SpaceMan", sampleRun, 35),
+            TournamentPost("NASA", sampleRun, 124),
+            TournamentPost("Diabolos", sampleRun, 666),
+            TournamentPost("Alien", sampleRun, -3),
+            TournamentPost("IDK", sampleRun, 0),
+        )
+        val t = Tournament(
+            "id4",
+            "Discover the earth",
+            "draw the earth",
+            "creator4",
+            LocalDateTime.now().plusDays(3L),
+            LocalDateTime.now().plusDays(4L),
+            listOf(),
+            posts1,
+        )
+        */
+        /*
+        val db = FirebaseDatabase()
+        //db.addTournament(t)
+        val t = db.getTournament("id4")
+        t.thenApply {
+            val x = 1
+        }
+        */
     }
 
     /**

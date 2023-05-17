@@ -621,6 +621,10 @@ class MockDatabase : Database() {
         return CompletableFuture.completedFuture(Unit)
     }
 
+    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
+        TODO("Not yet implemented")
+    }
+
     override fun createChatConversation(
         name: String,
         membersList: List<String>,

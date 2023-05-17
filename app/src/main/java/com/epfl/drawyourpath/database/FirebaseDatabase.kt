@@ -55,7 +55,15 @@ class FirebaseKeys {
         const val GOAL_HISTORY_TIME = "time"
 
         // Tournaments keys
+        const val TOURNAMENT_ID = "id"
+        const val TOURNAMENT_NAME = "name"
+        const val TOURNAMENT_DESCRIPTION = "description"
+        const val TOURNAMENT_CREATOR_ID = "creatorId"
+        const val TOURNAMENT_START_DATE = "startDate"
+        const val TOURNAMENT_END_DATE = "endDate"
         const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+        const val TOURNAMENT_POSTS = "posts"
+        const val TOURNAMENT_VISIBILITY = "visibility"
 
         // Chats keys top level
         const val CHAT_TITLE = "title"
@@ -541,6 +549,18 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         )
         database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
+        return future
+    }
+
+    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
+        val future = CompletableFuture<Tournament>()
+
+        tournamentsRoot().child(tournamentId).get().addOnSuccessListener {
+            future.complete(FirebaseDatabaseUtils.mapToTournament(it))
+        }.addOnFailureListener {
+            future.completeExceptionally(it)
+        }
+
         return future
     }
 
