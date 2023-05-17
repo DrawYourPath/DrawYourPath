@@ -50,7 +50,7 @@
     <string name="trophies">Trophies</string>
     <string name="milestones">Milestones</string>
     <string name="challenge">Challenge</string>
-    <string name="enter_a_number">Enter a number</string>
+    <string name="enter_a_number"><font size="15">Enter a number</font></string>
     <string name="trophy">trophy</string>
     <string name="server_client_id">593734550817-74svh08a2ram22m54eqvln88kecg3nr0.apps.googleusercontent.com</string>
     <string name="current_password">Current password:</string>
@@ -158,4 +158,8 @@
     <string name="duration_in_s">Duration (s)</string>
     <string name="segment">Segment</string>
     <string name="distance_in_m">Distance (in m)</string>
+    <string name="display_distance">Distance: %.2f Km</string>
+    <string name="display_time">Time taken: %d minutes</string>
+    <string name="display_shape">Shape: %s</string>
+    <string name="display_score">Score: %.2f</string>
 </resources>

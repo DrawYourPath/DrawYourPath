@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.path
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,14 +46,10 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         // Set the data to the view items in the layout
         // holder.mapImageView.setImageResource(run.mapImage)
         holder.dateTextView.text = run.getDate()
-        holder.distanceTextView.text =
-            "Distance: ${String.format("%.2f", run.getDistance() / 1000)} Km"
-        holder.timeTakenTextView.text = "Time taken: ${run.getDuration() / 60} minutes"
-        holder.calorieTextView.text = "Calories burned: ${run.getCalories()} kcal"
-        holder.averageSpeedTextView.text =
-            "Speed: ${String.format("%.2f", run.getAverageSpeed())} m/s"
-        holder.shapeRecognizedTextView.text = "Shape: ${run.predictedShape}"
-        holder.shapeScoreTextView.text = "Score: ${String.format("%.2f", run.similarityScore)}"
+        holder.distanceTextView.text = holder.context.getString(R.string.display_distance).format(run.getDistance() / 1000)
+        holder.timeTakenTextView.text = holder.context.getString(R.string.display_time).format(run.getDuration() / 60)
+        holder.shapeRecognizedTextView.text = holder.context.getString(R.string.display_shape).format(run.predictedShape)
+        holder.shapeScoreTextView.text = holder.context.getString(R.string.display_score).format(run.similarityScore)
         holder.itemView.setOnClickListener {
             val activity: MainActivity = holder.itemView.context as MainActivity
             val fragTransaction: FragmentTransaction = activity.supportFragmentManager.beginTransaction()
@@ -69,10 +66,9 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
         val distanceTextView: TextView = itemView.findViewById(R.id.distanceTextView)
         val timeTakenTextView: TextView = itemView.findViewById(R.id.timeTakenTextView)
-        val calorieTextView: TextView = itemView.findViewById(R.id.calorieTextView)
-        val averageSpeedTextView: TextView = itemView.findViewById(R.id.averageSpeedTextView)
         val shapeRecognizedTextView: TextView = itemView.findViewById(R.id.shapeTextView)
         val shapeScoreTextView: TextView = itemView.findViewById(R.id.scoreTextView)
+        val context: Context = itemView.context
     }
 
     fun updateRunsData(newRuns: List<Run>) {

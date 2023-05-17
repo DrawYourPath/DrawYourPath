@@ -9,7 +9,7 @@ import com.epfl.drawyourpath.R
 /**
  * This fragment is used to display the form description of the path and the score associated to it.
  * @param formName the name of the form recognized on the path
- * @param score the core gove to the form recognized
+ * @param score the score given to the form recognized
  */
 class ShapePathDescriptionFragment(private val formName: String, private val score: Int) : Fragment(R.layout.fragment_form_path_description) {
     private lateinit var formDescriptionText: TextView
