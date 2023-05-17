@@ -117,11 +117,27 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             userCache.insertAll(
                 UserEntity(userData, userId),
                 userData.dailyGoals?.map { DailyGoalEntity(it, userId) } ?: listOf(),
-                listOf(), // TODO replace with userData.milestones when there is one
+                fromMilestoneDataToEntity(userId = userId, milestonesData = userData.milestones),
                 runs.map { it.first },
                 runs.map { it.second }.flatten(),
             )
         }
+    }
+    /**
+     * Helper function to transform MilestoneData into Milestone entities
+     * @param milestoneData list of milestone data
+     * @param userId of the user who passed the milestones
+     * @return a list of milestone entities
+     */
+    private fun fromMilestoneDataToEntity(userId: String, milestonesData: List<MilestoneData>?): List<MilestoneEntity>{
+        if(milestonesData.isNullOrEmpty()){
+            return emptyList()
+        }
+        val list = mutableListOf<MilestoneEntity>()
+        milestonesData.forEach {milestone ->
+            list.add(MilestoneEntity(userId = userId, milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name), date = milestone.date!!.toEpochDay()))
+        }
+        return list
     }
 
     /**
@@ -292,13 +308,18 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @return a completable future that indicate if the the milesstones were correctly added
      */
     private fun addListMilestones(milestones: List<MilestoneEntity>): CompletableFuture<Unit>{
-        var future : CompletableFuture<Unit> = CompletableFuture()
-        milestones.forEachIndexed{index, entity ->
-            val currentFuture = database.addMilestone(milestone = MilestoneEnum.valueOf(entity.milestone), date = LocalDate.ofEpochDay(entity.date), userId = entity.userId)
-            if(index == 0){
-                future = currentFuture
+        var future = CompletableFuture<Unit>()
+        if(milestones.isEmpty()){
+            future.complete(Unit)
+        }else{
+            milestones.forEachIndexed{index, entity ->
+                val newFuture = database.addMilestone(milestone = MilestoneEnum.valueOf(Utils.getALL_CAPSFromString(entity.milestone)), date = LocalDate.ofEpochDay(entity.date), userId = entity.userId)
+                if(index == 0){
+                    future = newFuture
+                }else{
+                    future.thenApply { newFuture }
+                }
             }
-            future.thenApply { currentFuture }
         }
         return future
     }
