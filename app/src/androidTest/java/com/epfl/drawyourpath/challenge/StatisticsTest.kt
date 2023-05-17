@@ -1,7 +1,7 @@
 package com.epfl.drawyourpath.challenge
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Test
@@ -54,6 +54,16 @@ class StatisticsTest {
     @Test
     fun totalDistanceMatchesExpected() {
         assertThat(Statistics.getTotalDistance(goals), `is`(30.0))
+    }
+
+    @Test
+    fun totalTimeForEmptyGoalsIsZero() {
+        assertThat(Statistics.getTotalTime(emptyList()), `is`(0.0))
+    }
+
+    @Test
+    fun totalTimeMatchesExpected() {
+        assertThat(Statistics.getTotalTime(goals), `is`(30.0))
     }
 
     @Test

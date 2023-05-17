@@ -47,8 +47,8 @@
     <string name="stats_and_stuff">Stats and stuff</string>
 
     <string name="goals">Goals</string>
-    <string name="tournaments">Tournaments</string>
     <string name="trophies">Trophies</string>
+    <string name="milestones">Milestones</string>
     <string name="challenge">Challenge</string>
     <string name="enter_a_number">Enter a number</string>
     <string name="trophy">trophy</string>
@@ -140,6 +140,7 @@
     <string name="date">Date:</string>
     <string name="senderName">Sender Name</string>
     <string name="message_content_string">Message Content</string>
+    <string name="acquired">Acquired %s</string>
     <string name="changeLeftButton"><![CDATA[<]]></string>
     <string name="path_drawn">Path Drawn</string>
     <string name="changeRightButton"><![CDATA[>]]></string>
