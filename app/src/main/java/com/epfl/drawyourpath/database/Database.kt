@@ -184,7 +184,8 @@ abstract class Database {
 
     /**
      * Function used to add a new tournament to the database. The participants and posts of the
-     * tournament will not be stored.
+     * tournament will not be stored: use [addUserToTournament] and addPostToTournament to store
+     * these.
      * @param tournament the tournament to store.
      * @return a future that indicates if the tournament has been stored correctly.
      */

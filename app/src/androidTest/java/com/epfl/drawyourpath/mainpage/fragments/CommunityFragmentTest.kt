@@ -203,12 +203,12 @@ class CommunityFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        val postFromEarth = postsDiscoverEarth.map { p -> withText(p.user) }
+        val postFromEarth = postsDiscoverEarth.map { p -> withText(p.userId) }
         val postFromAllNotEarth = buildList {
             this.addAll(sampleWeekly.posts)
             this.addAll(postsYour)
             this.addAll(postsDiscoverMoon)
-        }.map { p -> withText(p.user) }
+        }.map { p -> withText(p.userId) }
         val postFromAll = listOf(postFromEarth, postFromAllNotEarth).flatten()
 
         // go to earth detail

@@ -142,8 +142,56 @@ object FirebaseDatabaseUtils {
      * @return the post, or null if an error occurred
      */
     fun transformPost(data: DataSnapshot?): TournamentPost? {
-        return data?.value as TournamentPost?
+        val userId = data?.child("userId")?.value as String?
+        val run = transformRun(data?.child("run"))
+        val votes = getNumber(data?.child("votes"))?.toInt()
+        val date = transformLocalDateTime(data?.child("date"))
+        // Unchecked cast here but should work without problem
+        val usersVotes = (data?.child("usersVotes")?.value ?: emptyMap<String, Int>()) as Map<String, Int>
+
+        if (userId == null) {
+            Log.e(this::class.java.name, "TournamentPost had null userId")
+            return null
+        }
+        if (run == null) {
+            Log.e(this::class.java.name, "TournamentPost had null run")
+            return null
+        }
+        if (votes == null) {
+            Log.e(this::class.java.name, "TournamentPost had null votes")
+            return null
+        }
+        if (date == null) {
+            Log.e(this::class.java.name, "TournamentPost had null date")
+            return null
+        }
+
+        return TournamentPost(userId, run, votes, date, usersVotes.toMutableMap())
     }
+
+    /**
+     * Helper function to obtain an object LocalDateTime from a data snapshot
+     * @param data the data snapshot containing the LocalDateTime
+     * @return the LocalDateTime, or null if an error occurred
+     */
+    fun transformLocalDateTime(data: DataSnapshot?): LocalDateTime? {
+        val year = getNumber(data?.child("year"))?.toInt()
+        val month = getNumber(data?.child("monthValue"))?.toInt()
+        val dayOfMonth = getNumber(data?.child("dayOfMonth"))?.toInt()
+        val hour = getNumber(data?.child("hour"))?.toInt()
+        val minute = getNumber(data?.child("minute"))?.toInt()
+        val second = getNumber(data?.child("second"))?.toInt()
+        val nano = getNumber(data?.child("nano"))?.toInt()
+
+        if (year == null || month == null ||dayOfMonth == null || hour == null || minute == null ||
+                second == null || nano == null) {
+            Log.e(this::class.java.name, "LocalDateTime had null values")
+            return null
+        }
+
+        return LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, nano)
+    }
+
 
     /**
      * Helper function to obtain the chats list from the database of the user
@@ -241,16 +289,26 @@ object FirebaseDatabaseUtils {
         val name = data.child(FirebaseKeys.TOURNAMENT_NAME).value as String?
         val description = data.child(FirebaseKeys.TOURNAMENT_DESCRIPTION).value as String?
         val creatorId = data.child(FirebaseKeys.TOURNAMENT_CREATOR_ID).value as String?
-        val startDate = data.child(FirebaseKeys.TOURNAMENT_START_DATE).value as LocalDateTime?
-        val endDate = data.child(FirebaseKeys.TOURNAMENT_END_DATE).value as LocalDateTime?
+        val startDate = transformLocalDateTime(data.child(FirebaseKeys.TOURNAMENT_START_DATE))
+        val endDate = transformLocalDateTime(data.child(FirebaseKeys.TOURNAMENT_END_DATE))
         val participants = getKeys(data.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
         val posts = transformPostList(data.child(FirebaseKeys.TOURNAMENT_POSTS))
-        val visibility = data.child(FirebaseKeys.TOURNAMENT_VISIBILITY).value as Tournament.Visibility?
+        val visibilityString = data.child(FirebaseKeys.TOURNAMENT_VISIBILITY).value as String?
 
         if (id == null || name == null || description == null || creatorId == null || startDate == null
-            || endDate == null || visibility == null) {
+            || endDate == null || visibilityString == null) {
+            Log.e(this::class.java.name, "Tournament had null values")
             return null
         }
+
+        val visibility: Tournament.Visibility
+        try {
+            visibility = Tournament.Visibility.valueOf(visibilityString)
+        } catch (_: IllegalArgumentException) {
+            Log.e(this::class.java.name, "Tournament visibility has unknow value")
+            return null
+        }
+
         return Tournament(
             id,
             name,
