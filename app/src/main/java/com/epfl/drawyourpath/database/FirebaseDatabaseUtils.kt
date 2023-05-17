@@ -147,7 +147,8 @@ object FirebaseDatabaseUtils {
         val votes = getNumber(data?.child("votes"))?.toInt()
         val date = transformLocalDateTime(data?.child("date"))
         // Unchecked cast here but should work without problem
-        val usersVotes = (data?.child("usersVotes")?.value ?: emptyMap<String, Int>()) as Map<String, Int>
+        val usersVotes =
+            (data?.child("usersVotes")?.value ?: emptyMap<String, Int>()) as Map<String, Int>
 
         if (userId == null) {
             Log.e(this::class.java.name, "TournamentPost had null userId")
@@ -183,15 +184,15 @@ object FirebaseDatabaseUtils {
         val second = getNumber(data?.child("second"))?.toInt()
         val nano = getNumber(data?.child("nano"))?.toInt()
 
-        if (year == null || month == null ||dayOfMonth == null || hour == null || minute == null ||
-                second == null || nano == null) {
+        if (year == null || month == null || dayOfMonth == null || hour == null || minute == null ||
+            second == null || nano == null
+        ) {
             Log.e(this::class.java.name, "LocalDateTime had null values")
             return null
         }
 
         return LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, nano)
     }
-
 
     /**
      * Helper function to obtain the chats list from the database of the user
@@ -295,8 +296,9 @@ object FirebaseDatabaseUtils {
         val posts = transformPostList(data.child(FirebaseKeys.TOURNAMENT_POSTS))
         val visibilityString = data.child(FirebaseKeys.TOURNAMENT_VISIBILITY).value as String?
 
-        if (id == null || name == null || description == null || creatorId == null || startDate == null
-            || endDate == null || visibilityString == null) {
+        if (id == null || name == null || description == null || creatorId == null ||
+            startDate == null || endDate == null || visibilityString == null
+        ) {
             Log.e(this::class.java.name, "Tournament had null values")
             return null
         }
@@ -318,7 +320,7 @@ object FirebaseDatabaseUtils {
             endDate,
             participants,
             posts,
-            visibility
+            visibility,
         )
     }
 }
