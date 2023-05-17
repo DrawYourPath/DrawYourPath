@@ -57,6 +57,16 @@ class StatisticsTest {
     }
 
     @Test
+    fun totalTimeForEmptyGoalsIsZero() {
+        assertThat(Statistics.getTotalTime(emptyList()), `is`(0.0))
+    }
+
+    @Test
+    fun totalTimeMatchesExpected() {
+        assertThat(Statistics.getTotalTime(goals), `is`(30.0))
+    }
+
+    @Test
     fun reachedGoalsCountForEmptyGoalsIsZero() {
         assertThat(Statistics.getReachedGoalsCount(emptyList()), `is`(0))
     }

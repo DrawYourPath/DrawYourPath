@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.arch.core.executor.testing.CountingTaskExecutorRule
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -19,6 +20,11 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.MockDatabase
+import androidx.test.espresso.contrib.RecyclerViewActions.*
+import com.epfl.drawyourpath.utils.Utils
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.anyOf
 import org.hamcrest.core.StringContains.containsString
 import org.junit.Rule
 import org.junit.Test
@@ -198,108 +204,6 @@ class ChallengeFragmentTest {
         scenario.close()
     }
 
-    /*@Test
-    fun modifyDistanceGoalDisplayNewDistanceGoal() {
-        val scenario = FragmentScenario.launchInContainer(
-            ChallengeFragment::class.java,
-            Bundle(),
-            R.style.Theme_Bootcamp,
-        )
-
-        val newDistance = 158
-
-        // change value of path
-        onView(withId(R.id.goals_view)).perform(
-            actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                0,
-                replaceTextOnViewChild(newDistance.toString(), R.id.goal_display_edit_text),
-            ),
-            actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                0,
-                pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
-            ),
-        )
-
-        val pathProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, newDistance.toDouble())
-
-        waitUntilAllThreadAreDone()
-
-        // check that the value is correctly changed
-        onView(withId(R.id.goals_view)).check(matches(hasDescendant(withText(pathProgressGoal))))
-            .check(matches(hasDescendant(withText(newDistance.toString()))))
-            .check(matches(hasDescendant(withText(R.string.kilometers))))
-
-        scenario.close()
-    }
-
-    @Test
-    fun modifyTimeGoalDisplayNewTimeGoal() {
-        val scenario = FragmentScenario.launchInContainer(
-            ChallengeFragment::class.java,
-            Bundle(),
-            R.style.Theme_Bootcamp,
-        )
-
-        val newTime = 70
-
-        // change value of path
-        onView(withId(R.id.goals_view)).perform(
-            actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                1,
-                replaceTextOnViewChild(newTime.toString(), R.id.goal_display_edit_text),
-            ),
-            actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                1,
-                pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
-            ),
-        )
-
-        val pathProgressGoal = context.resources.getString(R.string.progress_over_goal).format(0.0, newTime.toDouble())
-
-        waitUntilAllThreadAreDone()
-
-        // check that the value is correctly changed
-        onView(withId(R.id.goals_view)).check(matches(hasDescendant(withText(pathProgressGoal))))
-            .check(matches(hasDescendant(withText(newTime.toString()))))
-            .check(matches(hasDescendant(withText(R.string.minutes))))
-
-        scenario.close()
-    }
-
-    @Test
-    fun modifyPathsGoalDisplayNewPathsGoal() {
-        val scenario = FragmentScenario.launchInContainer(
-            ChallengeFragment::class.java,
-            Bundle(),
-            R.style.Theme_Bootcamp,
-        )
-
-        val newPaths = 12
-
-        // change value of path
-        onView(withId(R.id.goals_view)).perform(
-            actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                2,
-                replaceTextOnViewChild(newPaths.toString(), R.id.goal_display_edit_text),
-            ),
-            actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                2,
-                pressImeActionButtonOnViewChild(R.id.goal_display_edit_text),
-            ),
-        )
-
-        val pathProgressGoal = context.resources.getString(R.string.progress_over_goal_path).format(0.0, newPaths.toDouble())
-
-        waitUntilAllThreadAreDone()
-
-        // check that the value is correctly changed
-        onView(withId(R.id.goals_view)).check(matches(hasDescendant(withText(pathProgressGoal))))
-            .check(matches(hasDescendant(withText(newPaths.toString()))))
-            .check(matches(hasDescendant(withText(R.string.paths))))
-
-        scenario.close()
-    }*/
-
     // TODO change to mock user's trophies when in mock database
     @Test
     fun displayTrophiesSample() {
@@ -309,12 +213,11 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        onView(withId(R.id.trophies_view)).perform(scrollTo())
-
-        for (trophy in Trophy.sample) {
+        Trophy.sample.forEach { trophy ->
+            onView(withText(trophy.tournamentName)).perform(scrollTo())
             onView(withId(R.id.trophies_view)).check(matches(hasDescendant(withText(trophy.tournamentName))))
                 .check(matches(hasDescendant(withText(trophy.tournamentDescription))))
-                .check(matches(hasDescendant(withText(containsString(trophy.dateAsString)))))
+                .check(matches(hasDescendant(withText(containsString(Utils.getDateAsString(trophy.date))))))
                 .check(matches(hasDescendant(withText(containsString(trophy.ranking.toString())))))
         }
 
@@ -330,13 +233,13 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        onView(withId(R.id.milestones_view)).perform(scrollTo())
-
-        for (milestone in Milestone.sample) {
+        // TODO uncomment this when milestones are in mockUser
+        /*mockUser.milestones.forEach { milestone ->
+            onView(withText(milestone.name)).perform(scrollTo())
             onView(withId(R.id.milestones_view)).check(matches(hasDescendant(withText(milestone.name))))
                 .check(matches(hasDescendant(withText(milestone.description))))
-                .check(matches(hasDescendant(withText(containsString(milestone.dateAsString)))))
-        }
+                .check(matches(hasDescendant(withText(containsString(Utils.getDateAsString(milestone.date))))))
+        }*/
 
         scenario.close()
     }
@@ -366,5 +269,20 @@ class ChallengeFragmentTest {
         override fun getDescription() = "press Ime action button on a child view with specified id."
 
         override fun perform(uiController: UiController, view: View) = pressImeActionButton().perform(uiController, view.findViewById(viewId))
+    }
+
+    private fun scrollTo(): ViewAction = actionWithAssertions(ScrollToAction())
+
+    private class ScrollToAction(
+        private val original: androidx.test.espresso.action.ScrollToAction = androidx.test.espresso.action.ScrollToAction(),
+    ) : ViewAction by original {
+
+        override fun getConstraints(): Matcher<View> = anyOf(
+            allOf(
+                withEffectiveVisibility(Visibility.VISIBLE),
+                isDescendantOfA(isAssignableFrom(NestedScrollView::class.java)),
+            ),
+            original.constraints,
+        )
     }
 }

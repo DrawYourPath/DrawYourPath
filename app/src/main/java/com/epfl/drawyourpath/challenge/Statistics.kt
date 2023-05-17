@@ -20,6 +20,17 @@ object Statistics {
     }
 
     /**
+     * Computes the total time of the specified goals.
+     * @param dailyGoals The list of goals we want to compute the time.
+     * @return The total time of the goals.
+     */
+    fun getTotalTime(dailyGoals: List<DailyGoal>): Double {
+        return dailyGoals.fold(0.0) { acc, dailyGoal ->
+            acc + dailyGoal.time
+        }
+    }
+
+    /**
      * Computes the number of goals that were reached.
      * @param dailyGoals The target goals.
      * @return The total number of reached goals.

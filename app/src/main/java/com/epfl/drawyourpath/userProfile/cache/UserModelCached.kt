@@ -11,6 +11,8 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
 import com.epfl.drawyourpath.challenge.milestone.Milestone
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEntity
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.path.Run
@@ -63,8 +65,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     // dailyGoal
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
-        dailyGoalCache.getDailyGoalById(user.userId).map {
-            getTodayDailyGoal(user.goals, it.firstOrNull())
+        dailyGoalCache.getDailyGoalById(user.userId).map { entities ->
+            getTodayDailyGoal(user.goals, entities.maxByOrNull { it.date })
         }
     }
 
@@ -78,8 +80,10 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     // trophies TODO remove sample
     private val trophies: MutableLiveData<List<Trophy>> = MutableLiveData(Trophy.sample)
 
-    // milestones TODO remove sample
-    private val milestones: MutableLiveData<List<Milestone>> = MutableLiveData(Milestone.sample)
+    // milestones
+    private val milestones: LiveData<List<Milestone>> = _currentUserID.switchMap { dailyGoalCache.getMilestonesById(it) }.map { entities ->
+        entities.map { Milestone(it) }
+    }
 
     /**
      * This function will create a new user
@@ -94,6 +98,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             userCache.insertAll(
                 UserEntity(userProfile),
                 listOf(DailyGoalEntity(DailyGoal(userProfile.goals), userProfile.userId)),
+                listOf(),
                 listOf(),
                 listOf(),
             )
@@ -112,6 +117,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             userCache.insertAll(
                 UserEntity(userData, userId),
                 userData.dailyGoals?.map { DailyGoalEntity(it, userId) } ?: listOf(),
+                listOf(), // TODO replace with userData.milestones when there is one
                 runs.map { it.first },
                 runs.map { it.second }.flatten(),
             )
@@ -256,20 +262,45 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         val distanceInKilometer: Double = run.getDistance() / 1000.0
         val timeInMinute: Double = run.getDuration() / 60.0
         val date = LocalDate.now().toEpochDay()
+
         val future = CompletableFuture.supplyAsync {
             val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run), false)
-            dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, distanceInKilometer, timeInMinute, 1, runs[0].first, runs[0].second)
+            dailyGoalCache.addRunAndUpdateProgress(
+                currentUserID!!,
+                date,
+                UserGoals(1, distanceInKilometer, timeInMinute),
+                runs[0].first,
+                runs[0].second,
+            )
         }
-        future.thenComposeAsync {
-            database.addDailyGoal(currentUserID!!, DailyGoal(it))
+        future.thenApplyAsync {
+            database.addDailyGoal(currentUserID!!, DailyGoal(it.first))
+            it.second
+        }.thenComposeAsync {
+            addListMilestones(it)
         }.thenComposeAsync {
             database.addRunToHistory(currentUserID!!, run)
         }.thenApplyAsync {
             runCache.runSynced(currentUserID!!, run.getStartTime())
-        } /*.thenComposeAsync { TODO add again when in database
-            database.updateUserAchievements(currentUserID!!, distanceInKilometer, timeInMinute)
-        }*/
+        }
         return future.thenApply {}
+    }
+
+    /**
+     * Helper function to add all the milestones in the database
+     * @param milestones list of milestones to add in the database
+     * @return a completable future that indicate if the the milesstones were correctly added
+     */
+    private fun addListMilestones(milestones: List<MilestoneEntity>): CompletableFuture<Unit>{
+        var future : CompletableFuture<Unit> = CompletableFuture()
+        milestones.forEachIndexed{index, entity ->
+            val currentFuture = database.addMilestone(milestone = MilestoneEnum.valueOf(entity.milestone), date = LocalDate.ofEpochDay(entity.date), userId = entity.userId)
+            if(index == 0){
+                future = currentFuture
+            }
+            future.thenApply { currentFuture }
+        }
+        return future
     }
 
     /**

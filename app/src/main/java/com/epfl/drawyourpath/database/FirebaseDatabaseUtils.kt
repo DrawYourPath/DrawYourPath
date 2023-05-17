@@ -85,26 +85,44 @@ object FirebaseDatabaseUtils {
      * @return the run corresponding to the data
      */
     fun transformRun(data: DataSnapshot?): Run? {
-        val points = data?.child("path")?.child("points")?.children?.mapNotNull {
-            val lat = getNumber(it.child("latitude"))?.toDouble()
-            val lon = getNumber(it.child("longitude"))?.toDouble()
-            if (lat != null && lon != null) {
-                LatLng(lat, lon)
-            } else {
-                Log.w(this::class.java.name, "A coordinate was badly formatted.")
-                null
+        val sections = data?.child("path")?.child("points")?.children?.map { section ->
+            section.children.mapNotNull { point ->
+                val lat = getNumber(point.child("latitude"))?.toDouble()
+                val lon = getNumber(point.child("longitude"))?.toDouble()
+                if (lat != null && lon != null) {
+                    LatLng(lat, lon)
+                } else {
+                    Log.w(this::class.java.name, "A coordinate was badly formatted.")
+                    null
+                }
             }
         } ?: emptyList()
 
         val startTime = getNumber(data?.child("startTime"))?.toLong()
+        val duration = getNumber(data?.child("duration"))?.toLong()
         val endTime = getNumber(data?.child("endTime"))?.toLong()
-        if (startTime != null && endTime != null) {
-            return Run(Path(points), startTime, endTime)
+        val predictedShape = (data?.child("predictedShape")?.value ?: "None") as String
+        val similarityScore = (getNumber(data?.child("similarityScore")) ?: 0.0).toDouble()
+        if (startTime == null) {
+            Log.e(this::class.java.name, "Run start time was null.")
+            return null
         }
-
-        Log.e(this::class.java.name, "Run time was null.")
-
-        return null
+        if (endTime == null) {
+            Log.e(this::class.java.name, "Run end time was null.")
+            return null
+        }
+        if (duration == null) {
+            Log.e(this::class.java.name, "Run duration was null.")
+            return null
+        }
+        return Run(
+            Path(sections),
+            startTime,
+            duration,
+            endTime,
+            predictedShape,
+            similarityScore,
+        )
     }
 
     /**

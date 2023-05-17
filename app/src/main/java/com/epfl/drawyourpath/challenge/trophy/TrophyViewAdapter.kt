@@ -8,9 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.utils.Utils
 
 /**
- * used in a recycler view to display the [Trophy]
+ * used in a recycler view to display the list of [Trophy]
  */
 class TrophyViewAdapter : RecyclerView.Adapter<TrophyViewAdapter.ViewHolder>() {
 
@@ -51,7 +52,7 @@ class TrophyViewAdapter : RecyclerView.Adapter<TrophyViewAdapter.ViewHolder>() {
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.name.text = trophies[position].tournamentName
         viewHolder.description.text = trophies[position].tournamentDescription
-        viewHolder.date.text = viewHolder.context.getString(R.string.acquired).format(trophies[position].dateAsString)
+        viewHolder.date.text = viewHolder.context.getString(R.string.acquired).format(Utils.getDateAsString(trophies[position].date))
         viewHolder.rank.text = trophies[position].ranking.toString().let { "#$it" }
         viewHolder.image.setImageResource(trophies[position].drawable)
     }

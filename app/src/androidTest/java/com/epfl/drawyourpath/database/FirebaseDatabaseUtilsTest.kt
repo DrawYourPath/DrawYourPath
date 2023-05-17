@@ -96,23 +96,45 @@ class FirebaseDatabaseUtilsTest {
         return snapshot
     }
 
+    private fun mockSection(section: List<LatLng>): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        val pointsSnap = section.map {
+            mockPoint(it)
+        }
+        `when`(snapshot.children).thenReturn(pointsSnap)
+
+        return snapshot
+    }
+
     private fun mockRun(run: Run): DataSnapshot {
         val snapshot = mock(DataSnapshot::class.java)
 
         val path = mock(DataSnapshot::class.java)
-        val pointsSnap = mock(DataSnapshot::class.java)
+        val pathPoints = mock(DataSnapshot::class.java)
+        val sectionsSnap = run.getPath().getPoints().map {
+            mockSection(it)
+        }
 
-        val points = run.getPath().getPoints().map { mockPoint(it) }
+        `when`(path.child("points")).thenReturn(pathPoints)
+        `when`(pathPoints.children).thenReturn(sectionsSnap)
 
-        `when`(path.child("points")).thenReturn(pointsSnap)
-        `when`(pointsSnap.children).thenReturn(points)
+        `when`(snapshot.child("path")).thenReturn(path)
 
         val startTime = mockNumberSnapshot(run.getStartTime())
         `when`(snapshot.child("startTime")).thenReturn(startTime)
 
+        val duration = mockNumberSnapshot(run.getDuration())
+        `when`(snapshot.child("duration")).thenReturn(duration)
+
         val endTime = mockNumberSnapshot(run.getEndTime())
         `when`(snapshot.child("endTime")).thenReturn(endTime)
-        `when`(snapshot.child("path")).thenReturn(path)
+
+        val predictedShape = mockSnapshot(run.predictedShape)
+        `when`(snapshot.child("predictedShape")).thenReturn(predictedShape)
+
+        val similarityScore = mockNumberSnapshot(run.similarityScore)
+        `when`(snapshot.child("similarityScore")).thenReturn(similarityScore)
 
         return snapshot
     }
@@ -220,27 +242,45 @@ class FirebaseDatabaseUtilsTest {
     }
 
     @Test
-    fun transformRunsReturnExpectedRuns() {
+    fun transformRunsReturnsEmptyListForEmptySnapshot() {
+        assertEquals(FirebaseDatabaseUtils.transformRunList(null).size, 0)
+    }
+
+    @Test
+    fun transformRunListReturnExpectedRunsInOrder() {
         val runs = listOf(
             Run(
                 Path(
                     listOf(
-                        LatLng(1.0, 1.0),
-                        LatLng(2.0, 2.0),
+                        listOf(
+                            LatLng(1.0, 1.0),
+                            LatLng(2.1, 2.0),
+                        ),
+                        listOf(
+                            LatLng(3.0, 3.0),
+                            LatLng(0.0, 3.1),
+                        ),
                     ),
                 ),
-                1000,
-                2000,
+                startTime = 1000,
+                duration = 1000,
+                endTime = 2000,
+                predictedShape = "Cat",
+                similarityScore = 0.9,
             ),
             Run(
                 Path(
                     listOf(
-                        LatLng(12.0, 12.0),
-                        LatLng(22.0, 22.0),
+                        listOf(
+                            LatLng(12.0, 12.0),
+                            LatLng(31.98, -98.45),
+                            LatLng(4.0, -4.0),
+                        ),
                     ),
                 ),
-                4000,
-                8000,
+                startTime = 4000,
+                duration = 4000,
+                endTime = 8000,
             ),
         )
 
@@ -281,12 +321,15 @@ class FirebaseDatabaseUtilsTest {
                 Run(
                     Path(
                         listOf(
-                            LatLng(1.0, 1.0),
-                            LatLng(2.0, 2.0),
+                            listOf(
+                                LatLng(1.0, 1.0),
+                                LatLng(2.0, 2.0),
+                            ),
                         ),
                     ),
-                    1000,
-                    2000,
+                    startTime = 1000,
+                    duration = 1000,
+                    endTime = 2000,
                 ),
             ),
             timestamp = 20,

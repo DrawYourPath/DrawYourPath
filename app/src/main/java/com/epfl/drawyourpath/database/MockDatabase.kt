@@ -39,7 +39,10 @@ class MockDatabase : Database() {
                 Run(
                     startTime = 10,
                     endTime = 20,
-                    path = Path(listOf(LatLng(46.51854301997813, 6.56237289547834))),
+                    duration = 10,
+                    path = Path(listOf(listOf(LatLng(46.51854301997813, 6.56237289547834)))),
+                    predictedShape = "Circle",
+                    similarityScore = 0.9,
                 ),
             ),
             dailyGoals = listOf(
@@ -94,6 +97,9 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
+                    predictedShape = "Cat",
+                    similarityScore = -0.8,
                 ),
             ),
             dailyGoals = listOf(
@@ -127,6 +133,9 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
+                    predictedShape = "Dog",
+                    similarityScore = 0.7,
                 ),
             ),
             dailyGoals = listOf(
@@ -161,6 +170,13 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
+                ),
+                Run(
+                    startTime = 30,
+                    endTime = 40,
+                    path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
@@ -195,6 +211,8 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
+                    predictedShape = "testShape",
                 ),
             ),
             dailyGoals = listOf(
@@ -257,7 +275,7 @@ class MockDatabase : Database() {
 
     var mockTournamentUID = 1234567
 
-    var MOCK_CHAT_PREVIEWS = listOf<ChatPreview>(
+    var MOCK_CHAT_PREVIEWS = listOf(
         ChatPreview(
             conversationId = "0",
             title = "New Conversation",
@@ -265,14 +283,14 @@ class MockDatabase : Database() {
         ),
     )
 
-    val MOCK_CHAT_MEMBERS = listOf<ChatMembers>(
+    val MOCK_CHAT_MEMBERS = listOf(
         ChatMembers(
             conversationId = "0",
             membersList = listOf(mockUser.userId!!, MOCK_USERS[1].userId!!),
         ),
     )
 
-    val MOCK_CHAT_MESSAGES = listOf<ChatMessages>(
+    val MOCK_CHAT_MESSAGES = listOf(
         ChatMessages(
             conversationId = "0",
             chat = listOf(
@@ -477,10 +495,11 @@ class MockDatabase : Database() {
             return userDoesntExist()
         }
 
-        val current = users[userId]!!
+        val currentUser = users[userId]!!
+        val currentRuns = currentUser.runs?.filter { it.getStartTime() != run.getStartTime() }
 
-        users[userId] = current.copy(
-            runs = ((current.runs ?: emptyList()) + run).sortedBy {
+        users[userId] = currentUser.copy(
+            runs = ((currentRuns ?: emptyList()) + run).sortedBy {
                 it.getStartTime()
             },
         )
