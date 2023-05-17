@@ -16,7 +16,6 @@ import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
@@ -29,7 +28,6 @@ import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.database.ktx.database
 import java.util.concurrent.CompletableFuture
 
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
