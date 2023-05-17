@@ -24,11 +24,11 @@ class PathDrawingPauseFragmentTest {
     @Test
     fun checkThatClickingOnPauseButtonShowMainFragmentInNonStateDrawing() {
         val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
-            PathDrawingContainerFragment(1L)
+            PathDrawingContainerFragment(0L)
         }
 
         // wait that the countdown passed
-        Thread.sleep(1005)
+        Thread.sleep(10)
         // click on stop button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .perform(ViewActions.click())
