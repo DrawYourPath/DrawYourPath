@@ -272,7 +272,6 @@ object Utils {
      */
     fun reducePath(path: Path, maxError: Float = 0.01F): Path {
         val reducedPoints = mutableListOf(listOf<LatLng>())
-        // Check for trivial cases
         if (path.size() <= 2) {
             return Path(path.getPoints())
         }
@@ -293,22 +292,23 @@ object Utils {
      */
     fun reduceSection(section: List<LatLng>, epsilon: Float): List<LatLng> {
         val reducedPointList = mutableListOf<LatLng>()
-        // Check for trivial cases
         if (section.size <= 2) {
             reducedPointList.addAll(section)
             return reducedPointList.toList()
         }
-        // Find index and distance of point furthest to the segment
+
         val distances = distancesToSegment(section.subList(1, section.size - 1), section.first(), section.last())
         val distMax = distances.max()
         val indexMax = distances.indexOf(distMax) + 1
-        // Check if finished, otherwise solve recursively
+        // Check if finished, otherwise we need to solve recursively
         if (distMax <= epsilon) {
             reducedPointList.add(section.first())
             reducedPointList.add(section.last())
         } else {
-            reducedPointList.addAll(reduceSection(section.subList(0, indexMax + 1), epsilon))
-            reducedPointList.addAll(reduceSection(section.subList(indexMax, section.size), epsilon))
+            val firstHalf = reduceSection(section.subList(0, indexMax + 1), epsilon)
+            val secondHalf = reduceSection(section.subList(indexMax, section.size), epsilon)
+            reducedPointList.addAll(firstHalf.subList(0, firstHalf.size - 1))
+            reducedPointList.addAll(secondHalf)
         }
         return reducedPointList.toList()
     }
@@ -322,9 +322,12 @@ object Utils {
      */
     private fun distancesToSegment(points: List<LatLng>, start: LatLng, end: LatLng): List<Float> {
         // Translate to put the start at the origin
-        val newEnd = LatLng(end.latitude - start.latitude, end.longitude - start.longitude)
+        var newEnd = LatLng(end.latitude - start.latitude, end.longitude - start.longitude)
         // Consider the angle in the plane perpendicular to the x axis in spherical coordinates
+        // So the angle is atan2(z, y) where z = sin(latitude), y = cos(latitude)sin(longitude)
         val anglePlane = atan2(sin(newEnd.latitude), cos(newEnd.latitude) * sin(newEnd.longitude))
+        // Rotate the end point to be aligned with the equator
+        newEnd = rotateXAxis(newEnd.latitude, newEnd.longitude, -anglePlane)
 
         var distances = mutableListOf<Float>()
         for (point in points) {
@@ -334,16 +337,16 @@ object Utils {
                 point.longitude - start.longitude,
                 -anglePlane,
             )
-            // Compute the distance to the segment
+            // Compute the distance to the segment case by case
             val results = FloatArray(3)
-            Location.distanceBetween(0.0, 0.0, 0.0, point.longitude, results)
-            var pointDistance = results[0]
-            Location.distanceBetween(start.latitude, start.longitude, point.latitude, point.longitude, results)
-            pointDistance = min(pointDistance, results[0])
-            Location.distanceBetween(end.latitude, end.longitude, point.latitude, point.longitude, results)
-            pointDistance = min(pointDistance, results[0])
-            // Store the result
-            distances.add(pointDistance)
+            if (newPoint.longitude < 0) {
+                Location.distanceBetween(start.latitude, start.longitude, point.latitude, point.longitude, results)
+            } else if (newPoint.longitude > newEnd.longitude) {
+                Location.distanceBetween(end.latitude, end.longitude, point.latitude, point.longitude, results)
+            } else {
+                Location.distanceBetween(0.0, 0.0, 0.0, point.longitude, results)
+            }
+            distances.add(results[0])
         }
         return distances.toList()
     }
