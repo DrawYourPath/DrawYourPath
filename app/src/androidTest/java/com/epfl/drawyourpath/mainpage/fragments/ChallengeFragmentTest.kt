@@ -17,8 +17,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.challenge.milestone.Milestone
-import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.utils.Utils

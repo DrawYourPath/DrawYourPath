@@ -25,5 +25,4 @@ data class MilestoneEntity(
         milestone.name,
         milestone.date.toEpochDay(),
     )
-
 }

@@ -8,11 +8,9 @@ import androidx.lifecycle.*
 import androidx.room.Room
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.challenge.Statistics
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
 import com.epfl.drawyourpath.challenge.milestone.Milestone
-import com.epfl.drawyourpath.challenge.milestone.MilestoneEntity
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.path.Run
@@ -270,13 +268,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 date,
                 UserGoals(1, distanceInKilometer, timeInMinute),
                 runs[0].first,
-                runs[0].second
+                runs[0].second,
             )
         }
         future.thenApplyAsync {
             database.addDailyGoal(currentUserID!!, DailyGoal(it.first))
             it.second
-        }/*.thenComposeAsync { TODO uncomment when function is created
+        } /*.thenComposeAsync { TODO uncomment when function is created
             database.addMilestones(currentUserID!!, it.map {entity -> Milestone(entity)})
         }*/.thenComposeAsync {
             database.addRunToHistory(currentUserID!!, run)

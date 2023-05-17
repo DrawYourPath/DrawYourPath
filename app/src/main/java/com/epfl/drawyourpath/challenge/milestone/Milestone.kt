@@ -33,5 +33,4 @@ data class Milestone(
             return MilestoneEnum.values().filter { it.isMilestoneReached(dailyGoals) }.map { Milestone(it, LocalDate.now()) }
         }
     }
-
 }
