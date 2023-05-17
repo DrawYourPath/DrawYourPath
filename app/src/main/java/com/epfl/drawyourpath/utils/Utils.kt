@@ -332,7 +332,7 @@ object Utils {
             val newPoint = rotateXAxis(
                 point.latitude - start.latitude,
                 point.longitude - start.longitude,
-                -anglePlane
+                -anglePlane,
             )
             // Compute the distance to the segment
             val results = FloatArray(3)
