@@ -334,8 +334,10 @@ object Utils {
         var distances = mutableListOf<Double>()
         for (i in 1 until points.size - 1) {
             // Translate to put the start at the origin : point -> point - start
-            var newPoint = LatLng(points[i].latitude - points.first().latitude,
-                points[i].longitude - points.first().longitude)
+            var newPoint = LatLng(
+                points[i].latitude - points.first().latitude,
+                points[i].longitude - points.first().longitude,
+            )
             // Rotate around the origin to have the end with longitude 0
             val finalLon = newPoint.latitude * sin(angleRotation) + newPoint.longitude * cos(angleRotation)
             // The distance is the absolute value of the longitude
