@@ -6,12 +6,12 @@ import androidx.test.core.app.ApplicationProvider
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
 import org.junit.Assert.assertEquals
@@ -300,7 +300,7 @@ class MockDatabaseTest {
         assertEquals(user.surname, surnameTest)
         assertEquals(user.birthDate, dateOfBirthTest)
         assertEquals(user.goals?.distance ?: 0.0, distanceGoalTest, 0.001)
-        assertEquals(user.goals?.activityTime?.toDouble() ?: 0.0, activityTimeGoalTest, 0.001)
+        assertEquals(user.goals?.activityTime ?: 0.0, activityTimeGoalTest, 0.001)
         assertEquals(user.goals?.paths ?: 0, nbOfPathsGoalTest.toLong())
     }
 
@@ -524,15 +524,15 @@ class MockDatabaseTest {
     /**
      * Test if adding a run with a startTime equal to an already stored run replaces the run
      * This behavior is the one of the Firebase
-     * TODO does not work
      */
-    /*@Test
+    @Test
     fun addingNewRunWithSameStartingTimeReplacesOldRun() {
         val database = MockDatabase()
         val newRun = Run(
-            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
             10,
-            10 + 2e6.toLong(),
+            1e6.toLong(),
+            1e6.toLong() + 10,
         )
         database.addRunToHistory(userIdTest, newRun)
 
@@ -542,7 +542,7 @@ class MockDatabaseTest {
             expectedHistory,
             database.users[userIdTest]?.runs,
         )
-    }*/
+    }
 
     /**
      * Test if removing a run which does not exist does nothing, as expected

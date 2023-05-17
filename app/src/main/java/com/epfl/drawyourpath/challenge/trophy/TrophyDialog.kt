@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.challenge
+package com.epfl.drawyourpath.challenge.trophy
 
 import android.os.Bundle
 import android.view.LayoutInflater

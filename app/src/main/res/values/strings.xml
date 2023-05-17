@@ -47,8 +47,8 @@
     <string name="stats_and_stuff">Stats and stuff</string>
 
     <string name="goals">Goals</string>
-    <string name="tournaments">Tournaments</string>
     <string name="trophies">Trophies</string>
+    <string name="milestones">Milestones</string>
     <string name="challenge">Challenge</string>
     <string name="enter_a_number">Enter a number</string>
     <string name="trophy">trophy</string>
@@ -140,4 +140,22 @@
     <string name="date">Date:</string>
     <string name="senderName">Sender Name</string>
     <string name="message_content_string">Message Content</string>
+    <string name="acquired">Acquired %s</string>
+    <string name="changeLeftButton"><![CDATA[<]]></string>
+    <string name="path_drawn">Path Drawn</string>
+    <string name="changeRightButton"><![CDATA[>]]></string>
+    <string name="global_stats">Global Stats</string>
+    <string name="ml_shape_recognition_description">Remark : The shape description and score, given below, are given by an automatic form recognition Machine Learning model.</string>
+    <string name="shape_recognized_on_the_path_drawn">- Shape recognized on the Path drawn :</string>
+    <string name="score_of_the_shape_recognized">- Score of the shape recognized :</string>
+    <string name="average_speed_per_km">Avg Speed per Km</string>
+    <string name="duration_per_km">Duration per Km</string>
+    <string name="distance_per_segment">Distance per Segment</string>
+    <string name="duration_per_segment">Duration per Segment</string>
+    <string name="average_speed_per_segment">Avg Speed per Segment</string>
+    <string name="distance_in_km">Distance (in Km)</string>
+    <string name="average_speed_in_m_s">Average Speed (m/s)</string>
+    <string name="duration_in_s">Duration (s)</string>
+    <string name="segment">Segment</string>
+    <string name="distance_in_m">Distance (in m)</string>
 </resources>

@@ -6,8 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.MainActivity
+import com.epfl.drawyourpath.mainpage.fragments.runStats.RunInfoStatsFragment
+import com.epfl.drawyourpath.utils.Utils.getStaticMapUrl
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * This class is the adapter for the RecyclerView that displays the list of runs.
@@ -24,8 +30,8 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         val run = runs[position]
 
         // TODO: will be refactor with the creation of a bitmap directly with the run coordinates
-        /*
-        val runCoordinates: List<LatLng> = run.getPath().getPoints() // Get the coordinates for this specific run
+
+        val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten() // Get the coordinates for this specific run
         val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
 
         val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey)
@@ -35,7 +41,7 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
             .load(staticMapUrl)
             .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
             .into(holder.mapImageView)
-        */
+
         // Set the data to the view items in the layout
         // holder.mapImageView.setImageResource(run.mapImage)
         holder.dateTextView.text = run.getDate()
@@ -47,6 +53,11 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
             "Speed: ${String.format("%.2f", run.getAverageSpeed())} m/s"
         holder.shapeRecognizedTextView.text = "Shape: ${run.predictedShape}"
         holder.shapeScoreTextView.text = "Score: ${String.format("%.2f", run.similarityScore)}"
+        holder.itemView.setOnClickListener {
+            val activity: MainActivity = holder.itemView.context as MainActivity
+            val fragTransaction: FragmentTransaction = activity.supportFragmentManager.beginTransaction()
+            fragTransaction.replace(R.id.fragmentContainerView, RunInfoStatsFragment(run = run)).commit()
+        }
     }
 
     override fun getItemCount(): Int {
