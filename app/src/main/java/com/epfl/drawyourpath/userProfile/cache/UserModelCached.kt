@@ -136,7 +136,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     private fun fromMilestoneDataToEntity(
         userId: String,
-        milestonesData: List<MilestoneData>?
+        milestonesData: List<MilestoneData>?,
     ): List<MilestoneEntity> {
         if (milestonesData.isNullOrEmpty()) {
             return emptyList()
@@ -147,8 +147,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 MilestoneEntity(
                     userId = userId,
                     milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name),
-                    date = milestone.date!!.toEpochDay()
-                )
+                    date = milestone.date!!.toEpochDay(),
+                ),
             )
         }
         return list
@@ -329,8 +329,10 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             milestones.forEachIndexed { index, entity ->
                 val newFuture = database.addMilestone(
                     milestone = MilestoneEnum.valueOf(
-                        Utils.getALL_CAPSFromString(entity.milestone)
-                    ), date = LocalDate.ofEpochDay(entity.date), userId = entity.userId
+                        Utils.getALL_CAPSFromString(entity.milestone),
+                    ),
+                    date = LocalDate.ofEpochDay(entity.date),
+                    userId = entity.userId,
                 )
                 if (index == 0) {
                     future = newFuture

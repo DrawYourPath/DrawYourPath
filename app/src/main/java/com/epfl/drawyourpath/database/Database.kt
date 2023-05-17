@@ -193,7 +193,7 @@ abstract class Database {
     abstract fun addMilestone(
         milestone: MilestoneEnum,
         date: LocalDate,
-        userId: String
+        userId: String,
     ): CompletableFuture<Unit>
 
     /**
@@ -327,6 +327,6 @@ abstract class Database {
     abstract fun modifyChatTextMessage(
         conversationId: String,
         messageId: Long,
-        message: String
+        message: String,
     ): CompletableFuture<Unit>
 }

@@ -1,9 +1,6 @@
 package com.epfl.drawyourpath.misc
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 
 data class NewsAction(val title: String, val onClick: () -> Unit)
