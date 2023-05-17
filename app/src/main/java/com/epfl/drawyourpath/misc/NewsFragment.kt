@@ -15,11 +15,6 @@ data class News(
 )
 
 class NewsFragment : Fragment(R.layout.fragment_news) {
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // TODO: Create an actual news feed
-    }
 
     /**
      * Adds a new at the bottom of the feed news.

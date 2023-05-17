@@ -190,7 +190,11 @@ abstract class Database {
      * @param date at which the user obtained this milestone
      * @return a future to indicate if the milestone was correctly added to the user profile on the database
      */
-    abstract fun addMilestone(milestone: MilestoneEnum, date: LocalDate, userId: String): CompletableFuture<Unit>
+    abstract fun addMilestone(
+        milestone: MilestoneEnum,
+        date: LocalDate,
+        userId: String
+    ): CompletableFuture<Unit>
 
     /**
      * Function used to get a unique ID for a new tournament. Never fails (because client side).
@@ -320,5 +324,9 @@ abstract class Database {
      * @param message the content text of the new message
      * @return a future that indicated if the message was correctly modify
      */
-    abstract fun modifyChatTextMessage(conversationId: String, messageId: Long, message: String): CompletableFuture<Unit>
+    abstract fun modifyChatTextMessage(
+        conversationId: String,
+        messageId: Long,
+        message: String
+    ): CompletableFuture<Unit>
 }

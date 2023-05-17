@@ -42,7 +42,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private var database: Database = FirebaseDatabase()
 
     // room database
-    private val roomDatabase = Room.databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME).fallbackToDestructiveMigration().build()
+    private val roomDatabase =
+        Room.databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
+            .fallbackToDestructiveMigration().build()
 
     // room database user
     private val userCache = roomDatabase.userDao()
@@ -81,9 +83,10 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val trophies: MutableLiveData<List<Trophy>> = MutableLiveData(Trophy.sample)
 
     // milestones
-    private val milestones: LiveData<List<Milestone>> = _currentUserID.switchMap { dailyGoalCache.getMilestonesById(it) }.map { entities ->
-        entities.map { Milestone(it) }
-    }
+    private val milestones: LiveData<List<Milestone>> =
+        _currentUserID.switchMap { dailyGoalCache.getMilestonesById(it) }.map { entities ->
+            entities.map { Milestone(it) }
+        }
 
     /**
      * This function will create a new user
@@ -113,7 +116,8 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser(false)
         setUserId(userId)
         return database.getUserData(userId).thenApplyAsync { userData ->
-            val runs = RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
+            val runs =
+                RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
             userCache.insertAll(
                 UserEntity(userData, userId),
                 userData.dailyGoals?.map { DailyGoalEntity(it, userId) } ?: listOf(),
@@ -123,19 +127,29 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
             )
         }
     }
+
     /**
      * Helper function to transform MilestoneData into Milestone entities
      * @param milestoneData list of milestone data
      * @param userId of the user who passed the milestones
      * @return a list of milestone entities
      */
-    private fun fromMilestoneDataToEntity(userId: String, milestonesData: List<MilestoneData>?): List<MilestoneEntity>{
-        if(milestonesData.isNullOrEmpty()){
+    private fun fromMilestoneDataToEntity(
+        userId: String,
+        milestonesData: List<MilestoneData>?
+    ): List<MilestoneEntity> {
+        if (milestonesData.isNullOrEmpty()) {
             return emptyList()
         }
         val list = mutableListOf<MilestoneEntity>()
-        milestonesData.forEach {milestone ->
-            list.add(MilestoneEntity(userId = userId, milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name), date = milestone.date!!.toEpochDay()))
+        milestonesData.forEach { milestone ->
+            list.add(
+                MilestoneEntity(
+                    userId = userId,
+                    milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name),
+                    date = milestone.date!!.toEpochDay()
+                )
+            )
         }
         return list
     }
@@ -307,16 +321,20 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param milestones list of milestones to add in the database
      * @return a completable future that indicate if the the milesstones were correctly added
      */
-    private fun addListMilestones(milestones: List<MilestoneEntity>): CompletableFuture<Unit>{
+    private fun addListMilestones(milestones: List<MilestoneEntity>): CompletableFuture<Unit> {
         var future = CompletableFuture<Unit>()
-        if(milestones.isEmpty()){
+        if (milestones.isEmpty()) {
             future.complete(Unit)
-        }else{
-            milestones.forEachIndexed{index, entity ->
-                val newFuture = database.addMilestone(milestone = MilestoneEnum.valueOf(Utils.getALL_CAPSFromString(entity.milestone)), date = LocalDate.ofEpochDay(entity.date), userId = entity.userId)
-                if(index == 0){
+        } else {
+            milestones.forEachIndexed { index, entity ->
+                val newFuture = database.addMilestone(
+                    milestone = MilestoneEnum.valueOf(
+                        Utils.getALL_CAPSFromString(entity.milestone)
+                    ), date = LocalDate.ofEpochDay(entity.date), userId = entity.userId
+                )
+                if (index == 0) {
                     future = newFuture
-                }else{
+                } else {
                     future.thenApply { newFuture }
                 }
             }
