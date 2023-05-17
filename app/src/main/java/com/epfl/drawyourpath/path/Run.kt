@@ -168,7 +168,7 @@ class Run(
      */
     fun getSectionsDuration(): List<Long> {
         val list = mutableListOf<Long>()
-        val step = this.path.size() / duration
+        val step = duration / this.path.size()
         this.path.getPoints().forEachIndexed { index, _ ->
             list.add(this.path.sizeOfSection(index).toLong() * step)
         }
@@ -193,7 +193,7 @@ class Run(
      * Function used to get the time (in seconds) taken by the user to throw each kilometer
      */
     fun getKilometersDuration(): List<Long> {
-        val step: Int = (path.size() / duration).toInt()
+        val step = duration / path.size()
         val listTime = mutableListOf<Long>()
         val newPath = Path()
         var totalTime = 0L

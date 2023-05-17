@@ -11,6 +11,7 @@ import com.google.firebase.database.DataSnapshot
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -184,6 +185,11 @@ class FirebaseDatabaseUtilsTest {
     @Test
     fun transformRunReturnsNullForNullSnapshot() {
         Assert.assertEquals(FirebaseDatabaseUtils.transformRun(null), null)
+    }
+
+    @Test
+    fun transformRunsReturnsEmptyListForEmptySnapshot() {
+        assertEquals(FirebaseDatabaseUtils.transformRunList(null).size, 0)
     }
 
     // TODO: uncomment his method when the run have been refactored
