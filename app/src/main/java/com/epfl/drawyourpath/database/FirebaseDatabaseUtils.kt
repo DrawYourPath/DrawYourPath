@@ -307,7 +307,7 @@ object FirebaseDatabaseUtils {
         try {
             visibility = Tournament.Visibility.valueOf(visibilityString)
         } catch (_: IllegalArgumentException) {
-            Log.e(this::class.java.name, "Tournament visibility has unknow value")
+            Log.e(this::class.java.name, "Tournament visibility had an unknown value")
             return null
         }
 

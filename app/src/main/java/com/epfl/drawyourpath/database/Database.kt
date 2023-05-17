@@ -54,7 +54,7 @@ abstract class Database {
     abstract fun isUserInDatabase(userId: String): CompletableFuture<Boolean>
 
     /**
-     * This function is used to know if a certain user is already stored in the database
+     * This function is used to know if a certain tournament is stored in the database
      * @param tournamentId that corresponds to the tournament
      * @return a future that indicates if the tournament is stored on the database
      */
@@ -225,7 +225,8 @@ abstract class Database {
     /**
      * Function used to retrieve the tournament corresponding to the ID.
      * @param tournamentId the id of the tournaments to retrieve
-     * @return a future that contains the tournament if successful, or an exception.
+     * @return a future that contains the tournament if successful, or an exception if an error
+     * occurred with the db.
      */
     abstract fun getTournament(
         tournamentId: String,

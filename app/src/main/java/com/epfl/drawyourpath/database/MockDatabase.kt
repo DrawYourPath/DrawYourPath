@@ -622,7 +622,11 @@ class MockDatabase : Database() {
     }
 
     override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
-        TODO("Not yet implemented")
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
+
+        return CompletableFuture.completedFuture(tournaments[tournamentId])
     }
 
     override fun createChatConversation(

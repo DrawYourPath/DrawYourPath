@@ -184,7 +184,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
-        tournamentsRoot().get()
+        tournamentsRoot().child(tournamentId).get()
             .addOnSuccessListener {
                 future.complete(it.value != null)
             }
@@ -522,7 +522,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             if (!userExists) {
                 future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
             } else if (!tournamentExists) {
-                future.completeExceptionally(Exception("The tournament with tournamentId  $tournamentId doesn't exist."))
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
             } else {
                 // if they exist, do the operation
                 val changes: MutableMap<String, Any?> = hashMapOf(
@@ -554,13 +554,24 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
 
     override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
         val future = CompletableFuture<Tournament>()
-
-        tournamentsRoot().child(tournamentId).get().addOnSuccessListener {
-            future.complete(FirebaseDatabaseUtils.mapToTournament(it))
-        }.addOnFailureListener {
-            future.completeExceptionally(it)
+        // Check that the tournament exists
+        isTournamentInDatabase(tournamentId).thenApply {tournamentExists ->
+            if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
+            } else {
+                // Get tournament data and check if corrupted
+                tournamentsRoot().child(tournamentId).get().addOnSuccessListener {
+                    val tournament = FirebaseDatabaseUtils.mapToTournament(it)
+                    if (tournament == null) {
+                        future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
+                    } else {
+                        future.complete(tournament)
+                    }
+                }.addOnFailureListener {
+                    future.completeExceptionally(it)
+                }
+            }
         }
-
         return future
     }
 

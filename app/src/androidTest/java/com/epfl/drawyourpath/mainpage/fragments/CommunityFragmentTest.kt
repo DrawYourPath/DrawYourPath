@@ -28,6 +28,24 @@ import java.time.LocalDateTime
 class CommunityFragmentTest {
 
     /**
+     * test that the function getUserVotes return the correct result
+     */
+    @Test
+    fun getUserVotesReturnsCorrectMap() {
+        val run = Run(
+            Path(listOf(listOf(LatLng(0.0, 0.1)))),
+            10,
+            10,
+            20,
+            "Cat",
+            0.9,
+        )
+        val userVotes = mutableMapOf("test" to 1)
+        val post = TournamentPost("testId", run, 1, usersVotes = userVotes)
+        assertThat(post.getUsersVotes(), `is`(userVotes))
+    }
+
+    /**
      * test that pressing the upvote button adds a vote
      */
     @Test

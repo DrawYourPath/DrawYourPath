@@ -838,6 +838,29 @@ class MockDatabaseTest {
     }
 
     /**
+     * Test if trying to retrieve an non-existing tournament from the database throws.
+     */
+    @Test
+    fun getTournamentThatDoesNotExistThrows() {
+        val database = MockDatabase()
+        val tournamentId = "NotAnID"
+        assertThrows(Throwable::class.java) {
+            database.getTournament(tournamentId).get()
+        }
+    }
+
+    /**
+     * Test if retrieving an existing tournament from the database returns the tournament.
+     */
+    @Test
+    fun getTournamentThatExistsReturnsTheTournament() {
+        val database= MockDatabase()
+        val expectedTournament = database.mockTournament
+        val expectedTournamentId = expectedTournament.id
+        assertEquals(expectedTournament, database.getTournament(expectedTournamentId).get())
+    }
+
+    /**
      * Test if a conversation was correctly created
      */
     @Test
