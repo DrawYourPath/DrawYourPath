@@ -8,9 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.utils.Utils
 
 /**
- * used in a recycler view to display the [Milestone]
+ * used in a recycler view to display the list of [Milestone]
  */
 class MilestoneViewAdapter : RecyclerView.Adapter<MilestoneViewAdapter.ViewHolder>() {
 
@@ -47,7 +48,7 @@ class MilestoneViewAdapter : RecyclerView.Adapter<MilestoneViewAdapter.ViewHolde
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.name.text = milestones[position].name
         viewHolder.description.text = milestones[position].description
-        viewHolder.date.text = viewHolder.context.getString(R.string.acquired).format(milestones[position].dateAsString)
+        viewHolder.date.text = viewHolder.context.getString(R.string.acquired).format(Utils.getDateAsString(milestones[position].date))
         viewHolder.image.setImageResource(milestones[position].drawable)
     }
 

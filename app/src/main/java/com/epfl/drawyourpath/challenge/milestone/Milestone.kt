@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.challenge.milestone
 
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
 import java.time.LocalDate
 
@@ -8,7 +9,6 @@ data class Milestone(
     val description: String,
     val date: LocalDate,
     val drawable: Int,
-    val dateAsString: String = Utils.getDateAsString(date),
 ) {
 
     constructor(enum: MilestoneEnum, date: LocalDate) : this (
@@ -18,7 +18,20 @@ data class Milestone(
         enum.drawable,
     )
 
+    constructor(entity: MilestoneEntity) : this (
+        MilestoneEnum.valueOf(Utils.getALL_CAPSFromString(entity.milestone)),
+        LocalDate.ofEpochDay(entity.date),
+    )
+
     companion object {
-        val sample = MilestoneEnum.values().toList().map { Milestone(it, LocalDate.ofYearDay(2023, 105)) }
+        /**
+         * get all the reached milestones with today date
+         * @param dailyGoals the list of daily goals
+         * @return the list of reached milestones
+         */
+        fun getAllReachedMilestones(dailyGoals: List<DailyGoal>): List<Milestone> {
+            return MilestoneEnum.values().filter { it.isMilestoneReached(dailyGoals) }.map { Milestone(it, LocalDate.now()) }
+        }
     }
+
 }

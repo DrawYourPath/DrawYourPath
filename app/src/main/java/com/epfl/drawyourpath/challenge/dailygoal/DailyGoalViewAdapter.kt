@@ -15,7 +15,7 @@ import java.lang.Integer.min
 import java.util.concurrent.CompletableFuture
 
 /**
- * used in a recycler view to display the [DailyGoal]
+ * used in a recycler view to display the list of [DailyGoal]
  */
 class DailyGoalViewAdapter(
     private val updateDistanceGoal: (distance: Double) -> CompletableFuture<Unit>,

@@ -11,10 +11,10 @@ data class Trophy(
     val date: LocalDate,
     val ranking: Int,
     val drawable: Int = R.drawable.award,
-    val dateAsString: String = Utils.getDateAsString(date),
 ) {
 
     companion object {
+        // sample used for testing TODO remove this when linked with the user
         val sample = listOf(
             Trophy("id1", "Star Shape", "draw a star with 5 branches", LocalDate.ofYearDay(2023, 92), 1),
             Trophy("id2", "Discover the earth ", "draw the earth", LocalDate.ofYearDay(2023, 23), 3),
