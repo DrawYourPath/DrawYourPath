@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Location
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
@@ -15,10 +16,7 @@ import java.io.ByteArrayOutputStream
 import java.time.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import kotlin.math.cos
-import kotlin.math.ln
-import kotlin.math.roundToInt
-import kotlin.math.tan
+import kotlin.math.*
 
 /**
  * A class containing various utility functions.
@@ -266,47 +264,83 @@ object Utils {
         return Point.create(long.toFloat(), y.toFloat())
     }
 
+    /**
+     * Reduces the number of points in a Path.
+     * @param path The path we want to reduce
+     * @param maxError The max error percentage relative to the average segment length
+     * @return A similar Path with the least useful points removed.
+     */
     fun reducePath(path: Path, maxError: Double = 0.01): Path {
-        val avgSegmentLength = path.getDistance() / path.size()
-        val epsilon = maxError * avgSegmentLength
-        var reducedPoints = mutableListOf(listOf<LatLng>())
+        val reducedPoints = mutableListOf(listOf<LatLng>())
+        // Check for trivial cases
+        if (path.size() <= 2) {
+            return Path(path.getPoints())
+        }
 
+        val nbSegments = path.getPoints().filter { section -> section.size > 1 }.size
+        val epsilon = maxError * path.getDistance() / nbSegments
         for (section in path.getPoints()) {
             reducedPoints.add(reduceSection(section, epsilon))
         }
         return Path(reducedPoints.toList())
     }
 
+    /**
+     * Reduces the number of points in a section.
+     * @param section The section we want to reduce
+     * @param epsilon The min distance to keep the point on the section
+     * @return A similar segment with the least useful points removed.
+     */
     fun reduceSection(section: List<LatLng>, epsilon: Double): List<LatLng> {
-        var reducedPointList = mutableListOf<LatLng>()
+        val reducedPointList = mutableListOf<LatLng>()
         // Check for trivial cases
         if (section.size <= 2) {
             reducedPointList.addAll(section)
             return reducedPointList.toList()
         }
-        // Find index and distance of maximal distance to the segment
-        var distMax = 0.0
-        var indexMax = 0
-        for (i in 1 until section.size - 1) {
-            val dist = distanceToSegment(section[i], section.first(), section.last())
-            if (dist > distMax) {
-                distMax = dist
-                indexMax = i
-            }
-        }
+        // Find index and distance of point furthest to the segment
+        val distances = distancesToSegment(section.subList(1, section.size - 1), section.first(), section.last())
+        val distMax = distances.max()
+        val indexMax = distances.indexOf(distMax) + 1
         // Check if finished, otherwise solve recursively
-        if (distMax > epsilon) {
-            reducedPointList.addAll(reduceSection(section.subList(0, indexMax + 1), epsilon))
-            reducedPointList.addAll(reduceSection(section.subList(indexMax, section.size), epsilon))
-        } else {
+        if (distMax <= epsilon) {
             reducedPointList.add(section.first())
             reducedPointList.add(section.last())
+        } else {
+            reducedPointList.addAll(reduceSection(section.subList(0, indexMax + 1), epsilon))
+            reducedPointList.addAll(reduceSection(section.subList(indexMax, section.size), epsilon))
         }
         return reducedPointList.toList()
     }
 
-    private fun distanceToSegment(point: LatLng, start: LatLng, end: LatLng): Double {
-        // TODO : Compute distance of point to segment
-        return 0.0
+    /**
+     * Compute the distances between each point the segment (described by start and end)
+     * @param points The points we want to calculate the distance with
+     * @param start The starting point of the segment
+     * @param end The end point of the segment
+     * @return The distance between each point and the segment.
+     */
+    private fun distancesToSegment(points: List<LatLng>, start: LatLng, end: LatLng): List<Double> {
+        val results = FloatArray(0)
+        Location.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude, results)
+        val segmentLength = results[0]
+
+        // Translate to put the start at the origin
+        val newEnd = LatLng(end.latitude - start.latitude, end.longitude - start.longitude)
+        // Consider the angle in the plane perpendicular to the x axis in spherical coordinates
+        val anglePlane = atan2(sin(newEnd.latitude), cos(newEnd.latitude) * sin(newEnd.longitude))
+        val angleRotation = (PI / 2) - anglePlane
+
+        var distances = mutableListOf<Double>()
+        for (i in 1 until points.size - 1) {
+            // Translate to put the start at the origin : point -> point - start
+            var newPoint = LatLng(points[i].latitude - points.first().latitude,
+                points[i].longitude - points.first().longitude)
+            // Rotate around the origin to have the end with longitude 0
+            val finalLon = newPoint.latitude * sin(angleRotation) + newPoint.longitude * cos(angleRotation)
+            // The distance is the absolute value of the longitude
+            distances.add(finalLon.absoluteValue)
+        }
+        return distances
     }
 }
