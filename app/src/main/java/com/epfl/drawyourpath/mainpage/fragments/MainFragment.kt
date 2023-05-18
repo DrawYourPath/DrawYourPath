@@ -50,7 +50,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         // Create an instance of FriendsFragmentFactory and set it as the fragment factory
         requireActivity().supportFragmentManager.fragmentFactory = CustomFragmentFactory(database)
 
-        // Display the main fragment when no saved state
+        // Display the main fragment when there is no saved state
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.draw_menu_item
             replaceFragment<DrawMenuFragment>()
