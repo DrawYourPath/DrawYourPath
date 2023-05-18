@@ -76,10 +76,7 @@ class MessagesAdapter(private val messages: List<Message>, private val userId: S
         }
     }
 
-
     override fun getItemCount() = messages.size
-
-
 
     class TextMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textMessage: TextView = itemView.findViewById(R.id.textMessage)

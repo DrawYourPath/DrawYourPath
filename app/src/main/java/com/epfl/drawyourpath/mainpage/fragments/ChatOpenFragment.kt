@@ -65,8 +65,6 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
         messagesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         messagesRecyclerView.adapter = messagesAdapter
 
-
-
         // Get the chat object from arguments
         val chat: Chat? = arguments?.getSerializable(ARG_CHAT) as Chat?
         chatId = arguments?.getString(ARG_CHAT_ID) ?: ""
