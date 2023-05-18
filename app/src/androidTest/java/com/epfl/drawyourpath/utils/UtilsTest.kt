@@ -63,7 +63,7 @@ class UtilsTest {
     }
 
     @Test
-    fun testReduceOnLinePath() {
+    fun testReduceOnNoisyLinePath() {
         val sideLength = 0.001
         val noiseSize = sideLength / 1000
         val baseLat = 46.5185
@@ -79,5 +79,39 @@ class UtilsTest {
         val reducedPath = reducePath(path, 0.01F)
 
         assertEquals(listOf(listOf(c00, c04)), reducedPath.getPoints())
+    }
+
+    @Test
+    fun testReduceOnNoisySquarePath() {
+        val sideLength = 0.01
+        val noiseSize = 4*sideLength / 1000
+        val baseLat = 46.5185
+        val baseLng = 6.56177
+        // Draw square
+        var c00 = LatLng(baseLat, baseLng)
+        var c01 = LatLng(baseLat, baseLng + sideLength * 1 / 3)
+        var c02 = LatLng(baseLat, baseLng + sideLength * 2 / 3)
+        var c10 = LatLng(baseLat, baseLng + sideLength)
+        var c11 = LatLng(baseLat + sideLength * 1 / 2, baseLng + sideLength)
+        var c20 = LatLng(baseLat + sideLength, baseLng + sideLength)
+        var c30 = LatLng(baseLat + sideLength, baseLng)
+        var c31 = LatLng(baseLat + sideLength * 2 / 3, baseLng)
+        var c32 = LatLng(baseLat + sideLength * 1 / 3, baseLng)
+        var c33 = LatLng(baseLat, baseLng)
+
+        // Add noise
+        c00 = LatLng(c00.latitude - 2 * noiseSize, c00.longitude - 1 * noiseSize)
+        c01 = LatLng(c01.latitude, c01.longitude + 2 * noiseSize)
+        c10 = LatLng(c10.latitude - 1 * noiseSize, c10.longitude + 3 * noiseSize)
+        c20 = LatLng(c20.latitude + 1 * noiseSize, c20.longitude)
+        c30 = LatLng(c30.latitude - 2 * noiseSize, c30.longitude + 1 * noiseSize)
+        c32 = LatLng(c32.latitude + 2 * noiseSize, c32.longitude - 1 * noiseSize)
+
+
+        val points = listOf(listOf(c00, c01, c02, c10, c11, c20, c30, c31, c32, c33))
+        val path = Path(points)
+        val reducedPath = reducePath(path, 0.01F)
+
+        assertEquals(listOf(listOf(c00, c10, c20, c30, c33)), reducedPath.getPoints())
     }
 }
