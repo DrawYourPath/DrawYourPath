@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
@@ -21,6 +22,7 @@ import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.util.concurrent.CompletableFuture
 
+const val IS_TEST_KEY = "isTest"
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
 const val SCAN_QR_REQ_CODE = 8233
 
@@ -33,9 +35,13 @@ class MainActivity : AppCompatActivity() {
 
     private val userCached: UserModelCached by viewModels()
 
+    private var isTest = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        isTest = intent.getBooleanExtra(IS_TEST_KEY, false)
 
         // get the user id given by login or register to use it inside this activity and its child fragment
         setupUser()
@@ -72,6 +78,15 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
+    fun openProfileForUser(userId: String) {
+        replaceFragment<ProfileFragment>(
+            bundleOf(
+                PROFILE_USER_ID_KEY to userId,
+                PROFILE_TEST_KEY to isTest,
+            ),
+        )
+    }
+
     private fun setupUser() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId != null) {
@@ -85,7 +100,11 @@ class MainActivity : AppCompatActivity() {
     private inline fun <reified F : Fragment> replaceFragment(args: Bundle? = null) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace(R.id.main_fragment_container_view, F::class.java, args)
+            replace(
+                R.id.main_fragment_container_view,
+                F::class.java,
+                bundleOf(IS_TEST_KEY to isTest).also { it.putAll(args ?: bundleOf()) },
+            )
         }
     }
 

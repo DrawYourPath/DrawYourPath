@@ -19,6 +19,7 @@ import com.epfl.drawyourpath.authentication.User
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.login.launchLoginActivity
+import com.epfl.drawyourpath.mainpage.IS_TEST_KEY
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.Friend
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsListAdapter
@@ -26,24 +27,27 @@ import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModel
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.FriendsViewModelFactory
 import com.epfl.drawyourpath.utils.Utils
 
-class FriendsFragment(private val database: Database) : Fragment(R.layout.fragment_friends) {
+class FriendsFragment(private var database: Database) : Fragment(R.layout.fragment_friends) {
     private lateinit var viewModel: FriendsViewModel
     private lateinit var friendsListAdapter: FriendsListAdapter
     private lateinit var user: User
+    private var isTesting = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val currentUser =
-            if (database is MockDatabase) {
-                MockAuth(forceSigned = true).getUser()
-            } else {
-                FirebaseAuth.getUser()
-            }
+        isTesting = arguments?.getBoolean(IS_TEST_KEY, false) == true
 
+        Log.i("Friends Fragment", "Is Testing $isTesting")
+
+        val currentUser = getCurrentUser()
         if (currentUser == null) {
             launchLoginActivity(requireActivity())
             return
+        }
+
+        if (isTesting) {
+            database = MockDatabase()
         }
 
         user = currentUser
@@ -63,23 +67,28 @@ class FriendsFragment(private val database: Database) : Fragment(R.layout.fragme
     private fun initializeRecyclerView(view: View) {
         val recyclerView: RecyclerView = view.findViewById(R.id.friends_list)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        friendsListAdapter = FriendsListAdapter { friend, isFriend ->
+        friendsListAdapter = FriendsListAdapter({ friend, isFriend ->
             viewModel.addOrRemoveFriend(friend, isFriend)
-        }
+        }, { onFriendClicked(it) })
         recyclerView.adapter = friendsListAdapter
     }
+
+    private fun onFriendClicked(friend: Friend) {
+        (activity as MainActivity?)?.openProfileForUser(friend.id)
+    }
+
+    private fun getCurrentUser(): User? =
+        if (database is MockDatabase || isTesting) {
+            MockAuth(forceSigned = true).getUser()
+        } else {
+            FirebaseAuth.getUser()
+        }
 
     /**
      * Initializes the ViewModel and observes the LiveData for friends list updates.
      */
     private fun initializeViewModel(view: View) {
-        val currentUser =
-            if (database is MockDatabase) {
-                MockAuth(forceSigned = true).getUser()
-            } else {
-                FirebaseAuth.getUser()
-            }
-
+        val currentUser = getCurrentUser()
         if (currentUser == null) {
             launchLoginActivity(requireActivity())
             return

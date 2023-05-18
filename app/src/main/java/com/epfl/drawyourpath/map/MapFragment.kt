@@ -45,13 +45,13 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState != null) {
-            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
-        }
+        lastKnownLocation = savedInstanceState?.getParcelable(KEY_LOCATION)
+
         Places.initialize(
             this.requireActivity().applicationContext,
             getString(R.string.google_api_key),
         )
+
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(this.requireActivity())
 
@@ -75,7 +75,8 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         val pathReady = path != null && path.getPoints().flatten().isNotEmpty()
         if (pathReady && !focusedOnPosition) {
             val bounds = LatLngBounds.builder()
-            path!!.getPoints().flatten().map { bounds.include(it); Log.d("test", it.toString()) }
+            path!!.getPoints().flatten().forEach { bounds.include(it) }
+
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 5))
             drawStaticPathOnMap(map, path)
         }
@@ -233,7 +234,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        map?.let { map ->
+        map?.let { _ ->
             outState.putParcelable(KEY_LOCATION, lastKnownLocation)
         }
         super.onSaveInstanceState(outState)

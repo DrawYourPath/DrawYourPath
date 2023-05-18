@@ -23,12 +23,12 @@ class Path {
      * Constructor that creates a path from a list of sections composed of multiple points.
      * @param pointsSections the list of sections that composed the path
      */
-    constructor(pointsSections: List<List<LatLng>>) {
-        pointsSections.forEachIndexed { index, section ->
+    constructor(inPointsSections: List<List<LatLng>>) {
+        inPointsSections.forEachIndexed { index, section ->
             if (index == 0) {
-                this.pointsSections[index].addAll(section)
+                pointsSections[index].addAll(section)
             } else {
-                this.pointsSections.add(section.toMutableList())
+                pointsSections.add(section.toMutableList())
             }
         }
     }
@@ -109,11 +109,9 @@ class Path {
      */
     @Exclude
     fun getDistance(): Double {
-        var distance = 0.0
-        this.pointsSections.forEachIndexed { index, elem ->
-            distance += getDistanceInSection(index)
+        return pointsSections.foldIndexed(0.0) { index, acc, _ ->
+            acc + getDistanceInSection(index)
         }
-        return distance
     }
 
     /**
@@ -136,13 +134,10 @@ class Path {
      * Return a list of Polyline object representing the path(each polyline represent a section).
      */
     @Exclude
-    fun getPolyline(): List<PolylineOptions> {
-        val list = mutableListOf<PolylineOptions>()
-        this.pointsSections.forEachIndexed { index, _ ->
-            list.add(getPolylineInSection(index))
+    fun getPolyline(): List<PolylineOptions> =
+        List(pointsSections.size) { index ->
+            getPolylineInSection(index)
         }
-        return list
-    }
 
     /**
      * Return the polyline object representing the path of the section at the given index

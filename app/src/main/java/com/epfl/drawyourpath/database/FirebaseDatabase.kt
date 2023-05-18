@@ -19,75 +19,73 @@ import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class FirebaseKeys {
-    companion object {
-        // Database root entries
-        const val USERS_ROOT = "users"
-        const val USERNAMES_ROOT = "usernameToUid"
-        const val TOURNAMENTS_ROOT = "tournaments"
-        const val CHATS_ROOT = "chats"
-        const val CHATS_MEMBERS_ROOT = "chatsMembers"
-        const val CHATS_MESSAGES_ROOT = "chatsMessages"
+object FirebaseKeys {
+    // Database root entries
+    const val USERS_ROOT = "users"
+    const val USERNAMES_ROOT = "usernameToUid"
+    const val TOURNAMENTS_ROOT = "tournaments"
+    const val CHATS_ROOT = "chats"
+    const val CHATS_MEMBERS_ROOT = "chatsMembers"
+    const val CHATS_MESSAGES_ROOT = "chatsMessages"
 
-        // User keys top level
-        const val PROFILE = "profile"
-        const val GOALS = "goals"
-        const val RUN_HISTORY = "runs"
-        const val FRIENDS = "friends"
-        const val DAILY_GOALS = "dailyGoals"
-        const val USER_TOURNAMENTS = "tournaments"
-        const val USER_CHATS = "chats"
-        const val TROPHIES = "trophies"
-        const val MILESTONES = "milestones"
+    // User keys top level
+    const val PROFILE = "profile"
+    const val GOALS = "goals"
+    const val RUN_HISTORY = "runs"
+    const val FRIENDS = "friends"
+    const val DAILY_GOALS = "dailyGoals"
+    const val USER_TOURNAMENTS = "tournaments"
+    const val USER_CHATS = "chats"
+    const val TROPHIES = "trophies"
+    const val MILESTONES = "milestones"
 
-        // User profile keys sublevel
-        const val USERNAME = "username"
-        const val FIRSTNAME = "firstname"
-        const val SURNAME = "surname"
-        const val BIRTHDATE = "birth"
-        const val EMAIL = "email"
-        const val PICTURE = "picture"
+    // User profile keys sublevel
+    const val USERNAME = "username"
+    const val FIRSTNAME = "firstname"
+    const val SURNAME = "surname"
+    const val BIRTHDATE = "birth"
+    const val EMAIL = "email"
+    const val PICTURE = "picture"
 
-        // User goal keys sublevel
-        const val GOAL_PATH = "paths"
-        const val GOAL_DISTANCE = "distance"
-        const val GOAL_TIME = "time"
+    // User goal keys sublevel
+    const val GOAL_PATH = "paths"
+    const val GOAL_DISTANCE = "distance"
+    const val GOAL_TIME = "time"
 
-        // Goals history list sublevels
-        const val GOAL_HISTORY_EXPECTED_DISTANCE = "expectedDistance"
-        const val GOAL_HISTORY_EXPECTED_PATHS = "expectedPaths"
-        const val GOAL_HISTORY_EXPECTED_TIME = "expectedTime"
-        const val GOAL_HISTORY_DISTANCE = "distance"
-        const val GOAL_HISTORY_PATHS = "paths"
-        const val GOAL_HISTORY_TIME = "time"
+    // Goals history list sublevels
+    const val GOAL_HISTORY_EXPECTED_DISTANCE = "expectedDistance"
+    const val GOAL_HISTORY_EXPECTED_PATHS = "expectedPaths"
+    const val GOAL_HISTORY_EXPECTED_TIME = "expectedTime"
+    const val GOAL_HISTORY_DISTANCE = "distance"
+    const val GOAL_HISTORY_PATHS = "paths"
+    const val GOAL_HISTORY_TIME = "time"
 
-        // Trophies history list sublevels
-        const val TROPHY_TOURNAMENT_NAME: String = "tournamentName"
-        const val TROPHY_TOURNAMENT_DESCRIPTION: String = "tournamentDescription"
-        const val TROPHY_DATE: String = "date"
-        const val TROPHY_RANKING: String = "ranking"
+    // Trophies history list sublevels
+    const val TROPHY_TOURNAMENT_NAME: String = "tournamentName"
+    const val TROPHY_TOURNAMENT_DESCRIPTION: String = "tournamentDescription"
+    const val TROPHY_DATE: String = "date"
+    const val TROPHY_RANKING: String = "ranking"
 
-        // Tournaments keys
-        const val TOURNAMENT_ID = "id"
-        const val TOURNAMENT_NAME = "name"
-        const val TOURNAMENT_DESCRIPTION = "description"
-        const val TOURNAMENT_CREATOR_ID = "creatorId"
-        const val TOURNAMENT_START_DATE = "startDate"
-        const val TOURNAMENT_END_DATE = "endDate"
-        const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
-        const val TOURNAMENT_POSTS = "posts"
-        const val TOURNAMENT_VISIBILITY = "visibility"
+    // Tournaments keys
+    const val TOURNAMENT_ID = "id"
+    const val TOURNAMENT_NAME = "name"
+    const val TOURNAMENT_DESCRIPTION = "description"
+    const val TOURNAMENT_CREATOR_ID = "creatorId"
+    const val TOURNAMENT_START_DATE = "startDate"
+    const val TOURNAMENT_END_DATE = "endDate"
+    const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+    const val TOURNAMENT_POSTS = "posts"
+    const val TOURNAMENT_VISIBILITY = "visibility"
 
-        // Chats keys top level
-        const val CHAT_TITLE = "title"
-        const val CHAT_LAST_MESSAGE = "lastMessage"
+    // Chats keys top level
+    const val CHAT_TITLE = "title"
+    const val CHAT_LAST_MESSAGE = "lastMessage"
 
-        // Chats messages keys to level
-        const val CHAT_MESSAGE_SENDER = "sender"
-        const val CHAT_MESSAGE_CONTENT_TEXT = "text"
-        const val CHAT_MESSAGE_CONTENT_IMAGE = "image"
-        const val CHAT_MESSAGE_CONTENT_RUN = "run"
-    }
+    // Chats messages keys to level
+    const val CHAT_MESSAGE_SENDER = "sender"
+    const val CHAT_MESSAGE_CONTENT_TEXT = "text"
+    const val CHAT_MESSAGE_CONTENT_IMAGE = "image"
+    const val CHAT_MESSAGE_CONTENT_RUN = "run"
 }
 
 /**
@@ -271,7 +269,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             }
 
             // Wanted username is available, we get the old username.
-            getUsername(userId).handle { pastUsername, exc2 ->
+            getUsername(userId).handle { pastUsername, _ ->
 
                 // Create a new mapping to the new username.
                 nameMapping(username).setValue(userId).addOnSuccessListener {
@@ -589,7 +587,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val conversationId: String? = pushedPostRef.key
 
         if (conversationId == null) {
-            return Utils.failedFuture(Exception("Error in the generation of the conversation id !"))
+            return Utils.failedFuture("Error in the generation of the conversation id !")
         } else {
             val date = Utils.getCurrentDateAsEpoch()
             return initChatPreview(
@@ -709,7 +707,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
 
             MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
         }
-        return Utils.failedFuture(Error("No type found for the content of the message !"))
+        return Utils.failedFuture("No type found for the content of the message !")
     }
 
     override fun removeChatMessage(
@@ -878,11 +876,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        val data = HashMap<String, Any>()
-        for (member in membersList) {
-            data[member] = true
-        }
-
+        val data = membersList.associateWith { true }
         chatMembers(conversationId).updateChildren(data)
             .addOnSuccessListener {
                 future.complete(Unit)
@@ -929,6 +923,9 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         conversationId: String,
         membersList: List<String>,
     ): CompletableFuture<Unit> {
+        // TODO: THis is implemented wrong. Futures don't work like that.
+        //       Future.allOf() should be used.
+        //       Also, we can batch all these operations in a single write.
         val future = CompletableFuture<Unit>()
         for (memberId in membersList) {
             val data = mapOf(conversationId to true)
@@ -936,7 +933,6 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 .addOnSuccessListener { future.complete(Unit) }
                 .addOnFailureListener { future.completeExceptionally(it) }
         }
-
         return future
     }
 

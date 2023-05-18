@@ -14,6 +14,7 @@ import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
+import com.epfl.drawyourpath.mainpage.IS_TEST_KEY
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -29,6 +30,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private val userCached: UserModelCached by activityViewModels()
 
+    private var isTest = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -40,6 +43,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         // Create an instance of your database
         val database: Database = FirebaseDatabase()
+
+        isTest = arguments?.getBoolean(IS_TEST_KEY, false) ?: false
 
         // Create an instance of FriendsFragmentFactory and set it as the fragment factory
         val friendsFragmentFactory = FriendsFragmentFactory(database)
@@ -129,7 +134,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private inline fun <reified F : Fragment> replaceFragment(args: Bundle? = null) {
         requireActivity().supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace(R.id.fragmentContainerView, F::class.java, args)
+            replace(
+                R.id.fragmentContainerView,
+                F::class.java,
+                bundleOf(IS_TEST_KEY to isTest).also { it.putAll(args ?: bundleOf()) },
+            )
         }
     }
 }

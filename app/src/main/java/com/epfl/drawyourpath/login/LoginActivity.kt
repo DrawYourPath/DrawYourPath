@@ -147,40 +147,52 @@ class LoginActivity :
     }
 
     private fun showError(error: java.lang.Exception) {
+        Log.w("Login", "Error: ${error.localizedMessage}")
         Toast.makeText(applicationContext, error.localizedMessage, Toast.LENGTH_LONG).show()
     }
 
     private fun onRegistrationResult(user: User?, error: Exception?) {
         when (error) {
-            null -> openAccountRegistration()
+            null -> {
+                Log.i("Login", "Registered, redirecting to main activity.")
+                openAccountRegistration()
+            }
             else -> showError(error)
         }
     }
 
     private fun onLoginResult(user: User?, error: Exception?) {
         when (error) {
-            null -> openMainMenu()
+            null -> {
+                Log.i("Login", "Logged in, redirecting to main activity.")
+                openMainMenu()
+            }
             else -> showError(error)
         }
     }
 
     override fun registerWithGoogle() {
+        Log.i("Login", "Trying to register with Google.")
         auth.registerWithGoogle(this) { user, error -> onRegistrationResult(user, error) }
     }
 
     override fun registerAnonymously() {
+        Log.i("Login", "Trying to login anonymously.")
         auth.loginAnonymously { user, error -> onRegistrationResult(user, error) }
     }
 
     override fun loginWithGoogle() {
+        Log.i("Login", "Trying to login with Google.")
         auth.loginWithGoogle(this) { user, error -> onLoginResult(user, error) }
     }
 
     override fun loginWithEmailAndPassword(email: String, password: String) {
+        Log.i("Login", "Trying to login with email.")
         auth.loginWithEmail(email, password) { user, error -> onLoginResult(user, error) }
     }
 
     override fun registerWithEmailAndPassword(email: String, password: String) {
+        Log.i("Login", "Trying to register with email.")
         auth.registerWithEmail(email, password) { user, error -> onRegistrationResult(user, error) }
     }
 }

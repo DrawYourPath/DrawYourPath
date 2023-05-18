@@ -8,10 +8,11 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThrows
+import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
 import java.util.concurrent.Executor
+import java.util.concurrent.TimeUnit
 import kotlin.Exception
 
 class FirebaseDatabaseTest {
@@ -104,13 +105,49 @@ class FirebaseDatabaseTest {
         }
     }
 
+    /**
+     * Mocks a database that returns a `null` snapshot on all nodes.
+     */
     private fun mockEmptyDatabase(): DatabaseReference {
         val database = mock(DatabaseReference::class.java)
         `when`(database.child(any())).thenReturn(database)
         val snapshot = mockNullSnapshot()
+        `when`(database.push()).thenReturn(database)
+        `when`(database.key).thenReturn("db_key_mock")
         `when`(database.get()).thenReturn(mockTask(snapshot, null))
         `when`(database.updateChildren(any())).thenReturn(mockTask(null, null))
         `when`(database.removeValue()).thenReturn(mockTask(null, null))
+        return database
+    }
+
+    /**
+     * Mocks a database that always fail at all operations.
+     */
+    private fun mockFailingDatabase(): DatabaseReference {
+        val exception = Exception("Failing db")
+        val database = mock(DatabaseReference::class.java)
+
+        `when`(database.child(any())).thenReturn(database)
+
+        `when`(database.push()).thenReturn(database)
+        `when`(database.key).thenReturn("db_key_mock")
+        `when`(database.get()).thenReturn(mockTask(null, exception))
+        `when`(database.setValue(any())).thenReturn(mockTask(null, exception))
+        `when`(database.updateChildren(any())).thenReturn(mockTask(null, exception))
+        `when`(database.removeValue()).thenReturn(mockTask(null, exception))
+        return database
+    }
+
+    private fun mockDatabaseWithUsernameMapping(username: String, uid: String, exception: Exception? = null): DatabaseReference {
+        val database = mock(DatabaseReference::class.java)
+        val mapField = mock(DatabaseReference::class.java)
+        val usernameField = mock(DatabaseReference::class.java)
+        val uidSnapshot = mockSnapshot(uid)
+
+        `when`(database.child(FirebaseKeys.USERNAMES_ROOT)).thenReturn(mapField)
+        `when`(mapField.child(username)).thenReturn(usernameField)
+        `when`(usernameField.get()).thenReturn(mockTask(uidSnapshot, exception))
+
         return database
     }
 
@@ -169,7 +206,7 @@ class FirebaseDatabaseTest {
         )
         val databaseRef = mockDatabaseWithUser(user)
 
-        val res = FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get()
+        val res = FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get(100, TimeUnit.MILLISECONDS)
 
         assertThat(res, `is`(true))
     }
@@ -178,7 +215,7 @@ class FirebaseDatabaseTest {
     fun isUserInDatabaseForNonExistingUserReturnsFalse() {
         val databaseRef = mockEmptyDatabase()
 
-        val res = FirebaseDatabase(databaseRef).isUserInDatabase("uid").get()
+        val res = FirebaseDatabase(databaseRef).isUserInDatabase("uid").get(100, TimeUnit.MILLISECONDS)
 
         assertThat(res, `is`(false))
     }
@@ -192,7 +229,7 @@ class FirebaseDatabaseTest {
         val databaseRef = mockDatabaseWithUser(user, Exception("Foobar"))
 
         assertThrows(Throwable::class.java) {
-            FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get()
+            FirebaseDatabase(databaseRef).isUserInDatabase(user.userId!!).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -204,7 +241,7 @@ class FirebaseDatabaseTest {
         )
         val databaseRef = mockDatabaseWithUser(user)
 
-        val res = FirebaseDatabase(databaseRef).getUsername(user.userId!!).get()
+        val res = FirebaseDatabase(databaseRef).getUsername(user.userId!!).get(100, TimeUnit.MILLISECONDS)
 
         assertThat(res, `is`(user.username))
     }
@@ -217,7 +254,7 @@ class FirebaseDatabaseTest {
         val databaseRef = mockDatabaseWithUser(user)
 
         assertThrows(Throwable::class.java) {
-            FirebaseDatabase(databaseRef).getUsername(user.userId!!).get()
+            FirebaseDatabase(databaseRef).getUsername(user.userId!!).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -230,7 +267,7 @@ class FirebaseDatabaseTest {
         val databaseRef = mockDatabaseWithUser(user, Exception("Foobar"))
 
         assertThrows(Throwable::class.java) {
-            FirebaseDatabase(databaseRef).getUsername(user.userId!!).get()
+            FirebaseDatabase(databaseRef).getUsername(user.userId!!).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -246,9 +283,9 @@ class FirebaseDatabaseTest {
         val dbRef = mockDatabaseWithUser(userData)
 
         val db = FirebaseDatabase(dbRef)
-        db.createUser(userData.userId!!, userData).get()
+        db.createUser(userData.userId!!, userData).get(100, TimeUnit.MILLISECONDS)
 
-        val resData = db.getUsername(userData.userId!!).get()
+        val resData = db.getUsername(userData.userId!!).get(100, TimeUnit.MILLISECONDS)
         assertThat(resData, `is`(userData.username))
     }
 
@@ -264,7 +301,7 @@ class FirebaseDatabaseTest {
         val dbRef = mockDatabaseWithUser(userData, Exception("error"))
 
         assertThrows(Exception::class.java) {
-            FirebaseDatabase(dbRef).createUser(userData.userId!!, userData).get()
+            FirebaseDatabase(dbRef).createUser(userData.userId!!, userData).get(100, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -281,11 +318,104 @@ class FirebaseDatabaseTest {
 
         val db = FirebaseDatabase(dbRef)
 
-        db.setUserData(userData.userId!!, userData).get()
+        db.setUserData(userData.userId!!, userData).get(100, TimeUnit.MILLISECONDS)
 
-        val data = db.getUserData(userData.userId!!).get()
+        val data = db.getUserData(userData.userId!!).get(100, TimeUnit.MILLISECONDS)
 
         assertThat(data.birthDate, `is`(userData.birthDate))
         assertThat(data.username, `is`(userData.username))
+    }
+
+    @Test
+    fun getUserIdFromUsernameReturnsCorrespondingId() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid)
+        val db = FirebaseDatabase(dbRef)
+
+        val dbuid = db.getUserIdFromUsername(username).get(100, TimeUnit.MILLISECONDS)
+
+        assertEquals(uid, dbuid)
+    }
+
+    @Test
+    fun getUserIdFromUsernameThrowsWhenUserDoesNotExist() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid)
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.getUserIdFromUsername("otheruname").get(100, TimeUnit.MILLISECONDS)
+        }
+    }
+
+    @Test
+    fun getUserIdFromUsernameForwardsExceptionFromDatabase() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid, Exception("Foobar"))
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.getUserIdFromUsername("otheruname").get(100, TimeUnit.MILLISECONDS)
+        }
+    }
+
+    @Test
+    fun isUsernameAvailableReturnsFalseWhenUnameIsTaken() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid)
+        val db = FirebaseDatabase(dbRef)
+
+        val dbUname = db.isUsernameAvailable(username).get(100, TimeUnit.MILLISECONDS)
+
+        assertFalse(dbUname)
+    }
+
+    @Test
+    fun setUsernameThrowsWhenUsernameIstaken() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockDatabaseWithUsernameMapping(username, uid)
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.setUsername(uid, username).get(100, TimeUnit.MILLISECONDS)
+        }
+    }
+
+    @Test
+    fun setUsernameForwardsDatabaseException() {
+        val username = "uname"
+        val uid = "uid"
+
+        val dbRef = mockFailingDatabase()
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.setUsername(uid, username).get(100, TimeUnit.MILLISECONDS)
+        }
+    }
+
+    @Test
+    fun createChatConversationForwardsDatabaseException() {
+        val dbRef = mockFailingDatabase()
+        val db = FirebaseDatabase(dbRef)
+
+        assertThrows(Throwable::class.java) {
+            db.createChatConversation(
+                "name",
+                listOf("user1", "user2"),
+                "user1",
+                "Welcome message",
+            ).get(100, TimeUnit.MILLISECONDS)
+        }
     }
 }

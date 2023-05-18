@@ -39,10 +39,20 @@ object Utils {
         return url
     }
 
+    /**
+     * Creates a failed future for a specific exception.
+     */
     fun <T> failedFuture(throwable: Throwable): CompletableFuture<T> {
         val future = CompletableFuture<T>()
         future.completeExceptionally(throwable)
         return future
+    }
+
+    /**
+     * Creates a failed future with an error message.
+     */
+    fun <T> failedFuture(message: String): CompletableFuture<T> {
+        return failedFuture(Exception(message))
     }
 
     /**
