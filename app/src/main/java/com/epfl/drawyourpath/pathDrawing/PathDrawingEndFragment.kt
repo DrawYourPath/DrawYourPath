@@ -15,7 +15,6 @@ import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.epfl.drawyourpath.utils.Utils
 import com.google.mlkit.vision.digitalink.RecognitionCandidate
-import com.google.mlkit.vision.digitalink.RecognitionResult
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -60,7 +59,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
         backMenuButton.setOnClickListener {
             cancel.set(true)
             result.thenApplyAsync {
-                Run(runToAdd.getPath(), runToAdd.getStartTime(), runToAdd.getDuration(), runToAdd.getEndTime(), it.text, it.score?.toDouble() ?: 0.0 )
+                Run(runToAdd.getPath(), runToAdd.getStartTime(), runToAdd.getDuration(), runToAdd.getEndTime(), it.text, it.score?.toDouble() ?: 0.0)
             }.thenComposeAsync {
                 userCached.addNewRun(it)
             }
@@ -77,7 +76,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
             requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(
             R.id.path_drawing_end_form_description,
-            result?.let { ShapePathDescriptionFragment(formName = it.text, score = it.score?.toDouble() ?: 0.0)} ?: ShapePathDescriptionFragment(),
+            result?.let { ShapePathDescriptionFragment(formName = it.text, score = it.score?.toDouble() ?: 0.0) } ?: ShapePathDescriptionFragment(),
         ).commit()
         // launch the fragment to display the score and the form recognized
     }

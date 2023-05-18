@@ -7,13 +7,10 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.machineLearning.DigitalInk
 import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.pathDrawing.PathDrawingDetailPerformanceFragment
 import com.epfl.drawyourpath.utils.Utils
-import com.google.android.gms.maps.model.LatLng
-import com.google.mlkit.vision.digitalink.Ink
 
 /**
  * This fragment is used to display some information and statistics relative to a run.

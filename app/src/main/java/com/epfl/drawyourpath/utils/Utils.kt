@@ -418,5 +418,4 @@ object Utils {
             DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
         }
     }
-
 }
