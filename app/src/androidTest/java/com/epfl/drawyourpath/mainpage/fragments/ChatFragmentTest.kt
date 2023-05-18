@@ -151,12 +151,12 @@ class ChatFragmentTest {
      */
     private fun clickChildViewWithId(id: Int): ViewAction {
         return object : ViewAction {
-            //Define the constraints of this view action.
+            // Define the constraints of this view action.
             override fun getConstraints(): Matcher<View> {
                 return allOf(isDisplayed(), isAssignableFrom(ViewGroup::class.java))
             }
 
-            //Provides a human-readable description of this view action.
+            // Provides a human-readable description of this view action.
             override fun getDescription(): String {
                 return "Click on a child view with specified id."
             }

@@ -76,11 +76,11 @@ class MessagesAdapter(private val messages: List<Message>, private val userId: S
         }
     }
 
-    override fun getItemCount() = messages.size  // Returns the total count of items
+    override fun getItemCount() = messages.size // Returns the total count of items
 
     // Define different types of ViewHolder classes
 
-    //This ViewHolder represents a View for an incoming or outgoing text message.
+    // This ViewHolder represents a View for an incoming or outgoing text message.
     class TextMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textMessage: TextView = itemView.findViewById(R.id.textMessage)
     }

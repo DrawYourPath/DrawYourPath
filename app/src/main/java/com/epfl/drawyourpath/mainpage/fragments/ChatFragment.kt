@@ -73,7 +73,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
             chatAdapter.notifyDataSetChanged()
         }
 
-        //code related to the tranzition to a new fragment when a chat is selected and to delete a chat when the delete button is clicked
+        // code related to the tranzition to a new fragment when a chat is selected and to delete a chat when the delete button is clicked
         chatAdapter = ChatAdapter(
             chatList,
             { selectedChatPreview ->
@@ -109,8 +109,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
         // Get user data
         val userAccountFuture = database.getUserData(userId)
 
-
-        //Code related to the new chat button and the popup functionality.
+        // Code related to the new chat button and the popup functionality.
 
         // Initialize new chat button
         val newChatButton: FloatingActionButton = view.findViewById(R.id.addChatButton)
@@ -215,7 +214,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
                 CompletableFuture.allOf(*chatPreviewFutures.toTypedArray())
                     .thenCompose {
                         CompletableFuture.allOf(*chatPreviewFutures.toTypedArray())
-                    }.thenApply{listMilestones ->
+                    }.thenApply { listMilestones ->
                         // Create a list of ChatPreview objects from the completed futures
                         chatPreviewFutures.mapNotNull { future ->
                             try {
@@ -226,7 +225,6 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
                             }
                         }
                     }
-
             }
     }
 
