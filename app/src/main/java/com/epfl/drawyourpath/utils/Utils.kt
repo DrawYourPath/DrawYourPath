@@ -267,7 +267,7 @@ object Utils {
     /**
      * Reduces the number of points in a Path.
      * @param path The path we want to reduce
-     * @param maxError The max error percentage relative to the average segment length
+     * @param maxError The max error percentage relative to the path distance
      * @return A similar Path with the least useful points removed.
      */
     fun reducePath(path: Path, maxError: Float = 0.01F): Path {
@@ -276,11 +276,11 @@ object Utils {
             return Path(path.getPoints())
         }
 
-        val nbSegments = path.getPoints().filter { section -> section.size > 1 }.size
-        val epsilon = maxError * path.getDistance().toFloat() / nbSegments
+        val epsilon = maxError * path.getDistance().toFloat()
         for (section in path.getPoints()) {
             reducedPoints.add(reduceSection(section, epsilon))
         }
+        reducedPoints.removeFirst()
         return Path(reducedPoints.toList())
     }
 
@@ -290,7 +290,7 @@ object Utils {
      * @param epsilon The min distance to keep the point on the section
      * @return A similar segment with the least useful points removed.
      */
-    fun reduceSection(section: List<LatLng>, epsilon: Float): List<LatLng> {
+    private fun reduceSection(section: List<LatLng>, epsilon: Float): List<LatLng> {
         val reducedPointList = mutableListOf<LatLng>()
         if (section.size <= 2) {
             reducedPointList.addAll(section)
@@ -325,7 +325,10 @@ object Utils {
         var newEnd = LatLng(end.latitude - start.latitude, end.longitude - start.longitude)
         // Consider the angle in the plane perpendicular to the x axis in spherical coordinates
         // So the angle is atan2(z, y) where z = sin(latitude), y = cos(latitude)sin(longitude)
-        val anglePlane = atan2(sin(newEnd.latitude), cos(newEnd.latitude) * sin(newEnd.longitude))
+        val anglePlane = atan2(
+            sin(newEnd.latitude * PI / 180),
+            cos(newEnd.latitude * PI / 180) * sin(newEnd.longitude * PI / 180),
+        )
         // Rotate the end point to be aligned with the equator
         newEnd = rotateXAxis(newEnd.latitude, newEnd.longitude, -anglePlane)
 
@@ -338,13 +341,13 @@ object Utils {
                 -anglePlane,
             )
             // Compute the distance to the segment case by case
-            val results = FloatArray(3)
+            var results = FloatArray(3)
             if (newPoint.longitude < 0) {
                 Location.distanceBetween(start.latitude, start.longitude, point.latitude, point.longitude, results)
             } else if (newPoint.longitude > newEnd.longitude) {
                 Location.distanceBetween(end.latitude, end.longitude, point.latitude, point.longitude, results)
             } else {
-                Location.distanceBetween(0.0, 0.0, 0.0, point.longitude, results)
+                Location.distanceBetween(0.0, 0.0, newPoint.latitude, 0.0, results)
             }
             distances.add(results[0])
         }
@@ -359,17 +362,19 @@ object Utils {
      * @return The point after applying the rotation.
      */
     private fun rotateXAxis(latitude: Double, longitude: Double, angle: Double): LatLng {
+        val latRadian = latitude * PI / 180
+        val lonRadian = longitude * PI / 180
         // Transform to 3D coordinates
-        val x = cos(latitude) * cos(longitude)
-        val y = cos(latitude) * sin(longitude)
-        val z = sin(longitude)
-        // Apply rotation
+        val x = cos(latRadian) * cos(lonRadian)
+        val y = cos(latRadian) * sin(lonRadian)
+        val z = sin(latRadian)
+        // Apply rotation along the X axis (equivalent to a 2D rotation on y and z)
         val newX = x
         val newY = cos(angle) * y - sin(angle) * z
         val newZ = sin(angle) * y + cos(angle) * z
         // Transform back to latitude and longitude
         val newLat = asin(newZ)
         val newLon = atan2(newY, newX)
-        return LatLng(newLat, newLon)
+        return LatLng(newLat * 180 / PI, newLon * 180 / PI)
     }
 }
