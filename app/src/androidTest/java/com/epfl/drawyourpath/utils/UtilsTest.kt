@@ -1,10 +1,10 @@
 package com.epfl.drawyourpath.utils
 
 import com.epfl.drawyourpath.path.Path
-import com.epfl.drawyourpath.utils.Utils.reducePath
 import com.epfl.drawyourpath.utils.Utils.coordinatesToBitmap
 import com.epfl.drawyourpath.utils.Utils.getBiggestPoint
 import com.epfl.drawyourpath.utils.Utils.getSmallestPoint
+import com.epfl.drawyourpath.utils.Utils.reducePath
 import com.epfl.drawyourpath.utils.Utils.reduceSection
 import com.google.android.gms.maps.model.LatLng
 import com.google.mlkit.vision.digitalink.Ink
