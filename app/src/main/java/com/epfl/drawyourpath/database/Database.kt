@@ -2,9 +2,13 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Run
+import java.time.LocalDate
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 data class UserGoals(
@@ -26,6 +30,8 @@ data class UserData(
     val runs: List<Run>? = null,
     val dailyGoals: List<DailyGoal>? = null,
     val tournaments: List<String>? = null,
+    val trophies: List<Trophy>? = null,
+    val milestones: List<MilestoneData>? = null,
     val chatList: List<String>? = null,
 )
 
@@ -43,6 +49,11 @@ data class ChatMembers(
 data class ChatMessages(
     val conversationId: String? = null,
     val chat: List<Message>? = null,
+)
+
+data class MilestoneData(
+    val milestone: MilestoneEnum? = null,
+    val date: LocalDate? = null,
 )
 
 abstract class Database {
@@ -167,14 +178,23 @@ abstract class Database {
     abstract fun addDailyGoal(userId: String, dailyGoal: DailyGoal): CompletableFuture<Unit>
 
     /**
-     * Function used to update on the database the user achievements(total distance, total activity time and total nb of paths draw by the user)
-     * with the result at the end of a drawing activity(remark: the total number of path will be incremented by one, since only one draw
-     * can be achieved each drawing activity).
-     * @param distanceDrawing distance run by user to achieve the drawing
-     * @param activityTimeDrawing time take by the user to realized the drawing
-     * @return a future that indicate if the achievements of the user have been correctly updated.
+     * This function is used to add a trophy to the user profile of the user in the database
+     * @param tropy to be stored in the database
+     * @return a future to indicate if the trophy was correctly added to the user profile on the database
      */
-    abstract fun updateUserAchievements(userId: String, distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit>
+    abstract fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit>
+
+    /**
+     * This function is used to add a milestone to the user profile of the user on the database
+     * @param milestone to be stored in the database of type MilestoneEnum
+     * @param date at which the user obtained this milestone
+     * @return a future to indicate if the milestone was correctly added to the user profile on the database
+     */
+    abstract fun addMilestone(
+        userId: String,
+        milestone: MilestoneEnum,
+        date: LocalDate,
+    ): CompletableFuture<Unit>
 
     /**
      * Function used to get a unique ID for a new tournament. Never fails (because client side).
@@ -315,5 +335,9 @@ abstract class Database {
      * @param message the content text of the new message
      * @return a future that indicated if the message was correctly modify
      */
-    abstract fun modifyChatTextMessage(conversationId: String, messageId: Long, message: String): CompletableFuture<Unit>
+    abstract fun modifyChatTextMessage(
+        conversationId: String,
+        messageId: Long,
+        message: String,
+    ): CompletableFuture<Unit>
 }

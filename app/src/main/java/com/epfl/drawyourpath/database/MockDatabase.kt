@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
@@ -64,6 +66,12 @@ class MockDatabase : Database() {
                 ),
             ),
             friendList = listOf("0", "1"),
+            trophies = listOf(
+                Trophy(tournamentId = "0", tournamentName = "tournament0", tournamentDescription = "description0", date = LocalDate.of(2000, 2, 20), ranking = 1),
+            ),
+            milestones = listOf(
+                MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 20)),
+            ),
             tournaments = listOf("0"),
             chatList = listOf("0"),
         )
@@ -528,12 +536,35 @@ class MockDatabase : Database() {
         return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun updateUserAchievements(
+    override fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit> {
+        if (!users.contains(userId)) {
+            return userDoesntExist()
+        }
+
+        val current = users[userId]!!
+
+        users[userId] = current.copy(
+            trophies = (current.trophies ?: emptyList()) + trophy,
+        )
+
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun addMilestone(
         userId: String,
-        distanceDrawing: Double,
-        activityTimeDrawing: Double,
+        milestone: MilestoneEnum,
+        date: LocalDate,
     ): CompletableFuture<Unit> {
-        // TODO: Implement it
+        if (!users.contains(userId)) {
+            return userDoesntExist()
+        }
+
+        val current = users[userId]!!
+
+        users[userId] = current.copy(
+            milestones = (current.milestones ?: emptyList()) + MilestoneData(milestone, date),
+        )
+
         return CompletableFuture.completedFuture(Unit)
     }
 
