@@ -1143,7 +1143,7 @@ class MockDatabaseTest {
         // check the messages list
         assertEquals(
             (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(),
-            database.chatMessages[conversationId]!!.chat
+            database.chatMessages[conversationId]!!.chat,
         )
         // check the preview
         assertEquals(database.MOCK_CHAT_PREVIEWS[0], database.chatPreviews[conversationId])
@@ -1162,17 +1162,18 @@ class MockDatabaseTest {
         // check the messages list
         assertEquals(
             (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(),
-            database.chatMessages[conversationId]!!.chat
+            database.chatMessages[conversationId]!!.chat,
         )
         // check the preview
         assertEquals(
             database.MOCK_CHAT_PREVIEWS[0].copy(
                 lastMessage = database.MOCK_CHAT_PREVIEWS[0].lastMessage!!.copy(
                     content = MessageContent.Text(
-                        database.DELETE_MESSAGE_STR
-                    )
-                )
-            ), database.chatPreviews[conversationId]
+                        database.DELETE_MESSAGE_STR,
+                    ),
+                ),
+            ),
+            database.chatPreviews[conversationId],
         )
     }
 
@@ -1191,17 +1192,18 @@ class MockDatabaseTest {
         assertEquals(
             (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream()
                 .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList(),
-            database.chatMessages[conversationId]!!.chat
+            database.chatMessages[conversationId]!!.chat,
         )
         // check the preview
         assertEquals(
             database.MOCK_CHAT_PREVIEWS[0].copy(
                 lastMessage = database.MOCK_CHAT_PREVIEWS[0].lastMessage!!.copy(
                     content = MessageContent.Text(
-                        newMessage
-                    )
-                )
-            ), database.chatPreviews[conversationId]
+                        newMessage,
+                    ),
+                ),
+            ),
+            database.chatPreviews[conversationId],
         )
     }
 
@@ -1220,7 +1222,7 @@ class MockDatabaseTest {
         assertEquals(
             (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream()
                 .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList(),
-            database.chatMessages[conversationId]!!.chat
+            database.chatMessages[conversationId]!!.chat,
         )
         // check the preview
         assertEquals(database.MOCK_CHAT_PREVIEWS[0], database.chatPreviews[conversationId])

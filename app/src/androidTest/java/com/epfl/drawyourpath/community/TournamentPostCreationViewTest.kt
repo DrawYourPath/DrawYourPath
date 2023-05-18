@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.community
 
 import android.Manifest
 import android.content.Intent
-import android.util.Log
 import androidx.arch.core.executor.testing.CountingTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario

@@ -226,6 +226,4 @@ class Run(
     override fun toString(): String {
         return "Run(startTime=$startTime, duration=$duration, endTime=$endTime, predictedShape='$predictedShape', similarityScore=$similarityScore)"
     }
-
-
 }

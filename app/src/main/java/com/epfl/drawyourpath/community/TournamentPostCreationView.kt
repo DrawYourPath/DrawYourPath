@@ -62,5 +62,4 @@ class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_cr
         // sample used for testing TODO remove this when everything is linked
         val TOURNAMENT_SAMPLE = listOf("Shape Spear", "Best tournament", "Draw the earth")
     }
-
 }
