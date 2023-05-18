@@ -44,6 +44,14 @@ class MockDatabase : Database() {
                     predictedShape = "Circle",
                     similarityScore = 0.9,
                 ),
+                Run(
+                    startTime = 20,
+                    endTime = 50,
+                    duration = 10,
+                    path = Path(listOf(listOf(LatLng(46.51854301997813, 6.56237289547834)))),
+                    predictedShape = "square",
+                    similarityScore = 1.65321,
+                ),
             ),
             dailyGoals = listOf(
                 DailyGoal(
@@ -71,6 +79,8 @@ class MockDatabase : Database() {
             ),
             milestones = listOf(
                 MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 20)),
+                MilestoneData(MilestoneEnum.THE_FIRST_KILOMETER, LocalDate.of(2001, 2, 20)),
+                MilestoneData(MilestoneEnum.THE_FIRST_DAY, LocalDate.of(2002, 2, 20)),
             ),
             tournaments = listOf("0"),
             chatList = listOf("0"),

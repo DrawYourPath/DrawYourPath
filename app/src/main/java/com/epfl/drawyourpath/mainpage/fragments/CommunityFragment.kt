@@ -19,6 +19,7 @@ import com.epfl.drawyourpath.community.*
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import java.time.LocalDateTime
 
@@ -52,6 +53,8 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         createSortButton(view)
 
         createBackButton(view)
+
+        createAddPostButton(view)
     }
 
     /**
@@ -123,6 +126,17 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
                 CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
             tournamentPostsView.invalidate()
             scroll.scrollTo(0, 0)
+        }
+    }
+
+    /**
+     * create the add post button to go to the tournament post creation fragment
+     * @param view the view
+     */
+    private fun createAddPostButton(view: View) {
+        val addButton = view.findViewById<FloatingActionButton>(R.id.community_add_post_button)
+        addButton.setOnClickListener {
+            replaceFragment<TournamentPostCreationView>()
         }
     }
 
@@ -245,9 +259,10 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      * replace this fragment by another one
      */
     private inline fun <reified F : Fragment> replaceFragment(fragmentArgs: Bundle? = null) {
-        activity?.supportFragmentManager?.commit {
+        requireActivity().supportFragmentManager.commit {
             setReorderingAllowed(true)
             replace<F>(R.id.fragmentContainerView, args = fragmentArgs)
+            addToBackStack("creation")
         }
     }
 

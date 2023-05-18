@@ -222,4 +222,8 @@ class Run(
     fun getKilometersAvgSpeed(): List<Double> {
         return getKilometersDuration().map { t -> 1000.0 / t }
     }
+
+    override fun toString(): String {
+        return "Run(startTime=$startTime, duration=$duration, endTime=$endTime, predictedShape='$predictedShape', similarityScore=$similarityScore)"
+    }
 }
