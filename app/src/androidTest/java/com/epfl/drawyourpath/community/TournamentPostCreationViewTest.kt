@@ -12,11 +12,13 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.mainpage.MainActivity
 import org.hamcrest.Matchers.anything
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -109,5 +111,10 @@ class TournamentPostCreationViewTest {
         onView(withId(R.id.community_menu_item)).perform(click())
         // go to post creation
         onView(withId(R.id.community_add_post_button)).perform(click())
+    }
+
+    @Before
+    fun clearDatabase() {
+        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("pm clear com.epfl.drawyourpath.package").close()
     }
 }

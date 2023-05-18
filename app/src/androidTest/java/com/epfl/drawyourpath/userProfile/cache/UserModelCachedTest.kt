@@ -105,7 +105,7 @@ class UserModelCachedTest {
         waitUntilAllThreadAreDone()
         // check that it is the correct user
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-        assertEqualRun(testUserModel.runs!!, user.getRunHistory().getOrAwaitValue())
+        assertEqualRun(testUserModel.runs!!.sortedByDescending { it.getStartTime() }, user.getRunHistory().getOrAwaitValue())
         // set non working database
         user.setDatabase(MockNonWorkingDatabase())
         // set current user to new user fom cache
@@ -226,7 +226,7 @@ class UserModelCachedTest {
             newUser.dailyGoals!![0].copy(distance = distance, time = time, paths = 1),
             user.getTodayDailyGoal().getOrAwaitValue(),
         )
-        assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(0, run) }, user.getRunHistory().getOrAwaitValue())
+        assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(run) }.sortedByDescending { it.getStartTime() }, user.getRunHistory().getOrAwaitValue())
     }
 
     @Test
@@ -242,7 +242,7 @@ class UserModelCachedTest {
             newUser.dailyGoals!![0].copy(distance = distance, time = time, paths = 1),
             user.getTodayDailyGoal().getOrAwaitValue(),
         )
-        assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(0, run) }, user.getRunHistory().getOrAwaitValue())
+        assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(run) }.sortedByDescending { it.getStartTime() }, user.getRunHistory().getOrAwaitValue())
     }
 
     @Test
