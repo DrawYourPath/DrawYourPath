@@ -24,7 +24,6 @@ class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val r
     }
 
     private fun createView(position: Int, convertView: View?, parent: ViewGroup): View {
-
         val view = convertView ?: LayoutInflater.from(context).inflate(resource, parent, false)
         val viewHolder = ViewHolder(view)
 
@@ -59,5 +58,4 @@ class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val r
         val distanceTextView: TextView = view.findViewById(R.id.distanceTextView)
         val timeTakenTextView: TextView = view.findViewById(R.id.timeTakenTextView)
     }
-
 }

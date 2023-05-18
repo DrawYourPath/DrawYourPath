@@ -5,18 +5,9 @@ import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.DatePicker
-import android.widget.ImageButton
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
-import android.widget.TimePicker
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.Auth
 import com.epfl.drawyourpath.authentication.FirebaseAuth
@@ -25,7 +16,6 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
-import com.epfl.drawyourpath.mainpage.fragments.CommunityFragment
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -46,5 +46,4 @@ class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_cr
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
-
 }
