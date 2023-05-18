@@ -254,7 +254,7 @@ object FirebaseDatabaseUtils {
      * Helper function to convert a data snapshot to a userModel
      * @param data data snapshot to convert
      * @param userId of the user
-     * @return ta future that contains the user Model
+     * @return a future that contains the user Model
      */
     fun mapToUserData(data: DataSnapshot, userId: String): UserData {
         val profile = data.child(FirebaseKeys.PROFILE)
