@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.fragments.*
-import com.epfl.drawyourpath.mainpage.fragments.helperClasses.CustomFragmentFactory
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.pathDrawing.PathDrawingContainerFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
@@ -46,7 +45,6 @@ class MainActivity : AppCompatActivity() {
 
         // get the user id given by login or register to use it inside this activity and its child fragment
         setupUser()
-
 
         setupNotifications()
 
