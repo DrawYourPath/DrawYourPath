@@ -182,7 +182,7 @@ abstract class Database {
      * @param tropy to be stored in the database
      * @return a future to indicate if the trophy was correctly added to the user profile on the database
      */
-    abstract fun addTrophy(trophy: Trophy, userId: String): CompletableFuture<Unit>
+    abstract fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit>
 
     /**
      * This function is used to add a milestone to the user profile of the user on the database
@@ -191,9 +191,9 @@ abstract class Database {
      * @return a future to indicate if the milestone was correctly added to the user profile on the database
      */
     abstract fun addMilestone(
+        userId: String,
         milestone: MilestoneEnum,
         date: LocalDate,
-        userId: String,
     ): CompletableFuture<Unit>
 
     /**

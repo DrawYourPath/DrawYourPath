@@ -78,14 +78,14 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun addTrophy(trophy: Trophy, userId: String): CompletableFuture<Unit> {
+    override fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit> {
         return failedFuture()
     }
 
     override fun addMilestone(
+        userId: String,
         milestone: MilestoneEnum,
         date: LocalDate,
-        userId: String,
     ): CompletableFuture<Unit> {
         return failedFuture()
     }

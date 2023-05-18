@@ -536,7 +536,7 @@ class MockDatabase : Database() {
         return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun addTrophy(trophy: Trophy, userId: String): CompletableFuture<Unit> {
+    override fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit> {
         if (!users.contains(userId)) {
             return userDoesntExist()
         }
@@ -551,9 +551,9 @@ class MockDatabase : Database() {
     }
 
     override fun addMilestone(
+        userId: String,
         milestone: MilestoneEnum,
         date: LocalDate,
-        userId: String,
     ): CompletableFuture<Unit> {
         if (!users.contains(userId)) {
             return userDoesntExist()

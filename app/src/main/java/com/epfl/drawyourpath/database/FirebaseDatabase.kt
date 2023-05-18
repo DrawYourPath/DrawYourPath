@@ -426,7 +426,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
-    override fun addTrophy(trophy: Trophy, userId: String): CompletableFuture<Unit> {
+    override fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
         // this is how the data is store in the database:
@@ -450,9 +450,9 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     }
 
     override fun addMilestone(
+        userId: String,
         milestone: MilestoneEnum,
         date: LocalDate,
-        userId: String,
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         // this is how the data is store in the database:

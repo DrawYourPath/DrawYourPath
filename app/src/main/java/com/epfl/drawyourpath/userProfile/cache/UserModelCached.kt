@@ -138,20 +138,13 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         userId: String,
         milestonesData: List<MilestoneData>?,
     ): List<MilestoneEntity> {
-        if (milestonesData.isNullOrEmpty()) {
-            return emptyList()
-        }
-        val list = mutableListOf<MilestoneEntity>()
-        milestonesData.forEach { milestone ->
-            list.add(
-                MilestoneEntity(
-                    userId = userId,
-                    milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name),
-                    date = milestone.date!!.toEpochDay(),
-                ),
+        return milestonesData?.map {milestone ->
+            MilestoneEntity(
+                userId = userId,
+                milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name),
+                date = milestone.date!!.toEpochDay(),
             )
-        }
-        return list
+        } ?: emptyList()
     }
 
     /**
@@ -321,27 +314,16 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @param milestones list of milestones to add in the database
      * @return a completable future that indicate if the the milesstones were correctly added
      */
-    private fun addListMilestones(milestones: List<MilestoneEntity>): CompletableFuture<Unit> {
-        var future = CompletableFuture<Unit>()
-        if (milestones.isEmpty()) {
-            future.complete(Unit)
-        } else {
-            milestones.forEachIndexed { index, entity ->
-                val newFuture = database.addMilestone(
-                    milestone = MilestoneEnum.valueOf(
-                        Utils.getALL_CAPSFromString(entity.milestone),
-                    ),
-                    date = LocalDate.ofEpochDay(entity.date),
-                    userId = entity.userId,
+    private fun addListMilestones(milestones: List<MilestoneEntity>): CompletableFuture<Void> {
+        return CompletableFuture.allOf(
+            *milestones.map {
+                database.addMilestone(
+                    it.userId,
+                    MilestoneEnum.valueOf(value = Utils.getALL_CAPSFromString(it.milestone)),
+                    LocalDate.ofEpochDay(it.date),
                 )
-                if (index == 0) {
-                    future = newFuture
-                } else {
-                    future.thenApply { newFuture }
-                }
-            }
-        }
-        return future
+            }.toTypedArray()
+        )
     }
 
     /**

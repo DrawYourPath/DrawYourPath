@@ -460,7 +460,10 @@ class MockDatabaseTest {
         val database = MockDatabase()
 
         assertThrows(Exception::class.java) {
-            database.addTrophy(Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2), "incorrect").get()
+            database.addTrophy(
+                "incorrect",
+                Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2)
+            ).get()
         }
     }
 
@@ -472,7 +475,7 @@ class MockDatabaseTest {
         val database = MockDatabase()
         val trophy = Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2)
         val userId = database.MOCK_USERS[0].userId!!
-        database.addTrophy(trophy, userId).get()
+        database.addTrophy(userId, trophy).get()
         assertEquals(listOf(trophy), database.users[userId]?.trophies)
     }
 
@@ -484,7 +487,11 @@ class MockDatabaseTest {
         val database = MockDatabase()
 
         assertThrows(Exception::class.java) {
-            database.addMilestone(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21), "incorrect").get()
+            database.addMilestone(
+                "incorrect",
+                MilestoneEnum.HUNDRED_KILOMETERS,
+                LocalDate.of(2000, 2, 21)
+            ).get()
         }
     }
 
@@ -495,7 +502,7 @@ class MockDatabaseTest {
     fun addMilestoneCorrectly() {
         val database = MockDatabase()
         val userId = database.MOCK_USERS[0].userId!!
-        database.addMilestone(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21), userId).get()
+        database.addMilestone(userId, MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21)).get()
         assertEquals(listOf(MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21))), database.users[userId]?.milestones)
     }
 
