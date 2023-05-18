@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
+import android.graphics.*
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
@@ -14,6 +15,7 @@ import com.google.mlkit.vision.digitalink.Ink.Point
 import com.google.mlkit.vision.digitalink.Ink.Stroke
 import java.io.ByteArrayOutputStream
 import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.math.*
@@ -167,6 +169,24 @@ object Utils {
     }
 
     /**
+     * transform ALL_CAPS naming convention to a All caps
+     * @param ALL_CAPS the string to transform
+     * @return the formatted string
+     */
+    fun getStringFromALL_CAPS(ALL_CAPS: String): String {
+        return ALL_CAPS.replace("_", " ").lowercase().let { value -> value.replaceFirstChar { it.uppercaseChar() } }
+    }
+
+    /**
+     * transform All caps to ALL_CAPS naming convention
+     * @param value the string to transform
+     * @return the formatted string
+     */
+    fun getALL_CAPSFromString(value: String): String {
+        return value.uppercase().replace(" ", "_")
+    }
+
+    /**
      * Get current date and time in epoch seconds
      * @return current date and time in epoch seconds
      */
@@ -192,14 +212,7 @@ object Utils {
      */
     fun getStringDuration(time: Long): String {
         val duration = Duration.ofSeconds(time)
-        val hours: Int = duration.toHours().toInt()
-        val hoursStr: String = if (hours == 0) "00" else if (hours < 10) "0$hours" else hours.toString()
-        val minutes: Int = duration.toMinutes().toInt() - hours * 60
-        val minutesStr: String = if (minutes == 0) "00" else if (minutes < 10) "0$minutes" else minutes.toString()
-        val seconds: Int = duration.seconds.toInt() - 3600 * hours - 60 * minutes
-        val secondsStr: String = if (seconds == 0) "00" else if (seconds < 10) "0$seconds" else seconds.toString()
-
-        return "$hoursStr:$minutesStr:$secondsStr"
+        return String.format("%02d:%02d:%02d", duration.toHours(), duration.toMinutes(), duration.seconds % 60)
     }
 
     /**
@@ -207,16 +220,9 @@ object Utils {
      * @param time that we want to displayed in seconds
      * @return the string that correspond to the time in "hh:mm:ss"
      */
-    fun getStringTimeStartEnd(time: Long): String {
-        val localTime = LocalDateTime.ofEpochSecond(time, 0, ZoneOffset.UTC)
-        val hours = localTime.hour
-        val hoursStr = if (hours == 0) "00" else if (hours < 10) "0$hours" else hours
-        val minutes = localTime.minute
-        val minutesStr = if (minutes == 0) "00" else if (minutes < 10) "0$minutes" else minutes
-        val seconds = localTime.second
-        val secondsStr = if (seconds == 0) "00" else if (seconds < 10) "0$seconds" else seconds
-        return "$hoursStr:$minutesStr:$secondsStr"
-    }
+    fun getStringTimeStartEnd(time: Long): String =
+        LocalDateTime.ofEpochSecond(time, 0, ZoneOffset.UTC)
+            .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
     /**
      * Helper function to get a string to displayed a speed in m/s
@@ -226,6 +232,15 @@ object Utils {
     fun getStringSpeed(speed: Double): String {
         val roundSpeed: Double = (speed * 100.0).roundToInt() / 100.0
         return roundSpeed.toString()
+    }
+
+    /**
+     * get the date as string with the format dd mm yyyy
+     * @param date the date to transform
+     * @return the formatted string
+     */
+    fun getDateAsString(date: LocalDate): String {
+        return date.format(DateTimeFormatter.ofPattern("dd MM uuuu"))
     }
 
     /**
@@ -262,6 +277,124 @@ object Utils {
         // Mercator projection formula
         val y = ln(tan(lat) + (1 / cos(lat)))
         return Point.create(long.toFloat(), y.toFloat())
+    }
+
+    /**
+     * Gets the smallest coordinates independently.
+     * When we want to fit the path in a square, it represents the topleft corner of the square.
+     * @return The smallest coordinate for all the strokes.
+     */
+    fun getSmallestPoint(strokes: List<Stroke>): Point =
+        strokes.fold(Pair(Float.MAX_VALUE, Float.MAX_VALUE)) { acc, stroke ->
+            stroke.points.fold(acc) { acc2, point ->
+                Pair(min(acc2.first, point.x), min(acc2.second, point.y))
+            }
+        }.let { Point.create(it.first, it.second) }
+
+    /**
+     * Gets the smallest coordinates independently.
+     * When we want to fit the path in a square, it represents the topleft corner of the square.
+     * @return The smallest coordinate for the stroke.
+     */
+    fun getSmallestPoint(stroke: Stroke): Point =
+        getSmallestPoint(listOf(stroke))
+
+    /**
+     * Gets the biggest coordinates independently.
+     * When we want to fit the path in a square, it represents the bottom right corner of the square.
+     * @return The smallest coordinate for all the strokes.
+     */
+    fun getBiggestPoint(strokes: List<Stroke>): Point =
+        strokes.fold(Pair(0f, 0f)) { acc, stroke ->
+            stroke.points.fold(acc) { acc2, point ->
+                Pair(max(acc2.first, point.x), max(acc2.second, point.y))
+            }
+        }.let { Point.create(it.first, it.second) }
+
+    /**
+     * Gets the smallest coordinates independently.
+     * When we want to fit the path in a square, it represents the bottom right corner of the square.
+     * @return The biggest coordinate for the stroke.
+     */
+    fun getBiggestPoint(stroke: Stroke): Point =
+        getBiggestPoint(listOf(stroke))
+
+    /**
+     * Normalizes strokes so that it fits in a 1:1 square.
+     * @note It isn't stretched.
+     * @param strokes The strokes to normalize.
+     * @param padding The padding applied between the borders and the points in percent.
+     * @return All the strokes with all points inside fitting in [0;1].
+     */
+    fun normalizeStrokes(strokes: List<Stroke>, padding: Float = 0f): List<Stroke> {
+        // Finds the origin that fits all the points. (top left most corner)
+        val origin = getSmallestPoint(strokes)
+
+        // Finds the biggest point (opposite of origin). (bottom right most corner)
+        val max = getBiggestPoint(strokes)
+
+        // The scale is the biggest distance between the origin and a coordinate.
+        val scale = max(max.x - origin.x, max.y - origin.y) + padding
+
+        // We pad the origin relatively to the scaling.
+        val paddedOrigin = Pair(
+            origin.x - scale * padding,
+            origin.y - scale * padding,
+        )
+
+        // Constructs the new strokes translated and scaled to fit in a 1:1 square
+        return strokes.map { stroke ->
+            Stroke.builder().also {
+                for (point in stroke.points) {
+                    it.addPoint(
+                        Point.create(
+                            (point.x - paddedOrigin.first) / scale,
+                            (point.y - paddedOrigin.second) / scale,
+                        ),
+                    )
+                }
+            }.build()
+        }
+    }
+
+    // Defaults paint used to draw strokes.
+    // Uses anti aliasing and draws rounded black strokes of width 2.
+    private val defaultPaint = Paint(Paint.ANTI_ALIAS_FLAG).also {
+        it.color = Color.BLACK
+        it.strokeWidth = 2f
+        it.strokeCap = Paint.Cap.ROUND
+    }
+
+    /**
+     * Converts a stroke to a bitmap image representation.
+     * @param stroke The stroke we want to draw
+     * @param size The size of the bitmap in pixels
+     * @param paint The paint option used to draw the stroke.
+     */
+    fun strokesToBitmap(strokes: List<Stroke>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        normalizeStrokes(strokes, 0.1f).forEach { stroke ->
+            val points = stroke.points
+
+            // Associates idx (n) to (n + 1)
+            points.zip(points.drop(1)).forEach {
+                canvas.drawLine(it.first.x * size, it.first.y * size, it.second.x * size, it.second.y * size, paint)
+            }
+        }
+
+        return bitmap
+    }
+
+    /**
+     * Converts a list of coordinates to a bitmap image representation.
+     * @param stroke The list of coordinates we want to draw
+     * @param size The size of the bitmap in pixels
+     * @param paint The paint option used to draw the list of coordinates.
+     */
+    fun coordinatesToBitmap(coordinates: List<LatLng>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
+        return strokesToBitmap(listOf(coordinatesToStroke(coordinates)), size, paint)
     }
 
     /**

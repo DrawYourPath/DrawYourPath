@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="110dp"
+    android:gravity="center|top"
+    android:id="@+id/form_path_description_fragment"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/formDescriptionPath"
+        android:text="@string/shape_recognized_on_the_path_drawn"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scorePath"
+        android:text="@string/score_of_the_shape_recognized"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="@string/ml_shape_recognition_description"
+        android:justificationMode="inter_word"
+        android:textStyle="italic"
+        android:textSize="11sp"
+        android:id = "@+id/descriptionTextFormDescription"
+        android:layout_margin="5dp"/>
+</LinearLayout>

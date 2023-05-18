@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.challenge
+package com.epfl.drawyourpath.challenge.dailygoal
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,12 +11,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import java.lang.Integer.min
 import java.util.concurrent.CompletableFuture
 
 /**
- * used in a recycler view to display the [DailyGoal]
+ * used in a recycler view to display the list of [DailyGoal]
  */
 class DailyGoalViewAdapter(
     private val updateDistanceGoal: (distance: Double) -> CompletableFuture<Unit>,
@@ -121,8 +120,8 @@ class DailyGoalViewAdapter(
         val goal = getGoalToDouble(dailyGoal, position)
 
         viewHolder.progressText.text = getProgressText(position, context).format(currentProgress, goal)
-        viewHolder.progressBar.max = goal.toInt()
-        viewHolder.progressBar.progress = min(currentProgress.toInt(), goal.toInt())
+        viewHolder.progressBar.max = (goal * 100).toInt()
+        viewHolder.progressBar.progress = min((currentProgress * 100).toInt(), (goal * 100).toInt())
     }
 
     /**

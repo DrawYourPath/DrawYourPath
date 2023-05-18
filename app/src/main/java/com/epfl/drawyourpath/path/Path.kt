@@ -12,7 +12,7 @@ class Path {
      * private mutable list to store the sections of the paths, and a section is composed of a list of points.
      * A new section is added each time the user made a pause during his drawing activity.
      */
-    private val pointsSections: MutableList<MutableList<LatLng>> = mutableListOf(mutableListOf<LatLng>())
+    private val pointsSections: MutableList<MutableList<LatLng>> = mutableListOf(mutableListOf())
 
     /**
      * Constructor that creates an empty path, composed of one empty section.

@@ -4,7 +4,6 @@ import com.google.firebase.database.Exclude
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.math.pow
 
 /**
@@ -18,6 +17,8 @@ class Run(
     private val startTime: Long, // the timestamps of the run
     private var duration: Long, // represent the duration of the run(in seconds)
     private val endTime: Long,
+    val predictedShape: String = "None", // the shape predicted by the ML model
+    val similarityScore: Double = 0.0, // the score of similarity with the predicted shape
 ) {
 
     init {
@@ -91,7 +92,6 @@ class Run(
     /**
      * Returns the duration of the run (in seconds)
      */
-    @Exclude
     fun getDuration(): Long {
         return duration
     }
@@ -154,6 +154,7 @@ class Run(
     /**
      * This function returns the distance (in meters) of each sections of the path(in order of the drawing)
      */
+    @Exclude
     fun getSectionsDistance(): List<Double> {
         val list = mutableListOf<Double>()
         this.path.getPoints().forEachIndexed { index, _ ->
@@ -166,9 +167,10 @@ class Run(
      * This function returns the time (in seconds) taken to draw each section of the path(in order of the drawing)
      * We consider that each seconds a points is added to a section.
      */
+    @Exclude
     fun getSectionsDuration(): List<Long> {
         val list = mutableListOf<Long>()
-        val step = this.path.size() / duration
+        val step = duration / this.path.size()
         this.path.getPoints().forEachIndexed { index, _ ->
             list.add(this.path.sizeOfSection(index).toLong() * step)
         }
@@ -179,6 +181,7 @@ class Run(
      * This function returns the average speed taken to draw each section of the path(in order of the drawing) in m/s
      * We consider that each seconds a points is added to a section.
      */
+    @Exclude
     fun getSectionsAvgSpeed(): List<Double> {
         val list = mutableListOf<Double>()
         val distance = getSectionsDistance()
@@ -192,8 +195,9 @@ class Run(
     /**
      * Function used to get the time (in seconds) taken by the user to throw each kilometer
      */
+    @Exclude
     fun getKilometersDuration(): List<Long> {
-        val step: Int = (path.size() / duration).toInt()
+        val step = duration / path.size()
         val listTime = mutableListOf<Long>()
         val newPath = Path()
         var totalTime = 0L
@@ -214,6 +218,7 @@ class Run(
     /**
      * Function used to get the average speed taken by the user to throw each kilometer in m/s
      */
+    @Exclude
     fun getKilometersAvgSpeed(): List<Double> {
         return getKilometersDuration().map { t -> 1000.0 / t }
     }
