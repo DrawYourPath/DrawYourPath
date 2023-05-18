@@ -16,6 +16,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.MockDatabase
@@ -24,6 +25,7 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.anyOf
 import org.hamcrest.core.StringContains.containsString
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,6 +47,11 @@ class ChallengeFragmentTest {
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
         Thread.sleep(10)
+    }
+
+    @Before
+    fun clearDatabase() {
+        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("pm clear com.epfl.drawyourpath.package").close()
     }
 
     @Test
