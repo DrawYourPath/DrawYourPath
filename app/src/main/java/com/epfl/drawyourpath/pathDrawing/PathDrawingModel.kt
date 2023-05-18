@@ -49,6 +49,9 @@ class PathDrawingModel : ViewModel() {
      * start the run
      */
     fun startRun() {
+        startTime = null
+        pauseTime = null
+        pauseDuration = Duration.ZERO
         resultingRun = Run(path = Path(), startTime = getAndSetStartTime(), duration = 0, endTime = startTime!! + 1)
         _run.postValue(resultingRun)
         handler.post(updateHandler)
@@ -121,6 +124,7 @@ class PathDrawingModel : ViewModel() {
      * clear the run
      */
     fun clearRun() {
+        handler.removeCallbacks(updateHandler)
         resultingRun = Run(path = Path(), startTime = 0, duration = 0L, endTime = 1)
         _run.postValue(resultingRun)
     }
