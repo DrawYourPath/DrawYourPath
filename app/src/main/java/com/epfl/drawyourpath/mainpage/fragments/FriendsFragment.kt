@@ -8,7 +8,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -190,14 +189,5 @@ class FriendsFragment(private var database: Database) : Fragment(R.layout.fragme
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
                 null
             }
-    }
-}
-
-class FriendsFragmentFactory(private val database: Database) : FragmentFactory() {
-    override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
-        return when (className) {
-            FriendsFragment::class.java.name -> FriendsFragment(database)
-            else -> super.instantiate(classLoader, className)
-        }
     }
 }

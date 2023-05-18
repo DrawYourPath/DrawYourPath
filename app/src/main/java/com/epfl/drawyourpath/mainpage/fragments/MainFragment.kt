@@ -15,6 +15,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.mainpage.IS_TEST_KEY
+import com.epfl.drawyourpath.mainpage.fragments.helperClasses.CustomFragmentFactory
 import com.epfl.drawyourpath.preferences.PreferencesFragment
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -47,10 +48,9 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         isTest = arguments?.getBoolean(IS_TEST_KEY, false) ?: false
 
         // Create an instance of FriendsFragmentFactory and set it as the fragment factory
-        val friendsFragmentFactory = FriendsFragmentFactory(database)
-        requireActivity().supportFragmentManager.fragmentFactory = friendsFragmentFactory
+        requireActivity().supportFragmentManager.fragmentFactory = CustomFragmentFactory(database)
 
-        // Display the main fragment when no saved state
+        // Display the main fragment when there is no saved state
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.draw_menu_item
             replaceFragment<DrawMenuFragment>()
