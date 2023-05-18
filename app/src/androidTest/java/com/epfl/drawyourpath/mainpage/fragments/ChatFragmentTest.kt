@@ -44,7 +44,7 @@ class ChatFragmentTest {
         // Go to chats!
         onView(withId(R.id.chat_menu_item)).perform(click())
 
-        // Check if chatListRecyclerView is visible
+        // Check if chatListRecyclerView is visible!
         onView(withId(R.id.chatListRecyclerView))
             .check(matches(isDisplayed()))
     }
