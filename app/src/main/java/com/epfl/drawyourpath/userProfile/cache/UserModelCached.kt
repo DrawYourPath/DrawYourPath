@@ -138,7 +138,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         userId: String,
         milestonesData: List<MilestoneData>?,
     ): List<MilestoneEntity> {
-        return milestonesData?.map {milestone ->
+        return milestonesData?.map { milestone ->
             MilestoneEntity(
                 userId = userId,
                 milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name),
@@ -322,7 +322,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                     MilestoneEnum.valueOf(value = Utils.getALL_CAPSFromString(it.milestone)),
                     LocalDate.ofEpochDay(it.date),
                 )
-            }.toTypedArray()
+            }.toTypedArray(),
         )
     }
 

@@ -462,7 +462,7 @@ class MockDatabaseTest {
         assertThrows(Exception::class.java) {
             database.addTrophy(
                 "incorrect",
-                Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2)
+                Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2),
             ).get()
         }
     }
@@ -490,7 +490,7 @@ class MockDatabaseTest {
             database.addMilestone(
                 "incorrect",
                 MilestoneEnum.HUNDRED_KILOMETERS,
-                LocalDate.of(2000, 2, 21)
+                LocalDate.of(2000, 2, 21),
             ).get()
         }
     }
