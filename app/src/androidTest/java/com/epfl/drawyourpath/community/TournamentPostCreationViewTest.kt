@@ -42,6 +42,11 @@ class TournamentPostCreationViewTest {
         Thread.sleep(10)
     }
 
+    @Before
+    fun clearDatabase() {
+        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("pm clear com.epfl.drawyourpath.package").close()
+    }
+
     @Test
     fun selectTournamentDisplayCorrectTournament() {
         // TODO change this when everything is linked
@@ -111,10 +116,5 @@ class TournamentPostCreationViewTest {
         onView(withId(R.id.community_menu_item)).perform(click())
         // go to post creation
         onView(withId(R.id.community_add_post_button)).perform(click())
-    }
-
-    @Before
-    fun clearDatabase() {
-        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("pm clear com.epfl.drawyourpath.package").close()
     }
 }

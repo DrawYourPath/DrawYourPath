@@ -129,6 +129,10 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         }
     }
 
+    /**
+     * create the add post button to go to the tournament post creation fragment
+     * @param view the view
+     */
     private fun createAddPostButton(view: View) {
         val addButton = view.findViewById<FloatingActionButton>(R.id.community_add_post_button)
         addButton.setOnClickListener {

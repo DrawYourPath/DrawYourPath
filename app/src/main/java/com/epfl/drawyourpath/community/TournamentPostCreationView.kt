@@ -12,6 +12,9 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.RunArrayAdapter
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
+/**
+ * this class is used to create a post with a run to a specific tournament and then post it
+ */
 class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_creation) {
 
     private val user: UserModelCached by activityViewModels()
@@ -28,12 +31,21 @@ class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_cr
         setupPostButton(view)
     }
 
+    /**
+     * TODO use real tournament and not sample
+     * setup the tournament spinner to select the tournament
+     * @param view the view
+     */
     private fun setupTournamentSpinner(view: View) {
         val spinner = view.findViewById<Spinner>(R.id.post_creation_tournament_spinner)
         val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, TOURNAMENT_SAMPLE)
         spinner.adapter = arrayAdapter
     }
 
+    /**
+     * setup the run spinner to select the run
+     * @param view the view
+     */
     private fun setupRunSpinner(view: View) {
         val spinner = view.findViewById<Spinner>(R.id.post_creation_run_spinner)
         val arrayAdapter = RunArrayAdapter(requireContext(), mutableListOf())
@@ -43,6 +55,10 @@ class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_cr
         }
     }
 
+    /**
+     * setup the back button to go back to the community fragment
+     * @param view the view
+     */
     private fun setupBackButton(view: View) {
         val back = view.findViewById<ImageButton>(R.id.post_creation_back_button)
         back.setOnClickListener {
@@ -50,6 +66,10 @@ class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_cr
         }
     }
 
+    /**
+     * setup the post button to post the newly created post and then go back to the community fragment
+     * @param view the view
+     */
     private fun setupPostButton(view: View) {
         val post = view.findViewById<Button>(R.id.post_creation_post_button)
         post.setOnClickListener {

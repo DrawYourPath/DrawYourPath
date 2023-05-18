@@ -58,7 +58,8 @@
         <Spinner
             android:id="@+id/post_creation_run_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown" />
 
         <Space
             android:layout_width="0dp"
