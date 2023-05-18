@@ -7,10 +7,14 @@ import android.location.Location
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
+import com.epfl.drawyourpath.machineLearning.DigitalInk
 import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
+import com.google.mlkit.vision.digitalink.Ink
 import com.google.mlkit.vision.digitalink.Ink.Point
 import com.google.mlkit.vision.digitalink.Ink.Stroke
+import com.google.mlkit.vision.digitalink.RecognitionResult
 import java.io.ByteArrayOutputStream
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -265,6 +269,17 @@ object Utils {
     }
 
     /**
+     * converts a list of list of LatLng to an [Ink]
+     * @param coordinates the coordinates to convert
+     * @return the ink object
+     */
+    fun coordinatesToInk(coordinates: List<List<LatLng>>): Ink {
+        val builder = Ink.builder()
+        coordinates.forEach { builder.addStroke(coordinatesToStroke(it)) }
+        return builder.build()
+    }
+
+    /**
      * Converts a LatLng to a Point.
      * @param coordinate The coordinate we want to convert
      * @return A Point object representing the coordinate in planar space.
@@ -393,6 +408,17 @@ object Utils {
      */
     fun coordinatesToBitmap(coordinates: List<LatLng>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
         return strokesToBitmap(listOf(coordinatesToStroke(coordinates)), size, paint)
+    }
+
+    /**
+     * get the recognition result of a run
+     * @param run the run to recognize
+     * @return the recognition result
+     */
+    fun getRunRecognition(run: Run): CompletableFuture<RecognitionResult> {
+        return DigitalInk.downloadModelML().thenComposeAsync {
+            DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
+        }
     }
 
     /**

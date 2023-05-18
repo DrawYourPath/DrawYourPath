@@ -12,6 +12,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
@@ -46,12 +47,13 @@ class PathDrawingEndFragmentTest {
     fun checkThatClickingOnBackMenuButtonShowMainAppActivity() {
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
+            MainActivity::class.java,
         )
-        intent.putExtra(PathDrawingActivity.EXTRA_COUNTDOWN_DURATION, 1L)
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        intent.putExtra(MainActivity.EXTRA_DRAW_TEST, true)
+        val t: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
+
         // wait that the countdown passed
-        Thread.sleep(1001)
+        Thread.sleep(10)
         // click on pause button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .perform(ViewActions.click())
@@ -72,7 +74,7 @@ class PathDrawingEndFragmentTest {
      */
     @Test
     fun checkInformationDisplayedOnEndDrawingFragment() {
-        val scenario = launchFragmentInContainer<PathDrawingEndFragment>(themeResId = R.style.Theme_Bootcamp) {
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
             PathDrawingEndFragment(run = mockRun)
         }
         // check that the map is displayed

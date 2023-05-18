@@ -72,12 +72,10 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    // runs
-    private val runHistory: MutableLiveData<List<Run>> = MutableLiveData(listOf())
-    // TODO change this in future task
-    /*private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
-        runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }
-    }*/
+    // run
+    private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
+        runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }.sortedByDescending { it.getStartTime() }
+    }
 
     // trophies TODO remove sample
     private val trophies: MutableLiveData<List<Trophy>> = MutableLiveData(Trophy.sample)
@@ -184,13 +182,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun getRunHistory(): LiveData<List<Run>> {
         checkCurrentUser()
-        CompletableFuture.supplyAsync {
-            runHistory.postValue(
-                runCache.getAllRunsAndPoints(currentUserID!!).map {
-                    RunEntity.fromEntityToRun(it.key, it.value)
-                }.sortedByDescending { it.getStartTime() },
-            )
-        }
         return runHistory
     }
 

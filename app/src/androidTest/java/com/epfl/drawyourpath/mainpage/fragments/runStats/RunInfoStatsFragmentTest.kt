@@ -15,7 +15,6 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.pathDrawing.PathDrawingActivity
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Rule
 import org.junit.Test
@@ -44,7 +43,7 @@ class RunInfoStatsFragmentTest {
             ApplicationProvider.getApplicationContext(),
             MainActivity::class.java,
         )
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        val t: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
 
         // Go to history
         Espresso.onView(ViewMatchers.withId(R.id.history_menu_item)).perform(ViewActions.click())
