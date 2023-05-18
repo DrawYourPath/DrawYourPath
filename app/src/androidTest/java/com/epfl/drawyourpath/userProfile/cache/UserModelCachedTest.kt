@@ -63,6 +63,8 @@ class UserModelCachedTest {
                 100 + 10,
                 duration = 1286,
                 100 + 10 + 1286,
+                "goalpost",
+                0.698532,
             ),
         ),
         listOf(
@@ -291,18 +293,16 @@ class UserModelCachedTest {
     private fun assertEqualRun(expected: List<Run>, actual: List<Run>) {
         expected.forEachIndexed { index, run ->
             assertEquals(run.getStartTime(), actual[index].getStartTime())
+            assertEquals(run.getDuration(), actual[index].getDuration())
             assertEquals(run.getEndTime(), actual[index].getEndTime())
             assertEqualPath(run.getPath(), actual[index].getPath())
+            assertEquals(run.predictedShape, actual[index].predictedShape)
+            assertEquals(run.similarityScore, actual[index].similarityScore, 0.001)
         }
     }
 
     private fun assertEqualPath(expected: Path, actual: Path) {
-        expected.getPoints().forEachIndexed { index, section ->
-            section.forEachIndexed { indexSection, latLng ->
-                assertEquals(latLng.latitude, actual.getPoints()[index][indexSection].latitude, 0.00001)
-                assertEquals(latLng.longitude, actual.getPoints()[index][indexSection].longitude, 0.00001)
-            }
-        }
+        assertEquals(expected.getPoints(), actual.getPoints())
     }
 
     /**

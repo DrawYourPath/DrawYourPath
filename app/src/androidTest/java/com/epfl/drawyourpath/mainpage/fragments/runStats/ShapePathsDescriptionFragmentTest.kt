@@ -21,8 +21,8 @@ class ShapePathsDescriptionFragmentTest {
     @Test
     fun correctFormScoreDisplayed() {
         val scenario =
-            launchFragmentInContainer<ShapePathDescriptionFragment>(themeResId = R.style.Theme_Bootcamp) {
-                ShapePathDescriptionFragment(formName = "square", score = 2)
+            launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+                ShapePathDescriptionFragment(formName = "square", score = 2.0)
             }
         // check that the fragment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.form_path_description_fragment))
@@ -32,7 +32,7 @@ class ShapePathsDescriptionFragmentTest {
             .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.shape_recognized_on_the_path_drawn)} square")))
         // check the score displayed
         Espresso.onView(ViewMatchers.withId(R.id.scorePath))
-            .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.score_of_the_shape_recognized)} 2")))
+            .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.score_of_the_shape_recognized)} 2.00")))
         // check the description text displayed
         Espresso.onView(ViewMatchers.withId(R.id.descriptionTextFormDescription))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.resources.getString(R.string.ml_shape_recognition_description))))
