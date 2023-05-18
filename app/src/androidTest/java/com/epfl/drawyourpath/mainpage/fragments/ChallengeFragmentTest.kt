@@ -218,6 +218,8 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
+        waitUntilAllThreadAreDone()
+
         Trophy.sample.forEach { trophy ->
             onView(withText(trophy.tournamentName)).perform(scrollTo())
             onView(withId(R.id.trophies_view)).check(matches(hasDescendant(withText(trophy.tournamentName))))
@@ -236,6 +238,8 @@ class ChallengeFragmentTest {
             Bundle(),
             R.style.Theme_Bootcamp,
         )
+
+        waitUntilAllThreadAreDone()
 
         mockUser.milestones!!.forEach { milestone ->
             val name = Utils.getStringFromALL_CAPS(milestone.milestone!!.name)
