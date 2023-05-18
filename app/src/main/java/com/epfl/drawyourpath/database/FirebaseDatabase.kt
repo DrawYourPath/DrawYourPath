@@ -3,14 +3,19 @@ package com.epfl.drawyourpath.database
 import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformMilestoneToData
+import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformTrophyToData
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -32,6 +37,8 @@ class FirebaseKeys {
         const val DAILY_GOALS = "dailyGoals"
         const val USER_TOURNAMENTS = "tournaments"
         const val USER_CHATS = "chats"
+        const val TROPHIES = "trophies"
+        const val MILESTONES = "milestones"
 
         // User profile keys sublevel
         const val USERNAME = "username"
@@ -53,6 +60,12 @@ class FirebaseKeys {
         const val GOAL_HISTORY_DISTANCE = "distance"
         const val GOAL_HISTORY_PATHS = "paths"
         const val GOAL_HISTORY_TIME = "time"
+
+        // Trophies history list sublevels
+        const val TROPHY_TOURNAMENT_NAME: String = "tournamentName"
+        const val TROPHY_TOURNAMENT_DESCRIPTION: String = "tournamentDescription"
+        const val TROPHY_DATE: String = "date"
+        const val TROPHY_RANKING: String = "ranking"
 
         // Tournaments keys
         const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
@@ -413,58 +426,48 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
-    override fun updateUserAchievements(
-        userId: String,
-        distanceDrawing: Double,
-        activityTimeDrawing: Double,
-    ): CompletableFuture<Unit> {
-        // TODO: Rewrite this function so it can scale as we add achievements.
-        //       Current implementation is too restrictive.
-        /*
-        This is how the achievements are store in the firebase:
-        Users{
-            userId{
-                username: Value
-                ....
-                achievements{
-                    totalDistance: Value
-                    totalActivityTime: Value
-                    totalNbOfPaths: Value
-                }
-            }
-        }
-         */
-        /*
-
+    override fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        // obtain the current achievements
-        getCurrentUserAchievements().thenApply { pastAchievements ->
-            val newAchievement = HashMap<String, Any>()
-            newAchievement.put(
-                totalDistanceFile,
-                pastAchievements.get(totalDistanceFile) as Double + distanceDrawing
-            )
-            newAchievement.put(
-                totalActivityTimeFile,
-                pastAchievements.get(totalActivityTimeFile) as Double + activityTimeDrawing
-            )
-            newAchievement.put(
-                totalNbOfPathsFile,
-                pastAchievements.get(totalNbOfPathsFile) as Int + 1
-            )
-            val userId = getUserId()
-            if (userId == null) {
-                future.completeExceptionally(Error("The userId can't be null !"))
-            } else {
-                userAccountFile(userId).child(achievementsFile).updateChildren(newAchievement)
-                    .addOnSuccessListener { future.complete(Unit) }
-                    .addOnFailureListener { future.completeExceptionally(it) }
-            }
-        }
+        // this is how the data is store in the database:
+        // trophies = {
+        //      tournamentId = {
+        //          tournamentName = Value
+        //          tournamentDescription = Value
+        //          date = LocalDate
+        //          ranking = Value
+        //      }
+        // }
+        // transform the trophy into data
+        val trophyData = transformTrophyToData(trophy)
+        // add the trophy to the database
+        userRoot(userId).child(FirebaseKeys.TROPHIES)
+            .child(trophy.tournamentId)
+            .updateChildren(trophyData)
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
         return future
-        */
-        return Utils.failedFuture(Error("Not implemented"))
+    }
+
+    override fun addMilestone(
+        userId: String,
+        milestone: MilestoneEnum,
+        date: LocalDate,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // this is how the data is store in the database:
+        // milestones = {
+        //      milestone1 = date,
+        //      milestone2 = date,
+        // }
+        // transform the milestone into data
+        val milestoneData = transformMilestoneToData(milestone, date)
+        // add the milestone to the database
+        userRoot(userId).child(FirebaseKeys.MILESTONES)
+            .updateChildren(milestoneData)
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
     }
 
     override fun getTournamentUID(): String? {

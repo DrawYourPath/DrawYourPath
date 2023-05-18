@@ -11,6 +11,8 @@ import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
 import com.epfl.drawyourpath.challenge.milestone.Milestone
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEntity
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.path.Run
@@ -40,7 +42,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private var database: Database = FirebaseDatabase()
 
     // room database
-    private val roomDatabase = Room.databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME).fallbackToDestructiveMigration().build()
+    private val roomDatabase =
+        Room.databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
+            .fallbackToDestructiveMigration().build()
 
     // room database user
     private val userCache = roomDatabase.userDao()
@@ -79,9 +83,10 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val trophies: MutableLiveData<List<Trophy>> = MutableLiveData(Trophy.sample)
 
     // milestones
-    private val milestones: LiveData<List<Milestone>> = _currentUserID.switchMap { dailyGoalCache.getMilestonesById(it) }.map { entities ->
-        entities.map { Milestone(it) }
-    }
+    private val milestones: LiveData<List<Milestone>> =
+        _currentUserID.switchMap { dailyGoalCache.getMilestonesById(it) }.map { entities ->
+            entities.map { Milestone(it) }
+        }
 
     /**
      * This function will create a new user
@@ -111,15 +116,35 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser(false)
         setUserId(userId)
         return database.getUserData(userId).thenApplyAsync { userData ->
-            val runs = RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
+            val runs =
+                RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
             userCache.insertAll(
                 UserEntity(userData, userId),
                 userData.dailyGoals?.map { DailyGoalEntity(it, userId) } ?: listOf(),
-                listOf(), // TODO replace with userData.milestones when there is one
+                fromMilestoneDataToEntity(userId = userId, milestonesData = userData.milestones),
                 runs.map { it.first },
                 runs.map { it.second }.flatten(),
             )
         }
+    }
+
+    /**
+     * Helper function to transform MilestoneData into Milestone entities
+     * @param milestoneData list of milestone data
+     * @param userId of the user who passed the milestones
+     * @return a list of milestone entities
+     */
+    private fun fromMilestoneDataToEntity(
+        userId: String,
+        milestonesData: List<MilestoneData>?,
+    ): List<MilestoneEntity> {
+        return milestonesData?.map { milestone ->
+            MilestoneEntity(
+                userId = userId,
+                milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name),
+                date = milestone.date!!.toEpochDay(),
+            )
+        } ?: emptyList()
     }
 
     /**
@@ -274,14 +299,31 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         future.thenApplyAsync {
             database.addDailyGoal(currentUserID!!, DailyGoal(it.first))
             it.second
-        } /*.thenComposeAsync { TODO uncomment when function is created
-            database.addMilestones(currentUserID!!, it.map {entity -> Milestone(entity)})
-        }*/.thenComposeAsync {
+        }.thenComposeAsync {
+            addListMilestones(it)
+        }.thenComposeAsync {
             database.addRunToHistory(currentUserID!!, run)
         }.thenApplyAsync {
             runCache.runSynced(currentUserID!!, run.getStartTime())
         }
         return future.thenApply {}
+    }
+
+    /**
+     * Helper function to add all the milestones in the database
+     * @param milestones list of milestones to add in the database
+     * @return a completable future that indicate if the the milesstones were correctly added
+     */
+    private fun addListMilestones(milestones: List<MilestoneEntity>): CompletableFuture<Void> {
+        return CompletableFuture.allOf(
+            *milestones.map {
+                database.addMilestone(
+                    it.userId,
+                    MilestoneEnum.valueOf(value = Utils.getALL_CAPSFromString(it.milestone)),
+                    LocalDate.ofEpochDay(it.date),
+                )
+            }.toTypedArray(),
+        )
     }
 
     /**

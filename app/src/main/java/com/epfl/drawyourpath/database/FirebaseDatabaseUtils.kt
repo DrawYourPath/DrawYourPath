@@ -2,6 +2,8 @@ package com.epfl.drawyourpath.database
 
 import android.util.Log
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.path.Path
@@ -10,6 +12,7 @@ import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import java.time.LocalDate
+import java.util.HashMap
 
 object FirebaseDatabaseUtils {
 
@@ -204,7 +207,90 @@ object FirebaseDatabaseUtils {
             ),
             runs = transformRunList(data.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
+            trophies = transformTrophyFromData(data.child(FirebaseKeys.TROPHIES)),
+            milestones = transformMilestoneFromData(data.child(FirebaseKeys.MILESTONES)),
             chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
         )
+    }
+
+    /**
+     * Helper function to transform a trophy object into an object to store in the database
+     * The tournament id is not take into account since is used as a key for the trophy in the database.
+     * @param tropy to store in the database
+     */
+    fun transformTrophyToData(trophy: Trophy): HashMap<String, Any> {
+        return hashMapOf(
+            FirebaseKeys.TROPHY_TOURNAMENT_NAME to trophy.tournamentName,
+            FirebaseKeys.TROPHY_TOURNAMENT_DESCRIPTION to trophy.tournamentDescription,
+            FirebaseKeys.TROPHY_DATE to trophy.date.toEpochDay(),
+            FirebaseKeys.TROPHY_RANKING to trophy.ranking,
+        )
+    }
+
+    /**
+     * Helper function to obtain the trophies list from the database of the user
+     * @param data the data snapshot containing the trophies list
+     * @return a list containing the trophies of the user
+     */
+    fun transformTrophyFromData(data: DataSnapshot?): List<Trophy> {
+        return data?.children?.mapNotNull {
+            if (it.key == null) {
+                Log.w(this::class.java.name, "Tophies's key was null.")
+                null
+            } else {
+                val tournamentId = it.key!!.toString()
+
+                val tournamentName: String =
+                    it.child(FirebaseKeys.TROPHY_TOURNAMENT_NAME).value as String
+                val tournamentDescription: String =
+                    it.child(FirebaseKeys.TROPHY_TOURNAMENT_DESCRIPTION).value as String
+                val dateLong: Long =
+                    it.child(FirebaseKeys.TROPHY_DATE).value as Long
+                val ranking: Int =
+                    it.child(FirebaseKeys.TROPHY_RANKING).value as Int
+
+                Trophy(
+                    tournamentId = tournamentId,
+                    tournamentName = tournamentName,
+                    tournamentDescription = tournamentDescription,
+                    date = LocalDate.ofEpochDay(dateLong),
+                    ranking = ranking,
+                )
+            }
+        } ?: emptyList()
+    }
+
+    /**
+     * Helper function to transform a milestone object enum with a date into an object to store in the database
+     * The tournament id is not take into account since is used as a key for the trophy in the database.
+     * @param tropy to store in the database
+     */
+    fun transformMilestoneToData(milestone: MilestoneEnum, date: LocalDate): HashMap<String, Any> {
+        return hashMapOf(
+            milestone.name to date.toEpochDay(),
+        )
+    }
+
+    /**
+     * Helper function to obtain the milestones list from the database of the user
+     * @param data the data snapshot containing the milestone list
+     * @return a list containing the milestone of the user
+     */
+    fun transformMilestoneFromData(data: DataSnapshot?): List<MilestoneData> {
+        return data?.children?.mapNotNull {
+            if (it.key == null) {
+                Log.w(this::class.java.name, "Milestone's key was null.")
+                null
+            } else {
+                val milestone = it.key!!.toString()
+                val dateLong: Long =
+                    it.value as Long
+
+                MilestoneData(
+                    milestone = MilestoneEnum.valueOf(milestone),
+                    date = LocalDate.ofEpochDay(dateLong),
+                )
+            }
+        } ?: emptyList()
     }
 }
