@@ -84,7 +84,7 @@ class UtilsTest {
     @Test
     fun testReduceOnNoisySquarePath() {
         val sideLength = 0.01
-        val noiseSize = 4*sideLength / 1000
+        val noiseSize = 4 * sideLength / 1000
         val baseLat = 46.5185
         val baseLng = 6.56177
         // Draw square
@@ -106,7 +106,6 @@ class UtilsTest {
         c20 = LatLng(c20.latitude + 1 * noiseSize, c20.longitude)
         c30 = LatLng(c30.latitude - 2 * noiseSize, c30.longitude + 1 * noiseSize)
         c32 = LatLng(c32.latitude + 2 * noiseSize, c32.longitude - 1 * noiseSize)
-
 
         val points = listOf(listOf(c00, c01, c02, c10, c11, c20, c30, c31, c32, c33))
         val path = Path(points)
