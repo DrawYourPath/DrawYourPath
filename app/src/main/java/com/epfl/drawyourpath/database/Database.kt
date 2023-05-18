@@ -65,7 +65,7 @@ abstract class Database {
     abstract fun isUserInDatabase(userId: String): CompletableFuture<Boolean>
 
     /**
-     * This function is used to know if a certain user is already stored in the database
+     * This function is used to know if a certain tournament is stored in the database
      * @param tournamentId that corresponds to the tournament
      * @return a future that indicates if the tournament is stored on the database
      */
@@ -147,7 +147,7 @@ abstract class Database {
     /**
      * This function will remove a user to the the friends list of the current user with his userId
      * @param targetFriend of the user that we want to remove to the friendsList of the current user
-     * @throws an Error if the user that we want to removed is not present on the database.
+     * @throws Error if the user that we want to removed is not present on the database.
      * @return a future that indicates if the user has been correctly removed to the current user friends list
      */
     abstract fun removeFriend(userId: String, targetFriend: String): CompletableFuture<Unit>
@@ -172,7 +172,7 @@ abstract class Database {
      * This function is used to add a dailyGoal in the database to the list of dailyGoals realized by the user logged
      * in the dailyGoals section(the dailyGoal will be update if dailyGoal at this date already exist in the database).
      * @param userId The target user.
-     * @param dailyGaol that we want to add in the database
+     * @param dailyGoal that we want to add in the database
      * @return a future that indicates if the daily Goal have been correctly added to the database
      */
     abstract fun addDailyGoal(userId: String, dailyGoal: DailyGoal): CompletableFuture<Unit>
@@ -204,7 +204,8 @@ abstract class Database {
 
     /**
      * Function used to add a new tournament to the database. The participants and posts of the
-     * tournament will not be stored.
+     * tournament will not be stored: use [addUserToTournament] and addPostToTournament to store
+     * these.
      * @param tournament the tournament to store.
      * @return a future that indicates if the tournament has been stored correctly.
      */
@@ -240,6 +241,16 @@ abstract class Database {
         userId: String,
         tournamentId: String,
     ): CompletableFuture<Unit>
+
+    /**
+     * Function used to retrieve the tournament corresponding to the ID.
+     * @param tournamentId the id of the tournaments to retrieve
+     * @return a future that contains the tournament if successful, or an exception if an error
+     * occurred with the db.
+     */
+    abstract fun getTournament(
+        tournamentId: String,
+    ): CompletableFuture<Tournament>
 
     /**
      * Function used to create a chat conversation with other users of the DrawYourPath community.

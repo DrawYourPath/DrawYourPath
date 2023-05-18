@@ -6,12 +6,15 @@ import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
+import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.HashMap
 
 object FirebaseDatabaseUtils {
@@ -126,6 +129,63 @@ object FirebaseDatabaseUtils {
     }
 
     /**
+     * Helper function to obtain the posts of a tournament from the database
+     * @param data the data snapshot containing the posts
+     * @return a list containing the posts of the tournament
+     */
+    fun transformPostList(data: DataSnapshot?): List<TournamentPost> {
+        return data?.children?.mapNotNull {
+            transformPost(it)
+        } ?: emptyList()
+    }
+
+    /**
+     * Helper function to obtain a post from a database snapshot
+     * @param data the data snapshot containing the post
+     * @return the post, or null if an error occurred
+     */
+    fun transformPost(data: DataSnapshot?): TournamentPost? {
+        val userId = data?.child("userId")?.value as String?
+        val run = transformRun(data?.child("run"))
+        val votes = getNumber(data?.child("votes"))?.toInt()
+        val date = transformLocalDateTime(data?.child("date"))
+        // Unchecked cast here but should work without problem
+        val usersVotes =
+            (data?.child("usersVotes")?.value ?: emptyMap<String, Int>()) as Map<String, Int>
+
+        if (userId == null || run == null || votes == null || date == null) {
+            Log.e(this::class.java.name, "TournamentPost had null values")
+            return null
+        }
+
+        return TournamentPost(userId, run, votes, date, usersVotes.toMutableMap())
+    }
+
+    /**
+     * Helper function to obtain an object LocalDateTime from a data snapshot
+     * @param data the data snapshot containing the LocalDateTime
+     * @return the LocalDateTime, or null if an error occurred
+     */
+    fun transformLocalDateTime(data: DataSnapshot?): LocalDateTime? {
+        val year = getNumber(data?.child("year"))?.toInt()
+        val month = getNumber(data?.child("monthValue"))?.toInt()
+        val dayOfMonth = getNumber(data?.child("dayOfMonth"))?.toInt()
+        val hour = getNumber(data?.child("hour"))?.toInt()
+        val minute = getNumber(data?.child("minute"))?.toInt()
+        val second = getNumber(data?.child("second"))?.toInt()
+        val nano = getNumber(data?.child("nano"))?.toInt()
+
+        if (year == null || month == null || dayOfMonth == null ||
+            hour == null || minute == null || second == null || nano == null
+        ) {
+            Log.e(this::class.java.name, "LocalDateTime had null values")
+            return null
+        }
+
+        return LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, nano)
+    }
+
+    /**
      * Helper function to obtain the chats list from the database of the user
      * @param data the data snapshot containing the chats List
      * @return a list containing the conversationId of all the chats where the user is present
@@ -185,7 +245,7 @@ object FirebaseDatabaseUtils {
      * Helper function to convert a data snapshot to a userModel
      * @param data data snapshot to convert
      * @param userId of the user
-     * @return ta future that contains the user Model
+     * @return a future that contains the user Model
      */
     fun mapToUserData(data: DataSnapshot, userId: String): UserData {
         val profile = data.child(FirebaseKeys.PROFILE)
@@ -210,6 +270,54 @@ object FirebaseDatabaseUtils {
             trophies = transformTrophyFromData(data.child(FirebaseKeys.TROPHIES)),
             milestones = transformMilestoneFromData(data.child(FirebaseKeys.MILESTONES)),
             chatList = transformChatList(data.child(FirebaseKeys.USER_CHATS)),
+        )
+    }
+
+    /**
+     * Helper function to convert a data snapshot to a tournament
+     * @param data the data snapshot containing the tournament
+     * @return the tournament, or null if an error occurred
+     */
+    fun mapToTournament(data: DataSnapshot?): Tournament? {
+        val id = data?.child(FirebaseKeys.TOURNAMENT_ID)?.value as String?
+        val name = data?.child(FirebaseKeys.TOURNAMENT_NAME)?.value as String?
+        val description = data?.child(FirebaseKeys.TOURNAMENT_DESCRIPTION)?.value as String?
+        val creatorId = data?.child(FirebaseKeys.TOURNAMENT_CREATOR_ID)?.value as String?
+        val startDate = transformLocalDateTime(data?.child(FirebaseKeys.TOURNAMENT_START_DATE))
+        val endDate = transformLocalDateTime(data?.child(FirebaseKeys.TOURNAMENT_END_DATE))
+        val participants = getKeys(data?.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
+        val posts = transformPostList(data?.child(FirebaseKeys.TOURNAMENT_POSTS))
+        val visibilityString = data?.child(FirebaseKeys.TOURNAMENT_VISIBILITY)?.value as String?
+
+        // Get the visibility back to an enum value
+        val visibility = try {
+            if (visibilityString != null) {
+                Tournament.Visibility.valueOf(visibilityString)
+            } else {
+                null
+            }
+        } catch (_: IllegalArgumentException) {
+            Log.e(this::class.java.name, "Tournament visibility had an unknown value")
+            return null
+        }
+
+        if (id == null || name == null || description == null || creatorId == null ||
+            startDate == null || endDate == null || visibility == null
+        ) {
+            Log.e(this::class.java.name, "Tournament had null values")
+            return null
+        }
+
+        return Tournament(
+            id,
+            name,
+            description,
+            creatorId,
+            startDate,
+            endDate,
+            participants,
+            posts,
+            visibility,
         )
     }
 

@@ -652,6 +652,14 @@ class MockDatabase : Database() {
         return CompletableFuture.completedFuture(Unit)
     }
 
+    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
+
+        return CompletableFuture.completedFuture(tournaments[tournamentId])
+    }
+
     override fun createChatConversation(
         name: String,
         membersList: List<String>,
