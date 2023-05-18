@@ -163,6 +163,8 @@
     <string name="select_the_run">Select the run</string>
     <string name="post">Post</string>
     <string name="add_post">add post</string>
+    <string name="display_distance">Distance: %s kilometers</string>
+    <string name="display_duration">Duration: %s</string>
     <string name="display_shape">Shape: %s</string>
     <string name="display_score">Score: %.2f</string>
 </resources>

@@ -72,10 +72,10 @@ class HistoryFragmentTest {
             // check date
             onView(withText(run.getDate())).check(matches(isDisplayed()))
             // check distance
-            val distance = Utils.getStringDistance(run.getDistance())
+            val distance = context.getString(R.string.display_distance).format(Utils.getStringDistance(run.getDistance()))
             onView(withText(distance)).check(matches(isDisplayed()))
             // check duration
-            val time = Utils.getStringDuration(run.getDuration())
+            val time = context.getString(R.string.display_duration).format(Utils.getStringDuration(run.getDuration()))
             onView(withText(time)).check(matches(isDisplayed()))
             // check predicted shape
             val shape = context.getString(R.string.display_shape).format(run.predictedShape)
