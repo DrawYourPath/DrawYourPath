@@ -273,31 +273,37 @@ object FirebaseDatabaseUtils {
      * @param data the data snapshot containing the tournament
      * @return the tournament, or null if an error occurred
      */
-    fun mapToTournament(data: DataSnapshot): Tournament? {
-        val id = data.child(FirebaseKeys.TOURNAMENT_ID).value as String?
-        val name = data.child(FirebaseKeys.TOURNAMENT_NAME).value as String?
-        val description = data.child(FirebaseKeys.TOURNAMENT_DESCRIPTION).value as String?
-        val creatorId = data.child(FirebaseKeys.TOURNAMENT_CREATOR_ID).value as String?
-        val startDate = transformLocalDateTime(data.child(FirebaseKeys.TOURNAMENT_START_DATE))
-        val endDate = transformLocalDateTime(data.child(FirebaseKeys.TOURNAMENT_END_DATE))
-        val participants = getKeys(data.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
-        val posts = transformPostList(data.child(FirebaseKeys.TOURNAMENT_POSTS))
-        val visibilityString = data.child(FirebaseKeys.TOURNAMENT_VISIBILITY).value as String?
+    fun mapToTournament(data: DataSnapshot?): Tournament? {
+        val id = data?.child(FirebaseKeys.TOURNAMENT_ID)?.value as String?
+        val name = data?.child(FirebaseKeys.TOURNAMENT_NAME)?.value as String?
+        val description = data?.child(FirebaseKeys.TOURNAMENT_DESCRIPTION)?.value as String?
+        val creatorId = data?.child(FirebaseKeys.TOURNAMENT_CREATOR_ID)?.value as String?
+        val startDate = transformLocalDateTime(data?.child(FirebaseKeys.TOURNAMENT_START_DATE))
+        val endDate = transformLocalDateTime(data?.child(FirebaseKeys.TOURNAMENT_END_DATE))
+        val participants = getKeys(data?.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
+        val posts = transformPostList(data?.child(FirebaseKeys.TOURNAMENT_POSTS))
+        val visibilityString = data?.child(FirebaseKeys.TOURNAMENT_VISIBILITY)?.value as String?
+
+        // Get the visibility back to an enum value
+        val visibility = try {
+            if (visibilityString != null) {
+                Tournament.Visibility.valueOf(visibilityString)
+            } else {
+                null
+            }
+        } catch (_: IllegalArgumentException) {
+            Log.e(this::class.java.name, "Tournament visibility had an unknown value")
+            return null
+        }
 
         if (id == null || name == null || description == null || creatorId == null ||
-            startDate == null || endDate == null || visibilityString == null
+            startDate == null || endDate == null || visibility == null
         ) {
             Log.e(this::class.java.name, "Tournament had null values")
             return null
         }
 
-        val visibility: Tournament.Visibility
-        try {
-            visibility = Tournament.Visibility.valueOf(visibilityString)
-        } catch (_: IllegalArgumentException) {
-            Log.e(this::class.java.name, "Tournament visibility had an unknown value")
-            return null
-        }
+
 
         return Tournament(
             id,

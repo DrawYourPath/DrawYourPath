@@ -597,4 +597,27 @@ class FirebaseDatabaseUtilsTest {
         assertThat(reformedTournament.posts.size, `is`(tournament.posts.size))
         assertThat(reformedTournament.visibility, `is`(tournament.visibility))
     }
+
+    @Test
+    fun mapToTournamentReturnsNullWithNullValues() {
+        // With only null values
+        assertEquals(FirebaseDatabaseUtils.mapToTournament(null), null)
+        // With existing visibility but other values null, to test other path
+        val mockVisibility = mockSnapshot("PUBLIC")
+        val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
+        `when`(nonNullVisibilitySnapshot.child("visibility"))
+            .thenReturn(mockVisibility)
+        assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
+    }
+
+    @Test
+    fun mapToTournamentReturnsNullWithNonExistingVisibilityValue() {
+        val mockVisibility = mockSnapshot("SomeVisibility")
+        val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
+        `when`(nonNullVisibilitySnapshot.child("visibility"))
+            .thenReturn(mockVisibility)
+        assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
+    }
+
+
 }
