@@ -5,6 +5,7 @@ import com.epfl.drawyourpath.utils.Utils.reducePath
 import com.epfl.drawyourpath.utils.Utils.coordinatesToBitmap
 import com.epfl.drawyourpath.utils.Utils.getBiggestPoint
 import com.epfl.drawyourpath.utils.Utils.getSmallestPoint
+import com.epfl.drawyourpath.utils.Utils.reduceSection
 import com.google.android.gms.maps.model.LatLng
 import com.google.mlkit.vision.digitalink.Ink
 import org.hamcrest.MatcherAssert.assertThat
@@ -242,5 +243,24 @@ class UtilsTest {
         val reducedPath = reducePath(path, 0.01F)
 
         assertEquals(listOf(listOf(c00, c10, c20, c30, c33)), reducedPath.getPoints())
+    }
+
+    @Test
+    fun testReduceOnNoisyLineSection() {
+        val sideLength = 0.001
+        val noiseSize = sideLength / 1000
+        val baseLat = 46.5185
+        val baseLng = 6.56177
+        val c00 = LatLng(baseLat, baseLng)
+        val c01 = LatLng(baseLat, baseLng + sideLength + 2 * noiseSize)
+        val c02 = LatLng(baseLat, baseLng + 2 * sideLength + noiseSize)
+        val c03 = LatLng(baseLat, baseLng + 3 * sideLength - noiseSize)
+        val c04 = LatLng(baseLat, baseLng + 4 * sideLength)
+
+        val points = listOf(c00, c01, c02, c03, c04)
+        val epsilon = 4 * sideLength.toFloat() * 0.01F
+        val reducedPath = reduceSection(points, epsilon)
+
+        assertEquals(listOf(c00, c04), reducedPath)
     }
 }

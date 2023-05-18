@@ -423,7 +423,7 @@ object Utils {
      * @param epsilon The min distance to keep the point on the section
      * @return A similar segment with the least useful points removed.
      */
-    private fun reduceSection(section: List<LatLng>, epsilon: Float): List<LatLng> {
+    fun reduceSection(section: List<LatLng>, epsilon: Float): List<LatLng> {
         val reducedPointList = mutableListOf<LatLng>()
         if (section.size <= 2) {
             reducedPointList.addAll(section)
