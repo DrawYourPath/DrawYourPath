@@ -52,7 +52,7 @@ data class RunEntity(
                         endTime = run.getEndTime(),
                         predictedShape = run.predictedShape,
                         similarityScore = run.similarityScore,
-                        sync = sync
+                        sync = sync,
                     ),
                     fromPathToEntity(userId, run.getStartTime(), run.getPath()),
                 )
@@ -75,7 +75,7 @@ data class RunEntity(
                         section = sectionIndex,
                         index = index,
                         latitude = point.latitude,
-                        longitude = point.longitude
+                        longitude = point.longitude,
                     )
                 }
             }.flatten()

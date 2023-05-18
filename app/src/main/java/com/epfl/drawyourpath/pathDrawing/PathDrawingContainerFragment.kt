@@ -25,5 +25,4 @@ class PathDrawingContainerFragment(private val countdownDuration: Long = 4) : Fr
         // value pass in bundle to set the countdown duration
         const val EXTRA_COUNTDOWN_DURATION = "extra_countdown_duration"
     }
-
 }

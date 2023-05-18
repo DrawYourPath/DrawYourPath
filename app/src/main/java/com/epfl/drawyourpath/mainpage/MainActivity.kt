@@ -95,9 +95,11 @@ class MainActivity : AppCompatActivity() {
     private fun setupFragment() {
         val runTest = intent.getBooleanExtra(EXTRA_DRAW_TEST, false)
         if (runTest) {
-            replaceFragment<PathDrawingContainerFragment>(Bundle().also {
-                it.putLong(PathDrawingContainerFragment.EXTRA_COUNTDOWN_DURATION, 0L)
-            })
+            replaceFragment<PathDrawingContainerFragment>(
+                Bundle().also {
+                    it.putLong(PathDrawingContainerFragment.EXTRA_COUNTDOWN_DURATION, 0L)
+                }
+            )
         } else {
             replaceFragment<MainFragment>()
         }
