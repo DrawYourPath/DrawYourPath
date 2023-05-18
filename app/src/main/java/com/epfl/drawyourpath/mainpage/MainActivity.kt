@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * setup the Main fragment or the path drawing fragment if the intent for it was sent
      */
-    private fun setupFragment() {   
+    private fun setupFragment() {
         val runTest = intent.getBooleanExtra(EXTRA_DRAW_TEST, false)
         if (runTest) {
             replaceFragment<PathDrawingContainerFragment>(
