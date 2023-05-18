@@ -9,12 +9,14 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Rule
 import org.junit.Test
@@ -49,7 +51,8 @@ class RunInfoStatsFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.history_menu_item)).perform(ViewActions.click())
 
         // click on a run
-        Espresso.onView(ViewMatchers.withId(R.id.run_item_layout)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.runsRecyclerView))
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RunsAdapter.ViewHolder>(0, ViewActions.click()))
 
         // Check fragment the fragment the displays run info is displayed
         Espresso.onView(ViewMatchers.withId(R.id.run_info_stats_fragment))
