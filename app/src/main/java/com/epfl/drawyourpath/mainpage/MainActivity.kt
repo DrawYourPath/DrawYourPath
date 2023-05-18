@@ -4,35 +4,26 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.CustomFragmentFactory
 import com.epfl.drawyourpath.notifications.NotificationsHelper
-import com.epfl.drawyourpath.preferences.PreferencesFragment
+import com.epfl.drawyourpath.pathDrawing.PathDrawingContainerFragment
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_CODE
 import com.epfl.drawyourpath.qrcode.SCANNER_ACTIVITY_RESULT_KEY
 import com.epfl.drawyourpath.qrcode.launchFriendQRScanner
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
-import com.google.firebase.database.ktx.database
 import java.util.concurrent.CompletableFuture
 
+const val IS_TEST_KEY = "isTest"
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
 const val SCAN_QR_REQ_CODE = 8233
 
@@ -40,42 +31,26 @@ const val SCAN_QR_REQ_CODE = 8233
  * Main activity of the application, should be launched after the login activity.
  */
 class MainActivity : AppCompatActivity() {
-    // The navigation bar at the bottom of the screen
-    private lateinit var bottomNavigationView: BottomNavigationView
-
-    // The drawer menu displayed when clicking the "head" icon
-    private lateinit var drawerLayout: DrawerLayout
 
     private var qrScanResult: CompletableFuture<String>? = null
 
     private val userCached: UserModelCached by viewModels()
 
+    private var isTest = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        isTest = intent.getBooleanExtra(IS_TEST_KEY, false)
+
         // get the user id given by login or register to use it inside this activity and its child fragment
         setupUser()
 
-        // Setup the components of the screen
-        setupTopBar()
-        setupProfileButton()
-        setupDrawerNavigationView()
-        setupBottomNavigationView()
-
-        // Create an instance of your database
-        val database: Database = FirebaseDatabase()
-
-        // Set the fragment factory to the custom fragment factory to help initialise the friends fragment with the database dependency
-        supportFragmentManager.fragmentFactory = CustomFragmentFactory(database)
-
-        // Display the main fragment when no saved state
-        if (savedInstanceState == null) {
-            bottomNavigationView.selectedItemId = R.id.draw_menu_item
-            replaceFragment<DrawMenuFragment>()
-        }
 
         setupNotifications()
+
+        setupFragment()
     }
 
     /**
@@ -105,6 +80,15 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
+    fun openProfileForUser(userId: String) {
+        replaceFragment<ProfileFragment>(
+            bundleOf(
+                PROFILE_USER_ID_KEY to userId,
+                PROFILE_TEST_KEY to isTest,
+            ),
+        )
+    }
+
     private fun setupUser() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId != null) {
@@ -115,84 +99,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupTopBar() {
-        val topAppBar: Toolbar = findViewById(R.id.topAppBar)
-        // Make this toolbar behave like the main action bar
-        setSupportActionBar(topAppBar)
-    }
-
-    private fun setupProfileButton() {
-        val profileImageButton: ImageButton = findViewById(R.id.profile_button)
-        userCached.getUser().observe(this) {
-            profileImageButton.setImageBitmap(it.profilePhoto(resources))
-        }
-        drawerLayout = findViewById(R.id.drawerLayout)
-        // Set a listener to open the drawer menu (we might want it on the right)
-        profileImageButton.setOnClickListener {
-            drawerLayout.open()
-        }
-    }
-
-    private fun setupDrawerNavigationView() {
-        val drawerNavigationView: NavigationView = findViewById(R.id.navigationView)
-        val header = drawerNavigationView.getHeaderView(0)
-        userCached.getUser().observe(this) {
-            header.findViewById<TextView>(R.id.header_username).text = it.username
-            header.findViewById<TextView>(R.id.header_email).text = it.emailAddress
-        }
-        // Handle the items in the drawer menu
-        drawerNavigationView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                // Display profile fragment
-                R.id.profile_menu_item -> replaceFragment<ProfileFragment>(
-                    bundleOf(
-                        PROFILE_USER_ID_KEY to userCached.getUserId(),
-                    ),
-                )
-
-                // Display stats fragment
-                R.id.stats_menu_item -> replaceFragment<StatsFragment>()
-
-                // Display challenge fragment
-                R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>()
-
-                // Display settings fragment
-
-                R.id.preferences_menu_item -> replaceFragment<PreferencesFragment>()
-            }
-            drawerLayout.close()
-            true
-        }
-    }
-
-    private fun setupBottomNavigationView() {
-        bottomNavigationView = findViewById(R.id.bottom_navigation)
-        // Listener that handles the items in the bottom menu
-        bottomNavigationView.setOnItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                // Display community fragment
-                R.id.community_menu_item -> replaceFragment<CommunityFragment>()
-
-                // Display friends fragment
-                R.id.friends_menu_item -> replaceFragment<FriendsFragment>()
-
-                // Display drawing fragment
-                R.id.draw_menu_item -> replaceFragment<DrawMenuFragment>()
-
-                // Display history fragment
-                R.id.history_menu_item -> replaceFragment<HistoryFragment>()
-
-                // Display chat fragment
-                R.id.chat_menu_item -> replaceFragment<ChatFragment>()
-            }
-            true
-        }
-    }
-
     private inline fun <reified F : Fragment> replaceFragment(args: Bundle? = null) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace(R.id.fragmentContainerView, F::class.java, args)
+            replace(
+                R.id.main_fragment_container_view,
+                F::class.java,
+                bundleOf(IS_TEST_KEY to isTest).also { it.putAll(args ?: bundleOf()) },
+            )
+        }
+    }
+
+    /**
+     * setup the Main fragment or the path drawing fragment if the intent for it was sent
+     */
+    private fun setupFragment() {
+        val runTest = intent.getBooleanExtra(EXTRA_DRAW_TEST, false)
+        if (runTest) {
+            replaceFragment<PathDrawingContainerFragment>(
+                Bundle().also {
+                    it.putLong(PathDrawingContainerFragment.EXTRA_COUNTDOWN_DURATION, 0L)
+                },
+            )
+        } else {
+            replaceFragment<MainFragment>()
         }
     }
 
@@ -234,6 +164,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        // value to pass in intent to set the current user
         const val EXTRA_USER_ID = "extra_user_id"
+
+        // value pass in intent to set the path drawing fragment (used in test)
+        const val EXTRA_DRAW_TEST = "extra_draw_test"
     }
 }

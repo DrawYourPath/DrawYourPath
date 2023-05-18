@@ -4,7 +4,6 @@ import com.google.firebase.database.Exclude
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.math.pow
 
 /**
@@ -14,18 +13,19 @@ import kotlin.math.pow
  * Various methods are included to calculate and retrieve this information.
  */
 class Run(
-    // val user: User,             //TODO add later
     private val path: Path, // represents the path taken by the user
     private val startTime: Long, // the timestamps of the run
+    private var duration: Long, // represent the duration of the run(in seconds)
     private val endTime: Long,
+    val predictedShape: String = "None", // the shape predicted by the ML model
+    val similarityScore: Double = 0.0, // the score of similarity with the predicted shape
 ) {
 
     init {
-        if (endTime <= startTime) {
-            throw IllegalArgumentException("End time must be greater than start time")
+        if (endTime < startTime) {
+            throw IllegalArgumentException("End time must be greater than or equal to start time")
         }
         calculateDistance()
-        calculateDuration()
         calculateAverageSpeed()
         calculateTimeForOneKilometer()
         calculateCalorieBurn()
@@ -33,9 +33,6 @@ class Run(
 
     // the distance of the run (in meters)
     private var distance: Double = 0.0
-
-    // the duration of the run (in seconds)
-    private var duration: Long = 0L
 
     // the average speed of the run (in meters per second)
     private var averageSpeed: Double = 0.0
@@ -52,10 +49,6 @@ class Run(
 
     private fun calculateAverageSpeed() {
         averageSpeed = distance / duration
-    }
-
-    private fun calculateDuration() {
-        duration = endTime - startTime
     }
 
     /**
@@ -99,7 +92,6 @@ class Run(
     /**
      * Returns the duration of the run (in seconds)
      */
-    @Exclude
     fun getDuration(): Long {
         return duration
     }
@@ -157,5 +149,81 @@ class Run(
      */
     fun getPath(): Path {
         return path
+    }
+
+    /**
+     * This function returns the distance (in meters) of each sections of the path(in order of the drawing)
+     */
+    @Exclude
+    fun getSectionsDistance(): List<Double> {
+        val list = mutableListOf<Double>()
+        this.path.getPoints().forEachIndexed { index, _ ->
+            list.add(this.path.getDistanceInSection(index))
+        }
+        return list
+    }
+
+    /**
+     * This function returns the time (in seconds) taken to draw each section of the path(in order of the drawing)
+     * We consider that each seconds a points is added to a section.
+     */
+    @Exclude
+    fun getSectionsDuration(): List<Long> {
+        val list = mutableListOf<Long>()
+        val step = duration / this.path.size()
+        this.path.getPoints().forEachIndexed { index, _ ->
+            list.add(this.path.sizeOfSection(index).toLong() * step)
+        }
+        return list
+    }
+
+    /**
+     * This function returns the average speed taken to draw each section of the path(in order of the drawing) in m/s
+     * We consider that each seconds a points is added to a section.
+     */
+    @Exclude
+    fun getSectionsAvgSpeed(): List<Double> {
+        val list = mutableListOf<Double>()
+        val distance = getSectionsDistance()
+        val time = getSectionsDuration()
+        distance.forEachIndexed { index, _ ->
+            list.add(distance[index] / time[index])
+        }
+        return list
+    }
+
+    /**
+     * Function used to get the time (in seconds) taken by the user to throw each kilometer
+     */
+    @Exclude
+    fun getKilometersDuration(): List<Long> {
+        val step = duration / path.size()
+        val listTime = mutableListOf<Long>()
+        val newPath = Path()
+        var totalTime = 0L
+        for (section in this.path.getPoints()) {
+            for (point in section) {
+                newPath.addPointToLastSection(point)
+                if (newPath.getDistance() >= ((listTime.size + 1) * 1000)) {
+                    val timeTaken = step * (newPath.size().toLong()) - totalTime
+                    listTime.add(timeTaken)
+                    totalTime += timeTaken
+                }
+            }
+            newPath.addNewSection()
+        }
+        return listTime
+    }
+
+    /**
+     * Function used to get the average speed taken by the user to throw each kilometer in m/s
+     */
+    @Exclude
+    fun getKilometersAvgSpeed(): List<Double> {
+        return getKilometersDuration().map { t -> 1000.0 / t }
+    }
+
+    override fun toString(): String {
+        return "Run(startTime=$startTime, duration=$duration, endTime=$endTime, predictedShape='$predictedShape', similarityScore=$similarityScore)"
     }
 }

@@ -1,10 +1,14 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import java.time.LocalDate
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 data class UserGoals(
@@ -26,6 +30,8 @@ data class UserData(
     val runs: List<Run>? = null,
     val dailyGoals: List<DailyGoal>? = null,
     val tournaments: List<String>? = null,
+    val trophies: List<Trophy>? = null,
+    val milestones: List<MilestoneData>? = null,
     val chatList: List<String>? = null,
 )
 
@@ -45,6 +51,11 @@ data class ChatMessages(
     val chat: List<Message>? = null,
 )
 
+data class MilestoneData(
+    val milestone: MilestoneEnum? = null,
+    val date: LocalDate? = null,
+)
+
 abstract class Database {
     /**
      * This function is used to know if a certain user is already store in the database
@@ -54,7 +65,7 @@ abstract class Database {
     abstract fun isUserInDatabase(userId: String): CompletableFuture<Boolean>
 
     /**
-     * This function is used to know if a certain user is already stored in the database
+     * This function is used to know if a certain tournament is stored in the database
      * @param tournamentId that corresponds to the tournament
      * @return a future that indicates if the tournament is stored on the database
      */
@@ -136,7 +147,7 @@ abstract class Database {
     /**
      * This function will remove a user to the the friends list of the current user with his userId
      * @param targetFriend of the user that we want to remove to the friendsList of the current user
-     * @throws an Error if the user that we want to removed is not present on the database.
+     * @throws Error if the user that we want to removed is not present on the database.
      * @return a future that indicates if the user has been correctly removed to the current user friends list
      */
     abstract fun removeFriend(userId: String, targetFriend: String): CompletableFuture<Unit>
@@ -161,20 +172,29 @@ abstract class Database {
      * This function is used to add a dailyGoal in the database to the list of dailyGoals realized by the user logged
      * in the dailyGoals section(the dailyGoal will be update if dailyGoal at this date already exist in the database).
      * @param userId The target user.
-     * @param dailyGaol that we want to add in the database
+     * @param dailyGoal that we want to add in the database
      * @return a future that indicates if the daily Goal have been correctly added to the database
      */
     abstract fun addDailyGoal(userId: String, dailyGoal: DailyGoal): CompletableFuture<Unit>
 
     /**
-     * Function used to update on the database the user achievements(total distance, total activity time and total nb of paths draw by the user)
-     * with the result at the end of a drawing activity(remark: the total number of path will be incremented by one, since only one draw
-     * can be achieved each drawing activity).
-     * @param distanceDrawing distance run by user to achieve the drawing
-     * @param activityTimeDrawing time take by the user to realized the drawing
-     * @return a future that indicate if the achievements of the user have been correctly updated.
+     * This function is used to add a trophy to the user profile of the user in the database
+     * @param tropy to be stored in the database
+     * @return a future to indicate if the trophy was correctly added to the user profile on the database
      */
-    abstract fun updateUserAchievements(userId: String, distanceDrawing: Double, activityTimeDrawing: Double): CompletableFuture<Unit>
+    abstract fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit>
+
+    /**
+     * This function is used to add a milestone to the user profile of the user on the database
+     * @param milestone to be stored in the database of type MilestoneEnum
+     * @param date at which the user obtained this milestone
+     * @return a future to indicate if the milestone was correctly added to the user profile on the database
+     */
+    abstract fun addMilestone(
+        userId: String,
+        milestone: MilestoneEnum,
+        date: LocalDate,
+    ): CompletableFuture<Unit>
 
     /**
      * Function used to get a unique ID for a new tournament. Never fails (because client side).
@@ -184,7 +204,8 @@ abstract class Database {
 
     /**
      * Function used to add a new tournament to the database. The participants and posts of the
-     * tournament will not be stored.
+     * tournament will not be stored: use [addUserToTournament] and addPostToTournament to store
+     * these.
      * @param tournament the tournament to store.
      * @return a future that indicates if the tournament has been stored correctly.
      */
@@ -220,6 +241,16 @@ abstract class Database {
         userId: String,
         tournamentId: String,
     ): CompletableFuture<Unit>
+
+    /**
+     * Function used to retrieve the tournament corresponding to the ID.
+     * @param tournamentId the id of the tournaments to retrieve
+     * @return a future that contains the tournament if successful, or an exception if an error
+     * occurred with the db.
+     */
+    abstract fun getTournament(
+        tournamentId: String,
+    ): CompletableFuture<Tournament>
 
     /**
      * Function used to create a chat conversation with other users of the DrawYourPath community.
@@ -304,5 +335,9 @@ abstract class Database {
      * @param message the content text of the new message
      * @return a future that indicated if the message was correctly modify
      */
-    abstract fun modifyChatTextMessage(conversationId: String, messageId: Long, message: String): CompletableFuture<Unit>
+    abstract fun modifyChatTextMessage(
+        conversationId: String,
+        messageId: Long,
+        message: String,
+    ): CompletableFuture<Unit>
 }

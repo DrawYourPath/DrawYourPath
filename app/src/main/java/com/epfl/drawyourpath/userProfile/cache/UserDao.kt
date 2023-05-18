@@ -2,9 +2,10 @@ package com.epfl.drawyourpath.userProfile.cache
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEntity
 import com.epfl.drawyourpath.path.cache.PointsEntity
 import com.epfl.drawyourpath.path.cache.RunEntity
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
 
 @Dao
 interface UserDao {
@@ -21,15 +22,17 @@ interface UserDao {
      * insert user and its daily goals and runs
      * @param user the user to insert
      * @param dailyGoals the daily goals
+     * @param milestones the milestones
      * @param runs the runs
      * @param points the points of the runs
      */
     @Transaction
-    fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>, runs: List<RunEntity>, points: List<PointsEntity>) {
-        if (update(user) == 0) {
+    fun insertAll(user: UserEntity, dailyGoals: List<DailyGoalEntity>, milestones: List<MilestoneEntity>, runs: List<RunEntity>, points: List<PointsEntity>) {
+        if (update(user) != 1) {
             insertUser(user)
         }
-        insertAllDailyGoal(dailyGoals)
+        insertAllDailyGoals(dailyGoals)
+        insertAllMilestones(milestones)
         insertAllRuns(runs)
         insertAllPoints(points)
     }
@@ -38,24 +41,31 @@ interface UserDao {
      * insert a new user inside the room database and will replace if there is a conflict with the id
      * @param user the user to insert
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUser(user: UserEntity)
 
     /**
      * insert a new dailyGoal inside the room database and will replace if there is a conflict with the id and date
-     * @param dailyGoal the dailyGoal to insert
+     * @param dailyGoals the dailyGoal to insert
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllDailyGoal(dailyGoal: List<DailyGoalEntity>)
+    fun insertAllDailyGoals(dailyGoals: List<DailyGoalEntity>)
+
+    /**
+     * insert the milestones inside the cache
+     * @param milestones the milestones
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllMilestones(milestones: List<MilestoneEntity>)
 
     /**
      * insert the runs inside the cache
-     * @param runs the run
+     * @param runs the runs
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAllRuns(runs: List<RunEntity>)
 
-    /**6
+    /**
      * insert the points inside the cache
      * @param points the points
      */

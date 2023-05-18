@@ -1,6 +1,6 @@
 package com.epfl.drawyourpath.challenge
 
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 
 /**
  * Helper object to compute all kind of statistics.
@@ -16,6 +16,17 @@ object Statistics {
         return dailyGoals.fold(0.0) {
                 acc, dailyGoal ->
             acc + dailyGoal.distance
+        }
+    }
+
+    /**
+     * Computes the total time of the specified goals.
+     * @param dailyGoals The list of goals we want to compute the time.
+     * @return The total time of the goals.
+     */
+    fun getTotalTime(dailyGoals: List<DailyGoal>): Double {
+        return dailyGoals.fold(0.0) { acc, dailyGoal ->
+            acc + dailyGoal.time
         }
     }
 

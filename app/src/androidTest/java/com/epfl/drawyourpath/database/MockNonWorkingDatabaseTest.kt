@@ -1,10 +1,13 @@
 package com.epfl.drawyourpath.database
 
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -31,7 +34,8 @@ class MockNonWorkingDatabaseTest {
         mock.addFriend("", "").assertError(Unit)
         mock.removeFriend("", "").assertError(Unit)
         mock.addDailyGoal("", DailyGoal(0.0, 0.0, 0)).assertError(Unit)
-        mock.updateUserAchievements("", 0.0, 0.0).assertError(Unit)
+        mock.addTrophy("", Trophy("", "", "", LocalDate.of(2000, 2, 20), 1)).assertError(Unit)
+        mock.addMilestone("", MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 20)).assertError(Unit)
         mock.createChatConversation("", emptyList(), "", "").assertError("")
         mock.getChatPreview("").assertError(mockChatPreview)
         mock.setChatTitle("", "").assertError(Unit)
@@ -43,8 +47,8 @@ class MockNonWorkingDatabaseTest {
         mock.removeChatMessage("", 0L).assertError(Unit)
         mock.modifyChatTextMessage("", 0L, "").assertError(Unit)
         mock.setUserData("", UserData()).assertError(Unit)
-        mock.addRunToHistory("", Run(Path(), 1, 10)).assertError(Unit)
-        mock.removeRunFromHistory("", Run(Path(), 1, 10)).assertError(Unit)
+        mock.addRunToHistory("", Run(Path(), 1, 9, 10)).assertError(Unit)
+        mock.removeRunFromHistory("", Run(Path(), 1, 9, 10)).assertError(Unit)
         mock.addTournament(mockTournament).assertError(Unit)
         mock.removeTournament("").assertError(Unit)
         mock.addUserToTournament("", "").assertError(Unit)

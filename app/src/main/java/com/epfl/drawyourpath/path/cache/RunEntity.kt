@@ -14,37 +14,71 @@ import com.google.android.gms.maps.model.LatLng
     foreignKeys = [ForeignKey(entity = UserEntity::class, parentColumns = ["id"], childColumns = ["user_id"], onDelete = ForeignKey.CASCADE)],
 )
 data class RunEntity(
-    @ColumnInfo("user_id") val userId: String,
+    @ColumnInfo("user_id")
+    val userId: String,
 
-    @ColumnInfo("start_time") val startTime: Long,
+    @ColumnInfo("start_time")
+    val startTime: Long,
 
-    @ColumnInfo("end_time") val endTime: Long,
+    val duration: Long,
+
+    @ColumnInfo("end_time")
+    val endTime: Long,
+
+    @ColumnInfo("shape")
+    val predictedShape: String,
+
+    @ColumnInfo("score")
+    val similarityScore: Double,
 
     val sync: Boolean,
 ) {
+
     companion object {
         /**
          * transform a list of run into entities used in the cache
          * @param userId the user id
          * @param runs the list of runs to transform
          * @param sync with the firebase
-         * @return a list of pair of entities
+         * @return a list of pair of [RunEntity] and [PointsEntity]
          */
         fun fromRunsToEntities(userId: String, runs: List<Run>, sync: Boolean = true): List<Pair<RunEntity, List<PointsEntity>>> {
             return runs.map { run ->
                 Pair(
-                    RunEntity(userId, run.getStartTime(), run.getEndTime(), sync),
-                    run.getPath().getPoints().mapIndexed { index, point ->
-                        PointsEntity(
-                            userId,
-                            run.getStartTime(),
-                            index,
-                            point.latitude,
-                            point.longitude,
-                        )
-                    },
+                    RunEntity(
+                        userId = userId,
+                        startTime = run.getStartTime(),
+                        duration = run.getDuration(),
+                        endTime = run.getEndTime(),
+                        predictedShape = run.predictedShape,
+                        similarityScore = run.similarityScore,
+                        sync = sync,
+                    ),
+                    fromPathToEntity(userId, run.getStartTime(), run.getPath()),
                 )
             }
+        }
+
+        /**
+         * transform a path into entities used in the cache
+         * @param userId the user id
+         * @param runId the run id
+         * @param path the path to transform
+         * @return a list [PointsEntity]
+         */
+        private fun fromPathToEntity(userId: String, runId: Long, path: Path): List<PointsEntity> {
+            return path.getPoints().mapIndexed { sectionIndex, section ->
+                section.mapIndexed { index, point ->
+                    PointsEntity(
+                        userId = userId,
+                        runId = runId,
+                        section = sectionIndex,
+                        index = index,
+                        latitude = point.latitude,
+                        longitude = point.longitude,
+                    )
+                }
+            }.flatten()
         }
 
         /**
@@ -54,7 +88,27 @@ data class RunEntity(
          * @return the run
          */
         fun fromEntityToRun(runEntity: RunEntity, pointsEntity: List<PointsEntity>): Run {
-            return Run(Path(pointsEntity.sortedBy { it.index }.map { LatLng(it.latitude, it.longitude) }), runEntity.startTime, runEntity.endTime)
+            return Run(
+                path = fromEntityToPath(pointsEntity.filter { it.runId == runEntity.startTime }),
+                startTime = runEntity.startTime,
+                duration = runEntity.duration,
+                endTime = runEntity.endTime,
+                predictedShape = runEntity.predictedShape,
+                similarityScore = runEntity.similarityScore,
+            )
+        }
+
+        /**
+         * transform an entity into a path
+         * @param pointsEntity the points of the path
+         * @return the path
+         */
+        private fun fromEntityToPath(pointsEntity: List<PointsEntity>): Path {
+            val sections = pointsEntity.distinctBy { it.section }.map { it.section }.sortedBy { it }
+            val points = sections.map { section ->
+                pointsEntity.filter { it.section == section }.sortedBy { it.index }.map { LatLng(it.latitude, it.longitude) }
+            }
+            return Path(points)
         }
     }
 }

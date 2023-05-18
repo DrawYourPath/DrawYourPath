@@ -37,8 +37,6 @@ android {
         }
     }
 
-
-
     buildTypes {
         release {
             minifyEnabled false
@@ -73,6 +71,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
     implementation 'com.google.mlkit:digital-ink-recognition:18.1.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     androidTestImplementation 'androidx.navigation:navigation-testing:2.3.5'
 

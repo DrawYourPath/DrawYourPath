@@ -2,71 +2,90 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import android.util.Log
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformMilestoneToData
+import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformTrophyToData
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class FirebaseKeys {
-    companion object {
-        // Database root entries
-        const val USERS_ROOT = "users"
-        const val USERNAMES_ROOT = "usernameToUid"
-        const val TOURNAMENTS_ROOT = "tournaments"
-        const val CHATS_ROOT = "chats"
-        const val CHATS_MEMBERS_ROOT = "chatsMembers"
-        const val CHATS_MESSAGES_ROOT = "chatsMessages"
+object FirebaseKeys {
+    // Database root entries
+    const val USERS_ROOT = "users"
+    const val USERNAMES_ROOT = "usernameToUid"
+    const val TOURNAMENTS_ROOT = "tournaments"
+    const val CHATS_ROOT = "chats"
+    const val CHATS_MEMBERS_ROOT = "chatsMembers"
+    const val CHATS_MESSAGES_ROOT = "chatsMessages"
 
-        // User keys top level
-        const val PROFILE = "profile"
-        const val GOALS = "goals"
-        const val RUN_HISTORY = "runs"
-        const val FRIENDS = "friends"
-        const val DAILY_GOALS = "dailyGoals"
-        const val USER_TOURNAMENTS = "tournaments"
-        const val USER_CHATS = "chats"
+    // User keys top level
+    const val PROFILE = "profile"
+    const val GOALS = "goals"
+    const val RUN_HISTORY = "runs"
+    const val FRIENDS = "friends"
+    const val DAILY_GOALS = "dailyGoals"
+    const val USER_TOURNAMENTS = "tournaments"
+    const val USER_CHATS = "chats"
+    const val TROPHIES = "trophies"
+    const val MILESTONES = "milestones"
 
-        // User profile keys sublevel
-        const val USERNAME = "username"
-        const val FIRSTNAME = "firstname"
-        const val SURNAME = "surname"
-        const val BIRTHDATE = "birth"
-        const val EMAIL = "email"
-        const val PICTURE = "picture"
+    // User profile keys sublevel
+    const val USERNAME = "username"
+    const val FIRSTNAME = "firstname"
+    const val SURNAME = "surname"
+    const val BIRTHDATE = "birth"
+    const val EMAIL = "email"
+    const val PICTURE = "picture"
 
-        // User goal keys sublevel
-        const val GOAL_PATH = "paths"
-        const val GOAL_DISTANCE = "distance"
-        const val GOAL_TIME = "time"
+    // User goal keys sublevel
+    const val GOAL_PATH = "paths"
+    const val GOAL_DISTANCE = "distance"
+    const val GOAL_TIME = "time"
 
-        // Goals history list sublevels
-        const val GOAL_HISTORY_EXPECTED_DISTANCE = "expectedDistance"
-        const val GOAL_HISTORY_EXPECTED_PATHS = "expectedPaths"
-        const val GOAL_HISTORY_EXPECTED_TIME = "expectedTime"
-        const val GOAL_HISTORY_DISTANCE = "distance"
-        const val GOAL_HISTORY_PATHS = "paths"
-        const val GOAL_HISTORY_TIME = "time"
+    // Goals history list sublevels
+    const val GOAL_HISTORY_EXPECTED_DISTANCE = "expectedDistance"
+    const val GOAL_HISTORY_EXPECTED_PATHS = "expectedPaths"
+    const val GOAL_HISTORY_EXPECTED_TIME = "expectedTime"
+    const val GOAL_HISTORY_DISTANCE = "distance"
+    const val GOAL_HISTORY_PATHS = "paths"
+    const val GOAL_HISTORY_TIME = "time"
 
-        // Tournaments keys
-        const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+    // Trophies history list sublevels
+    const val TROPHY_TOURNAMENT_NAME: String = "tournamentName"
+    const val TROPHY_TOURNAMENT_DESCRIPTION: String = "tournamentDescription"
+    const val TROPHY_DATE: String = "date"
+    const val TROPHY_RANKING: String = "ranking"
 
-        // Chats keys top level
-        const val CHAT_TITLE = "title"
-        const val CHAT_LAST_MESSAGE = "lastMessage"
+    // Tournaments keys
+    const val TOURNAMENT_ID = "id"
+    const val TOURNAMENT_NAME = "name"
+    const val TOURNAMENT_DESCRIPTION = "description"
+    const val TOURNAMENT_CREATOR_ID = "creatorId"
+    const val TOURNAMENT_START_DATE = "startDate"
+    const val TOURNAMENT_END_DATE = "endDate"
+    const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+    const val TOURNAMENT_POSTS = "posts"
+    const val TOURNAMENT_VISIBILITY = "visibility"
 
-        // Chats messages keys to level
-        const val CHAT_MESSAGE_SENDER = "sender"
-        const val CHAT_MESSAGE_CONTENT_TEXT = "text"
-        const val CHAT_MESSAGE_CONTENT_IMAGE = "image"
-        const val CHAT_MESSAGE_CONTENT_RUN = "run"
-    }
+    // Chats keys top level
+    const val CHAT_TITLE = "title"
+    const val CHAT_LAST_MESSAGE = "lastMessage"
+
+    // Chats messages keys to level
+    const val CHAT_MESSAGE_SENDER = "sender"
+    const val CHAT_MESSAGE_CONTENT_TEXT = "text"
+    const val CHAT_MESSAGE_CONTENT_IMAGE = "image"
+    const val CHAT_MESSAGE_CONTENT_RUN = "run"
 }
 
 /**
@@ -176,7 +195,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
-        tournamentsRoot().get()
+        tournamentsRoot().child(tournamentId).get()
             .addOnSuccessListener {
                 future.complete(it.value != null)
             }
@@ -250,7 +269,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             }
 
             // Wanted username is available, we get the old username.
-            getUsername(userId).handle { pastUsername, exc2 ->
+            getUsername(userId).handle { pastUsername, _ ->
 
                 // Create a new mapping to the new username.
                 nameMapping(username).setValue(userId).addOnSuccessListener {
@@ -413,58 +432,48 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
-    override fun updateUserAchievements(
-        userId: String,
-        distanceDrawing: Double,
-        activityTimeDrawing: Double,
-    ): CompletableFuture<Unit> {
-        // TODO: Rewrite this function so it can scale as we add achievements.
-        //       Current implementation is too restrictive.
-        /*
-        This is how the achievements are store in the firebase:
-        Users{
-            userId{
-                username: Value
-                ....
-                achievements{
-                    totalDistance: Value
-                    totalActivityTime: Value
-                    totalNbOfPaths: Value
-                }
-            }
-        }
-         */
-        /*
-
+    override fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        // obtain the current achievements
-        getCurrentUserAchievements().thenApply { pastAchievements ->
-            val newAchievement = HashMap<String, Any>()
-            newAchievement.put(
-                totalDistanceFile,
-                pastAchievements.get(totalDistanceFile) as Double + distanceDrawing
-            )
-            newAchievement.put(
-                totalActivityTimeFile,
-                pastAchievements.get(totalActivityTimeFile) as Double + activityTimeDrawing
-            )
-            newAchievement.put(
-                totalNbOfPathsFile,
-                pastAchievements.get(totalNbOfPathsFile) as Int + 1
-            )
-            val userId = getUserId()
-            if (userId == null) {
-                future.completeExceptionally(Error("The userId can't be null !"))
-            } else {
-                userAccountFile(userId).child(achievementsFile).updateChildren(newAchievement)
-                    .addOnSuccessListener { future.complete(Unit) }
-                    .addOnFailureListener { future.completeExceptionally(it) }
-            }
-        }
+        // this is how the data is store in the database:
+        // trophies = {
+        //      tournamentId = {
+        //          tournamentName = Value
+        //          tournamentDescription = Value
+        //          date = LocalDate
+        //          ranking = Value
+        //      }
+        // }
+        // transform the trophy into data
+        val trophyData = transformTrophyToData(trophy)
+        // add the trophy to the database
+        userRoot(userId).child(FirebaseKeys.TROPHIES)
+            .child(trophy.tournamentId)
+            .updateChildren(trophyData)
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
         return future
-        */
-        return Utils.failedFuture(Error("Not implemented"))
+    }
+
+    override fun addMilestone(
+        userId: String,
+        milestone: MilestoneEnum,
+        date: LocalDate,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // this is how the data is store in the database:
+        // milestones = {
+        //      milestone1 = date,
+        //      milestone2 = date,
+        // }
+        // transform the milestone into data
+        val milestoneData = transformMilestoneToData(milestone, date)
+        // add the milestone to the database
+        userRoot(userId).child(FirebaseKeys.MILESTONES)
+            .updateChildren(milestoneData)
+            .addOnSuccessListener { future.complete(Unit) }
+            .addOnFailureListener { future.completeExceptionally(it) }
+        return future
     }
 
     override fun getTournamentUID(): String? {
@@ -514,7 +523,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             if (!userExists) {
                 future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
             } else if (!tournamentExists) {
-                future.completeExceptionally(Exception("The tournament with tournamentId  $tournamentId doesn't exist."))
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
             } else {
                 // if they exist, do the operation
                 val changes: MutableMap<String, Any?> = hashMapOf(
@@ -544,6 +553,29 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
+    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
+        val future = CompletableFuture<Tournament>()
+        // Check that the tournament exists
+        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
+            if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
+            } else {
+                // Get tournament data and check if corrupted
+                tournamentsRoot().child(tournamentId).get().addOnSuccessListener {
+                    val tournament = FirebaseDatabaseUtils.mapToTournament(it)
+                    if (tournament == null) {
+                        future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
+                    } else {
+                        future.complete(tournament)
+                    }
+                }.addOnFailureListener {
+                    future.completeExceptionally(it)
+                }
+            }
+        }
+        return future
+    }
+
     override fun createChatConversation(
         name: String,
         membersList: List<String>,
@@ -555,7 +587,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val conversationId: String? = pushedPostRef.key
 
         if (conversationId == null) {
-            return Utils.failedFuture(Exception("Error in the generation of the conversation id !"))
+            return Utils.failedFuture("Error in the generation of the conversation id !")
         } else {
             val date = Utils.getCurrentDateAsEpoch()
             return initChatPreview(
@@ -675,7 +707,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
 
             MessageContent.Text::class.java -> return addChatTextMessage(conversationId, message)
         }
-        return Utils.failedFuture(Error("No type found for the content of the message !"))
+        return Utils.failedFuture("No type found for the content of the message !")
     }
 
     override fun removeChatMessage(
@@ -844,11 +876,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     ): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
-        val data = HashMap<String, Any>()
-        for (member in membersList) {
-            data[member] = true
-        }
-
+        val data = membersList.associateWith { true }
         chatMembers(conversationId).updateChildren(data)
             .addOnSuccessListener {
                 future.complete(Unit)
@@ -895,6 +923,9 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         conversationId: String,
         membersList: List<String>,
     ): CompletableFuture<Unit> {
+        // TODO: THis is implemented wrong. Futures don't work like that.
+        //       Future.allOf() should be used.
+        //       Also, we can batch all these operations in a single write.
         val future = CompletableFuture<Unit>()
         for (memberId in membersList) {
             val data = mapOf(conversationId to true)
@@ -902,7 +933,6 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 .addOnSuccessListener { future.complete(Unit) }
                 .addOnFailureListener { future.completeExceptionally(it) }
         }
-
         return future
     }
 

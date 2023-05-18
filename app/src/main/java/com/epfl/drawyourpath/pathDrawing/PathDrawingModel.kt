@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.utils.Utils.getCurrentDateTimeInEpochSeconds
 import com.google.android.gms.maps.model.LatLng
 import java.time.Duration
 import java.time.LocalDateTime
@@ -16,7 +17,7 @@ import java.time.temporal.ChronoUnit
 
 class PathDrawingModel : ViewModel() {
 
-    private var resultingRun = Run(Path(), 0, 1)
+    private var resultingRun = Run(path = Path(), startTime = 0, duration = 0L, endTime = 1)
     private val _run: MutableLiveData<Run> = MutableLiveData(resultingRun)
     private var startTime: Long? = null
     private var pauseTime: Long? = null
@@ -25,7 +26,7 @@ class PathDrawingModel : ViewModel() {
     private var timeIntervalPointAdded: Long = 1
 
     val run: LiveData<Run> = _run
-    val points: LiveData<List<LatLng>> = run.map { it.getPath().getPoints() }
+    val pointsSection: LiveData<List<List<LatLng>>> = run.map { it.getPath().getPoints() }
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -48,7 +49,10 @@ class PathDrawingModel : ViewModel() {
      * start the run
      */
     fun startRun() {
-        resultingRun = Run(Path(), getAndSetStartTime(), startTime!! + 1)
+        startTime = null
+        pauseTime = null
+        pauseDuration = Duration.ZERO
+        resultingRun = Run(path = Path(), startTime = getAndSetStartTime(), duration = 0, endTime = startTime!! + 1)
         _run.postValue(resultingRun)
         handler.post(updateHandler)
     }
@@ -61,18 +65,19 @@ class PathDrawingModel : ViewModel() {
         if (runHasStarted() && !isPaused()) {
             resultingRun = resultingRun.let { oldRun ->
                 Run(
-                    oldRun.getPath().also {
+                    path = oldRun.getPath().also {
                         if (getCurrentTime() - lastRunUpdate >= timeIntervalPointAdded && point != null) {
-                            it.addPoint(point)
+                            it.addPointToLastSection(point)
                             lastRunUpdate = getCurrentTime()
                         }
                     },
-                    oldRun.getStartTime(),
-                    if (getCurrentTime() <= oldRun.getStartTime()) {
-                        oldRun.getStartTime() + 1
+                    startTime = oldRun.getStartTime(),
+                    duration = if (getCurrentTime() > oldRun.getStartTime() + oldRun.getDuration()) {
+                        oldRun.getDuration() + 1
                     } else {
-                        getCurrentTime()
+                        oldRun.getDuration()
                     },
+                    endTime = getCurrentDateTimeInEpochSeconds(),
                 )
             }
             _run.postValue(resultingRun)
@@ -93,6 +98,18 @@ class PathDrawingModel : ViewModel() {
             pauseDuration = pauseDuration.plus(getCurrentTime() - pauseTime!!, ChronoUnit.SECONDS)
             pauseTime = null
             handler.post(updateHandler)
+            resultingRun = resultingRun.let { oldRun ->
+                Run(
+                    path = oldRun.getPath().also {
+                        it.addNewSection()
+                        lastRunUpdate = getCurrentTime()
+                    },
+                    startTime = oldRun.getStartTime(),
+                    duration = oldRun.getDuration(),
+                    endTime = getCurrentDateTimeInEpochSeconds(),
+                )
+            }
+            _run.postValue(resultingRun)
         }
     }
 
@@ -101,6 +118,15 @@ class PathDrawingModel : ViewModel() {
      */
     fun setNewTimeInterval(interval: Long) {
         timeIntervalPointAdded = interval
+    }
+
+    /**
+     * clear the run
+     */
+    fun clearRun() {
+        handler.removeCallbacks(updateHandler)
+        resultingRun = Run(path = Path(), startTime = 0, duration = 0L, endTime = 1)
+        _run.postValue(resultingRun)
     }
 
     private fun getAndSetStartTime(): Long {

@@ -19,10 +19,13 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 
 @RunWith(JUnit4::class)
-class PathDrawingCurrentPerformanceFragmentTest {
-    private val mockPath = Path(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0)))
-    val date = LocalDate.of(2000, 1, 1).atTime(LocalTime.of(12, 0, 5)).toEpochSecond(ZoneOffset.UTC)
-    private val mockRun = Run(path = mockPath, startTime = date, endTime = date + 75)
+class PathDrawCurPerfFragTest {
+    val date = LocalDate.of(2000, 1, 1)
+        .atTime(LocalTime.of(12, 0, 5))
+        .toEpochSecond(ZoneOffset.UTC)
+    private val mockPath = Path(listOf(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0))))
+    private val mockRun = Run(path = mockPath, startTime = date, endTime = date + 75, duration = 75)
+
     val expectedDistance = "111.32"
     val expectedSpeed = "1484.26"
     val expectedTime = "00:01:15"

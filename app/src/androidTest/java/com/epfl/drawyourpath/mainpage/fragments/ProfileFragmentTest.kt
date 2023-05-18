@@ -1,17 +1,21 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
+import android.content.Intent
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.mainpage.IS_TEST_KEY
+import com.epfl.drawyourpath.mainpage.MainActivity
+import org.hamcrest.Matchers.allOf
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -96,5 +100,34 @@ class ProfileFragmentTest {
         // TODO: fix this:
         // Started failing in CI only.
         // onView(withId(R.id.TV_Error)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun clickOnFriendOpenFriendsProfile() {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+        intent.putExtra(IS_TEST_KEY, true)
+
+        // Moves to the profile from the friendlist.
+        val scenario: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
+        onView(withId(R.id.friends_menu_item)).perform(click())
+        onView(withText("testusername")).perform(click())
+
+        // Clicks on a friend in the friendlist in the profile.
+        onView(
+            allOf(
+                withText("MOCK_USER"),
+                withParent(withId(R.id.LV_Friends)),
+            ),
+        ).perform(click())
+
+        // The friend name should be displayed in the view.
+        onView(
+            allOf(
+                withText("MOCK_USER"),
+                withId(R.id.TV_username),
+            ),
+        ).check(matches(isDisplayed()))
+
+        scenario.close()
     }
 }

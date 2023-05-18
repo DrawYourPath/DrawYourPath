@@ -45,13 +45,13 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState != null) {
-            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
-        }
+        lastKnownLocation = savedInstanceState?.getParcelable(KEY_LOCATION)
+
         Places.initialize(
             this.requireActivity().applicationContext,
             getString(R.string.google_api_key),
         )
+
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(this.requireActivity())
 
@@ -72,10 +72,11 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         // setup the drawing on the map
         setupDrawingOnMap(map)
         // focused on
-        val pathReady = path != null && path.getPoints().isNotEmpty()
+        val pathReady = path != null && path.getPoints().flatten().isNotEmpty()
         if (pathReady && !focusedOnPosition) {
             val bounds = LatLngBounds.builder()
-            path!!.getPoints().map { bounds.include(it); Log.d("test", it.toString()) }
+            path!!.getPoints().flatten().forEach { bounds.include(it) }
+
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 5))
             drawStaticPathOnMap(map, path)
         }
@@ -103,10 +104,14 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param map the map
      */
     private fun setupDrawingOnMap(map: GoogleMap) {
-        val polyline = map.addPolyline(PolylineOptions().clickable(false))
-        pathDrawingModel.points.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty() && it.size > polyline.points.size) {
-                polyline.points = it
+        pathDrawingModel.pointsSection.observe(viewLifecycleOwner) { listSection ->
+            if (listSection.isNotEmpty()) {
+                for (section in listSection) {
+                    val polyline = map.addPolyline(PolylineOptions().clickable(false))
+                    if (section.isNotEmpty() && section.size > polyline.points.size) {
+                        polyline.points = section
+                    }
+                }
             }
         }
     }
@@ -117,11 +122,12 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
      * @param path will be drawn on the map
      */
     private fun drawStaticPathOnMap(map: GoogleMap, path: Path) {
-        val listLng = ArrayList<LatLng>()
-        for (coord in path.getPoints()) {
-            listLng.add(LatLng(coord.latitude, coord.longitude))
+        for (section in path.getPoints()) {
+            val polyline = map.addPolyline(PolylineOptions().clickable(false))
+            if (section.isNotEmpty() && section.size > polyline.points.size) {
+                polyline.points = section
+            }
         }
-        map.addPolyline(PolylineOptions().clickable(false).addAll(listLng))
     }
 
     /**
@@ -228,7 +234,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        map?.let { map ->
+        map?.let { _ ->
             outState.putParcelable(KEY_LOCATION, lastKnownLocation)
         }
         super.onSaveInstanceState(outState)

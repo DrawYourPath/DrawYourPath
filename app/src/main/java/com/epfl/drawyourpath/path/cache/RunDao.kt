@@ -1,26 +1,18 @@
 package com.epfl.drawyourpath.path.cache
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface RunDao {
 
     /**
-     * TODO change run history in usermodelcache
      * return a map of runs and its points
      * @param userId the user id
      * @return [LiveData] of [RunEntity] and [PointsEntity]
      */
-    /*@Query("SELECT * FROM Run JOIN Points ON Run.user_id = Points.user_id AND Run.start_time = Points.run_id WHERE Run.user_id = :userId ORDER BY Run.start_time DESC")
-    fun getAllRunsAndPoints(userId: String): LiveData<Map<RunEntity, List<PointsEntity>>>*/
-
-    /**
-     * return a map of runs and its points
-     * @param userId the user id
-     * @return a map of [RunEntity] and [PointsEntity]
-     */
     @Query("SELECT * FROM Run JOIN Points ON Run.user_id = Points.user_id AND Run.start_time = Points.run_id WHERE Run.user_id = :userId ORDER BY Run.start_time DESC")
-    fun getAllRunsAndPoints(userId: String): Map<RunEntity, List<PointsEntity>>
+    fun getAllRunsAndPoints(userId: String): LiveData<Map<RunEntity, List<PointsEntity>>>
 
     /**
      * update to know if the run is synced with the firebase

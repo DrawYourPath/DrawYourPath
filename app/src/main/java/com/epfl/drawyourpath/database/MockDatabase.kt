@@ -3,12 +3,14 @@ package com.epfl.drawyourpath.database
 import android.graphics.Bitmap
 import android.util.Log
 import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
@@ -37,7 +39,18 @@ class MockDatabase : Database() {
                 Run(
                     startTime = 10,
                     endTime = 20,
-                    path = Path(listOf(LatLng(46.51854301997813, 6.56237289547834))),
+                    duration = 10,
+                    path = Path(listOf(listOf(LatLng(46.51854301997813, 6.56237289547834)))),
+                    predictedShape = "Circle",
+                    similarityScore = 0.9,
+                ),
+                Run(
+                    startTime = 20,
+                    endTime = 50,
+                    duration = 10,
+                    path = Path(listOf(listOf(LatLng(46.51854301997813, 6.56237289547834)))),
+                    predictedShape = "square",
+                    similarityScore = 1.65321,
                 ),
             ),
             dailyGoals = listOf(
@@ -61,6 +74,14 @@ class MockDatabase : Database() {
                 ),
             ),
             friendList = listOf("0", "1"),
+            trophies = listOf(
+                Trophy(tournamentId = "0", tournamentName = "tournament0", tournamentDescription = "description0", date = LocalDate.of(2000, 2, 20), ranking = 1),
+            ),
+            milestones = listOf(
+                MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 20)),
+                MilestoneData(MilestoneEnum.THE_FIRST_KILOMETER, LocalDate.of(2001, 2, 20)),
+                MilestoneData(MilestoneEnum.THE_FIRST_DAY, LocalDate.of(2002, 2, 20)),
+            ),
             tournaments = listOf("0"),
             chatList = listOf("0"),
         )
@@ -86,6 +107,9 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
+                    predictedShape = "Cat",
+                    similarityScore = -0.8,
                 ),
             ),
             dailyGoals = listOf(
@@ -100,6 +124,7 @@ class MockDatabase : Database() {
                 ),
             ),
             tournaments = listOf("0", "1"),
+            friendList = listOf(MockAuth.MOCK_USER.getUid()),
         ),
         UserData(
             userId = "1",
@@ -119,6 +144,9 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
+                    predictedShape = "Dog",
+                    similarityScore = 0.7,
                 ),
             ),
             dailyGoals = listOf(
@@ -153,6 +181,13 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
+                ),
+                Run(
+                    startTime = 30,
+                    endTime = 40,
+                    path = Path(),
+                    duration = 10,
                 ),
             ),
             dailyGoals = listOf(
@@ -187,6 +222,8 @@ class MockDatabase : Database() {
                     startTime = 10,
                     endTime = 20,
                     path = Path(),
+                    duration = 10,
+                    predictedShape = "testShape",
                 ),
             ),
             dailyGoals = listOf(
@@ -249,7 +286,7 @@ class MockDatabase : Database() {
 
     var mockTournamentUID = 1234567
 
-    var MOCK_CHAT_PREVIEWS = listOf<ChatPreview>(
+    var MOCK_CHAT_PREVIEWS = listOf(
         ChatPreview(
             conversationId = "0",
             title = "New Conversation",
@@ -257,14 +294,14 @@ class MockDatabase : Database() {
         ),
     )
 
-    val MOCK_CHAT_MEMBERS = listOf<ChatMembers>(
+    val MOCK_CHAT_MEMBERS = listOf(
         ChatMembers(
             conversationId = "0",
             membersList = listOf(mockUser.userId!!, MOCK_USERS[1].userId!!),
         ),
     )
 
-    val MOCK_CHAT_MESSAGES = listOf<ChatMessages>(
+    val MOCK_CHAT_MESSAGES = listOf(
         ChatMessages(
             conversationId = "0",
             chat = listOf(
@@ -469,10 +506,11 @@ class MockDatabase : Database() {
             return userDoesntExist()
         }
 
-        val current = users[userId]!!
+        val currentUser = users[userId]!!
+        val currentRuns = currentUser.runs?.filter { it.getStartTime() != run.getStartTime() }
 
-        users[userId] = current.copy(
-            runs = ((current.runs ?: emptyList()) + run).sortedBy {
+        users[userId] = currentUser.copy(
+            runs = ((currentRuns ?: emptyList()) + run).sortedBy {
                 it.getStartTime()
             },
         )
@@ -509,12 +547,35 @@ class MockDatabase : Database() {
         return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun updateUserAchievements(
+    override fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit> {
+        if (!users.contains(userId)) {
+            return userDoesntExist()
+        }
+
+        val current = users[userId]!!
+
+        users[userId] = current.copy(
+            trophies = (current.trophies ?: emptyList()) + trophy,
+        )
+
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun addMilestone(
         userId: String,
-        distanceDrawing: Double,
-        activityTimeDrawing: Double,
+        milestone: MilestoneEnum,
+        date: LocalDate,
     ): CompletableFuture<Unit> {
-        // TODO: Implement it
+        if (!users.contains(userId)) {
+            return userDoesntExist()
+        }
+
+        val current = users[userId]!!
+
+        users[userId] = current.copy(
+            milestones = (current.milestones ?: emptyList()) + MilestoneData(milestone, date),
+        )
+
         return CompletableFuture.completedFuture(Unit)
     }
 
@@ -600,6 +661,14 @@ class MockDatabase : Database() {
             )
         }
         return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
+
+        return CompletableFuture.completedFuture(tournaments[tournamentId])
     }
 
     override fun createChatConversation(

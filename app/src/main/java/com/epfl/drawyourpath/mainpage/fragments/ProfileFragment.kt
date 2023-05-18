@@ -11,8 +11,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.Statistics
-import com.epfl.drawyourpath.challenge.TrophyDialog
+import com.epfl.drawyourpath.challenge.trophy.TrophyDialog
 import com.epfl.drawyourpath.database.*
+import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.qrcode.generateQR
 import com.epfl.drawyourpath.utils.Utils
 import java.util.concurrent.CompletableFuture
@@ -104,7 +105,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 }
             }
             .thenAccept {
-                populateFriendList(it)
+                populateFriendList(friendIds.zip(it))
             }
     }
 
@@ -127,14 +128,21 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         TrophyDialog().show(fragmentManager, "dialog")
     }
 
-    private fun populateFriendList(friends: List<String>) {
+    /**
+     * @param friends List of friends { id, uname }.
+     */
+    private fun populateFriendList(friends: List<Pair<String, String>>) {
         val friendsList = view?.findViewById<ListView>(R.id.LV_Friends)
 
         friendsList?.adapter = ArrayAdapter(
             requireActivity().applicationContext,
             android.R.layout.simple_list_item_1,
-            friends,
+            friends.map { it.second },
         )
+
+        friendsList?.setOnItemClickListener { _, _, index, _ ->
+            (activity as MainActivity?)?.openProfileForUser(friends[index].first)
+        }
     }
 
     private fun setStreak(streak: Int) {

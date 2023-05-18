@@ -1,7 +1,9 @@
-package com.epfl.drawyourpath.userProfile.dailygoal
+package com.epfl.drawyourpath.challenge.dailygoal
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.epfl.drawyourpath.challenge.milestone.Milestone
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEntity
 import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.path.cache.PointsEntity
 import com.epfl.drawyourpath.path.cache.RunEntity
@@ -17,6 +19,14 @@ interface DailyGoalDao {
      */
     @Query("SELECT * FROM DailyGoal WHERE user_id = :userId ORDER BY date DESC")
     fun getDailyGoalById(userId: String): LiveData<List<DailyGoalEntity>>
+
+    /**
+     * returns the daily goals of the user
+     * @param userId the id of the user
+     * @return list of [DailyGoalEntity]
+     */
+    @Query("SELECT * FROM DailyGoal WHERE user_id = :userId")
+    fun getAllDailyGoalOfUser(userId: String): List<DailyGoalEntity>
 
     /**
      * returns the dailyGoal associated to the user and date
@@ -36,6 +46,22 @@ interface DailyGoalDao {
     fun getGoalAndTotalProgress(userId: String): GoalAndAchievements
 
     /**
+     * returns the milestones of the user
+     * @param userId the user id
+     * @return [LiveData] of a list of [MilestoneEntity]
+     */
+    @Query("SELECT * FROM Milestone WHERE user_id = :userId")
+    fun getMilestonesById(userId: String): LiveData<List<MilestoneEntity>>
+
+    /**
+     * returns the milestones of the user
+     * @param userId the user id
+     * @return a list of [MilestoneEntity]
+     */
+    @Query("SELECT * FROM Milestone WHERE user_id = :userId")
+    fun getMilestones(userId: String): List<MilestoneEntity>
+
+    /**
      * insert a new dailyGoal inside the room database and will replace if there is a conflict with the id and date
      * @param dailyGoal the dailyGoal to insert
      */
@@ -46,20 +72,19 @@ interface DailyGoalDao {
      * add the run and update the progress of the dailyGoal and total progress of the User
      * @param userId the user id
      * @param date the date of the progress
-     * @param distance the distance to add
-     * @param time the time to add
-     * @param paths the number of paths to add
+     * @param progress the progress to add
      * @param run the run to add
      * @param points the path of the run
-     * @return the new daily goal
+     * @return the new daily goal and the milestones
      */
     @Transaction
-    fun addRunAndUpdateProgress(userId: String, date: Long, distance: Double, time: Double, paths: Int, run: RunEntity, points: List<PointsEntity>): DailyGoalEntity {
-        addTotalProgressUser(userId, distance, time, paths)
-        insertIfDailyGoalUpdateFailed(userId, date, addProgressDailyGoal(userId, date, distance, time, paths), distance, time, paths)
+    fun addRunAndUpdateProgress(userId: String, date: Long, progress: UserGoals, run: RunEntity, points: List<PointsEntity>): Pair<DailyGoalEntity, List<MilestoneEntity>> {
+        addTotalProgressUser(userId, progress.distance ?: 0.0, progress.activityTime ?: 0.0, progress.paths?.toInt() ?: 0)
+        insertIfDailyGoalUpdateFailed(userId, date, addProgressDailyGoal(userId, date, progress.distance ?: 0.0, progress.activityTime ?: 0.0, progress.paths?.toInt() ?: 0), progress)
         insertRun(run)
         insertAllPoints(points)
-        return getDailyGoalByIdAndDate(userId, date)
+        insertMilestones(getMilestonesToAdd(userId, getAllDailyGoalOfUser(userId)))
+        return Pair(getDailyGoalByIdAndDate(userId, date), getMilestones(userId))
     }
 
     /**
@@ -84,6 +109,14 @@ interface DailyGoalDao {
      */
     @Query("UPDATE User SET total_distance = total_distance + :distance, total_time = total_time + :time, total_paths = total_paths + :paths WHERE id = :userId")
     fun addTotalProgressUser(userId: String, distance: Double, time: Double, paths: Int)
+
+    /**
+     * should not be used: use [addRunAndUpdateProgress] instead
+     * insert the milestones in the cache only if they are new
+     * @param milestones the milestones
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertMilestones(milestones: List<MilestoneEntity>)
 
     /**
      * should not be used: use [addRunAndUpdateProgress] instead
@@ -196,15 +229,23 @@ interface DailyGoalDao {
     fun clear()
 
     /**
+     * get the milestones that are reached
+     * @param userId the user id
+     * @param dailyGoals the daily goals
+     * @return the milestones reached
+     */
+    private fun getMilestonesToAdd(userId: String, dailyGoals: List<DailyGoalEntity>): List<MilestoneEntity> {
+        return Milestone.getAllReachedMilestones(dailyGoals.map { DailyGoal(it) }).map { MilestoneEntity(userId, it) }
+    }
+
+    /**
      * create a new DailyGoal if the update was unsuccessful (no DailyGoal at the specified day)
      * @param userId the user id
      * @param date the date
      * @param updated the number of rows updated
-     * @param distance the progress distance to add
-     * @param time the time progress to add
-     * @param paths the paths progress to add
+     * @param progress the progress to add
      */
-    private fun insertIfDailyGoalUpdateFailed(userId: String, date: Long, updated: Int, distance: Double = 0.0, time: Double = 0.0, paths: Int = 0) {
+    private fun insertIfDailyGoalUpdateFailed(userId: String, date: Long, updated: Int, progress: UserGoals = UserGoals()) {
         if (updated == 0) {
             val goalAndProgress = getGoalAndTotalProgress(userId)
             insertDailyGoal(
@@ -214,9 +255,9 @@ interface DailyGoalDao {
                     goalAndProgress.distanceGoal,
                     goalAndProgress.activityTimeGoal,
                     goalAndProgress.nbOfPathsGoal,
-                    distance,
-                    time,
-                    paths,
+                    progress.distance ?: 0.0,
+                    progress.activityTime ?: 0.0,
+                    progress.paths?.toInt() ?: 0,
                 ),
             )
         }

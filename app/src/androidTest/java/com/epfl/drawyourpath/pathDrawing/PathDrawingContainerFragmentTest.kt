@@ -1,9 +1,7 @@
 package com.epfl.drawyourpath.pathDrawing
 
 import android.Manifest
-import android.content.Intent
-import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -15,7 +13,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-class PathDrawingActivityTest {
+class PathDrawingContainerFragmentTest {
     @get:Rule
     var permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
@@ -24,11 +22,9 @@ class PathDrawingActivityTest {
      */
     @Test
     fun checkThatTheCountdownFragmentIsDisplayedAtTheCreation() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            PathDrawingActivity::class.java,
-        )
-        val t: ActivityScenario<PathDrawingActivity> = ActivityScenario.launch(intent)
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
+            PathDrawingContainerFragment()
+        }
 
         // test that the countdown fragment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_countdown_fragment)).check(
@@ -36,6 +32,6 @@ class PathDrawingActivityTest {
                 ViewMatchers.isDisplayed(),
             ),
         )
-        t.close()
+        scenario.close()
     }
 }

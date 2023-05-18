@@ -6,16 +6,16 @@ import androidx.test.core.app.ApplicationProvider
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -181,13 +181,13 @@ class MockDatabaseTest {
         assertThrows(Throwable::class.java) {
             database.addRunToHistory(
                 "NOT_EXISTING_USER",
-                Run(Path(emptyList()), 1000, 2000),
+                Run(Path(emptyList()), startTime = 1000, duration = 1000, endTime = 2000),
             ).get()
         }
         assertThrows(Throwable::class.java) {
             database.removeRunFromHistory(
                 "NOT_EXISTING_USER",
-                Run(Path(emptyList()), 1000, 2000),
+                Run(Path(emptyList()), startTime = 1000, duration = 1000, endTime = 2000),
             ).get()
         }
     }
@@ -300,7 +300,7 @@ class MockDatabaseTest {
         assertEquals(user.surname, surnameTest)
         assertEquals(user.birthDate, dateOfBirthTest)
         assertEquals(user.goals?.distance ?: 0.0, distanceGoalTest, 0.001)
-        assertEquals(user.goals?.activityTime?.toDouble() ?: 0.0, activityTimeGoalTest, 0.001)
+        assertEquals(user.goals?.activityTime ?: 0.0, activityTimeGoalTest, 0.001)
         assertEquals(user.goals?.paths ?: 0, nbOfPathsGoalTest.toLong())
     }
 
@@ -333,6 +333,8 @@ class MockDatabaseTest {
         assertEquals(user.goals?.distance ?: 0.0, distanceGoalTest, 0.001)
         assertEquals((user.goals?.activityTime ?: 0).toDouble(), activityTimeGoalTest, 0.001)
         assertEquals((user.goals?.paths ?: 0).toInt(), nbOfPathsGoalTest)
+        assertEquals(database.users[userIdTest]?.trophies, user.trophies)
+        assertEquals(database.users[userIdTest]?.milestones, user.milestones)
     }
 
     /**
@@ -449,6 +451,60 @@ class MockDatabaseTest {
     }
 
     /**
+     * Test that adding a trophy to incorrect user throw an error
+     */
+    @Test
+    fun addTrophyIncorrectUserId() {
+        val database = MockDatabase()
+
+        assertThrows(Exception::class.java) {
+            database.addTrophy(
+                "incorrect",
+                Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2),
+            ).get()
+        }
+    }
+
+    /**
+     * Test that adding a trophy is correctly added
+     */
+    @Test
+    fun addTrophyCorrectly() {
+        val database = MockDatabase()
+        val trophy = Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2)
+        val userId = database.MOCK_USERS[0].userId!!
+        database.addTrophy(userId, trophy).get()
+        assertEquals(listOf(trophy), database.users[userId]?.trophies)
+    }
+
+    /**
+     * Test that adding a milestone to incorrect user throw an error
+     */
+    @Test
+    fun addMilestoneIncorrectUserId() {
+        val database = MockDatabase()
+
+        assertThrows(Exception::class.java) {
+            database.addMilestone(
+                "incorrect",
+                MilestoneEnum.HUNDRED_KILOMETERS,
+                LocalDate.of(2000, 2, 21),
+            ).get()
+        }
+    }
+
+    /**
+     * Test that adding a milestone is correctly added
+     */
+    @Test
+    fun addMilestoneCorrectly() {
+        val database = MockDatabase()
+        val userId = database.MOCK_USERS[0].userId!!
+        database.addMilestone(userId, MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21)).get()
+        assertEquals(listOf(MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21))), database.users[userId]?.milestones)
+    }
+
+    /**
      * Test if removing a friend to the friendsList is correctly removed
      */
     @Test
@@ -479,11 +535,13 @@ class MockDatabaseTest {
         // Add a run with starting after the one in database
         val newRun1StartTime = 10 + 1e7.toLong()
         val newRun1 = Run(
-            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
-            newRun1StartTime,
-            newRun1StartTime + 2e6.toLong(),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
+            startTime = newRun1StartTime,
+            duration = 2e6.toLong(),
+            endTime = newRun1StartTime + 2e6.toLong(),
         )
-        val expectedHistory = arrayListOf(newRun1).also { it.addAll(database.users[userIdTest]!!.runs!!) }.also { it.reverse() }
+        val expectedHistory =
+            arrayListOf(newRun1).also { it.addAll(database.users[userIdTest]!!.runs!!) }.also { runs -> runs.sortBy { it.getStartTime() } }
 
         database.addRunToHistory(userIdTest, newRun1).get()
 
@@ -495,9 +553,10 @@ class MockDatabaseTest {
         // Add a run with starting time before the one in database
         val newRun2StartTime = 10 - 1e7.toLong()
         val newRun2 = Run(
-            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
-            newRun2StartTime,
-            newRun2StartTime + 2e6.toLong(),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
+            startTime = newRun2StartTime,
+            duration = 2e6.toLong(),
+            endTime = newRun2StartTime + 2e6.toLong(),
         )
         database.addRunToHistory(userIdTest, newRun2).get()
 
@@ -522,25 +581,28 @@ class MockDatabaseTest {
     /**
      * Test if adding a run with a startTime equal to an already stored run replaces the run
      * This behavior is the one of the Firebase
-     * TODO does not work
      */
-    /*@Test
+    @Test
     fun addingNewRunWithSameStartingTimeReplacesOldRun() {
         val database = MockDatabase()
         val newRun = Run(
-            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
             10,
-            10 + 2e6.toLong(),
+            1e6.toLong(),
+            1e6.toLong() + 10,
         )
-        database.addRunToHistory(userIdTest, newRun)
 
-        val expectedHistory = listOf(newRun)
+        val expectedHistory =
+            database.users[userIdTest]!!.runs!!.filter { it.getStartTime() != newRun.getStartTime() }.toMutableList().also { it.add(newRun) }
+                .also { runs -> runs.sortBy { it.getStartTime() } }
+
+        database.addRunToHistory(userIdTest, newRun)
 
         assertEquals(
             expectedHistory,
             database.users[userIdTest]?.runs,
         )
-    }*/
+    }
 
     /**
      * Test if removing a run which does not exist does nothing, as expected
@@ -550,9 +612,10 @@ class MockDatabaseTest {
         val database = MockDatabase()
         val nonExistingStartingTime = 10 + 1e7.toLong()
         val nonExistingRun = Run(
-            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
-            nonExistingStartingTime,
-            nonExistingStartingTime + 2e6.toLong(),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
+            startTime = nonExistingStartingTime,
+            duration = 2e6.toLong(),
+            endTime = nonExistingStartingTime + 2e6.toLong(),
         )
         database.removeRunFromHistory(userIdTest, nonExistingRun)
 
@@ -618,25 +681,6 @@ class MockDatabaseTest {
             added.paths,
             1,
         )
-    }
-
-    /**
-     * Test if the achievements are update correctly
-     */
-    @Test
-    fun updateUserAchievementsCorrect() {
-        val database = MockDatabase()
-        /*
-        database.updateUserAchievements(userIdTest, 10.0, 50.0).get()
-        val userAccount = database.users[database.userIdTest]!!
-        assertEquals(userAccount.getTotalDistance(), database.totalDistanceTest + 10.0, 0.001)
-        assertEquals(
-            userAccount.getTotalActivityTime(),
-            database.totalActivityTimeTest + 50.0,
-            0.001,
-        )
-        assertEquals(userAccount.getTotalNbOfPaths(), database.totalNbOfPathsTest + 1)
-        */
     }
 
     /**
@@ -832,6 +876,29 @@ class MockDatabaseTest {
         val tournamentId = "NotAnID"
         val userId = "NotAnID"
         database.removeUserFromTournament(userId, tournamentId).get()
+    }
+
+    /**
+     * Test if trying to retrieve an non-existing tournament from the database throws.
+     */
+    @Test
+    fun getTournamentThatDoesNotExistThrows() {
+        val database = MockDatabase()
+        val tournamentId = "NotAnID"
+        assertThrows(Throwable::class.java) {
+            database.getTournament(tournamentId).get()
+        }
+    }
+
+    /**
+     * Test if retrieving an existing tournament from the database returns the tournament.
+     */
+    @Test
+    fun getTournamentThatExistsReturnsTheTournament() {
+        val database = MockDatabase()
+        val expectedTournament = database.mockTournament
+        val expectedTournamentId = expectedTournament.id
+        assertEquals(expectedTournament, database.getTournament(expectedTournamentId).get())
     }
 
     /**
@@ -1046,6 +1113,7 @@ class MockDatabaseTest {
                 startTime = 10,
                 endTime = 20,
                 path = Path(),
+                duration = 10,
             ),
             date,
         )
@@ -1073,7 +1141,10 @@ class MockDatabaseTest {
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(1).timestamp
         database.removeChatMessage(conversationId, timestamp)
         // check the messages list
-        assertEquals((database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(), database.chatMessages[conversationId]!!.chat)
+        assertEquals(
+            (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(),
+            database.chatMessages[conversationId]!!.chat,
+        )
         // check the preview
         assertEquals(database.MOCK_CHAT_PREVIEWS[0], database.chatPreviews[conversationId])
     }
@@ -1089,9 +1160,21 @@ class MockDatabaseTest {
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.get(0).timestamp
         database.removeChatMessage(conversationId, timestamp)
         // check the messages list
-        assertEquals((database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(), database.chatMessages[conversationId]!!.chat)
+        assertEquals(
+            (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(),
+            database.chatMessages[conversationId]!!.chat,
+        )
         // check the preview
-        assertEquals(database.MOCK_CHAT_PREVIEWS[0].copy(lastMessage = database.MOCK_CHAT_PREVIEWS[0].lastMessage!!.copy(content = MessageContent.Text(database.DELETE_MESSAGE_STR))), database.chatPreviews[conversationId])
+        assertEquals(
+            database.MOCK_CHAT_PREVIEWS[0].copy(
+                lastMessage = database.MOCK_CHAT_PREVIEWS[0].lastMessage!!.copy(
+                    content = MessageContent.Text(
+                        database.DELETE_MESSAGE_STR,
+                    ),
+                ),
+            ),
+            database.chatPreviews[conversationId],
+        )
     }
 
     /**
@@ -1106,9 +1189,22 @@ class MockDatabaseTest {
         val newMessage = "edited message"
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
         // check the messages list
-        assertEquals((database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList(), database.chatMessages[conversationId]!!.chat)
+        assertEquals(
+            (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream()
+                .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList(),
+            database.chatMessages[conversationId]!!.chat,
+        )
         // check the preview
-        assertEquals(database.MOCK_CHAT_PREVIEWS[0].copy(lastMessage = database.MOCK_CHAT_PREVIEWS[0].lastMessage!!.copy(content = MessageContent.Text(newMessage))), database.chatPreviews[conversationId])
+        assertEquals(
+            database.MOCK_CHAT_PREVIEWS[0].copy(
+                lastMessage = database.MOCK_CHAT_PREVIEWS[0].lastMessage!!.copy(
+                    content = MessageContent.Text(
+                        newMessage,
+                    ),
+                ),
+            ),
+            database.chatPreviews[conversationId],
+        )
     }
 
     /**
@@ -1123,7 +1219,11 @@ class MockDatabaseTest {
         val newMessage = "edited message"
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
         // check the messages list
-        assertEquals((database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream().map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList(), database.chatMessages[conversationId]!!.chat)
+        assertEquals(
+            (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()).stream()
+                .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList(),
+            database.chatMessages[conversationId]!!.chat,
+        )
         // check the preview
         assertEquals(database.MOCK_CHAT_PREVIEWS[0], database.chatPreviews[conversationId])
     }
