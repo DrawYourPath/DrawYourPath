@@ -45,9 +45,10 @@ class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val r
         // Set the data to the view items in the layout
         // holder.mapImageView.setImageResource(run.mapImage)
         viewHolder.dateTextView.text = run.getDate()
-        viewHolder.distanceTextView.text =
-            "Distance: ${String.format("%.2f", run.getDistance() / 1000)} Km"
-        viewHolder.timeTakenTextView.text = "Time taken: ${run.getDuration() / 60} minutes"
+        viewHolder.distanceTextView.text = context.getString(R.string.display_distance).format(Utils.getStringDistance(run.getDistance()))
+        viewHolder.timeTakenTextView.text = context.getString(R.string.display_duration).format(Utils.getStringDuration(run.getDuration()))
+        viewHolder.shapeRecognizedTextView.text = context.getString(R.string.display_shape).format(run.predictedShape)
+        viewHolder.shapeScoreTextView.text = context.getString(R.string.display_score).format(run.similarityScore)
 
         return view
     }
@@ -57,5 +58,7 @@ class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val r
         val dateTextView: TextView = view.findViewById(R.id.dateTextView)
         val distanceTextView: TextView = view.findViewById(R.id.distanceTextView)
         val timeTakenTextView: TextView = view.findViewById(R.id.timeTakenTextView)
+        val shapeRecognizedTextView: TextView = view.findViewById(R.id.shapeTextView)
+        val shapeScoreTextView: TextView = view.findViewById(R.id.scoreTextView)
     }
 }
