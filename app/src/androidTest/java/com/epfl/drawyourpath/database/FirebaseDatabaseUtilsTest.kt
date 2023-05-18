@@ -367,7 +367,7 @@ class FirebaseDatabaseUtilsTest {
         val post = TournamentPost(
             userId = "user1",
             run = Run(
-                Path(listOf(listOf(LatLng(0.1,1.0), LatLng(1.1, 0.2)))),
+                Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
                 10,
                 10,
                 20,
@@ -394,7 +394,7 @@ class FirebaseDatabaseUtilsTest {
             TournamentPost(
                 userId = "user1",
                 run = Run(
-                    Path(listOf(listOf(LatLng(0.1,1.0), LatLng(1.1, 0.2)))),
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
                     10,
                     10,
                     20,
@@ -408,7 +408,7 @@ class FirebaseDatabaseUtilsTest {
             TournamentPost(
                 "user2",
                 run = Run(
-                    Path(listOf(listOf(LatLng(0.1,1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
                     30,
                     20,
                     50,
@@ -416,7 +416,7 @@ class FirebaseDatabaseUtilsTest {
                 votes = 0,
                 date = LocalDateTime.now().minusDays(3),
                 usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
-            )
+            ),
         )
         val postsSnapshot = posts.map { mockTournamentPost(it) }
         val snapshot = mock(DataSnapshot::class.java)
@@ -533,7 +533,7 @@ class FirebaseDatabaseUtilsTest {
             TournamentPost(
                 userId = "user1",
                 run = Run(
-                    Path(listOf(listOf(LatLng(0.1,1.0), LatLng(1.1, 0.2)))),
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
                     10,
                     10,
                     20,
@@ -547,7 +547,7 @@ class FirebaseDatabaseUtilsTest {
             TournamentPost(
                 "user2",
                 run = Run(
-                    Path(listOf(listOf(LatLng(0.1,1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
                     30,
                     20,
                     50,
@@ -555,7 +555,7 @@ class FirebaseDatabaseUtilsTest {
                 votes = 0,
                 date = LocalDateTime.now().minusDays(3),
                 usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
-            )
+            ),
         )
         val tournament = Tournament(
             id = "testId",
