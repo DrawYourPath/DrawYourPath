@@ -1,17 +1,20 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
+import android.content.Context
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
+import androidx.test.espresso.matcher.ViewMatchers.*
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunsAdapter
+import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Test
@@ -38,7 +41,7 @@ class HistoryFragmentTest {
         val path = Path(points)
         val startTime = 1683226596L
         val endTime = startTime + 10
-        val run1 = Run(path, startTime, 10, endTime)
+        val run1 = Run(path, startTime, 10, endTime, "square", 0.65123)
         runs.add(run1)
 
         val point3 = LatLng(0.0, 0.0)
@@ -47,8 +50,10 @@ class HistoryFragmentTest {
         val path2 = Path(points2)
         val startTime2 = 1683226963L
         val endTime2 = startTime + 10000
-        val run2 = Run(path2, startTime2, 10000, endTime2)
+        val run2 = Run(path2, startTime2, 10000, endTime2, "goalpost", 1.235)
         runs.add(run2)
+
+        val context = ApplicationProvider.getApplicationContext<Context>()
 
         scenario.onFragment { fragment ->
             val recyclerView =
@@ -63,35 +68,21 @@ class HistoryFragmentTest {
 
         // verify that the runs are displayed in the recyclerView
         for ((index, run) in runs.withIndex()) {
-            Espresso.onView(ViewMatchers.withId(R.id.runsRecyclerView))
-                .perform(RecyclerViewActions.scrollToPosition<RunsAdapter.ViewHolder>(index))
-
-            Espresso.onView(ViewMatchers.withText(run.getDate()))
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(
-                ViewMatchers.withText(
-                    "Distance: ${
-                        String.format(
-                            "%.2f",
-                            run.getDistance() / 1000,
-                        )
-                    } Km",
-                ),
-            ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(ViewMatchers.withText("Time taken: ${run.getDuration() / 60} minutes"))
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(ViewMatchers.withText("Calories burned: ${run.getCalories()} kcal"))
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            Espresso.onView(
-                ViewMatchers.withText(
-                    "Speed: ${
-                        String.format(
-                            "%.2f",
-                            run.getAverageSpeed(),
-                        )
-                    } m/s",
-                ),
-            ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            onView(withId(R.id.runsRecyclerView)).perform(scrollToPosition<RunsAdapter.ViewHolder>(index))
+            // check date
+            onView(withText(run.getDate())).check(matches(isDisplayed()))
+            // check distance
+            val distance = Utils.getStringDistance(run.getDistance())
+            onView(withText(distance)).check(matches(isDisplayed()))
+            // check duration
+            val time = Utils.getStringDuration(run.getDuration())
+            onView(withText(time)).check(matches(isDisplayed()))
+            // check predicted shape
+            val shape = context.getString(R.string.display_shape).format(run.predictedShape)
+            onView(withText(shape)).check(matches(isDisplayed()))
+            // check score of predicted shape
+            val score = context.getString(R.string.display_score).format(run.similarityScore)
+            onView(withText(score)).check(matches(isDisplayed()))
         }
     }
 
@@ -107,7 +98,6 @@ class HistoryFragmentTest {
             recyclerView.layoutManager = LinearLayoutManager(fragment.requireContext())
         }
 
-        Espresso.onView(ViewMatchers.withId(R.id.runsRecyclerView))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(0)))
+        onView(withId(R.id.runsRecyclerView)).check(matches(hasChildCount(0)))
     }
 }

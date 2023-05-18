@@ -19,7 +19,7 @@ object DigitalInk {
         var model = DigitalInkRecognitionModel.builder(modelIdentifier).build()
         val remoteModelManager = RemoteModelManager.getInstance()
         remoteModelManager.isModelDownloaded(model)
-            .addOnSuccessListener() { is_downloaded: Boolean ->
+            .addOnSuccessListener { is_downloaded: Boolean ->
                 if (!is_downloaded) {
                     remoteModelManager.download(model, DownloadConditions.Builder().build())
                         .addOnSuccessListener {

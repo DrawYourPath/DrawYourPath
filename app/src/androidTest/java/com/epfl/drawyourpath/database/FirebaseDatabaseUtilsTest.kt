@@ -2,8 +2,14 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
+import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
+import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformMilestoneToData
+import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformTrophyToData
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils
@@ -11,12 +17,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class FirebaseDatabaseUtilsTest {
 
@@ -51,6 +58,33 @@ class FirebaseDatabaseUtilsTest {
         `when`(goal.child(FirebaseKeys.GOAL_HISTORY_PATHS))
             .thenReturn(paths)
         return goal
+    }
+
+    private fun mockTrophiesSnapshot(trophy: Trophy): DataSnapshot {
+        // NOTE: Can't mock inside `thenReturn`.
+        val trophyData = mock(DataSnapshot::class.java)
+        `when`(trophyData.key).thenReturn(trophy.tournamentId)
+        val tournamentName = mockSnapshot(trophy.tournamentName)
+        `when`(trophyData.child(FirebaseKeys.TROPHY_TOURNAMENT_NAME))
+            .thenReturn(tournamentName)
+        val tournamentDescription = mockSnapshot(trophy.tournamentDescription)
+        `when`(trophyData.child(FirebaseKeys.TROPHY_TOURNAMENT_DESCRIPTION))
+            .thenReturn(tournamentDescription)
+        val date = mockNumberSnapshot(trophy.date.toEpochDay())
+        `when`(trophyData.child(FirebaseKeys.TROPHY_DATE))
+            .thenReturn(date)
+        val ranking = mockNumberSnapshot(trophy.ranking)
+        `when`(trophyData.child(FirebaseKeys.TROPHY_RANKING))
+            .thenReturn(ranking)
+        return trophyData
+    }
+
+    private fun mockMilestonesSnapshot(milestone: MilestoneData): DataSnapshot {
+        // NOTE: Can't mock inside `thenReturn`.
+        val milestoneData = mock(DataSnapshot::class.java)
+        `when`(milestoneData.key).thenReturn(milestone.milestone!!.name)
+        `when`(milestoneData.value).thenReturn(milestone.date!!.toEpochDay())
+        return milestoneData
     }
 
     private fun mockPoint(point: LatLng): DataSnapshot {
@@ -103,6 +137,95 @@ class FirebaseDatabaseUtilsTest {
 
         val similarityScore = mockNumberSnapshot(run.similarityScore)
         `when`(snapshot.child("similarityScore")).thenReturn(similarityScore)
+
+        return snapshot
+    }
+
+    private fun mockLocalDateTime(ldt: LocalDateTime): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        val year = mockNumberSnapshot(ldt.year)
+        `when`(snapshot.child("year")).thenReturn(year)
+        val month = mockNumberSnapshot(ldt.monthValue)
+        `when`(snapshot.child("monthValue")).thenReturn(month)
+        val dayOfMonth = mockNumberSnapshot(ldt.dayOfMonth)
+        `when`(snapshot.child("dayOfMonth")).thenReturn(dayOfMonth)
+        val hour = mockNumberSnapshot(ldt.hour)
+        `when`(snapshot.child("hour")).thenReturn(hour)
+        val minute = mockNumberSnapshot(ldt.minute)
+        `when`(snapshot.child("minute")).thenReturn(minute)
+        val second = mockNumberSnapshot(ldt.second)
+        `when`(snapshot.child("second")).thenReturn(second)
+        val nano = mockNumberSnapshot(ldt.nano)
+        `when`(snapshot.child("nano")).thenReturn(nano)
+
+        return snapshot
+    }
+
+    private fun mockTournamentPost(post: TournamentPost): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        val userId = mockSnapshot(post.userId)
+        `when`(snapshot.child("userId")).thenReturn(userId)
+        val run = mockRun(post.run)
+        `when`(snapshot.child("run")).thenReturn(run)
+        val votes = mockNumberSnapshot(post.getVotes())
+        `when`(snapshot.child("votes")).thenReturn(votes)
+        val date = mockLocalDateTime(post.date)
+        `when`(snapshot.child("date")).thenReturn(date)
+        val usersVotes = mockSnapshot(post.getUsersVotes())
+        `when`(snapshot.child("usersVotes")).thenReturn(usersVotes)
+
+        return snapshot
+    }
+
+    private fun mockTournamentPostList(posts: List<TournamentPost>): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        val postsSnap = posts.map {
+            mockTournamentPost(it)
+        }
+        `when`(snapshot.children).thenReturn(postsSnap)
+
+        return snapshot
+    }
+
+    private fun mockTournament(tournament: Tournament): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        val id = mockSnapshot(tournament.id)
+        `when`(snapshot.child("id")).thenReturn(id)
+
+        val name = mockSnapshot(tournament.name)
+        `when`(snapshot.child("name")).thenReturn(name)
+
+        val description = mockSnapshot(tournament.description)
+        `when`(snapshot.child("description")).thenReturn(description)
+
+        val creatorId = mockSnapshot(tournament.creatorId)
+        `when`(snapshot.child("creatorId")).thenReturn(creatorId)
+
+        val startDate = mockLocalDateTime(tournament.startDate)
+        `when`(snapshot.child("startDate")).thenReturn(startDate)
+
+        val endDate = mockLocalDateTime(tournament.endDate)
+        `when`(snapshot.child("endDate")).thenReturn(endDate)
+
+        val participants = mock(DataSnapshot::class.java)
+        val participantsSubNodes = tournament.participants.map {
+            val participant = mock(DataSnapshot::class.java)
+            `when`(participant.value).thenReturn(true)
+            `when`(participant.key).thenReturn(it)
+            participant
+        }
+        `when`(snapshot.child("participants")).thenReturn(participants)
+        `when`(participants.children).thenReturn(participantsSubNodes)
+
+        val posts = mockTournamentPostList(tournament.posts)
+        `when`(snapshot.child("posts")).thenReturn(posts)
+
+        val visibility = mockSnapshot(tournament.visibility.name)
+        `when`(snapshot.child("visibility")).thenReturn(visibility)
 
         return snapshot
     }
@@ -176,7 +299,7 @@ class FirebaseDatabaseUtilsTest {
 
     @Test
     fun getKeysOfNullSnapshotIsEmpty() {
-        Assert.assertEquals(FirebaseDatabaseUtils.getKeys(null).size, 0)
+        assertEquals(FirebaseDatabaseUtils.getKeys(null).size, 0)
     }
 
     @Test
@@ -194,19 +317,19 @@ class FirebaseDatabaseUtilsTest {
 
     @Test
     fun transformChatListOfNullSnapshotIsEmpty() {
-        Assert.assertEquals(FirebaseDatabaseUtils.transformChatList(null).size, 0)
+        assertEquals(FirebaseDatabaseUtils.transformChatList(null).size, 0)
     }
 
     @Test
     fun transformChatListOfEmptySnapshotIsEmpty() {
         val chatList = mock(DataSnapshot::class.java)
         `when`(chatList.children).thenReturn(emptyList())
-        Assert.assertEquals(FirebaseDatabaseUtils.transformChatList(chatList).size, 0)
+        assertEquals(FirebaseDatabaseUtils.transformChatList(chatList).size, 0)
     }
 
     @Test
     fun transformRunReturnsNullForNullSnapshot() {
-        Assert.assertEquals(FirebaseDatabaseUtils.transformRun(null), null)
+        assertEquals(FirebaseDatabaseUtils.transformRun(null), null)
     }
 
     @Test
@@ -215,7 +338,7 @@ class FirebaseDatabaseUtilsTest {
     }
 
     @Test
-    fun transformRunListReturnExpectedRunsInOrder() {
+    fun transformRunListReturnExpectedData() {
         val runs = listOf(
             Run(
                 Path(
@@ -261,6 +384,93 @@ class FirebaseDatabaseUtilsTest {
         val transformedRuns = FirebaseDatabaseUtils.transformRunList(snapshot)
 
         assertThat(runs.size, `is`(transformedRuns.size))
+    }
+
+    @Test
+    fun transformLocalDateTimeReturnsExpectedData() {
+        val ldt = LocalDateTime.now()
+        val ldtSnapshot = mockLocalDateTime(ldt)
+
+        assertThat(FirebaseDatabaseUtils.transformLocalDateTime(ldtSnapshot), `is`(ldt))
+    }
+
+    @Test
+    fun transformLocalDateTimeReturnsNullWhenDataSnapshotContainsNullValues() {
+        assertEquals(FirebaseDatabaseUtils.transformLocalDateTime(null), null)
+    }
+
+    @Test
+    fun transformPostReturnsExpectedData() {
+        val post = TournamentPost(
+            userId = "user1",
+            run = Run(
+                Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
+                10,
+                10,
+                20,
+                "Lion",
+                0.8,
+            ),
+            votes = 2,
+            date = LocalDateTime.now().minusDays(2),
+            usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
+        )
+        val postSnapshot = mockTournamentPost(post)
+        val transformedPost = FirebaseDatabaseUtils.transformPost(postSnapshot)
+        assertThat(transformedPost!!.userId, `is`(post.userId))
+        // Just to know if the run is the same one
+        assertThat(transformedPost.run.getCalories(), `is`(post.run.getCalories()))
+        assertThat(transformedPost.getVotes(), `is`(post.getVotes()))
+        assertThat(transformedPost.date, `is`(post.date))
+        assertThat(transformedPost.getUsersVotes(), `is`(post.getUsersVotes()))
+    }
+
+    @Test
+    fun transformPostReturnsNullWhenNullSnapshot() {
+        assertEquals(FirebaseDatabaseUtils.transformPost(null), null)
+    }
+
+    @Test
+    fun transformPostListReturnsExpectedData() {
+        val posts = listOf(
+            TournamentPost(
+                userId = "user1",
+                run = Run(
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
+                    10,
+                    10,
+                    20,
+                    "Lion",
+                    0.8,
+                ),
+                votes = 2,
+                date = LocalDateTime.now().minusDays(2),
+                usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
+            ),
+            TournamentPost(
+                "user2",
+                run = Run(
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
+                    30,
+                    20,
+                    50,
+                ),
+                votes = 0,
+                date = LocalDateTime.now().minusDays(3),
+                usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
+            ),
+        )
+        val postsSnapshot = posts.map { mockTournamentPost(it) }
+        val snapshot = mock(DataSnapshot::class.java)
+        `when`(snapshot.children).thenReturn(postsSnapshot)
+        val transformedPosts = FirebaseDatabaseUtils.transformPostList(snapshot)
+
+        assertThat(transformedPosts.size, `is`(posts.size))
+    }
+
+    @Test
+    fun transformPostListReturnsEmptyListWithNullSnapshot() {
+        assertEquals(FirebaseDatabaseUtils.transformPostList(null), emptyList<TournamentPost>())
     }
 
     @Test
@@ -352,6 +562,8 @@ class FirebaseDatabaseUtilsTest {
                 FirebaseKeys.GOALS to FirebaseDatabaseTest.mockSnapshot(null),
                 FirebaseKeys.DAILY_GOALS to FirebaseDatabaseTest.mockSnapshot(null),
                 FirebaseKeys.RUN_HISTORY to FirebaseDatabaseTest.mockSnapshot(null),
+                FirebaseKeys.TROPHIES to FirebaseDatabaseTest.mockSnapshot(null),
+                FirebaseKeys.MILESTONES to FirebaseDatabaseTest.mockSnapshot(null),
                 FirebaseKeys.USER_CHATS to FirebaseDatabaseTest.mockSnapshot(null),
             ),
         )
@@ -362,5 +574,183 @@ class FirebaseDatabaseUtilsTest {
         assertThat(resData.username, `is`(userData.username))
         assertThat(resData.email, `is`(userData.email))
         assertThat(resData.birthDate, `is`(userData.birthDate))
+    }
+
+    @Test
+    fun mapToTournamentReturnsExpectedValue() {
+        val posts = listOf(
+            TournamentPost(
+                userId = "user1",
+                run = Run(
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
+                    10,
+                    10,
+                    20,
+                    "Lion",
+                    0.8,
+                ),
+                votes = 2,
+                date = LocalDateTime.now().minusDays(2),
+                usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
+            ),
+            TournamentPost(
+                "user2",
+                run = Run(
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
+                    30,
+                    20,
+                    50,
+                ),
+                votes = 0,
+                date = LocalDateTime.now().minusDays(3),
+                usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
+            ),
+        )
+        val tournament = Tournament(
+            id = "testId",
+            name = "testName",
+            description = "testDescription",
+            creatorId = "testCreatorId",
+            startDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now().plusWeeks(1),
+            participants = listOf("user1", "user2"),
+            posts = posts,
+            visibility = Tournament.Visibility.PUBLIC,
+        )
+
+        val tournamentDataSnapshot = mockTournament(tournament)
+        val reformedTournament = FirebaseDatabaseUtils.mapToTournament(tournamentDataSnapshot)
+
+        assertThat(reformedTournament!!.id, `is`(tournament.id))
+        assertThat(reformedTournament.name, `is`(tournament.name))
+        assertThat(reformedTournament.description, `is`(tournament.description))
+        assertThat(reformedTournament.creatorId, `is`(tournament.creatorId))
+        assertThat(reformedTournament.startDate, `is`(tournament.startDate))
+        assertThat(reformedTournament.endDate, `is`(tournament.endDate))
+        assertThat(reformedTournament.participants, `is`(tournament.participants))
+        assertThat(reformedTournament.posts.size, `is`(tournament.posts.size))
+        assertThat(reformedTournament.visibility, `is`(tournament.visibility))
+    }
+
+    @Test
+    fun mapToTournamentReturnsNullWithNullValues() {
+        // With only null values
+        assertEquals(FirebaseDatabaseUtils.mapToTournament(null), null)
+        // With existing visibility but other values null, to test other path
+        val mockVisibility = mockSnapshot("PUBLIC")
+        val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
+        `when`(nonNullVisibilitySnapshot.child("visibility"))
+            .thenReturn(mockVisibility)
+        assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
+    }
+
+    @Test
+    fun mapToTournamentReturnsNullWithNonExistingVisibilityValue() {
+        // Create a mock that returns a "wrong" visibility for the tournament
+        val mockVisibility = mockSnapshot("SomeVisibility")
+        val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
+        `when`(nonNullVisibilitySnapshot.child("visibility"))
+            .thenReturn(mockVisibility)
+        assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
+    }
+
+    /**
+     * Test if a given trophy is correctly transform to the correct hashmap
+     */
+    @Test
+    fun transformTrophyToDataCorrectly() {
+        val trophy = Trophy(tournamentId = "123", tournamentName = "tournament", tournamentDescription = "description", date = LocalDate.of(2000, 2, 20), ranking = 3)
+        val expectedMap = hashMapOf<String, Any>(
+            FirebaseKeys.TROPHY_TOURNAMENT_NAME to "tournament",
+            FirebaseKeys.TROPHY_TOURNAMENT_DESCRIPTION to "description",
+            FirebaseKeys.TROPHY_DATE to LocalDate.of(2000, 2, 20).toEpochDay(),
+            FirebaseKeys.TROPHY_RANKING to 3,
+        )
+        assertEquals(expectedMap, transformTrophyToData(trophy))
+    }
+
+    /**
+     * Test that transform null snapshot returns an empty trophies list
+     */
+    @Test
+    fun transformTrophiesReturnsEmptyListWithNullSnapshot() {
+        assertTrue(FirebaseDatabaseUtils.transformTrophyFromData(null).isEmpty())
+    }
+
+    /**
+     * Test that transform a data snapshot with no trophies return an empty trophies list
+     */
+    @Test
+    fun transformTrophiesReturnsEmptyListWhenNoChildren() {
+        val snapshot = mock(DataSnapshot::class.java)
+        assertThat(FirebaseDatabaseUtils.transformTrophyFromData(snapshot).isEmpty(), `is`(true))
+    }
+
+    /**
+     * Test that transform a data snapshot that contains trophies return the correct list of trophies
+     */
+    @Test
+    fun transformTrophiesReturnsTrophies() {
+        val trophies = listOf(
+            Trophy("123", "tournament1", "description1", LocalDate.of(2000, 2, 20), 3),
+            Trophy("345", "tournament2", "description2", LocalDate.of(2000, 2, 21), 2),
+        )
+
+        val trophySnapshot = trophies.map { mockTrophiesSnapshot(it) }
+
+        val snapshot = mock(DataSnapshot::class.java)
+        `when`(snapshot.children).thenReturn(trophySnapshot)
+
+        trophies.zip(FirebaseDatabaseUtils.transformTrophyFromData(snapshot)).forEach {
+            assertThat(it.first, `is`(it.second))
+        }
+    }
+
+    /**
+     * Test if a given milestone is correctly transform to the correct hashmap
+     */
+    @Test
+    fun transformMilestoneToDataCorrectly() {
+        val expectedMap = hashMapOf<String, Any>(
+            "THE_FIRST_KILOMETER" to LocalDate.of(2000, 2, 20).toEpochDay(),
+        )
+        assertEquals(expectedMap, transformMilestoneToData(MilestoneEnum.THE_FIRST_KILOMETER, LocalDate.of(2000, 2, 20)))
+    }
+
+    /**
+     * Test that transform null snapshot returns an empty milestones list
+     */
+    @Test
+    fun transformMilestonesReturnsEmptyListWithNullSnapshot() {
+        assertTrue(FirebaseDatabaseUtils.transformMilestoneFromData(null).isEmpty())
+    }
+
+    /**
+     * Test that transform a data snapshot with no milestones return an empty milestones list
+     */
+    @Test
+    fun transformMilestonesReturnsEmptyListWhenNoChildren() {
+        val snapshot = mock(DataSnapshot::class.java)
+        assertThat(FirebaseDatabaseUtils.transformMilestoneFromData(snapshot).isEmpty(), `is`(true))
+    }
+
+    /**
+     * Test that transform a data snapshot that contains milestones return the correct list of milestones
+     */
+    @Test
+    fun transformMilestonesReturnsMilestones() {
+        val milestonesData = listOf(
+            MilestoneData(milestone = MilestoneEnum.THE_FIRST_KILOMETER, date = LocalDate.of(2000, 2, 20)),
+            MilestoneData(milestone = MilestoneEnum.HUNDRED_KILOMETERS, date = LocalDate.of(2000, 2, 21)),
+        )
+
+        val milestoneSnapshot = milestonesData.map { mockMilestonesSnapshot(it) }
+
+        val snapshot = mock(DataSnapshot::class.java)
+        `when`(snapshot.children).thenReturn(milestoneSnapshot)
+
+        milestonesData.zip(FirebaseDatabaseUtils.transformMilestoneFromData(snapshot)).forEach {
+            assertThat(it.first, `is`(it.second))
+        }
     }
 }

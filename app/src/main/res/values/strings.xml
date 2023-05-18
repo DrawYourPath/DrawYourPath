@@ -50,7 +50,7 @@
     <string name="trophies">Trophies</string>
     <string name="milestones">Milestones</string>
     <string name="challenge">Challenge</string>
-    <string name="enter_a_number">Enter a number</string>
+    <string name="enter_a_number"><font size="15">Enter a number</font></string>
     <string name="trophy">trophy</string>
     <string name="server_client_id">593734550817-74svh08a2ram22m54eqvln88kecg3nr0.apps.googleusercontent.com</string>
     <string name="current_password">Current password:</string>
@@ -145,7 +145,7 @@
     <string name="path_drawn">Path Drawn</string>
     <string name="changeRightButton"><![CDATA[>]]></string>
     <string name="global_stats">Global Stats</string>
-    <string name="ml_shape_recognition_description">Remark : The shape description and score, given below, are given by an automatic form recognition Machine Learning model.</string>
+    <string name="ml_shape_recognition_description">Remark : The shape description and score (the best score is 0), given above, are given by an automatic form recognition Machine Learning model.</string>
     <string name="shape_recognized_on_the_path_drawn">- Shape recognized on the Path drawn :</string>
     <string name="score_of_the_shape_recognized">- Score of the shape recognized :</string>
     <string name="average_speed_per_km">Avg Speed per Km</string>
@@ -163,4 +163,6 @@
     <string name="select_the_run">Select the run</string>
     <string name="post">Post</string>
     <string name="add_post">add post</string>
+    <string name="display_shape">Shape: %s</string>
+    <string name="display_score">Score: %.2f</string>
 </resources>

@@ -64,7 +64,7 @@ class CommunityTournamentPostViewAdapter(
 
         // TODO change image(run) path of the post
 
-        viewHolder.userName.text = post.user
+        viewHolder.userName.text = post.userId
 
         viewHolder.voteCount.text = post.getVotes().toString()
 

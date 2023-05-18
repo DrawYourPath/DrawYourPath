@@ -28,6 +28,24 @@ import java.time.LocalDateTime
 class CommunityFragmentTest {
 
     /**
+     * test that the function getUserVotes return the correct result
+     */
+    @Test
+    fun getUserVotesReturnsCorrectMap() {
+        val run = Run(
+            Path(listOf(listOf(LatLng(0.0, 0.1)))),
+            10,
+            10,
+            20,
+            "Cat",
+            0.9,
+        )
+        val userVotes = mutableMapOf("test" to 1)
+        val post = TournamentPost("testId", run, 1, usersVotes = userVotes)
+        assertThat(post.getUsersVotes(), `is`(userVotes))
+    }
+
+    /**
      * test that pressing the upvote button adds a vote
      */
     @Test
@@ -203,12 +221,12 @@ class CommunityFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        val postFromEarth = postsDiscoverEarth.map { p -> withText(p.user) }
+        val postFromEarth = postsDiscoverEarth.map { p -> withText(p.userId) }
         val postFromAllNotEarth = buildList {
             this.addAll(sampleWeekly.posts)
             this.addAll(postsYour)
             this.addAll(postsDiscoverMoon)
-        }.map { p -> withText(p.user) }
+        }.map { p -> withText(p.userId) }
         val postFromAll = listOf(postFromEarth, postFromAllNotEarth).flatten()
 
         // go to earth detail
