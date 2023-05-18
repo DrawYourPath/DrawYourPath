@@ -150,20 +150,8 @@ object FirebaseDatabaseUtils {
         val usersVotes =
             (data?.child("usersVotes")?.value ?: emptyMap<String, Int>()) as Map<String, Int>
 
-        if (userId == null) {
-            Log.e(this::class.java.name, "TournamentPost had null userId")
-            return null
-        }
-        if (run == null) {
-            Log.e(this::class.java.name, "TournamentPost had null run")
-            return null
-        }
-        if (votes == null) {
-            Log.e(this::class.java.name, "TournamentPost had null votes")
-            return null
-        }
-        if (date == null) {
-            Log.e(this::class.java.name, "TournamentPost had null date")
+        if (userId == null || run == null || votes == null || date == null) {
+            Log.e(this::class.java.name, "TournamentPost had null values")
             return null
         }
 

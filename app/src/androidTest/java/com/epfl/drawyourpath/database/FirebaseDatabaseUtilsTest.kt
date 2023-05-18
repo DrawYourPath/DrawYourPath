@@ -363,6 +363,11 @@ class FirebaseDatabaseUtilsTest {
     }
 
     @Test
+    fun transformLocalDateTimeReturnsNullWhenDataSnapshotContainsNullValues() {
+        assertEquals(FirebaseDatabaseUtils.transformLocalDateTime(null), null)
+    }
+
+    @Test
     fun transformPostReturnsExpectedData() {
         val post = TournamentPost(
             userId = "user1",
@@ -386,6 +391,11 @@ class FirebaseDatabaseUtilsTest {
         assertThat(transformedPost.getVotes(), `is`(post.getVotes()))
         assertThat(transformedPost.date, `is`(post.date))
         assertThat(transformedPost.getUsersVotes(), `is`(post.getUsersVotes()))
+    }
+
+    @Test
+    fun transformPostReturnsNullWhenNullSnapshot() {
+        assertEquals(FirebaseDatabaseUtils.transformPost(null), null)
     }
 
     @Test
@@ -424,6 +434,11 @@ class FirebaseDatabaseUtilsTest {
         val transformedPosts = FirebaseDatabaseUtils.transformPostList(snapshot)
 
         assertThat(transformedPosts.size, `is`(posts.size))
+    }
+
+    @Test
+    fun transformPostListReturnsEmptyListWithNullSnapshot() {
+        assertEquals(FirebaseDatabaseUtils.transformPostList(null), emptyList<TournamentPost>())
     }
 
     @Test
