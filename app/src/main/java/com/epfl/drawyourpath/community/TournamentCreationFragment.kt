@@ -107,7 +107,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         storeNewTournament(newTournamentParameters, id, creatorId, database)
 
         // get back to community fragment without waiting for database
-        replaceFragment<CommunityFragment>()
+        requireActivity().supportFragmentManager.popBackStack()
     }
 
     /**
@@ -333,17 +333,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     private fun createBackButton(view: View) {
         val backButton = view.findViewById<ImageButton>(R.id.tournament_creation_back_button)
         backButton.setOnClickListener {
-            replaceFragment<CommunityFragment>()
-        }
-    }
-
-    /**
-     * replace this fragment by another one
-     */
-    private inline fun <reified F : Fragment> replaceFragment() {
-        activity?.supportFragmentManager?.commit {
-            setReorderingAllowed(true)
-            replace<F>(R.id.fragmentContainerView)
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 

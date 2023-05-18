@@ -158,4 +158,9 @@
     <string name="duration_in_s">Duration (s)</string>
     <string name="segment">Segment</string>
     <string name="distance_in_m">Distance (in m)</string>
+    <string name="tournament_post_creation">Tournament Post Creation</string>
+    <string name="select_the_tournament">Select the tournament</string>
+    <string name="select_the_run">Select the run</string>
+    <string name="post">Post</string>
+    <string name="add_post">add post</string>
 </resources>
