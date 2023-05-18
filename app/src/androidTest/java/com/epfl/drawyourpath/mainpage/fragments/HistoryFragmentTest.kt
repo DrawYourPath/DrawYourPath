@@ -14,6 +14,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunsAdapter
+import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Test
@@ -68,14 +69,18 @@ class HistoryFragmentTest {
         // verify that the runs are displayed in the recyclerView
         for ((index, run) in runs.withIndex()) {
             onView(withId(R.id.runsRecyclerView)).perform(scrollToPosition<RunsAdapter.ViewHolder>(index))
-
+            // check date
             onView(withText(run.getDate())).check(matches(isDisplayed()))
-            val distance = context.getString(R.string.display_distance).format(run.getDistance() / 1000)
+            // check distance
+            val distance = Utils.getStringDistance(run.getDistance())
             onView(withText(distance)).check(matches(isDisplayed()))
-            val time = context.getString(R.string.display_time).format(run.getDuration() / 60)
+            //check duration
+            val time = Utils.getStringDuration(run.getDuration())
             onView(withText(time)).check(matches(isDisplayed()))
+            // check predicted shape
             val shape = context.getString(R.string.display_shape).format(run.predictedShape)
             onView(withText(shape)).check(matches(isDisplayed()))
+            // check score of predicted shape
             val score = context.getString(R.string.display_score).format(run.similarityScore)
             onView(withText(score)).check(matches(isDisplayed()))
         }

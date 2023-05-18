@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.runStats.RunInfoStatsFragment
+import com.epfl.drawyourpath.utils.Utils
 import com.epfl.drawyourpath.utils.Utils.getStaticMapUrl
 import com.google.android.gms.maps.model.LatLng
 
@@ -46,8 +47,8 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         // Set the data to the view items in the layout
         // holder.mapImageView.setImageResource(run.mapImage)
         holder.dateTextView.text = run.getDate()
-        holder.distanceTextView.text = holder.context.getString(R.string.display_distance).format(run.getDistance() / 1000)
-        holder.timeTakenTextView.text = holder.context.getString(R.string.display_time).format(run.getDuration() / 60)
+        holder.distanceTextView.text = Utils.getStringDistance(run.getDistance())
+        holder.timeTakenTextView.text = Utils.getStringDuration(run.getDuration())
         holder.shapeRecognizedTextView.text = holder.context.getString(R.string.display_shape).format(run.predictedShape)
         holder.shapeScoreTextView.text = holder.context.getString(R.string.display_score).format(run.similarityScore)
         holder.itemView.setOnClickListener {

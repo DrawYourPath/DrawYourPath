@@ -89,10 +89,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * setup the Main fragment or the path drawing fragment if the intent for it was sent
+     */
     private fun setupFragment() {
         val runTest = intent.getBooleanExtra(EXTRA_DRAW_TEST, false)
         if (runTest) {
-            replaceFragment<PathDrawingContainerFragment>()
+            replaceFragment<PathDrawingContainerFragment>(Bundle().also {
+                it.putLong(PathDrawingContainerFragment.EXTRA_COUNTDOWN_DURATION, 0L)
+            })
         } else {
             replaceFragment<MainFragment>()
         }
@@ -136,7 +141,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        // value to pass in intent to set the current user
         const val EXTRA_USER_ID = "extra_user_id"
+
+        // value pass in intent to set the path drawing fragment (used in test)
         const val EXTRA_DRAW_TEST = "extra_draw_test"
     }
 }

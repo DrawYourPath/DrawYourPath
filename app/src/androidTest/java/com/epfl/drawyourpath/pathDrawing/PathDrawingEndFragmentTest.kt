@@ -53,7 +53,7 @@ class PathDrawingEndFragmentTest {
         val t: ActivityScenario<MainActivity> = ActivityScenario.launch(intent)
 
         // wait that the countdown passed
-        Thread.sleep(4010)
+        Thread.sleep(10)
         // click on pause button
         Espresso.onView(ViewMatchers.withId(R.id.path_drawing_pause_button))
             .perform(ViewActions.click())
@@ -74,7 +74,7 @@ class PathDrawingEndFragmentTest {
      */
     @Test
     fun checkInformationDisplayedOnEndDrawingFragment() {
-        val scenario = launchFragmentInContainer<PathDrawingEndFragment>(themeResId = R.style.Theme_Bootcamp) {
+        val scenario = launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
             PathDrawingEndFragment(run = mockRun)
         }
         // check that the map is displayed

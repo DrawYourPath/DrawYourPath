@@ -158,8 +158,6 @@
     <string name="duration_in_s">Duration (s)</string>
     <string name="segment">Segment</string>
     <string name="distance_in_m">Distance (in m)</string>
-    <string name="display_distance">Distance: %.2f kilometers</string>
-    <string name="display_time">Time taken: %d minutes</string>
     <string name="display_shape">Shape: %s</string>
     <string name="display_score">Score: %.2f</string>
 </resources>
