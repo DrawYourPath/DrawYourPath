@@ -612,6 +612,7 @@ class FirebaseDatabaseUtilsTest {
 
     @Test
     fun mapToTournamentReturnsNullWithNonExistingVisibilityValue() {
+        // Create a mock that returns a "wrong" visibility for the tournament
         val mockVisibility = mockSnapshot("SomeVisibility")
         val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
         `when`(nonNullVisibilitySnapshot.child("visibility"))

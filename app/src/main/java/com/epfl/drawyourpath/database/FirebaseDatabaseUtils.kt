@@ -172,8 +172,8 @@ object FirebaseDatabaseUtils {
         val second = getNumber(data?.child("second"))?.toInt()
         val nano = getNumber(data?.child("nano"))?.toInt()
 
-        if (year == null || month == null || dayOfMonth == null || hour == null || minute == null ||
-            second == null || nano == null
+        if (year == null || month == null || dayOfMonth == null ||
+            hour == null || minute == null || second == null || nano == null
         ) {
             Log.e(this::class.java.name, "LocalDateTime had null values")
             return null
