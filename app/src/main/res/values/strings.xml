@@ -141,4 +141,5 @@
     <string name="senderName">Sender Name</string>
     <string name="message_content_string">Message Content</string>
     <string name="chat_welcome_message">Welcome to the chat!</string>
+    <string name="delete_chat_icon_text">Delete</string>
 </resources>

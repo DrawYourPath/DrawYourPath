@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.ChatPreview
 
-// Class responsible for providing views that represent items in a data set.
+/**
+ *Class responsible for providing views that represent items in a data set.
+ */
 class ChatAdapter(
     // A list of chat previews
     private val chatPreviews: List<ChatPreview>,
@@ -19,7 +21,11 @@ class ChatAdapter(
     private val deleteListener: (ChatPreview) -> Unit,
 ) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
-    // ViewHolder provides a reference to the views for each chat preview in the item list
+    /**
+     *ViewHolder provides a reference to the views for each chat preview in the item list
+     *
+     * @param view the view that contains the chat preview
+     */
     inner class ChatViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val chatTitleTextView: TextView = view.findViewById(R.id.chatTitleTextView)
         val deleteButton: Button = view.findViewById(R.id.deleteButton)

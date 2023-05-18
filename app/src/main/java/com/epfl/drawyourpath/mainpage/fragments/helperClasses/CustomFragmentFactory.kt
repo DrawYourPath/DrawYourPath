@@ -6,16 +6,15 @@ import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.mainpage.fragments.FriendsFragment
 
 /**
- * A custom FragmentFactory class responsible for creating instances of ChatFragment and FriendsFragment
- * with their required dependencies.
+ * A custom FragmentFactory class responsible for creating instances of FriendsFragment and other classes that require database dependency injection.
  *
- * @property database The shared Database object to be injected into the fragments.
+ * @param database The shared Database object to be injected into the fragments.
  */
 class CustomFragmentFactory(private val database: Database) : FragmentFactory() {
 
     /**
      * This method is responsible for instantiating the appropriate Fragment based on the provided
-     * class name. It handles the creation of ChatFragment and FriendsFragment, injecting the
+     * class name. It handles the creation of FriendsFragment, injecting the
      * required Database object into their constructors.
      *
      * @param classLoader The ClassLoader used to load the Fragment class.

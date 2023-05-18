@@ -38,6 +38,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
     /**
      * This method is called after the fragment's view has been created.
      * It initializes the chat list and binds the data to the RecyclerView.
+     * TODO: refactor this method to use more helper functions to make it more readable
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,6 +73,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
             chatAdapter.notifyDataSetChanged()
         }
 
+        //code related to the tranzition to a new fragment when a chat is selected and to delete a chat when the delete button is clicked
         chatAdapter = ChatAdapter(
             chatList,
             { selectedChatPreview ->
@@ -106,6 +108,9 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
 
         // Get user data
         val userAccountFuture = database.getUserData(userId)
+
+
+        //Code related to the new chat button and the popup functionality.
 
         // Initialize new chat button
         val newChatButton: FloatingActionButton = view.findViewById(R.id.addChatButton)
@@ -208,10 +213,20 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
 
                 // Create a new CompletableFuture that completes when all chat preview futures complete
                 CompletableFuture.allOf(*chatPreviewFutures.toTypedArray())
-                    .thenApply {
-                        // Convert the list of futures to a list of ChatPreview objects
-                        chatPreviewFutures.map { it.join() }
+                    .thenCompose {
+                        CompletableFuture.allOf(*chatPreviewFutures.toTypedArray())
+                    }.thenApply{listMilestones ->
+                        // Create a list of ChatPreview objects from the completed futures
+                        chatPreviewFutures.mapNotNull { future ->
+                            try {
+                                future.get()
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error while getting chat preview: ", e)
+                                null
+                            }
+                        }
                     }
+
             }
     }
 

@@ -35,8 +35,6 @@ class ChatFragmentTest {
     fun testChatFragmentisDisplayed() {
         // Go to chats
         onView(withId(R.id.chat_menu_item)).perform(click())
-        // wait for the fragment to load!
-        Thread.sleep(1000)
         // Check fragment is chats
         onView(withId(R.id.chat_list_fragment)).check(matches(isDisplayed()))
     }
@@ -145,16 +143,29 @@ class ChatFragmentTest {
         }
     }
 
+    /**
+     * This function returns a ViewAction object that performs a click on a child view within a ViewGroup.
+     *
+     * @param id The resource ID of the child view to click.
+     * @return A ViewAction object that can be used in Espresso's view interaction methods.
+     */
     private fun clickChildViewWithId(id: Int): ViewAction {
         return object : ViewAction {
+            //Define the constraints of this view action.
             override fun getConstraints(): Matcher<View> {
                 return allOf(isDisplayed(), isAssignableFrom(ViewGroup::class.java))
             }
 
+            //Provides a human-readable description of this view action.
             override fun getDescription(): String {
                 return "Click on a child view with specified id."
             }
 
+            /**
+             * The main logic of the ViewAction.
+             * It finds a child view with the given id in the given parent view,
+             * and performs a click action on it.
+             */
             override fun perform(uiController: UiController, view: View) {
                 val v = view.findViewById<View>(id)
                 v.performClick()
@@ -169,7 +180,7 @@ class ChatFragmentTest {
 
         // Click the add chat button
         onView(withId(R.id.addChatButton)).perform(click())
-        Thread.sleep(1000)
+
         // Check if the popup is displayed
         onView(withText("testusername")).check(matches(isDisplayed()))
     }

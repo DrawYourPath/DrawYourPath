@@ -102,11 +102,11 @@ abstract class Database {
      */
     abstract fun setUserData(userId: String, userData: UserData): CompletableFuture<Unit>
 
-    // TODO: update this doc below
+
     /**
      * This function is used to get the user account of the user with userId
      * @param userId of the user that we want to retrieve is account
-     * @return a future that returns the UserModel corresponding to this user account
+     * @return a future that contains the a UserData object that contains the different informations of the user account.
      */
     abstract fun getUserData(userId: String): CompletableFuture<UserData>
 
