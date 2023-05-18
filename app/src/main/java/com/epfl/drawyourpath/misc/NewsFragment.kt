@@ -1,9 +1,6 @@
 package com.epfl.drawyourpath.misc
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 
 data class NewsAction(val title: String, val onClick: () -> Unit)
@@ -15,11 +12,6 @@ data class News(
 )
 
 class NewsFragment : Fragment(R.layout.fragment_news) {
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // TODO: Create an actual news feed
-    }
 
     /**
      * Adds a new at the bottom of the feed news.

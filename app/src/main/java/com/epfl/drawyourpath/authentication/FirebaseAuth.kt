@@ -183,6 +183,9 @@ class FirebaseAuth(instance: FirebaseAuth = FirebaseAuth.getInstance()) : Auth {
             .addOnFailureListener {
                 callback(null, it)
             }
+            .addOnCanceledListener {
+                callback(null, Exception("Cancelled"))
+            }
     }
 
     override fun registerWithEmail(email: String, password: String, callback: AuthCallback) {

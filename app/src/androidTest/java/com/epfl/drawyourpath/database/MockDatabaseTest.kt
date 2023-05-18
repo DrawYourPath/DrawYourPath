@@ -6,12 +6,14 @@ import androidx.test.core.app.ApplicationProvider
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.authentication.User
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
 import org.junit.Assert.assertEquals
@@ -300,7 +302,7 @@ class MockDatabaseTest {
         assertEquals(user.surname, surnameTest)
         assertEquals(user.birthDate, dateOfBirthTest)
         assertEquals(user.goals?.distance ?: 0.0, distanceGoalTest, 0.001)
-        assertEquals(user.goals?.activityTime?.toDouble() ?: 0.0, activityTimeGoalTest, 0.001)
+        assertEquals(user.goals?.activityTime ?: 0.0, activityTimeGoalTest, 0.001)
         assertEquals(user.goals?.paths ?: 0, nbOfPathsGoalTest.toLong())
     }
 
@@ -333,6 +335,8 @@ class MockDatabaseTest {
         assertEquals(user.goals?.distance ?: 0.0, distanceGoalTest, 0.001)
         assertEquals((user.goals?.activityTime ?: 0).toDouble(), activityTimeGoalTest, 0.001)
         assertEquals((user.goals?.paths ?: 0).toInt(), nbOfPathsGoalTest)
+        assertEquals(database.users[userIdTest]?.trophies, user.trophies)
+        assertEquals(database.users[userIdTest]?.milestones, user.milestones)
     }
 
     /**
@@ -449,6 +453,60 @@ class MockDatabaseTest {
     }
 
     /**
+     * Test that adding a trophy to incorrect user throw an error
+     */
+    @Test
+    fun addTrophyIncorrectUserId() {
+        val database = MockDatabase()
+
+        assertThrows(Exception::class.java) {
+            database.addTrophy(
+                "incorrect",
+                Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2),
+            ).get()
+        }
+    }
+
+    /**
+     * Test that adding a trophy is correctly added
+     */
+    @Test
+    fun addTrophyCorrectly() {
+        val database = MockDatabase()
+        val trophy = Trophy("12", "name", "description", LocalDate.of(2000, 2, 21), 2)
+        val userId = database.MOCK_USERS[0].userId!!
+        database.addTrophy(userId, trophy).get()
+        assertEquals(listOf(trophy), database.users[userId]?.trophies)
+    }
+
+    /**
+     * Test that adding a milestone to incorrect user throw an error
+     */
+    @Test
+    fun addMilestoneIncorrectUserId() {
+        val database = MockDatabase()
+
+        assertThrows(Exception::class.java) {
+            database.addMilestone(
+                "incorrect",
+                MilestoneEnum.HUNDRED_KILOMETERS,
+                LocalDate.of(2000, 2, 21),
+            ).get()
+        }
+    }
+
+    /**
+     * Test that adding a milestone is correctly added
+     */
+    @Test
+    fun addMilestoneCorrectly() {
+        val database = MockDatabase()
+        val userId = database.MOCK_USERS[0].userId!!
+        database.addMilestone(userId, MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21)).get()
+        assertEquals(listOf(MilestoneData(MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 21))), database.users[userId]?.milestones)
+    }
+
+    /**
      * Test if removing a friend to the friendsList is correctly removed
      */
     @Test
@@ -524,15 +582,15 @@ class MockDatabaseTest {
     /**
      * Test if adding a run with a startTime equal to an already stored run replaces the run
      * This behavior is the one of the Firebase
-     * TODO does not work
      */
-    /*@Test
+    @Test
     fun addingNewRunWithSameStartingTimeReplacesOldRun() {
         val database = MockDatabase()
         val newRun = Run(
-            Path(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0))),
+            Path(listOf(listOf(LatLng(2.0, 3.0), LatLng(3.0, 4.0), LatLng(4.0, 3.0)))),
             10,
-            10 + 2e6.toLong(),
+            1e6.toLong(),
+            1e6.toLong() + 10,
         )
         database.addRunToHistory(userIdTest, newRun)
 
@@ -542,7 +600,7 @@ class MockDatabaseTest {
             expectedHistory,
             database.users[userIdTest]?.runs,
         )
-    }*/
+    }
 
     /**
      * Test if removing a run which does not exist does nothing, as expected
@@ -621,25 +679,6 @@ class MockDatabaseTest {
             added.paths,
             1,
         )
-    }
-
-    /**
-     * Test if the achievements are update correctly
-     */
-    @Test
-    fun updateUserAchievementsCorrect() {
-        val database = MockDatabase()
-        /*
-        database.updateUserAchievements(userIdTest, 10.0, 50.0).get()
-        val userAccount = database.users[database.userIdTest]!!
-        assertEquals(userAccount.getTotalDistance(), database.totalDistanceTest + 10.0, 0.001)
-        assertEquals(
-            userAccount.getTotalActivityTime(),
-            database.totalActivityTimeTest + 50.0,
-            0.001,
-        )
-        assertEquals(userAccount.getTotalNbOfPaths(), database.totalNbOfPathsTest + 1)
-        */
     }
 
     /**
@@ -835,6 +874,29 @@ class MockDatabaseTest {
         val tournamentId = "NotAnID"
         val userId = "NotAnID"
         database.removeUserFromTournament(userId, tournamentId).get()
+    }
+
+    /**
+     * Test if trying to retrieve an non-existing tournament from the database throws.
+     */
+    @Test
+    fun getTournamentThatDoesNotExistThrows() {
+        val database = MockDatabase()
+        val tournamentId = "NotAnID"
+        assertThrows(Throwable::class.java) {
+            database.getTournament(tournamentId).get()
+        }
+    }
+
+    /**
+     * Test if retrieving an existing tournament from the database returns the tournament.
+     */
+    @Test
+    fun getTournamentThatExistsReturnsTheTournament() {
+        val database = MockDatabase()
+        val expectedTournament = database.mockTournament
+        val expectedTournamentId = expectedTournament.id
+        assertEquals(expectedTournament, database.getTournament(expectedTournamentId).get())
     }
 
     /**

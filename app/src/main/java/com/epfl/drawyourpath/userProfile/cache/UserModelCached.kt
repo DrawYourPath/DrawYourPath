@@ -8,12 +8,16 @@ import androidx.lifecycle.*
 import androidx.room.Room
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
+import com.epfl.drawyourpath.challenge.milestone.Milestone
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEntity
+import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
+import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.cache.RunEntity
 import com.epfl.drawyourpath.userProfile.UserProfile
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoalEntity
 import com.epfl.drawyourpath.utils.Utils
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
@@ -38,7 +42,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private var database: Database = FirebaseDatabase()
 
     // room database
-    private val roomDatabase = Room.databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME).fallbackToDestructiveMigration().build()
+    private val roomDatabase =
+        Room.databaseBuilder(application, UserDatabase::class.java, UserDatabase.NAME)
+            .fallbackToDestructiveMigration().build()
 
     // room database user
     private val userCache = roomDatabase.userDao()
@@ -61,17 +67,24 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
     // dailyGoal
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
-        dailyGoalCache.getDailyGoalById(user.userId).map {
-            getTodayDailyGoal(user.goals, it.firstOrNull())
+        dailyGoalCache.getDailyGoalById(user.userId).map { entities ->
+            getTodayDailyGoal(user.goals, entities.maxByOrNull { it.date })
         }
     }
 
-    // runs
-    private val runHistory: MutableLiveData<List<Run>> = MutableLiveData(listOf())
-    // TODO change this in future task
-    /*private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
-        runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }
-    }*/
+    // run
+    private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
+        runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }.sortedByDescending { it.getStartTime() }
+    }
+
+    // trophies TODO remove sample
+    private val trophies: MutableLiveData<List<Trophy>> = MutableLiveData(Trophy.sample)
+
+    // milestones
+    private val milestones: LiveData<List<Milestone>> =
+        _currentUserID.switchMap { dailyGoalCache.getMilestonesById(it) }.map { entities ->
+            entities.map { Milestone(it) }
+        }
 
     /**
      * This function will create a new user
@@ -88,6 +101,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
                 listOf(DailyGoalEntity(DailyGoal(userProfile.goals), userProfile.userId)),
                 listOf(),
                 listOf(),
+                listOf(),
             )
         }
     }
@@ -100,14 +114,35 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         checkCurrentUser(false)
         setUserId(userId)
         return database.getUserData(userId).thenApplyAsync { userData ->
-            val runs = RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
+            val runs =
+                RunEntity.fromRunsToEntities(userData.userId ?: userId, userData.runs ?: listOf())
             userCache.insertAll(
                 UserEntity(userData, userId),
                 userData.dailyGoals?.map { DailyGoalEntity(it, userId) } ?: listOf(),
+                fromMilestoneDataToEntity(userId = userId, milestonesData = userData.milestones),
                 runs.map { it.first },
                 runs.map { it.second }.flatten(),
             )
         }
+    }
+
+    /**
+     * Helper function to transform MilestoneData into Milestone entities
+     * @param milestoneData list of milestone data
+     * @param userId of the user who passed the milestones
+     * @return a list of milestone entities
+     */
+    private fun fromMilestoneDataToEntity(
+        userId: String,
+        milestonesData: List<MilestoneData>?,
+    ): List<MilestoneEntity> {
+        return milestonesData?.map { milestone ->
+            MilestoneEntity(
+                userId = userId,
+                milestone = Utils.getStringFromALL_CAPS(milestone.milestone!!.name),
+                date = milestone.date!!.toEpochDay(),
+            )
+        } ?: emptyList()
     }
 
     /**
@@ -147,14 +182,27 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      */
     fun getRunHistory(): LiveData<List<Run>> {
         checkCurrentUser()
-        CompletableFuture.supplyAsync {
-            runHistory.postValue(
-                runCache.getAllRunsAndPoints(currentUserID!!).map {
-                    RunEntity.fromEntityToRun(it.key, it.value)
-                }.sortedByDescending { it.getStartTime() },
-            )
-        }
         return runHistory
+    }
+
+    /**
+     * get the trophies
+     *
+     * @return the [LiveData] of a list of [Trophy]
+     */
+    fun getTrophies(): LiveData<List<Trophy>> {
+        checkCurrentUser()
+        return trophies
+    }
+
+    /**
+     * get the milestones
+     *
+     * @return the [LiveData] of a list of [Milestone]
+     */
+    fun getMilestones(): LiveData<List<Milestone>> {
+        checkCurrentUser()
+        return milestones
     }
 
     /**
@@ -231,16 +279,42 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
 
         val future = CompletableFuture.supplyAsync {
             val runs = RunEntity.fromRunsToEntities(currentUserID!!, listOf(run), false)
-            dailyGoalCache.addRunAndUpdateProgress(currentUserID!!, date, UserGoals(1, distanceInKilometer, timeInMinute), runs[0].first, runs[0].second)
+            dailyGoalCache.addRunAndUpdateProgress(
+                currentUserID!!,
+                date,
+                UserGoals(1, distanceInKilometer, timeInMinute),
+                runs[0].first,
+                runs[0].second,
+            )
         }
-        future.thenComposeAsync {
-            database.addDailyGoal(currentUserID!!, DailyGoal(it))
+        future.thenApplyAsync {
+            database.addDailyGoal(currentUserID!!, DailyGoal(it.first))
+            it.second
+        }.thenComposeAsync {
+            addListMilestones(it)
         }.thenComposeAsync {
             database.addRunToHistory(currentUserID!!, run)
         }.thenApplyAsync {
             runCache.runSynced(currentUserID!!, run.getStartTime())
         }
         return future.thenApply {}
+    }
+
+    /**
+     * Helper function to add all the milestones in the database
+     * @param milestones list of milestones to add in the database
+     * @return a completable future that indicate if the the milesstones were correctly added
+     */
+    private fun addListMilestones(milestones: List<MilestoneEntity>): CompletableFuture<Void> {
+        return CompletableFuture.allOf(
+            *milestones.map {
+                database.addMilestone(
+                    it.userId,
+                    MilestoneEnum.valueOf(value = Utils.getALL_CAPSFromString(it.milestone)),
+                    LocalDate.ofEpochDay(it.date),
+                )
+            }.toTypedArray(),
+        )
     }
 
     /**

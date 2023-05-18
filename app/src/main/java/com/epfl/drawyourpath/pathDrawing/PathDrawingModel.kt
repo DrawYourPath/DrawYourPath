@@ -117,6 +117,14 @@ class PathDrawingModel : ViewModel() {
         timeIntervalPointAdded = interval
     }
 
+    /**
+     * clear the run
+     */
+    fun clearRun() {
+        resultingRun = Run(path = Path(), startTime = 0, duration = 0L, endTime = 1)
+        _run.postValue(resultingRun)
+    }
+
     private fun getAndSetStartTime(): Long {
         startTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
         return startTime!!

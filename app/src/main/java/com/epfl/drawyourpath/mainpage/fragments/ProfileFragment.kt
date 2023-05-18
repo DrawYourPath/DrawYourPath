@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.challenge.Statistics
-import com.epfl.drawyourpath.challenge.TrophyDialog
+import com.epfl.drawyourpath.challenge.trophy.TrophyDialog
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.qrcode.generateQR

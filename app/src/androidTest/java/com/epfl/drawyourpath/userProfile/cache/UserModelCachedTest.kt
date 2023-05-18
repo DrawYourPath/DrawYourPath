@@ -7,6 +7,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
+import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import com.epfl.drawyourpath.database.UserData
@@ -14,7 +15,6 @@ import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.UserProfile
-import com.epfl.drawyourpath.userProfile.dailygoal.DailyGoal
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
@@ -63,6 +63,8 @@ class UserModelCachedTest {
                 100 + 10,
                 duration = 1286,
                 100 + 10 + 1286,
+                "goalpost",
+                0.698532,
             ),
         ),
         listOf(
@@ -103,8 +105,7 @@ class UserModelCachedTest {
         waitUntilAllThreadAreDone()
         // check that it is the correct user
         assertEqualUser(testUserModel, user.getUser().getOrAwaitValue())
-        // TODO future task
-        // assertEqualRun(testUserModel.runs!!, user.getRunHistory().getOrAwaitValue())
+        assertEqualRun(testUserModel.runs!!, user.getRunHistory().getOrAwaitValue())
         // set non working database
         user.setDatabase(MockNonWorkingDatabase())
         // set current user to new user fom cache
@@ -220,16 +221,12 @@ class UserModelCachedTest {
         assertEqualUser(
             testUserModel,
             user.getUser().getOrAwaitValue(),
-            /*addDistanceProgress = distance,
-            addTimeProgress = time,
-            addPathProgress = 1,*/
         )
         assertEquals(
             newUser.dailyGoals!![0].copy(distance = distance, time = time, paths = 1),
             user.getTodayDailyGoal().getOrAwaitValue(),
         )
-        // TODO future task
-        // assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(0, run) }, user.getRunHistory().getOrAwaitValue())
+        assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(0, run) }, user.getRunHistory().getOrAwaitValue())
     }
 
     @Test
@@ -245,8 +242,7 @@ class UserModelCachedTest {
             newUser.dailyGoals!![0].copy(distance = distance, time = time, paths = 1),
             user.getTodayDailyGoal().getOrAwaitValue(),
         )
-        // TODO future task
-        // assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(0, run) }, user.getRunHistory().getOrAwaitValue())
+        assertEqualRun(testUserModel.runs!!.toMutableList().also { it.add(0, run) }, user.getRunHistory().getOrAwaitValue())
     }
 
     @Test
@@ -297,18 +293,16 @@ class UserModelCachedTest {
     private fun assertEqualRun(expected: List<Run>, actual: List<Run>) {
         expected.forEachIndexed { index, run ->
             assertEquals(run.getStartTime(), actual[index].getStartTime())
+            assertEquals(run.getDuration(), actual[index].getDuration())
             assertEquals(run.getEndTime(), actual[index].getEndTime())
             assertEqualPath(run.getPath(), actual[index].getPath())
+            assertEquals(run.predictedShape, actual[index].predictedShape)
+            assertEquals(run.similarityScore, actual[index].similarityScore, 0.001)
         }
     }
 
     private fun assertEqualPath(expected: Path, actual: Path) {
-        expected.getPoints().forEachIndexed { index, section ->
-            section.forEachIndexed { indexSection, latLng ->
-                assertEquals(latLng.latitude, actual.getPoints()[index][indexSection].latitude, 0.00001)
-                assertEquals(latLng.longitude, actual.getPoints()[index][indexSection].longitude, 0.00001)
-            }
-        }
+        assertEquals(expected.getPoints(), actual.getPoints())
     }
 
     /**
