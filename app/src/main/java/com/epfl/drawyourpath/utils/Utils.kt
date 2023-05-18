@@ -2,8 +2,6 @@ package com.epfl.drawyourpath.utils
 
 import android.annotation.SuppressLint
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.*
 import android.location.Location
 import androidx.core.graphics.drawable.toBitmap

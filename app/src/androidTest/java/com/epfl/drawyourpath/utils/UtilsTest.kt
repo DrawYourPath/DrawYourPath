@@ -11,8 +11,6 @@ import com.google.mlkit.vision.digitalink.Ink
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.*
 import org.junit.Test
 import java.time.LocalDate
