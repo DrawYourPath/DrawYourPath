@@ -303,8 +303,6 @@ object FirebaseDatabaseUtils {
             return null
         }
 
-
-
         return Tournament(
             id,
             name,

@@ -618,6 +618,4 @@ class FirebaseDatabaseUtilsTest {
             .thenReturn(mockVisibility)
         assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
     }
-
-
 }
