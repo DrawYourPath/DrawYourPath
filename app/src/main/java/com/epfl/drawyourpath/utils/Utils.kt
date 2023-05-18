@@ -402,16 +402,14 @@ object Utils {
      * @return A similar Path with the least useful points removed.
      */
     fun reducePath(path: Path, maxError: Float = 0.01F): Path {
-        val reducedPoints = mutableListOf(listOf<LatLng>())
+        val reducedPoints = mutableListOf<List<LatLng>>()
         if (path.size() <= 2) {
-            return Path(path.getPoints())
+            return path
         }
-
         val epsilon = maxError * path.getDistance().toFloat()
         for (section in path.getPoints()) {
             reducedPoints.add(reduceSection(section, epsilon))
         }
-        reducedPoints.removeFirst()
         return Path(reducedPoints.toList())
     }
 
@@ -424,8 +422,7 @@ object Utils {
     fun reduceSection(section: List<LatLng>, epsilon: Float): List<LatLng> {
         val reducedPointList = mutableListOf<LatLng>()
         if (section.size <= 2) {
-            reducedPointList.addAll(section)
-            return reducedPointList.toList()
+            return section
         }
 
         val distances = distancesToSegment(section.subList(1, section.size - 1), section.first(), section.last())
@@ -463,7 +460,7 @@ object Utils {
         // Rotate the end point to be aligned with the equator
         newEnd = rotateXAxis(newEnd.latitude, newEnd.longitude, -anglePlane)
 
-        var distances = mutableListOf<Float>()
+        val distances = mutableListOf<Float>()
         for (point in points) {
             // Translate to put the start at the origin and rotate to put the segment on the equator
             val newPoint = rotateXAxis(
@@ -472,7 +469,7 @@ object Utils {
                 -anglePlane,
             )
             // Compute the distance to the segment case by case
-            var results = FloatArray(3)
+            val results = FloatArray(3)
             if (newPoint.longitude < 0) {
                 Location.distanceBetween(start.latitude, start.longitude, point.latitude, point.longitude, results)
             } else if (newPoint.longitude > newEnd.longitude) {
@@ -500,12 +497,12 @@ object Utils {
         val y = cos(latRadian) * sin(lonRadian)
         val z = sin(latRadian)
         // Apply rotation along the X axis (equivalent to a 2D rotation on y and z)
-        val newX = x
+        // This operation does not modify the x coordinate
         val newY = cos(angle) * y - sin(angle) * z
         val newZ = sin(angle) * y + cos(angle) * z
         // Transform back to latitude and longitude
         val newLat = asin(newZ)
-        val newLon = atan2(newY, newX)
+        val newLon = atan2(newY, x)
         return LatLng(newLat * 180 / PI, newLon * 180 / PI)
     }
 }
