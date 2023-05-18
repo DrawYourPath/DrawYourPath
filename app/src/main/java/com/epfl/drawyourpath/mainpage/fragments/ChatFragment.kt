@@ -78,7 +78,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
                 // When a chat preview is selected, convert it to a chat and open the ChatDetailFragment
                 chatPreviewToChat(database, selectedChatPreview).thenAccept { chat ->
                     // Create a new instance of ChatDetailFragment
-                    val chatDetailFragment = ChatOpenFragment.newInstance(chat)
+                    val chatDetailFragment = ChatOpenFragment.newInstance(chat, selectedChatPreview.conversationId!!)
 
                     // Replace the current fragment with the ChatDetailFragment
                     requireActivity().runOnUiThread {
