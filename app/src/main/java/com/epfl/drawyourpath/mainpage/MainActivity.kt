@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
             replaceFragment<PathDrawingContainerFragment>(
                 Bundle().also {
                     it.putLong(PathDrawingContainerFragment.EXTRA_COUNTDOWN_DURATION, 0L)
-                }
+                },
             )
         } else {
             replaceFragment<MainFragment>()
