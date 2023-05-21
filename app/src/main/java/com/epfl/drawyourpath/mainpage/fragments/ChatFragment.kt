@@ -70,28 +70,29 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
         val userId = currentUser.getUid()
 
         // Get user data and update chatList
-        getUserChatPreviews(database, userId).thenAccept { chatPreviews ->
-            chatList.clear()
-            chatList.addAll(chatPreviews)
-            chatAdapter.notifyDataSetChanged()
+        getUserChatPreviews(database, userId).observe(viewLifecycleOwner){previews ->
+            previews.map {
+                it.observe(viewLifecycleOwner){preview ->
+                    chatList.filter { it.conversationId != preview.conversationId }
+                    chatList.add(preview)
+                    chatAdapter.notifyDataSetChanged()
+                }
+            }
         }
 
         // code related to the tranzition to a new fragment when a chat is selected and to delete a chat when the delete button is clicked
         chatAdapter = ChatAdapter(
             chatList,
             { selectedChatPreview ->
-                // When a chat preview is selected, convert it to a chat and open the ChatDetailFragment
-                chatPreviewToChat(database, selectedChatPreview).observe(viewLifecycleOwner){chat->
-                    // Create a new instance of ChatDetailFragment
-                    val chatDetailFragment = ChatOpenFragment.newInstance(chat, selectedChatPreview.conversationId!!)
+                // Create a new instance of ChatDetailFragment
+                val chatDetailFragment = ChatOpenFragment.newInstance(selectedChatPreview.conversationId!!)
 
-                    // Replace the current fragment with the ChatDetailFragment
-                    requireActivity().runOnUiThread {
-                        requireActivity().supportFragmentManager.beginTransaction()
-                            .replace(R.id.fragmentContainerView, chatDetailFragment)
-                            .addToBackStack(null) // Add the transaction to the back stack
-                            .commit()
-                    }
+                // Replace the current fragment with the ChatDetailFragment
+                requireActivity().runOnUiThread {
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainerView, chatDetailFragment)
+                        .addToBackStack(null) // Add the transaction to the back stack
+                        .commit()
                 }
             },
             { selectedChatPreviewToDelete ->
@@ -195,75 +196,17 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
      *
      * @param database The Database object used to fetch user data and chat previews.
      * @param userId The ID of the user whose chat previews are to be fetched.
-     * @return A CompletableFuture that contains a list of ChatPreview objects when completed.
+     * @return A live data object that contains the list of chat previews
      */
     fun getUserChatPreviews(
         database: Database,
         userId: String,
-    ): CompletableFuture<List<ChatPreview>> {
-        // Return a CompletableFuture that fetches the user data from the database
-        return database.getUserData(userId)
-            .thenCompose { userData ->
-                // Get the list of conversation IDs associated with the user
-                // If the user's chatList is null, use an empty list
-                val chatList = userData.chatList ?: emptyList()
-
-                // Create a list of CompletableFuture objects, each fetching a chat preview for a conversation ID
-                val chatPreviewFutures = chatList.map { conversationId ->
-                    database.getChatPreview(conversationId)
-                }
-
-                // Create a new CompletableFuture that completes when all chat preview futures complete
-                CompletableFuture.allOf(*chatPreviewFutures.toTypedArray())
-                    .thenCompose {
-                        CompletableFuture.allOf(*chatPreviewFutures.toTypedArray())
-                    }.thenApply { listMilestones ->
-                        // Create a list of ChatPreview objects from the completed futures
-                        chatPreviewFutures.mapNotNull { future ->
-                            try {
-                                future.get()
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Error while getting chat preview: ", e)
-                                null
-                            }
-                        }
-                    }
-            }
-    }
-
-    /**
-     * This function converts a ChatPreview object to a full Chat object.
-     * It fetches the actual messages of the chat from the database and adds them to the Chat object.
-     *
-     * @param database The Database object used to fetch chat messages.
-     * @param chatPreview The ChatPreview object to be converted into a Chat object.
-     * @return Live data iobject that contains the chat
-     * @throws IllegalArgumentException If the conversationId in the chatPreview is null.
-     */
-    fun chatPreviewToChat(database: Database, chatPreview: ChatPreview): LiveData<Chat> {
-        // Get the conversationId from the chatPreview
-        val conversationId = chatPreview.conversationId
-
-        // If conversationId is null, throw an IllegalArgumentException
-        if (conversationId == null) {
-            throw IllegalArgumentException("Invalid conversationId")
+    ): LiveData<List<LiveData<ChatPreview>>> {
+        val listPreviews = MutableLiveData<List<LiveData<ChatPreview>>>()
+        database.getChatList(userId).observe(viewLifecycleOwner){chats ->
+            val previews = chats.map { database.getChatPreview(conversationId = it) }
+            listPreviews.postValue(previews)
         }
-
-        // Return a CompletableFuture that fetches the chat messages from the database
-        // and adds them to a new Chat object
-        val messageListener = database.getChatMessages(conversationId)
-        // Create a new Chat object
-        val liveChat = MutableLiveData<Chat>()
-
-        // For each message in the messages list, add it to the chat
-        messageListener.observe(viewLifecycleOwner) {messagesList->
-            val chat = Chat()
-            messagesList.forEach{message ->
-                chat.addMessage(message)
-            }
-            liveChat.postValue(chat)
-
-        }
-        return liveChat
+        return listPreviews
     }
 }

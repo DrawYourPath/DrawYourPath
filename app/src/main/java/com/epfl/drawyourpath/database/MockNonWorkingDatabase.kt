@@ -131,8 +131,14 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview> {
-        return failedFuture()
+    override fun getChatPreview(conversationId: String): LiveData<ChatPreview> {
+        //no error in this function
+        return MutableLiveData()
+    }
+
+    override fun getChatList(userId: String): LiveData<List<String>> {
+        //no error in this function
+        return MutableLiveData()
     }
 
     override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {
@@ -152,6 +158,7 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun getChatMessages(conversationId: String): LiveData<List<Message>> {
+        //no error in this function
         return MutableLiveData()
     }
 

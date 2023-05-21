@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
@@ -625,21 +626,61 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         }
     }
 
-    override fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview> {
-        val future = CompletableFuture<ChatPreview>()
-        chatPreview(conversationId).get()
-            .addOnSuccessListener { data ->
-                val preview = ChatPreview(
-                    conversationId = conversationId,
-                    title = data.child(FirebaseKeys.CHAT_TITLE).value as String?,
-                    lastMessage = FirebaseDatabaseUtils.transformMessage(
-                        data.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList()[0],
-                    ),
-                )
-                future.complete(preview)
+    override fun getChatPreview(conversationId: String): LiveData<ChatPreview> {
+        val previewValues = MutableLiveData<ChatPreview>()
+        val previewValueEventListener: ValueEventListener
+
+        //listener for data change
+        previewValueEventListener = object : ValueEventListener{
+            override fun onCancelled(error: DatabaseError) {
+                throw Error("The preview can't be fetched from the database.")
             }
-            .addOnFailureListener { future.completeExceptionally(it) }
-        return future
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists() && snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).exists()){
+                    val preview = ChatPreview(
+                        conversationId = conversationId,
+                        title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
+                        lastMessage = FirebaseDatabaseUtils.transformMessage(
+                                snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList().get(0),
+                            ),
+                        )
+                    previewValues.postValue(preview)
+                }else{
+                    val preview = ChatPreview(
+                        conversationId = conversationId,
+                        title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
+                        lastMessage = Message.createTextMessage("charging...", "charging...", LocalDate.now().toEpochDay()),
+                    )
+                    previewValues.postValue(preview)
+                }
+            }
+        }
+        //add the listener on the database previews
+        chatPreview(conversationId).ref.addValueEventListener(previewValueEventListener)
+        return previewValues
+    }
+
+    override fun getChatList(userId: String): LiveData<List<String>> {
+        val chatValues = MutableLiveData<List<String>>()
+        val chatValueEventListener: ValueEventListener
+
+        //listener for data change
+        chatValueEventListener = object : ValueEventListener{
+            override fun onCancelled(error: DatabaseError) {
+                throw Error("The list of chats can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    val chatList = snapshot.children.mapNotNull { it.key as String }
+                    chatValues.postValue(chatList)
+                }
+            }
+        }
+        //add the listener on the database messages
+        userProfile(userId).child(FirebaseKeys.USER_CHATS).ref.addValueEventListener(chatValueEventListener)
+        return chatValues
     }
 
     override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {

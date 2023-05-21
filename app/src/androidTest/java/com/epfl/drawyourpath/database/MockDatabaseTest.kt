@@ -22,6 +22,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
+import kotlin.math.exp
 import kotlin.streams.toList
 
 class MockDatabaseTest {
@@ -960,7 +961,7 @@ class MockDatabaseTest {
         val newExpectedMessages = pastChatMessages.map { it.chat!!.value } + newMessage.chat!!.value
         val obtainMessages = database.chatMessages.values.map { it.chat!!.value }
         assertEquals(newExpectedMessages , obtainMessages)
-        // test the chat list of the different members of the groupe
+        // test the chat list of the different members of the group
         assertEquals(
             if (pastUser0Chat == null) {
                 listOf("1")
@@ -995,7 +996,7 @@ class MockDatabaseTest {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_PREVIEWS[0].conversationId!!
         val chatPreview = database.getChatPreview(conversationId)
-        assertEquals(database.MOCK_CHAT_PREVIEWS[0], chatPreview.get())
+        assertEquals(database.MOCK_CHAT_PREVIEWS[0], chatPreview.value)
     }
 
     /**
@@ -1074,8 +1075,9 @@ class MockDatabaseTest {
     fun getChatMessagesCorrectly() {
         val database = MockDatabase()
         val conversationId = database.MOCK_CHAT_MESSAGES[0].conversationId!!
+        val expected = database.MOCK_CHAT_MESSAGES[0].copy().chat!!.value
         val messages = database.getChatMessages(conversationId)
-        assertEquals(database.MOCK_CHAT_MESSAGES[0].chat, messages)
+        assertEquals(expected, messages.value)
     }
 
     /**
@@ -1089,9 +1091,12 @@ class MockDatabaseTest {
         val date = LocalDate.now().atTime(LocalTime.now()).toEpochSecond(ZoneOffset.UTC)
         val messageSent = Message.createTextMessage(senderId, "Message Sent!", date)
         database.addChatMessage(conversationId, messageSent)
+        val expected = listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList())
+        //wait for the live data
+        Thread.sleep(10)
         // check the chat messages clist
         assertEquals(
-            listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].chat!!.value ?: emptyList()),
+            expected,
             database.chatMessages[conversationId]!!.chat!!.value,
         )
         // check the chat preview
@@ -1120,10 +1125,13 @@ class MockDatabaseTest {
             ),
             date,
         )
+        val expected = listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList())
         database.addChatMessage(conversationId, messageSent)
-        // check the chat messages clist
+        //wait for the livedata
+        Thread.sleep(10)
+        // check the chat messages list
         assertEquals(
-            listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].chat!!.value ?: emptyList()),
+            expected,
             database.chatMessages[conversationId]!!.chat!!.value,
         )
         // check the chat preview
@@ -1143,9 +1151,12 @@ class MockDatabaseTest {
         // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.value!!.get(1).timestamp
         database.removeChatMessage(conversationId, timestamp)
+        val expected = (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList()
+        //wait for the live data
+        Thread.sleep(10)
         // check the messages list
         assertEquals(
-            (database.MOCK_CHAT_MESSAGES[0].chat!!.value ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(),
+            expected,
             database.chatMessages[conversationId]!!.chat!!.value,
         )
         // check the preview
@@ -1162,9 +1173,11 @@ class MockDatabaseTest {
         // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.value!!.get(0).timestamp
         database.removeChatMessage(conversationId, timestamp)
+        //wait for the live data
+        Thread.sleep(10)
         // check the messages list
         assertEquals(
-            (database.MOCK_CHAT_MESSAGES[0].chat!!.value ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(),
+            (database.MOCK_CHAT_MESSAGES[0].chat?.value ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(),
             database.chatMessages[conversationId]!!.chat!!.value,
         )
         // check the preview
@@ -1191,10 +1204,13 @@ class MockDatabaseTest {
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.value!!.get(0).timestamp
         val newMessage = "edited message"
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
+        val expected = (database.MOCK_CHAT_MESSAGES[0].chat?.value ?: emptyList()).stream()
+            .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList()
+        //wait for the live data
+        Thread.sleep(10)
         // check the messages list
         assertEquals(
-            (database.MOCK_CHAT_MESSAGES[0].chat!!.value ?: emptyList()).stream()
-                .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList(),
+            expected,
             database.chatMessages[conversationId]!!.chat!!.value,
         )
         // check the preview
@@ -1220,15 +1236,26 @@ class MockDatabaseTest {
         // val senderId = database.MOCK_USERS[0].userId!!
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.value!!.get(1).timestamp
         val newMessage = "edited message"
+        val expected =  (database.MOCK_CHAT_MESSAGES[0].chat?.value ?: emptyList()).stream()
+            .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList()
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
+        Thread.sleep(10)
         // check the messages list
-        assertEquals(
-            (database.MOCK_CHAT_MESSAGES[0].chat!!.value ?: emptyList()).stream()
-                .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList(),
+        assertEquals(expected,
             database.chatMessages[conversationId]!!.chat!!.value,
         )
         // check the preview
         assertEquals(database.MOCK_CHAT_PREVIEWS[0], database.chatPreviews[conversationId])
+    }
+
+    /**
+     * Test if the correct list of conversation id is returned
+     */
+    @Test
+    fun getChatsListCorrectly(){
+        val database = MockDatabase()
+        val listConversationId = database.getChatList(database.MOCK_USERS[0].userId!!)
+        assertEquals(database.MOCK_USERS[0].chatList, listConversationId.value)
     }
 }
 

@@ -40,9 +40,12 @@ class MockDatabaseTestPhoto {
         val date = getCurrentDateTimeInEpochSeconds()
         val messageSent = Message.createPictureMessage(senderId, photoProfile, date)
         database.addChatMessage(conversationId, messageSent)
+        val expected = listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList())
+        //wait for the live data
+        Thread.sleep(10)
         // check the chat messages list
         Assert.assertEquals(
-            listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].chat!!.value ?: emptyList()),
+            expected,
             database.chatMessages[conversationId]!!.chat!!.value,
         )
         // check the chat preview

@@ -37,7 +37,7 @@ class MockNonWorkingDatabaseTest {
         mock.addTrophy("", Trophy("", "", "", LocalDate.of(2000, 2, 20), 1)).assertError(Unit)
         mock.addMilestone("", MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 20)).assertError(Unit)
         mock.createChatConversation("", emptyList(), "", "").assertError("")
-        mock.getChatPreview("").assertError(mockChatPreview)
+        mock.getChatPreview("")
         mock.setChatTitle("", "").assertError(Unit)
         mock.getChatMemberList("").assertError(mockChatMembers)
         mock.addChatMember("", "").assertError(Unit)
