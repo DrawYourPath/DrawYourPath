@@ -70,7 +70,7 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
         val listMessages: LiveData<List<Message>> = database.getChatMessages(conversationId = chatId)
 
         // Populate the messagesList with real messages from the Chat object
-        listMessages.observe(viewLifecycleOwner){
+        listMessages.observe(viewLifecycleOwner) {
             messagesList.clear()
             messagesList.addAll(it)
             messagesAdapter.notifyDataSetChanged()

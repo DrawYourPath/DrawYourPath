@@ -629,23 +629,23 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val previewValues = MutableLiveData<ChatPreview>()
         val previewValueEventListener: ValueEventListener
 
-        //listener for data change
-        previewValueEventListener = object : ValueEventListener{
+        // listener for data change
+        previewValueEventListener = object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
                 throw Error("The preview can't be fetched from the database.")
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists() && snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).exists()){
+                if (snapshot.exists() && snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).exists()) {
                     val preview = ChatPreview(
                         conversationId = conversationId,
                         title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
                         lastMessage = FirebaseDatabaseUtils.transformMessage(
-                                snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList().get(0),
-                            ),
-                        )
+                            snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList().get(0),
+                        ),
+                    )
                     previewValues.postValue(preview)
-                }else{
+                } else {
                     val preview = ChatPreview(
                         conversationId = conversationId,
                         title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
@@ -655,7 +655,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 }
             }
         }
-        //add the listener on the database previews
+        // add the listener on the database previews
         chatPreview(conversationId).ref.addValueEventListener(previewValueEventListener)
         return previewValues
     }
@@ -664,20 +664,20 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val chatValues = MutableLiveData<List<String>>()
         val chatValueEventListener: ValueEventListener
 
-        //listener for data change
-        chatValueEventListener = object : ValueEventListener{
+        // listener for data change
+        chatValueEventListener = object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
                 throw Error("The list of chats can't be fetched from the database.")
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists()){
+                if (snapshot.exists()) {
                     val chatList = snapshot.children.mapNotNull { it.key as String }
                     chatValues.postValue(chatList)
                 }
             }
         }
-        //add the listener on the database messages
+        // add the listener on the database messages
         userProfile(userId).child(FirebaseKeys.USER_CHATS).ref.addValueEventListener(chatValueEventListener)
         return chatValues
     }
@@ -735,14 +735,14 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val messagesValues = MutableLiveData<List<Message>>()
         val messagesValueEventListener: ValueEventListener
 
-        //listener for data change
-        messagesValueEventListener = object : ValueEventListener{
+        // listener for data change
+        messagesValueEventListener = object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
                 throw Error("The messages list can't be fetched from the database.")
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists()){
+                if (snapshot.exists()) {
                     val listMessage = snapshot.children.map { FirebaseDatabaseUtils.transformMessage(it) }
                     messagesValues.postValue(listMessage)
                 } else {
@@ -750,7 +750,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 }
             }
         }
-        //add the listener on the database messages
+        // add the listener on the database messages
         chatMessages(conversationId).ref.addValueEventListener(messagesValueEventListener)
         return messagesValues
     }

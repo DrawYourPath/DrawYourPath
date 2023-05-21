@@ -717,7 +717,7 @@ class MockDatabase : Database() {
 
     override fun getChatList(userId: String): LiveData<List<String>> {
         return MutableLiveData(
-            users[userId]!!.chatList
+            users[userId]!!.chatList,
         )
     }
 
@@ -848,15 +848,17 @@ class MockDatabase : Database() {
     ): CompletableFuture<Unit> {
         chatMessages[conversationId] = ChatMessages(
             conversationId = conversationId,
-            chat = MutableLiveData(listOf(
-                Message(
-                    id = firstMessage.id,
-                    content = firstMessage.content,
-                    senderId = firstMessage.senderId,
-                    timestamp = firstMessage.timestamp,
+            chat = MutableLiveData(
+                listOf(
+                    Message(
+                        id = firstMessage.id,
+                        content = firstMessage.content,
+                        senderId = firstMessage.senderId,
+                        timestamp = firstMessage.timestamp,
+                    ),
                 ),
             ),
-        ))
+        )
         return CompletableFuture.completedFuture(Unit)
     }
 

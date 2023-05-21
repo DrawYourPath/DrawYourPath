@@ -68,9 +68,9 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
         val userId = currentUser.getUid()
 
         // Get user data and update chatList
-        getUserChatPreviews(database, userId).observe(viewLifecycleOwner){previews ->
+        getUserChatPreviews(database, userId).observe(viewLifecycleOwner) { previews ->
             previews.map {
-                it.observe(viewLifecycleOwner){preview ->
+                it.observe(viewLifecycleOwner) { preview ->
                     chatList.filter { it.conversationId != preview.conversationId }
                     chatList.add(preview)
                     chatAdapter.notifyDataSetChanged()
@@ -201,7 +201,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
         userId: String,
     ): LiveData<List<LiveData<ChatPreview>>> {
         val listPreviews = MutableLiveData<List<LiveData<ChatPreview>>>()
-        database.getChatList(userId).observe(viewLifecycleOwner){chats ->
+        database.getChatList(userId).observe(viewLifecycleOwner) { chats ->
             val previews = chats.map { database.getChatPreview(conversationId = it) }
             listPreviews.postValue(previews)
         }
