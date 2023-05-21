@@ -961,7 +961,7 @@ class MockDatabaseTest {
         )
         val newExpectedMessages = pastChatMessages.map { it.chat!!.value } + newMessage.chat!!.value
         val obtainMessages = database.chatMessages.values.map { it.chat!!.value }
-        assertEquals(newExpectedMessages , obtainMessages)
+        assertEquals(newExpectedMessages, obtainMessages)
         // test the chat list of the different members of the group
         assertEquals(
             if (pastUser0Chat == null) {
