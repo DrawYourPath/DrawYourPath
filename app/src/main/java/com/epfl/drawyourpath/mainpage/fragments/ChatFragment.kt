@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
@@ -21,6 +23,7 @@ import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ChatAdapter
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
+import com.epfl.drawyourpath.utils.Utils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
@@ -78,7 +81,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
             chatList,
             { selectedChatPreview ->
                 // When a chat preview is selected, convert it to a chat and open the ChatDetailFragment
-                chatPreviewToChat(database, selectedChatPreview).thenAccept { chat ->
+                chatPreviewToChat(database, selectedChatPreview).observe(viewLifecycleOwner){chat->
                     // Create a new instance of ChatDetailFragment
                     val chatDetailFragment = ChatOpenFragment.newInstance(chat, selectedChatPreview.conversationId!!)
 
@@ -234,10 +237,10 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
      *
      * @param database The Database object used to fetch chat messages.
      * @param chatPreview The ChatPreview object to be converted into a Chat object.
-     * @return A CompletableFuture that contains the full Chat object when completed.
+     * @return Live data iobject that contains the chat
      * @throws IllegalArgumentException If the conversationId in the chatPreview is null.
      */
-    fun chatPreviewToChat(database: Database, chatPreview: ChatPreview): CompletableFuture<Chat> {
+    fun chatPreviewToChat(database: Database, chatPreview: ChatPreview): LiveData<Chat> {
         // Get the conversationId from the chatPreview
         val conversationId = chatPreview.conversationId
 
@@ -248,17 +251,19 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
 
         // Return a CompletableFuture that fetches the chat messages from the database
         // and adds them to a new Chat object
-        return database.getChatMessages(conversationId).thenApply { messages ->
-            // Create a new Chat object
-            val chat = Chat()
+        val messageListener = database.getChatMessages(conversationId)
+        // Create a new Chat object
+        val liveChat = MutableLiveData<Chat>()
 
-            // For each message in the messages list, add it to the chat
-            messages.forEach { message ->
+        // For each message in the messages list, add it to the chat
+        messageListener.observe(viewLifecycleOwner) {messagesList->
+            val chat = Chat()
+            messagesList.forEach{message ->
                 chat.addMessage(message)
             }
+            liveChat.postValue(chat)
 
-            // Return the full Chat object
-            chat
         }
+        return liveChat
     }
 }

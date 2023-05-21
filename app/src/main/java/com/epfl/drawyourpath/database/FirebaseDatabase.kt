@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
@@ -12,7 +13,10 @@ import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformMilestoneTo
 import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformTrophyToData
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDate
@@ -687,13 +691,28 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
-    override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
-        val future = CompletableFuture<List<Message>>()
-        chatMessages(conversationId).get().addOnSuccessListener { data ->
-            val listMessage = data.children.map { FirebaseDatabaseUtils.transformMessage(it) }
-            future.complete(listMessage)
-        }.addOnFailureListener { future.completeExceptionally(it) }
-        return future
+    override fun getChatMessages(conversationId: String): MutableLiveData<List<Message>> {
+        val messagesValues = MutableLiveData<List<Message>>()
+        val messagesValueEventListener: ValueEventListener
+
+        //listener for data change
+        messagesValueEventListener = object : ValueEventListener{
+            override fun onCancelled(error: DatabaseError) {
+                throw Error("The messages list can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    val listMessage = snapshot.children.map { FirebaseDatabaseUtils.transformMessage(it) }
+                    messagesValues.postValue(listMessage)
+                } else {
+                    messagesValues.postValue(emptyList())
+                }
+            }
+        }
+        //add the listener on the database messages
+        chatMessages(conversationId).ref.addValueEventListener(messagesValueEventListener)
+        return messagesValues
     }
 
     override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {

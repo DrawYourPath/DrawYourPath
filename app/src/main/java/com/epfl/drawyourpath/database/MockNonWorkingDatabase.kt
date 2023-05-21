@@ -1,6 +1,8 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
@@ -149,8 +151,8 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
-        return failedFuture()
+    override fun getChatMessages(conversationId: String): LiveData<List<Message>> {
+        return MutableLiveData()
     }
 
     override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {

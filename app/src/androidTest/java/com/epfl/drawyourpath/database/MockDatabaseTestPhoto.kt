@@ -42,8 +42,8 @@ class MockDatabaseTestPhoto {
         database.addChatMessage(conversationId, messageSent)
         // check the chat messages list
         Assert.assertEquals(
-            listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].chat ?: emptyList()),
-            database.chatMessages[conversationId]!!.chat,
+            listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].chat!!.value ?: emptyList()),
+            database.chatMessages[conversationId]!!.chat!!.value,
         )
         // check the chat preview
         Assert.assertEquals(

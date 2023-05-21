@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import androidx.lifecycle.LiveData
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
@@ -48,7 +49,7 @@ data class ChatMembers(
 
 data class ChatMessages(
     val conversationId: String? = null,
-    val chat: List<Message>? = null,
+    val chat: LiveData<List<Message>>? = null,
 )
 
 data class MilestoneData(
@@ -310,7 +311,7 @@ abstract class Database {
      * @param conversationId of the conversation
      * @return a future that contains the messages of the given conversation
      */
-    abstract fun getChatMessages(conversationId: String): CompletableFuture<List<Message>>
+    abstract fun getChatMessages(conversationId: String): LiveData<List<Message>>
 
     /**
      * Function used to add a message to the messages list of a given conversation with his conversationId
