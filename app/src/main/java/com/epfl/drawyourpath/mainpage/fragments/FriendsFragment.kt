@@ -110,7 +110,6 @@ class FriendsFragment(private var database: Database) : Fragment(R.layout.fragme
         }
     }
 
-
     /**
      * Sets up the SearchView and handles query text changes and query text submission.
      */
