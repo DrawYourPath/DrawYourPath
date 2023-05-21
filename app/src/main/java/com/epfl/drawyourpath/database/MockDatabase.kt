@@ -788,7 +788,8 @@ class MockDatabase : Database() {
     ): CompletableFuture<Unit> {
         // update the messages list
         val current = chatMessages[conversationId]!!
-        chatMessages[conversationId]!!.chat!!.postValue((current.chat?.value ?: emptyList()).stream().map {
+        chatMessages[conversationId]!!.chat!!.postValue(
+            (current.chat?.value ?: emptyList()).stream().map {
                 if (it.timestamp == messageId) it.copy(content = MessageContent.Text(message)) else it
             }.toList(),
         )

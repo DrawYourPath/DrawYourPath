@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.database.ChatPreview
@@ -23,7 +22,6 @@ import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ChatAdapter
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
-import com.epfl.drawyourpath.utils.Utils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
