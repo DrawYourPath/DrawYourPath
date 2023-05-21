@@ -96,6 +96,8 @@ class FriendsFragment(private var database: Database) : Fragment(R.layout.fragme
         val userAccountFuture = database.getUserData(currentUser.getUid())
 
         userAccountFuture.thenApply { userdata ->
+            if (!isAdded) return@thenApply
+
             val factory = FriendsViewModelFactory(userdata.userId!!, this.database)
             viewModel = ViewModelProvider(requireActivity(), factory)[FriendsViewModel::class.java]
 
@@ -107,6 +109,7 @@ class FriendsFragment(private var database: Database) : Fragment(R.layout.fragme
             Log.e(TAG, "Error while getting UserAccount: ", exception)
         }
     }
+
 
     /**
      * Sets up the SearchView and handles query text changes and query text submission.
