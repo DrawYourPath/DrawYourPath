@@ -71,7 +71,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
         getUserChatPreviews(database, userId).observe(viewLifecycleOwner) { previews ->
             previews.map { chatPreviews ->
                 chatPreviews.observe(viewLifecycleOwner) { preview ->
-                    chatList.removeIf { it.conversationId == preview.conversationId}
+                    chatList.removeIf { it.conversationId == preview.conversationId }
                     chatList.add(preview)
                     chatAdapter.notifyDataSetChanged()
                 }
