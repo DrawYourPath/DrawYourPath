@@ -169,4 +169,16 @@
     <string name="display_duration">Duration: %s</string>
     <string name="display_shape">Shape: %s</string>
     <string name="display_score">Score: %.2f</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="average_speed">Average Speed</string>
+    <string name="average_duration">Average Duration</string>
+    <string name="average_duration_in_s">Average Duration (s)</string>
+    <string name="average_distance_in_m">Average Distance (in m)</string>
+    <string name="average_distance">Average Distance</string>
+    <string name="distance_goal">Distance Goal</string>
+    <string name="distance_goal_in_m">Distance Goal (in m)</string>
+    <string name="activity_time_goal">Time Goal</string>
+    <string name="activity_time_goal_in_s">Time Goal (in s)</string>
+    <string name="path_number_goal">Path Num. Goal</string>
 </resources>

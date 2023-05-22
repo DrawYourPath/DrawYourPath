@@ -1,18 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_stats"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:gravity="center|top"
+android:id="@+id/fragment_stats"
+android:orientation="vertical">
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <Button
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:text="@string/changeLeftButton"
+        android:id="@+id/changeLeftStats"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:layout_margin="10dp"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
     <TextView
-        android:id="@+id/statsTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/stats"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text = "@string/path_drawn"
+        android:id="@+id/statsTitleView"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textSize="18sp" />
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+    <Button
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:translationZ="2dp"
+        android:text="@string/changeRightButton"
+        android:id="@+id/changeRightStats"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:layout_margin="10dp"/>
+</LinearLayout>
+<ToggleButton
+    android:layout_width="80dp"
+    android:layout_height="40dp"
+    android:checked="true"
+    android:textOn="@string/month"
+    android:textOff="@string/year"
+    android:id="@+id/toggleStats"/>
+<View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:background="@color/black"/>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:id="@+id/contentPreviewStats"/>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/contentDescriptionStats"/>
+</LinearLayout>

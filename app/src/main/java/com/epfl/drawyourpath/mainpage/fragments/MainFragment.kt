@@ -93,7 +93,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 )
 
                 // Display stats fragment
-                R.id.stats_menu_item -> replaceFragment<StatsFragment>()
+                R.id.stats_menu_item -> replaceFragment<StatsFragments>()
 
                 // Display challenge fragment
                 R.id.challenge_menu_item -> replaceFragment<ChallengeFragment>()
