@@ -66,11 +66,9 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
         messagesRecyclerView.adapter = messagesAdapter
 
         chatId = arguments?.getString(ARG_CHAT_ID) ?: ""
-        // Get the chat object from arguments
-        val listMessages: LiveData<List<Message>> = database.getChatMessages(conversationId = chatId)
 
         // Populate the messagesList with real messages from the Chat object
-        listMessages.observe(viewLifecycleOwner) {
+        database.getChatMessages(conversationId = chatId).observe(viewLifecycleOwner) {
             messagesList.clear()
             messagesList.addAll(it)
             messagesAdapter.notifyDataSetChanged()
