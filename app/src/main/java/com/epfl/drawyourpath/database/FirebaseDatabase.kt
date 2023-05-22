@@ -649,7 +649,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                     val preview = ChatPreview(
                         conversationId = conversationId,
                         title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
-                        lastMessage = Message.createTextMessage("charging...", "charging...", LocalDate.now().toEpochDay()),
+                        lastMessage = Message.createTextMessage("loading...", "loading...", LocalDate.now().toEpochDay()),
                     )
                     previewValues.postValue(preview)
                 }

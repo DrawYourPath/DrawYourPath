@@ -2,6 +2,7 @@ package com.epfl.drawyourpath.database
 
 import android.content.Context
 import android.graphics.Bitmap
+import androidx.arch.core.executor.testing.CountingTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import com.epfl.drawyourpath.R
@@ -17,11 +18,13 @@ import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
+import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
+import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
 class MockDatabaseTest {
@@ -38,6 +41,17 @@ class MockDatabaseTest {
     private val takenUsername = mockDatabase.MOCK_USERS[1].username!!
     private val dateOfBirthTest = MockDatabase.mockUser.birthDate!!
     private val runHistoryTest = MockDatabase.mockUser.runs!!
+
+    @get:Rule
+    val executorRule = CountingTaskExecutorRule()
+
+    /**
+     * wait for all thread to be done or throw a timeout error
+     */
+    private fun waitUntilAllThreadAreDone() {
+        executorRule.drainTasks(2, TimeUnit.SECONDS)
+        Thread.sleep(10)
+    }
 
     /**
      * Test if userId present in the database is given has present
@@ -961,6 +975,8 @@ class MockDatabaseTest {
         )
         val newExpectedMessages = pastChatMessages.map { it.chat!!.value } + newMessage.chat!!.value
         val obtainMessages = database.chatMessages.values.map { it.chat!!.value }
+        // wait for the live data
+        waitUntilAllThreadAreDone()
         assertEquals(newExpectedMessages, obtainMessages)
         // test the chat list of the different members of the group
         assertEquals(
@@ -1094,7 +1110,7 @@ class MockDatabaseTest {
         database.addChatMessage(conversationId, messageSent)
         val expected = listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList())
         // wait for the live data
-        Thread.sleep(10)
+        waitUntilAllThreadAreDone()
         // check the chat messages clist
         assertEquals(
             expected,
@@ -1129,7 +1145,7 @@ class MockDatabaseTest {
         val expected = listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList())
         database.addChatMessage(conversationId, messageSent)
         // wait for the livedata
-        Thread.sleep(10)
+        waitUntilAllThreadAreDone()
         // check the chat messages list
         assertEquals(
             expected,
@@ -1154,7 +1170,7 @@ class MockDatabaseTest {
         database.removeChatMessage(conversationId, timestamp)
         val expected = (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList()
         // wait for the live data
-        Thread.sleep(10)
+        waitUntilAllThreadAreDone()
         // check the messages list
         assertEquals(
             expected,
@@ -1175,7 +1191,7 @@ class MockDatabaseTest {
         val timestamp = database.MOCK_CHAT_MESSAGES[0].chat!!.value!!.get(0).timestamp
         database.removeChatMessage(conversationId, timestamp)
         // wait for the live data
-        Thread.sleep(10)
+        waitUntilAllThreadAreDone()
         // check the messages list
         assertEquals(
             (database.MOCK_CHAT_MESSAGES[0].chat?.value ?: emptyList()).stream().filter { it.timestamp != timestamp }.toList(),
@@ -1208,7 +1224,7 @@ class MockDatabaseTest {
         val expected = (database.MOCK_CHAT_MESSAGES[0].chat?.value ?: emptyList()).stream()
             .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList()
         // wait for the live data
-        Thread.sleep(10)
+        waitUntilAllThreadAreDone()
         // check the messages list
         assertEquals(
             expected,
@@ -1240,7 +1256,8 @@ class MockDatabaseTest {
         val expected = (database.MOCK_CHAT_MESSAGES[0].chat?.value ?: emptyList()).stream()
             .map { if (it.timestamp == timestamp) it.copy(content = MessageContent.Text(newMessage)) else it }.toList()
         database.modifyChatTextMessage(conversationId, timestamp, newMessage)
-        Thread.sleep(10)
+        // wait for the live data
+        waitUntilAllThreadAreDone()
         // check the messages list
         assertEquals(
             expected,
