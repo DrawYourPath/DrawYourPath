@@ -651,7 +651,7 @@ class StatsFragmentTest {
         // AVERAGE DURATION PER YEAR DISPLAYED
         checkAverageDurationYearView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
