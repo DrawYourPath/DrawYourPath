@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.core.widget.NestedScrollView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -188,8 +189,9 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      * create the tournament item of a subMenu
      */
     private fun createMenuItem(view: View, menu: SubMenu, tournament: Tournament) {
-        menu.add(tournament.name)
+        val item = menu.add(tournament.name)
             .setContentDescription("${tournament.name} details")
+            .setActionView(R.layout.item_tournament)
             .setOnMenuItemClickListener {
                 menuItemListener(view, tournament)
             }
