@@ -183,7 +183,7 @@
     <string name="path_number_goal">Path Num. Goal</string>
     <string name="average_speed_in_m_s_title">Average Speed (in m/s) :</string>
     <string name="average_duration_in_s_title">Average Duration (in s) :</string>
-    <string name="average_distance_in_m_title">Average Distance (in m) :</string>
+    <string name="average_distance_in_km_title">Average Distance (in km) :</string>
     <string name="number_of_distance_goal_reached">Number of distance goal reached :</string>
     <string name="number_of_time_goal_reached">Number of time goal reached :</string>
     <string name="number_of_path_goal_reached">Number of path goal reached :</string>

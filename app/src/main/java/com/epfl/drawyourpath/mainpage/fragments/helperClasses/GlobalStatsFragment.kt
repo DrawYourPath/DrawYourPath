@@ -41,13 +41,13 @@ class GlobalStatsFragment(
         this.textAvgDuration.text =
             "${getString(R.string.average_duration_in_s_title)} ${Utils.getStringDuration(time = averageDuration.toLong())}"
         this.textAvgDistance.text =
-            "${getString(R.string.average_distance_in_m_title)} ${Utils.getStringDistance(distance = averageDistance)}"
+            "${getString(R.string.average_distance_in_km_title)} ${Utils.getStringDistance(distance = averageDistance)}"
         this.textDistanceGoal.text =
-            "${getString(R.string.number_of_distance_goal_reached)} $totalDistanceGoal"
+            "${getString(R.string.number_of_distance_goal_reached)} ${totalDistanceGoal.toInt()}"
         this.textTimeGoal.text =
-            "${getString(R.string.number_of_time_goal_reached)} $totalActivityTimeGoal"
+            "${getString(R.string.number_of_time_goal_reached)} ${totalActivityTimeGoal.toInt()}"
         this.textPathGoal.text =
-            "${getString(R.string.number_of_path_goal_reached)} $totalPathNumberGoal"
+            "${getString(R.string.number_of_path_goal_reached)} ${totalPathNumberGoal.toInt()}"
     }
 
     /**
