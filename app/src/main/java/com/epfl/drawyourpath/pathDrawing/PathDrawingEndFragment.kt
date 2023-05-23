@@ -9,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.fragments.MainFragment
-import com.epfl.drawyourpath.mainpage.fragments.runStats.ShapePathDescriptionFragment
+import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ShapePathDescriptionFragment
 import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached

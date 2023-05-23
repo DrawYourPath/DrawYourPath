@@ -14,6 +14,8 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
+import com.epfl.drawyourpath.path.RunInfoStatsFragment
+import com.epfl.drawyourpath.mainpage.fragments.helperClasses.TableFromListFragment
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunsAdapter

@@ -47,22 +47,25 @@ android:orientation="vertical">
         android:textStyle="bold"
         android:textAlignment="center"
         android:textSize="24sp"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp" />
 </LinearLayout>
-<ToggleButton
-    android:layout_width="80dp"
-    android:layout_height="40dp"
-    android:checked="true"
-    android:textOn="@string/month"
-    android:textOff="@string/year"
-    android:id="@+id/toggleStats"/>
-<View
-    android:layout_width="match_parent"
-    android:layout_height="1dp"
-    android:background="@color/black"/>
-<FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="250dp"
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black" />
+
+    <ToggleButton
+        android:id="@+id/toggleStats"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:checked="true"
+        android:textOff="@string/year"
+        android:textOn="@string/month" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
     android:id="@+id/contentPreviewStats"/>
 <FrameLayout
     android:layout_width="match_parent"
