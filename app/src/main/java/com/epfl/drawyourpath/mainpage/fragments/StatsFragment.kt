@@ -356,7 +356,7 @@ class StatsFragment(
     }
 
     /**
-     * Helper function to adapt the view to display a graph and a table to display the total activity time goal per year.
+     * Helper function to adapt the view with a graph and a table to display the total activity time goal per year.
      */
     private fun showTotalActivityTimeGoalPerYear() {
         this.titleText.text = getString(R.string.activity_time_goal)
