@@ -51,7 +51,7 @@ class ChallengeFragmentTest {
 
     @Before
     fun clearDatabase() {
-        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("pm clear com.epfl.drawyourpath.package").close()
+        InstrumentationRegistry.getInstrumentation().targetContext.deleteDatabase("UserDatabase")
     }
 
     @Test
