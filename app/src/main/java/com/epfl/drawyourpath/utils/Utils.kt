@@ -11,10 +11,9 @@ import com.epfl.drawyourpath.machineLearning.DigitalInk
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
-import com.google.mlkit.vision.digitalink.Ink
+import com.google.mlkit.vision.digitalink.*
 import com.google.mlkit.vision.digitalink.Ink.Point
 import com.google.mlkit.vision.digitalink.Ink.Stroke
-import com.google.mlkit.vision.digitalink.RecognitionResult
 import java.io.ByteArrayOutputStream
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -421,7 +420,7 @@ object Utils {
     }
 
     /**
-     * get the recognition result of a run
+     * Get the recognition result of a run
      * @param run the run to recognize
      * @return the recognition result
      */
@@ -429,6 +428,38 @@ object Utils {
         return DigitalInk.downloadModelML().thenComposeAsync {
             DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
         }
+    }
+
+    /**
+     * Get the recognition result of a run
+     * @param run the run to recognize
+     * @return the recognition result
+     */
+    fun getBestRunRecognitionCandidate(run: Run): CompletableFuture<RecognitionCandidate> {
+        val bestCandidate = CompletableFuture<RecognitionCandidate>()
+        val ink = coordinatesToInk(run.getPath().getPoints())
+
+        val modelAutodraw = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.AUTODRAW).get()
+        val modelShapes = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.SHAPES).get()
+        val candidateAutodraw = DigitalInk.recognizeDrawingML(ink, modelAutodraw).get()
+        val candidateShapes = DigitalInk.recognizeDrawingML(ink, modelShapes).get()
+
+        if (candidateAutodraw.candidates.size > 0 && candidateShapes.candidates.size > 0) {
+            if (candidateAutodraw.candidates[0].score!! < candidateShapes.candidates[0].score!!) {
+                bestCandidate.complete(candidateAutodraw.candidates[0])
+            } else {
+                bestCandidate.complete(candidateShapes.candidates[0])
+            }
+        } else {
+            if (candidateAutodraw.candidates.size > 0) {
+                bestCandidate.complete(candidateAutodraw.candidates[0])
+            } else if (candidateShapes.candidates.size > 0) {
+                bestCandidate.complete(candidateShapes.candidates[0])
+            } else {
+                bestCandidate.completeExceptionally(Error("Could not recognize the drawing on the run"))
+            }
+        }
+        return bestCandidate
     }
 
     /**

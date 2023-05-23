@@ -1,7 +1,10 @@
 package com.epfl.drawyourpath.utils
 
+import com.epfl.drawyourpath.machineLearning.DigitalInk
 import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils.coordinatesToBitmap
+import com.epfl.drawyourpath.utils.Utils.getBestRunRecognitionCandidate
 import com.epfl.drawyourpath.utils.Utils.getBiggestPoint
 import com.epfl.drawyourpath.utils.Utils.getSmallestPoint
 import com.epfl.drawyourpath.utils.Utils.reducePath
@@ -11,6 +14,7 @@ import com.google.mlkit.vision.digitalink.Ink
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
 import org.hamcrest.Matchers.`is`
+import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Test
 import java.time.LocalDate
@@ -171,6 +175,55 @@ class UtilsTest {
                 LatLng(3.0, 3.0),
             ),
         )
+    }
+
+    @Test
+    fun testRecognizeTriangle() {
+        val sideLength = 0.01
+        val baseLat = 46.5185
+        val baseLng = 6.56177
+        // Draw square
+        val c0 = LatLng(baseLat, baseLng)
+        val c1 = LatLng(baseLat, baseLng + sideLength)
+        val c2 = LatLng(baseLat + sideLength, baseLng + sideLength)
+
+        val points = listOf(listOf(c0, c1, c2, c0))
+        val path = Path(points)
+        val startTime = System.currentTimeMillis()
+        val duration = 3000L
+        val endTime = startTime + duration
+        val run = Run(path, startTime, duration, endTime)
+
+        val result = getBestRunRecognitionCandidate(run).get()
+
+        assertNotNull(result)
+        assertEquals("ARROW", result.text)
+        assertEquals(0.64F, result.score!!, 0.1F)
+    }
+
+    @Test
+    fun testRecognizeSquare() {
+        val sideLength = 0.01
+        val baseLat = 46.5185
+        val baseLng = 6.56177
+        // Draw square
+        val c0 = LatLng(baseLat, baseLng)
+        val c1 = LatLng(baseLat, baseLng + sideLength)
+        val c2 = LatLng(baseLat + sideLength, baseLng + sideLength)
+        val c3 = LatLng(baseLat + sideLength, baseLng)
+
+        val points = listOf(listOf(c0, c1, c2, c3, c0))
+        val path = Path(points)
+        val startTime = System.currentTimeMillis()
+        val duration = 3000L
+        val endTime = startTime + duration
+        val run = Run(path, startTime, duration, endTime)
+
+        val result = getBestRunRecognitionCandidate(run).get()
+
+        assertNotNull(result)
+        assertEquals("ELLIPSE", result.text)
+        assertEquals(0.0F, result.score!!, 0.1F)
     }
 
     @Test
