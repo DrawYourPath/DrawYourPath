@@ -96,6 +96,8 @@ class FriendsFragment(private var database: Database) : Fragment(R.layout.fragme
         val userAccountFuture = database.getUserData(currentUser.getUid())
 
         userAccountFuture.thenApply { userdata ->
+            if (!isAdded) return@thenApply
+
             val factory = FriendsViewModelFactory(userdata.userId!!, this.database)
             viewModel = ViewModelProvider(requireActivity(), factory)[FriendsViewModel::class.java]
 

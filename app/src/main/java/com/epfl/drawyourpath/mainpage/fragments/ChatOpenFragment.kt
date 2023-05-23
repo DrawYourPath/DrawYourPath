@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.MockDatabase
@@ -65,13 +64,11 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
         messagesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         messagesRecyclerView.adapter = messagesAdapter
 
-        // Get the chat object from arguments
-        val chat: Chat? = arguments?.getSerializable(ARG_CHAT) as Chat?
         chatId = arguments?.getString(ARG_CHAT_ID) ?: ""
 
         // Populate the messagesList with real messages from the Chat object
-
-        chat?.getMessages()?.let {
+        database.getChatMessages(conversationId = chatId).observe(viewLifecycleOwner) {
+            messagesList.clear()
             messagesList.addAll(it)
             messagesAdapter.notifyDataSetChanged()
         }
@@ -81,8 +78,6 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
             if (messageText.isNotEmpty()) {
                 // Replace "your_sender_id" with the actual sender ID
                 val newMessage = Message.createTextMessage(userId, messageText, System.currentTimeMillis())
-                messagesList.add(newMessage)
-                messagesAdapter.notifyDataSetChanged()
                 messageEditText.setText("")
                 database.addChatMessage(chatId, newMessage)
             }
@@ -98,13 +93,11 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
     }
 
     companion object {
-        private const val ARG_CHAT = "arg_chat"
         private const val ARG_CHAT_ID = "arg_chat_id"
 
-        fun newInstance(chat: Chat, chatId: String): ChatOpenFragment {
+        fun newInstance(chatId: String): ChatOpenFragment {
             val fragment = ChatOpenFragment()
             val args = Bundle()
-            args.putSerializable(ARG_CHAT, chat)
             args.putString(ARG_CHAT_ID, chatId)
             fragment.arguments = args
             return fragment

@@ -1,6 +1,8 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
@@ -48,7 +50,7 @@ data class ChatMembers(
 
 data class ChatMessages(
     val conversationId: String? = null,
-    val chat: List<Message>? = null,
+    val chat: MutableLiveData<List<Message>>? = null,
 )
 
 data class MilestoneData(
@@ -268,11 +270,18 @@ abstract class Database {
     ): CompletableFuture<String>
 
     /**
+     * Function used to obtained the list of conversationId where the user with the given given userId is present.
+     * @param userId of the user
+     * @return a live data that contains a list of conversationId where the user is present.
+     */
+    abstract fun getChatList(userId: String): LiveData<List<String>>
+
+    /**
      * Function used to obtain the chat preview of a given conversation with his conversationId
      * @param conversationId that we want to obtain the chat preview
      * @return a future containing a chat preview object that contains the information of the chat preview
      */
-    abstract fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview>
+    abstract fun getChatPreview(conversationId: String): LiveData<ChatPreview>
 
     /**
      * Function used to modify the title of a given conversation with his conversationId
@@ -310,7 +319,7 @@ abstract class Database {
      * @param conversationId of the conversation
      * @return a future that contains the messages of the given conversation
      */
-    abstract fun getChatMessages(conversationId: String): CompletableFuture<List<Message>>
+    abstract fun getChatMessages(conversationId: String): LiveData<List<Message>>
 
     /**
      * Function used to add a message to the messages list of a given conversation with his conversationId
