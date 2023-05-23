@@ -16,57 +16,50 @@ class FriendsViewModel(private val userId: String, private val database: Databas
     // This is used to update the value internally within the ViewModel.
     private val _friendsList = MutableLiveData<List<Friend>>()
 
-    // The init block is executed when the ViewModel is created.
-    init {
+    /**
+     * Used to upadte the friend list value with the new friend list give in argument
+     * @param newFriendsList new value of the friendsList
+     */
+    fun loadFriends(newFriendsList: List<String>) {
+        // Use a mutable list to store the realFriends
+        val realFriends = mutableListOf<Friend>()
 
-        // Load friends asynchronously
-        loadFriends()
-    }
+        // Counter for tracking when all friends are loaded
+        var friendsLoaded = 0
 
-    private fun loadFriends() {
-        // Get the friend list from the UserModel
-        database.getUserData(userId).thenApplyAsync {
-            val friendsList = it.friendList ?: listOf()
-            // Use a mutable list to store the realFriends
-            val realFriends = mutableListOf<Friend>()
+        // Iterate through each userId in friendsList
+        for (userId in newFriendsList) {
+            // Get the username CompletableFuture
+            val usernameFuture = database.getUsername(userId)
 
-            // Counter for tracking when all friends are loaded
-            var friendsLoaded = 0
+            // When the CompletableFuture completes, update the list of friends
+            usernameFuture.whenComplete { username, exception ->
+                if (exception == null) {
+                    database.getUserData(userId).whenComplete { userdata, exception ->
+                        if (exception == null) {
+                            // Add the new Friend object to the realFriends list
+                            realFriends.add(
+                                Friend(
+                                    userdata.userId!!,
+                                    username,
+                                    userdata.picture?.let { pic -> Utils.decodePhoto(pic) },
+                                    true,
+                                ),
+                            )
 
-            // Iterate through each userId in friendsList
-            for (userId in friendsList) {
-                // Get the username CompletableFuture
-                val usernameFuture = database.getUsername(userId)
+                            // Increment the friendsLoaded counter
+                            friendsLoaded++
 
-                // When the CompletableFuture completes, update the list of friends
-                usernameFuture.whenComplete { username, exception ->
-                    if (exception == null) {
-                        database.getUserData(userId).whenComplete { userdata, exception ->
-                            if (exception == null) {
-                                // Add the new Friend object to the realFriends list
-                                realFriends.add(
-                                    Friend(
-                                        userdata.userId!!,
-                                        username,
-                                        userdata.picture?.let { pic -> Utils.decodePhoto(pic) },
-                                        true,
-                                    ),
-                                )
+                            // Check if all friends have been loaded
+                            if (friendsLoaded == newFriendsList.size) {
+                                // Concatenate the testFriends and realFriends lists
+                                allFriends = realFriends
 
-                                // Increment the friendsLoaded counter
-                                friendsLoaded++
-
-                                // Check if all friends have been loaded
-                                if (friendsLoaded == friendsList.size) {
-                                    // Concatenate the testFriends and realFriends lists
-                                    allFriends = realFriends
-
-                                    // Set the initial value of _friendsList to allFriends.
-                                    _friendsList.postValue(allFriends)
-                                }
-                            } else {
-                                // Handle the exception (e.g., log the error, show a message to the user, etc.)
+                                // Set the initial value of _friendsList to allFriends.
+                                _friendsList.postValue(allFriends)
                             }
+                        } else {
+                            // Handle the exception (e.g., log the error, show a message to the user, etc.)
                         }
                     }
                 }

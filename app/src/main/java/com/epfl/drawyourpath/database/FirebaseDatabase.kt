@@ -396,6 +396,31 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         )
     }
 
+    override fun getFriendsList(userId: String): LiveData<List<String>> {
+        val friendsValues = MutableLiveData<List<String>>()
+        val friendsValueEventListener: ValueEventListener
+
+        // listener for data change
+        friendsValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Error("The friends list of the user of userId $userId can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val friendsList: List<String> =
+                        FirebaseDatabaseUtils.getKeys(snapshot)
+                    friendsValues.postValue(friendsList)
+                } else {
+                    friendsValues.postValue(emptyList())
+                }
+            }
+        }
+        // add the listener on the database friendsList
+        userProfile(userId).child(FirebaseKeys.FRIENDS).ref.addValueEventListener(friendsValueEventListener)
+        return friendsValues
+    }
+
     override fun removeRunFromHistory(userId: String, run: Run): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
