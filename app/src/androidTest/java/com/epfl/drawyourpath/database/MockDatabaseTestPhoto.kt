@@ -24,7 +24,7 @@ class MockDatabaseTestPhoto {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
-        Thread.sleep(50)
+        Thread.sleep(100)
     }
 
     /**
@@ -53,8 +53,8 @@ class MockDatabaseTestPhoto {
         val senderId = database.MOCK_USERS[0].userId!!
         val date = getCurrentDateTimeInEpochSeconds()
         val messageSent = Message.createPictureMessage(senderId, photoProfile, date)
-        database.addChatMessage(conversationId, messageSent)
         val expected = listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList())
+        database.addChatMessage(conversationId, messageSent)
         // wait for the live data
         waitUntilAllThreadAreDone()
         // check the chat messages list

@@ -277,6 +277,13 @@ abstract class Database {
     abstract fun getChatList(userId: String): LiveData<List<String>>
 
     /**
+     * Function used to obtain the list of friends of the user with the given userId.
+     * @param userId of the user that we want to obtain the friends list
+     * @return a live data that contains the friends list(a list of friend's userId).
+     */
+    abstract fun getFriendsList(userId: String): LiveData<List<String>>
+
+    /**
      * Function used to obtain the chat preview of a given conversation with his conversationId
      * @param conversationId that we want to obtain the chat preview
      * @return a future containing a chat preview object that contains the information of the chat preview
