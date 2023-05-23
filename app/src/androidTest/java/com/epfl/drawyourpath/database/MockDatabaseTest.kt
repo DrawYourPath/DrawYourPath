@@ -50,7 +50,7 @@ class MockDatabaseTest {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
-        Thread.sleep(10)
+        Thread.sleep(50)
     }
 
     /**
