@@ -38,7 +38,7 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
         holder.mapImageView.setImageBitmap(Utils.coordinatesToBitmap(runCoordinates))
 
         // Load the image using Glide
-        
+
         Glide.with(holder.itemView.context)
             .load(getStaticMapUrl(runCoordinates, apiKey))
             .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
