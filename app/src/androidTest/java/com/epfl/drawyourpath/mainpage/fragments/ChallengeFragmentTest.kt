@@ -46,12 +46,12 @@ class ChallengeFragmentTest {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
-        Thread.sleep(10)
+        Thread.sleep(50)
     }
 
     @Before
     fun clearDatabase() {
-        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("pm clear com.epfl.drawyourpath.package").close()
+        InstrumentationRegistry.getInstrumentation().targetContext.deleteDatabase("UserDatabase")
     }
 
     @Test
