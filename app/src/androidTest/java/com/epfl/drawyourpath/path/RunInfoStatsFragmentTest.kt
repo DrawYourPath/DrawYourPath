@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.mainpage.fragments.runStats
+package com.epfl.drawyourpath.path
 
 import android.Manifest
 import android.content.Context
@@ -15,10 +15,6 @@ import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.TableFromListFragment
-import com.epfl.drawyourpath.path.Path
-import com.epfl.drawyourpath.path.Run
-import com.epfl.drawyourpath.path.RunInfoStatsFragment
-import com.epfl.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Rule
 import org.junit.Test

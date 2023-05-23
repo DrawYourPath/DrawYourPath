@@ -342,7 +342,7 @@ class StatsFragment(
     private fun showTotalDistanceGoalPerYear() {
         this.titleText.text = getString(R.string.distance_goal)
         val columnText = getString(R.string.year)
-        val lineText = getString(R.string.distance_goal_in_m)
+        val lineText = getString(R.string.distance_goal)
         // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the distance goal in function of the year
@@ -361,7 +361,7 @@ class StatsFragment(
     private fun showTotalActivityTimeGoalPerYear() {
         this.titleText.text = getString(R.string.activity_time_goal)
         val columnText = getString(R.string.year)
-        val lineText = getString(R.string.activity_time_goal_in_s)
+        val lineText = getString(R.string.activity_time_goal)
         // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the activity time goal in function of the year
