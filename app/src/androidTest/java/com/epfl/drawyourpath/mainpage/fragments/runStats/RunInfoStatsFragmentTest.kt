@@ -58,8 +58,8 @@ class RunInfoStatsFragmentTest {
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RunsAdapter.ViewHolder>(
                     0,
-                    ViewActions.click()
-                )
+                    ViewActions.click(),
+                ),
             )
 
         // Check fragment the fragment the displays run info is displayed

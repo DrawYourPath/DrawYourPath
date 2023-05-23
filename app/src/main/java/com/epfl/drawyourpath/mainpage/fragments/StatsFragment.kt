@@ -34,7 +34,7 @@ import com.epfl.drawyourpath.utils.Utils
  * @param totalPathNumberGoal total number of path number goal reached(used for test, default value is null)
  * @param totalPathNumberGoalPerYear number of path number goal reached per year(used for test, default value is null)
  */
-class StatsFragments(
+class StatsFragment(
     private val averageSpeed: Double? = null,
     private val averageSpeedPerMonth: Map<Double, Double>? = null,
     private val averageSpeedPerYear: Map<Double, Double>? = null,
@@ -402,7 +402,7 @@ class StatsFragments(
  * @param toggleStep step associate to the toggle button(0 if it is not defined, in cae of the general stats and the goals stats)(can be positive or negative)
  */
 private enum class StatsEnum(val index: Int, val rightStep: Int, val leftStep: Int, val toggleStep: Int) {
-    GLOBAL_STATS(index = 0,rightStep = 1, leftStep = -1, toggleStep = 0),
+    GLOBAL_STATS(index = 0, rightStep = 1, leftStep = -1, toggleStep = 0),
     AVERAGE_SPEED_PER_YEAR(index = 1, rightStep = 2, leftStep = -1, toggleStep = 1),
     AVERAGE_SPEED_PER_MONTH(index = 2, rightStep = 2, leftStep = -2, toggleStep = -1),
     AVERAGE_DURATION_PER_YEAR(index = 3, rightStep = 2, leftStep = -2, toggleStep = 1),
