@@ -169,6 +169,6 @@
     <string name="display_duration">Duration: %s</string>
     <string name="display_shape">Shape: %s</string>
     <string name="display_score">Score: %.2f</string>
-    <string name="register">register</string>
+    <string name="register">&#10010; register</string>
     <string name="check_mark">✔</string>
 </resources>

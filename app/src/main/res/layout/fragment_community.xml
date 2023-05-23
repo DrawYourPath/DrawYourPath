@@ -112,13 +112,24 @@
                                 android:layout_height="0dp"
                                 android:layout_weight="1" />
 
-                            <ToggleButton
-                                android:id="@+id/community_detail_toggle"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="5dp"
-                                android:textOff="@string/register"
-                                android:textOn="@string/check_mark"/>
+                                android:paddingHorizontal="5dp">
+
+                                <ToggleButton
+                                    android:id="@+id/community_detail_toggle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:minWidth="0dp"
+                                    android:minHeight="0dp"
+                                    android:textSize="12sp"
+                                    android:padding="10dp"
+                                    android:background="@drawable/toggle_register_tournament"
+                                    android:textOff="@string/register"
+                                    android:textOn="@string/check_mark" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -174,6 +185,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="false"
-        app:itemMaxLines="3"/>
+        app:itemMaxLines="3" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
