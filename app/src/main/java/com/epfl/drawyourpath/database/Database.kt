@@ -277,7 +277,7 @@ abstract class Database {
     abstract fun getChatList(userId: String): LiveData<List<String>>
 
     /**
-     * Function used to obtained the list of friends of the user with the given userId.
+     * Function used to obtain the list of friends of the user with the given userId.
      * @param userId of the user that we want to obtain the friends list
      * @return a live data that contains the friends list(a list of friend's userId).
      */
