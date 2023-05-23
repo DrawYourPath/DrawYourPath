@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -96,7 +95,7 @@ class FriendsFragment(private var database: Database) : Fragment(R.layout.fragme
         val factory = FriendsViewModelFactory(userId, this.database)
         viewModel = ViewModelProvider(requireActivity(), factory)[FriendsViewModel::class.java]
 
-        //get the live data of the friends list from the database
+        // get the live data of the friends list from the database
         database.getFriendsList(userId).observe(viewLifecycleOwner) { databaseFriendsList ->
             // Observe the friendsList LiveData from the ViewModel
             viewModel.loadFriends(databaseFriendsList)

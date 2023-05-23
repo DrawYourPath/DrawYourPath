@@ -142,7 +142,7 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun getFriendsList(userId: String): LiveData<List<String>> {
-        //no error in this function
+        // no error in this function
         return MutableLiveData()
     }
 
