@@ -8,9 +8,9 @@ import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Run
 import java.time.LocalDate
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 data class UserGoals(
@@ -181,7 +181,7 @@ abstract class Database {
 
     /**
      * This function is used to add a trophy to the user profile of the user in the database
-     * @param tropy to be stored in the database
+     * @param trophy to be stored in the database
      * @return a future to indicate if the trophy was correctly added to the user profile on the database
      */
     abstract fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit>
@@ -245,12 +245,42 @@ abstract class Database {
     ): CompletableFuture<Unit>
 
     /**
-     * Function used to retrieve the tournament corresponding to the ID.
+     * Function used to retrieve the tournament corresponding to the ID. USe only if you need to get
+     * everything about a tournament (including posts and participants). Otherwise, you should use
+     * [getTournamentInfo], [getTournamentPosts] or [getTournamentParticipantsId].
      * @param tournamentId the id of the tournaments to retrieve
      * @return a future that contains the tournament if successful, or an exception if an error
      * occurred with the db.
      */
     abstract fun getTournament(
+        tournamentId: String,
+    ): CompletableFuture<Tournament>
+
+    /**
+     * Function used to retrieve all posts from the tournament corresponding to the ID.
+     * @param tournamentId the id of the tournaments to retrieve
+     * @return a future that contains the list of the posts of the tournament.
+     */
+    abstract fun getTournamentPosts(
+        tournamentId: String,
+    ): CompletableFuture<List<TournamentPost>>
+
+    /**
+     * Function used to retrieve the participants of a tournament.
+     * @param tournamentId the id of the tournaments from which we want the participants
+     * @return a future that contains the list of participants if successful.
+     */
+    abstract fun getTournamentParticipantsId(
+        tournamentId: String,
+    ): CompletableFuture<List<String>>
+
+    /**
+     * Function used to retrieve only the info about the tournament, not the posts or the participants
+     * to avoid too much downloading.
+     * @param tournamentId the id of the tournament from which we want the info
+     * @return a future that contains the tournament which has empty posts and participants ids lists.
+     */
+    abstract fun getTournamentInfo(
         tournamentId: String,
     ): CompletableFuture<Tournament>
 

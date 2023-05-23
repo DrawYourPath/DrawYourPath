@@ -281,14 +281,40 @@ object FirebaseDatabaseUtils {
      * @return the tournament, or null if an error occurred
      */
     fun mapToTournament(data: DataSnapshot?): Tournament? {
+        val tournamentInfo = mapToTournamentInfo(data?.child(FirebaseKeys.TOURNAMENT_INFO))
+        val participants = getKeys(data?.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
+        val posts = transformPostList(data?.child(FirebaseKeys.TOURNAMENT_POSTS))
+
+        if (tournamentInfo == null) {
+            Log.e(this::class.java.name, "Tournament had null values")
+            return null
+        }
+
+        return Tournament(
+            tournamentInfo.id,
+            tournamentInfo.name,
+            tournamentInfo.description,
+            tournamentInfo.creatorId,
+            tournamentInfo.startDate,
+            tournamentInfo.endDate,
+            participants,
+            posts,
+            tournamentInfo.visibility,
+        )
+    }
+
+    /**
+     * Helper function to convert a data snapshot to a tournament
+     * @param data the data snapshot containing the tournament info
+     * @return the tournament info, or null if an error occurred
+     */
+    fun mapToTournamentInfo(data: DataSnapshot?): Tournament? {
         val id = data?.child(FirebaseKeys.TOURNAMENT_ID)?.value as String?
         val name = data?.child(FirebaseKeys.TOURNAMENT_NAME)?.value as String?
         val description = data?.child(FirebaseKeys.TOURNAMENT_DESCRIPTION)?.value as String?
         val creatorId = data?.child(FirebaseKeys.TOURNAMENT_CREATOR_ID)?.value as String?
         val startDate = transformLocalDateTime(data?.child(FirebaseKeys.TOURNAMENT_START_DATE))
         val endDate = transformLocalDateTime(data?.child(FirebaseKeys.TOURNAMENT_END_DATE))
-        val participants = getKeys(data?.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
-        val posts = transformPostList(data?.child(FirebaseKeys.TOURNAMENT_POSTS))
         val visibilityString = data?.child(FirebaseKeys.TOURNAMENT_VISIBILITY)?.value as String?
 
         // Get the visibility back to an enum value
@@ -311,22 +337,22 @@ object FirebaseDatabaseUtils {
         }
 
         return Tournament(
-            id,
-            name,
-            description,
-            creatorId,
-            startDate,
-            endDate,
-            participants,
-            posts,
-            visibility,
+            id = id,
+            name = name,
+            description = description,
+            creatorId = creatorId,
+            startDate = startDate,
+            endDate = endDate,
+            visibility = visibility,
         )
     }
+
+
 
     /**
      * Helper function to transform a trophy object into an object to store in the database
      * The tournament id is not take into account since is used as a key for the trophy in the database.
-     * @param tropy to store in the database
+     * @param trophy to store in the database
      */
     fun transformTrophyToData(trophy: Trophy): HashMap<String, Any> {
         return hashMapOf(
@@ -373,7 +399,6 @@ object FirebaseDatabaseUtils {
     /**
      * Helper function to transform a milestone object enum with a date into an object to store in the database
      * The tournament id is not take into account since is used as a key for the trophy in the database.
-     * @param tropy to store in the database
      */
     fun transformMilestoneToData(milestone: MilestoneEnum, date: LocalDate): HashMap<String, Any> {
         return hashMapOf(

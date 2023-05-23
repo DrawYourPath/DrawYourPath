@@ -10,6 +10,7 @@ import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformMilestoneToData
 import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformTrophyToData
 import com.epfl.drawyourpath.path.Run
@@ -71,14 +72,17 @@ object FirebaseKeys {
     const val TROPHY_RANKING: String = "ranking"
 
     // Tournaments keys
+    const val TOURNAMENT_INFO = "info"
+    const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+    const val TOURNAMENT_POSTS = "posts"
+
+    // Tournaments info keys
     const val TOURNAMENT_ID = "id"
     const val TOURNAMENT_NAME = "name"
     const val TOURNAMENT_DESCRIPTION = "description"
     const val TOURNAMENT_CREATOR_ID = "creatorId"
     const val TOURNAMENT_START_DATE = "startDate"
     const val TOURNAMENT_END_DATE = "endDate"
-    const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
-    const val TOURNAMENT_POSTS = "posts"
     const val TOURNAMENT_VISIBILITY = "visibility"
 
     // Chats keys top level
@@ -487,7 +491,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         // add the tournament to all tournaments
-        tournamentsRoot().updateChildren(mapOf(tournament.id to tournament))
+        tournamentsRoot().updateChildren(mapOf(tournament.id + "/" + FirebaseKeys.TOURNAMENT_INFO to tournament))
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
@@ -567,6 +571,65 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 // Get tournament data and check if corrupted
                 tournamentsRoot().child(tournamentId).get().addOnSuccessListener {
                     val tournament = FirebaseDatabaseUtils.mapToTournament(it)
+                    if (tournament == null) {
+                        future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
+                    } else {
+                        future.complete(tournament)
+                    }
+                }.addOnFailureListener {
+                    future.completeExceptionally(it)
+                }
+            }
+        }
+        return future
+    }
+
+    override fun getTournamentPosts(tournamentId: String): CompletableFuture<List<TournamentPost>> {
+        val future = CompletableFuture<List<TournamentPost>>()
+        // Check that the tournament exists
+        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
+            if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
+            } else {
+                // Get tournament posts
+                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_POSTS).get().addOnSuccessListener {
+                   future.complete(FirebaseDatabaseUtils.transformPostList(it))
+                }.addOnFailureListener {
+                    future.completeExceptionally(it)
+                }
+            }
+        }
+        return future
+    }
+
+    override fun getTournamentParticipantsId(tournamentId: String): CompletableFuture<List<String>> {
+        val future = CompletableFuture<List<String>>()
+        // Check that the tournament exists
+        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
+            if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
+            } else {
+                // Get tournament posts
+                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get().addOnSuccessListener {
+                    future.complete(FirebaseDatabaseUtils.getKeys(it))
+                }.addOnFailureListener {
+                    future.completeExceptionally(it)
+                }
+            }
+        }
+        return future
+    }
+
+    override fun getTournamentInfo(tournamentId: String): CompletableFuture<Tournament> {
+        val future = CompletableFuture<Tournament>()
+        // Check that the tournament exists
+        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
+            if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
+            } else {
+                // Get tournament info and check if corrupted
+                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_INFO).get().addOnSuccessListener {
+                    val tournament = FirebaseDatabaseUtils.mapToTournamentInfo(it)
                     if (tournament == null) {
                         future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
                     } else {
