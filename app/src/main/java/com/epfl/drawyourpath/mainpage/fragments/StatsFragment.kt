@@ -69,7 +69,7 @@ class StatsFragments(
         rightTransitionButton()
         // defined the transition of the left button
         leftTransitionButton()
-        //defined the transition of the toggle button
+        // defined the transition of the toggle button
         togglePeriodButton()
     }
 
@@ -150,7 +150,7 @@ class StatsFragments(
             requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(
             R.id.contentPreviewStats,
-            GraphFromListFragment(map = data, titleAxe1 = columnText, titleAxe2 = lineText)
+            GraphFromListFragment(map = data, titleAxe1 = columnText, titleAxe2 = lineText),
         ).commit()
     }
 
@@ -165,7 +165,7 @@ class StatsFragments(
             requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(
             R.id.contentDescriptionStats,
-            TableFromListFragment(map = data, column1Name = columnText, column2Name = lineText)
+            TableFromListFragment(map = data, column1Name = columnText, column2Name = lineText),
         ).commit()
         descriptionLayout.visibility = VISIBLE
     }
@@ -202,9 +202,9 @@ class StatsFragments(
      */
     private fun showGlobalStats() {
         this.titleText.text = getString(R.string.global_stats)
-        //not show the toggle button
+        // not show the toggle button
         setToggleInvisible()
-        //show the global stats
+        // show the global stats
         val fragTransaction: FragmentTransaction =
             requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(
@@ -218,7 +218,7 @@ class StatsFragments(
                 totalPathNumberGoal = totalPathNumberGoal ?: 0.0,
             ),
         ).commit()
-        //set the description layout an empty fragment
+        // set the description layout an empty fragment
         descriptionLayout.visibility = INVISIBLE
     }
 
@@ -229,13 +229,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.average_speed)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.average_speed_in_m_s)
-        //show the toggle button
+        // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average speed in function of the year
-        showGraphInPreview(data = averageSpeedPerYear?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = averageSpeedPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the average speed in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageSpeedPerYear?: emptyMap()).forEach{ (key, value) ->
+        (averageSpeedPerYear ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringSpeed(speed = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -248,13 +248,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.average_speed)
         val columnText = getString(R.string.month)
         val lineText = getString(R.string.average_speed_in_m_s)
-        //show the toggle button
+        // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average speed in function of the month
-        showGraphInPreview(data = averageSpeedPerMonth?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = averageSpeedPerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the average speed in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerMonth?: emptyMap()).forEach{ (key, value) ->
+        (averageDistancePerMonth ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringSpeed(speed = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -267,13 +267,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.average_duration)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.average_duration_in_s)
-        //show the toggle button
+        // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average duration in function of the year
-        showGraphInPreview(data = averageDurationPerYear?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = averageDurationPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the average duration in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageDurationPerYear?: emptyMap()).forEach{ (key, value) ->
+        (averageDurationPerYear ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -286,13 +286,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.average_duration)
         val columnText = getString(R.string.month)
         val lineText = getString(R.string.average_duration_in_s)
-        //show the toggle button
+        // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average duration in function of the month
-        showGraphInPreview(data = averageDurationPerMonth?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = averageDurationPerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the average duration in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDurationPerMonth?: emptyMap()).forEach{ (key, value) ->
+        (averageDurationPerMonth ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -305,13 +305,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.average_distance)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.average_distance_in_m)
-        //show the toggle button
+        // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average distance in function of the year
-        showGraphInPreview(data = averageDistancePerYear?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = averageDistancePerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the average distance in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerYear?: emptyMap()).forEach{ (key, value) ->
+        (averageDistancePerYear ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -324,13 +324,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.average_distance)
         val columnText = getString(R.string.month)
         val lineText = getString(R.string.average_distance_in_m)
-        //show the toggle button
+        // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average distance in function of the month
-        showGraphInPreview(data = averageDistancePerMonth?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = averageDistancePerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the average distance in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerMonth?: emptyMap()).forEach{ (key, value) ->
+        (averageDistancePerMonth ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -343,13 +343,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.distance_goal)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.distance_goal_in_m)
-        //show the toggle button and block it to year
+        // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the distance goal in function of the year
-        showGraphInPreview(data = totalDistanceGoalPerYear?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = totalDistanceGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the distance goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalDistanceGoalPerYear?: emptyMap()).forEach{ (key, value) ->
+        (totalDistanceGoalPerYear ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -362,13 +362,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.activity_time_goal)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.activity_time_goal_in_s)
-        //show the toggle button and block it to year
+        // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the activity time goal in function of the year
-        showGraphInPreview(data = totalActivityTimeGoalPerYear?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = totalActivityTimeGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the activity time goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalActivityTimeGoalPerYear?: emptyMap()).forEach{ (key, value) ->
+        (totalActivityTimeGoalPerYear ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -381,13 +381,13 @@ class StatsFragments(
         this.titleText.text = getString(R.string.path_number_goal)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.path_number_goal)
-        //show the toggle button and block it to year
+        // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the distance goal in function of the year
-        showGraphInPreview(data = totalPathNumberGoalPerYear?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = totalPathNumberGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
         // show a table containing the distance goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalPathNumberGoalPerYear?: emptyMap()).forEach{ (key, value) ->
+        (totalPathNumberGoalPerYear ?: emptyMap()).forEach { (key, value) ->
             mapString[key.toString()] = value.toString()
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -403,13 +403,13 @@ class StatsFragments(
  */
 private enum class StatsEnum(val index: Int, val rightStep: Int, val leftStep: Int, val toggleStep: Int) {
     GLOBAL_STATS(index = 0,rightStep = 1, leftStep = -1, toggleStep = 0),
-    AVERAGE_SPEED_PER_YEAR(index = 1,rightStep = 2, leftStep = -1, toggleStep = 1),
-    AVERAGE_SPEED_PER_MONTH(index = 2,rightStep = 2, leftStep = -2, toggleStep = -1),
-    AVERAGE_DURATION_PER_YEAR(index = 3,rightStep = 2, leftStep = -2, toggleStep = 1),
-    AVERAGE_DURATION_PER_MONTH(index = 4,rightStep = 2, leftStep = -2, toggleStep = -1),
-    AVERAGE_DISTANCE_PER_YEAR(index = 5,rightStep = 2, leftStep = -2, toggleStep = 1),
-    AVERAGE_DISTANCE_PER_MONTH(index = 6,rightStep = 1, leftStep = -2, toggleStep = -1),
-    TOTAL_DISTANCE_GOAL_PER_YEAR(index = 7,rightStep = 1, leftStep = -2, toggleStep = 0),
-    TOTAL_ACTIVITY_TIME_GOAL_PER_YEAR(index = 8,rightStep = 1, leftStep = -1, toggleStep = 0),
-    TOTAL_PATH_NUMBER_GOAL_PER_YEAR(index = 9,rightStep = 1, leftStep = -1, toggleStep = 0),
+    AVERAGE_SPEED_PER_YEAR(index = 1, rightStep = 2, leftStep = -1, toggleStep = 1),
+    AVERAGE_SPEED_PER_MONTH(index = 2, rightStep = 2, leftStep = -2, toggleStep = -1),
+    AVERAGE_DURATION_PER_YEAR(index = 3, rightStep = 2, leftStep = -2, toggleStep = 1),
+    AVERAGE_DURATION_PER_MONTH(index = 4, rightStep = 2, leftStep = -2, toggleStep = -1),
+    AVERAGE_DISTANCE_PER_YEAR(index = 5, rightStep = 2, leftStep = -2, toggleStep = 1),
+    AVERAGE_DISTANCE_PER_MONTH(index = 6, rightStep = 1, leftStep = -2, toggleStep = -1),
+    TOTAL_DISTANCE_GOAL_PER_YEAR(index = 7, rightStep = 1, leftStep = -2, toggleStep = 0),
+    TOTAL_ACTIVITY_TIME_GOAL_PER_YEAR(index = 8, rightStep = 1, leftStep = -1, toggleStep = 0),
+    TOTAL_PATH_NUMBER_GOAL_PER_YEAR(index = 9, rightStep = 1, leftStep = -1, toggleStep = 0),
 }

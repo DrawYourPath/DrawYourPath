@@ -14,10 +14,10 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
-import com.epfl.drawyourpath.path.RunInfoStatsFragment
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.TableFromListFragment
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
+import com.epfl.drawyourpath.path.RunInfoStatsFragment
 import com.epfl.drawyourpath.path.RunsAdapter
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Rule
@@ -35,7 +35,8 @@ class RunInfoStatsFragmentTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
     private val mockPath = Path(listOf(listOf(LatLng(0.0, 0.0), LatLng(0.0, 1.0))))
-    private val date = LocalDate.of(2000, 1, 1).atTime(LocalTime.of(12, 0, 5)).toEpochSecond(ZoneOffset.UTC)
+    private val date =
+        LocalDate.of(2000, 1, 1).atTime(LocalTime.of(12, 0, 5)).toEpochSecond(ZoneOffset.UTC)
     private val mockRun = Run(path = mockPath, startTime = date, endTime = date + 75, duration = 75)
 
     /**
@@ -54,7 +55,12 @@ class RunInfoStatsFragmentTest {
 
         // click on a run
         Espresso.onView(ViewMatchers.withId(R.id.runsRecyclerView))
-            .perform(RecyclerViewActions.actionOnItemAtPosition<RunsAdapter.ViewHolder>(0, ViewActions.click()))
+            .perform(
+                RecyclerViewActions.actionOnItemAtPosition<RunsAdapter.ViewHolder>(
+                    0,
+                    ViewActions.click()
+                )
+            )
 
         // Check fragment the fragment the displays run info is displayed
         Espresso.onView(ViewMatchers.withId(R.id.run_info_stats_fragment))

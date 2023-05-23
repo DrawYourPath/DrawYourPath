@@ -106,7 +106,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(
             R.id.contentPreviewRunInfo,
-            MapFragment(focusedOnPosition = false, path = run.getPath())
+            MapFragment(focusedOnPosition = false, path = run.getPath()),
         ).commit()
         val fragTransaction2: FragmentTransaction =
             requireActivity().supportFragmentManager.beginTransaction()
@@ -114,7 +114,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
             R.id.contentDescriptionRunInfo,
             ShapePathDescriptionFragment(
                 formName = run.predictedShape,
-                score = run.similarityScore
+                score = run.similarityScore,
             ),
         ).commit()
     }
@@ -128,13 +128,13 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.replace(
             R.id.contentPreviewRunInfo,
-            MapFragment(focusedOnPosition = false, path = run.getPath())
+            MapFragment(focusedOnPosition = false, path = run.getPath()),
         ).commit()
         // lunch the fragment to display all the dta of the run
         val fragTransaction2: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction2.replace(
             R.id.contentDescriptionRunInfo,
-            PathDrawingDetailPerformanceFragment(run = run)
+            PathDrawingDetailPerformanceFragment(run = run),
         ).commit()
     }
 
@@ -154,7 +154,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         val lineText = getString(R.string.average_speed_in_m_s)
         fragTransaction.replace(
             R.id.contentPreviewRunInfo,
-            GraphFromListFragment(map = mapSpeed, titleAxe1 = columnText, titleAxe2 = lineText)
+            GraphFromListFragment(map = mapSpeed, titleAxe1 = columnText, titleAxe2 = lineText),
         ).commit()
         // show a table containing the speed in function of the km
         val fragTransaction2: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -164,7 +164,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         }
         fragTransaction2.replace(
             R.id.contentDescriptionRunInfo,
-            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText)
+            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText),
         ).commit()
     }
 
@@ -184,7 +184,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         val lineText = getString(R.string.duration_in_s)
         fragTransaction.replace(
             R.id.contentPreviewRunInfo,
-            GraphFromListFragment(map = mapDuration, titleAxe1 = columnText, titleAxe2 = lineText)
+            GraphFromListFragment(map = mapDuration, titleAxe1 = columnText, titleAxe2 = lineText),
         ).commit()
         // show a table containing the duration in function of the km
         val fragTransaction2: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -194,7 +194,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         }
         fragTransaction2.replace(
             R.id.contentDescriptionRunInfo,
-            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText)
+            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText),
         ).commit()
     }
 
@@ -214,7 +214,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         val lineText = getString(R.string.distance_in_m)
         fragTransaction.replace(
             R.id.contentPreviewRunInfo,
-            GraphFromListFragment(map = mapDistance, titleAxe1 = columnText, titleAxe2 = lineText)
+            GraphFromListFragment(map = mapDistance, titleAxe1 = columnText, titleAxe2 = lineText),
         ).commit()
         // show a table containing the distance in function of the section
         val fragTransaction2: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -224,7 +224,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         }
         fragTransaction2.replace(
             R.id.contentDescriptionRunInfo,
-            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText)
+            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText),
         ).commit()
     }
 
@@ -244,7 +244,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         val lineText = getString(R.string.duration_in_s)
         fragTransaction.replace(
             R.id.contentPreviewRunInfo,
-            GraphFromListFragment(map = mapDuration, titleAxe1 = columnText, titleAxe2 = lineText)
+            GraphFromListFragment(map = mapDuration, titleAxe1 = columnText, titleAxe2 = lineText),
         ).commit()
         // show a table containing the duration in function of the section
         val fragTransaction2: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -254,7 +254,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         }
         fragTransaction2.replace(
             R.id.contentDescriptionRunInfo,
-            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText)
+            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText),
         ).commit()
     }
 
@@ -274,7 +274,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         val lineText = getString(R.string.average_speed_in_m_s)
         fragTransaction.replace(
             R.id.contentPreviewRunInfo,
-            GraphFromListFragment(map = mapSpeed, titleAxe1 = columnText, titleAxe2 = lineText)
+            GraphFromListFragment(map = mapSpeed, titleAxe1 = columnText, titleAxe2 = lineText),
         ).commit()
         // show a table containing the average speed in function of the sections
         val fragTransaction2: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -284,7 +284,7 @@ class RunInfoStatsFragment(private val run: Run) : Fragment(R.layout.fragment_ru
         }
         fragTransaction2.replace(
             R.id.contentDescriptionRunInfo,
-            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText)
+            TableFromListFragment(map = mapString, column1Name = columnText, column2Name = lineText),
         ).commit()
     }
 }

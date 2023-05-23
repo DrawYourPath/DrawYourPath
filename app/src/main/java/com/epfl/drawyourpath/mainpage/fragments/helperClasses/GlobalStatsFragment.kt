@@ -1,14 +1,9 @@
 package com.epfl.drawyourpath.mainpage.fragments.helperClasses
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
-import android.widget.ToggleButton
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.Fragment
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.utils.Utils
 
@@ -40,7 +35,7 @@ class GlobalStatsFragment(
         super.onViewCreated(view, savedInstanceState)
         // init the elements of the view
         initViewElements(view)
-        //set the text for each text view
+        // set the text for each text view
         this.textAvgSpeed.text =
             "${getString(R.string.average_speed_in_m_s_title)} ${Utils.getStringSpeed(speed = averageSpeed)}"
         this.textAvgDuration.text =
@@ -67,5 +62,4 @@ class GlobalStatsFragment(
         this.textTimeGoal = view.findViewById(R.id.time_goal_global_stats)
         this.textPathGoal = view.findViewById(R.id.path_goal_global_stats)
     }
-
 }
