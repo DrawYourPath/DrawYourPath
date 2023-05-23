@@ -245,7 +245,8 @@ class ChallengeFragmentTest {
             val name = Utils.getStringFromALL_CAPS(milestone.milestone!!.name)
             val description = milestone.milestone!!.description
             onView(withText(name)).perform(scrollTo())
-            onView(withId(R.id.milestones_view)).check(matches(hasDescendant(withText(name))))
+            onView(withId(R.id.milestones_view))
+                .check(matches(hasDescendant(withText(name))))
                 .check(matches(hasDescendant(withText(description))))
                 .check(matches(hasDescendant(withText(containsString(Utils.getDateAsString(milestone.date!!))))))
         }
