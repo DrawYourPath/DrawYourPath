@@ -981,18 +981,17 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     private fun updateMembersProfileWithNewChat(
         conversationId: String,
         membersList: List<String>,
-    ): CompletableFuture<Unit> {
-        // TODO: THis is implemented wrong. Futures don't work like that.
-        //       Future.allOf() should be used.
-        //       Also, we can batch all these operations in a single write.
-        val future = CompletableFuture<Unit>()
-        for (memberId in membersList) {
-            val data = mapOf(conversationId to true)
-            userProfile(memberId).child(FirebaseKeys.USER_CHATS).updateChildren(data)
-                .addOnSuccessListener { future.complete(Unit) }
-                .addOnFailureListener { future.completeExceptionally(it) }
-        }
-        return future
+    ): CompletableFuture<Void> {
+        return CompletableFuture.allOf(
+            *membersList.map {
+                val future = CompletableFuture<Unit>()
+                val data = mapOf(conversationId to true)
+                userProfile(it).child(FirebaseKeys.USER_CHATS).updateChildren(data)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+                future
+            }.toTypedArray(),
+        )
     }
 
     /**
