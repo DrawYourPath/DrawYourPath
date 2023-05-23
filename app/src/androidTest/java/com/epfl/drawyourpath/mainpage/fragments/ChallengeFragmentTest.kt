@@ -228,9 +228,7 @@ class ChallengeFragmentTest {
     @Test
     fun displayMilestonesSample() {
         InstrumentationRegistry.getInstrumentation().targetContext.deleteDatabase("UserDatabase")
-
         waitUntilAllThreadAreDone()
-        
         val scenario = FragmentScenario.launchInContainer(
             ChallengeFragment::class.java,
             Bundle(),
