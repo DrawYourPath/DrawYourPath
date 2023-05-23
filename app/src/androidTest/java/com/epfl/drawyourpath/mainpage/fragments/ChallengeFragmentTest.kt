@@ -49,11 +49,6 @@ class ChallengeFragmentTest {
         Thread.sleep(50)
     }
 
-    @Before
-    fun clearDatabase() {
-        InstrumentationRegistry.getInstrumentation().targetContext.deleteDatabase("UserDatabase")
-    }
-
     @Test
     fun displayDistanceGoalOfMockUser() {
         val scenario = FragmentScenario.launchInContainer(
@@ -233,6 +228,10 @@ class ChallengeFragmentTest {
 
     @Test
     fun displayMilestonesSample() {
+        InstrumentationRegistry.getInstrumentation().targetContext.deleteDatabase("UserDatabase")
+
+        waitUntilAllThreadAreDone()
+        
         val scenario = FragmentScenario.launchInContainer(
             ChallengeFragment::class.java,
             Bundle(),
