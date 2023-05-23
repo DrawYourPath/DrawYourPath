@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.*
 import android.location.Location
+import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
@@ -365,6 +366,8 @@ object Utils {
             origin.y - scale * padding,
         )
 
+        Log.e("DEBUG", "origin: $origin, scale: $scale")
+
         // Constructs the new strokes translated and scaled to fit in a 1:1 square
         return strokes.map { stroke ->
             Stroke.builder().also {
@@ -398,7 +401,7 @@ object Utils {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        normalizeStrokes(strokes, 0.1f).forEach { stroke ->
+        normalizeStrokes(strokes, 0f).forEach { stroke ->
             val points = stroke.points
 
             // Associates idx (n) to (n + 1)

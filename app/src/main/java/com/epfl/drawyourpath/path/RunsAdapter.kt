@@ -23,8 +23,7 @@ import com.google.android.gms.maps.model.LatLng
 class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.past_run, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.past_run, parent, false))
     }
 
     @SuppressLint("SetTextI18n")
@@ -33,14 +32,15 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
 
         // TODO: will be refactor with the creation of a bitmap directly with the run coordinates
 
-        val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten() // Get the coordinates for this specific run
         val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
 
-        val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey)
+        val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten() // Get the coordinates for this specific run
+        holder.mapImageView.setImageBitmap(Utils.coordinatesToBitmap(runCoordinates))
 
         // Load the image using Glide
+        
         Glide.with(holder.itemView.context)
-            .load(staticMapUrl)
+            .load(getStaticMapUrl(runCoordinates, apiKey))
             .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
             .into(holder.mapImageView)
 
