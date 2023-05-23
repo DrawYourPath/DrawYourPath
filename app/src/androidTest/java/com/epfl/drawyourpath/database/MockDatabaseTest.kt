@@ -1274,7 +1274,21 @@ class MockDatabaseTest {
     fun getChatsListCorrectly() {
         val database = MockDatabase()
         val listConversationId = database.getChatList(database.MOCK_USERS[0].userId!!)
+        // wait for the live data
+        waitUntilAllThreadAreDone()
         assertEquals(database.MOCK_USERS[0].chatList, listConversationId.value)
+    }
+
+    /**
+     * Test that the correct live data of the friend list is return
+     */
+    @Test
+    fun getFriendsListCorrectly() {
+        val database = MockDatabase()
+        val friendsList = database.getFriendsList(database.MOCK_USERS[0].userId!!)
+        // wait for the live data
+        waitUntilAllThreadAreDone()
+        assertEquals(database.MOCK_USERS[0].friendList, friendsList.value)
     }
 }
 
