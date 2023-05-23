@@ -64,7 +64,7 @@ class StatsFragmentTest {
         // check that the global stats fragment is displayed
         Espresso.onView(ViewMatchers.withId(R.id.global_stats_fragment))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        //check texts displayed
+        // check texts displayed
         // check the speed displayed
         Espresso.onView(ViewMatchers.withId(R.id.average_speed_global_stats))
             .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.average_speed_in_m_s_title)} 20.0")))
@@ -84,7 +84,7 @@ class StatsFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.path_goal_global_stats))
             .check(ViewAssertions.matches(ViewMatchers.withText("${context.resources.getString(R.string.number_of_path_goal_reached)} 5")))
 
-        //check that the toggle button is not visible
+        // check that the toggle button is not visible
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isNotEnabled()))
     }
@@ -108,7 +108,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_speed_in_m_s))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
@@ -134,7 +134,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_speed_in_m_s))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
@@ -160,7 +160,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_duration_in_s))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
@@ -186,7 +186,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_duration_in_s))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
@@ -212,7 +212,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_distance_in_m))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
@@ -238,7 +238,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_distance_in_m))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
@@ -264,7 +264,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.distance_goal))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isNotEnabled()))
@@ -290,7 +290,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.activity_time_goal))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isNotEnabled()))
@@ -316,7 +316,7 @@ class StatsFragmentTest {
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.path_number_goal))))
-        //check the toggle button
+        // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isNotEnabled()))
@@ -609,21 +609,21 @@ class StatsFragmentTest {
             launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
                 mockStatsFragment
             }
-        //access to the average speed view
+        // access to the average speed view
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
             .perform(ViewActions.click())
 
         // AVERAGE SPEED PER YEAR DISPLAYED
         checkAverageSpeedYearView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
         // AVERAGE SPEED PER MONTH DISPLAYED
         checkAverageSpeedMonthView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
@@ -642,7 +642,7 @@ class StatsFragmentTest {
             launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
                 mockStatsFragment
             }
-        //access to the average duration view
+        // access to the average duration view
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
             .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
@@ -658,7 +658,7 @@ class StatsFragmentTest {
         // AVERAGE DURATION PER MONTH DISPLAYED
         checkAverageDurationMonthView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
@@ -678,7 +678,7 @@ class StatsFragmentTest {
             launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
                 mockStatsFragment
             }
-        //access to the average distance view
+        // access to the average distance view
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
             .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
@@ -689,14 +689,14 @@ class StatsFragmentTest {
         // AVERAGE DISTANCE PER YEAR DISPLAYED
         checkAverageDistanceYearView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
         // AVERAGE DISTANCE PER MONTH DISPLAYED
         checkAverageDistanceMonthView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
@@ -716,7 +716,7 @@ class StatsFragmentTest {
             launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
                 mockStatsFragment
             }
-        //access to the distance goal view
+        // access to the distance goal view
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
             .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
@@ -729,7 +729,7 @@ class StatsFragmentTest {
         // DISTANCE GOAL DISPLAYED
         checkDistanceGoalView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
@@ -748,7 +748,7 @@ class StatsFragmentTest {
             launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
                 mockStatsFragment
             }
-        //access to the distance goal view
+        // access to the distance goal view
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
             .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
@@ -763,7 +763,7 @@ class StatsFragmentTest {
         // TIME GOAL DISPLAYED
         checkTimeGoalView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
@@ -782,7 +782,7 @@ class StatsFragmentTest {
             launchFragmentInContainer(themeResId = R.style.Theme_Bootcamp) {
                 mockStatsFragment
             }
-        //access to the distance goal view
+        // access to the distance goal view
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
             .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.changeRightStats))
@@ -799,7 +799,7 @@ class StatsFragmentTest {
         // PATH NUMBER GOAL DISPLAYED
         checkPathNumberGoalView()
 
-        //click on the toggle button
+        // click on the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .perform(ViewActions.click())
 
