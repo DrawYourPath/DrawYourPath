@@ -601,7 +601,7 @@ class StatsFragmentTest {
     }
 
     /**
-     * Test that the transition by clicking n the toggle button are correct in the average speed view.
+     * Test that the transition by clicking on the toggle button are correct in the average speed view.
      */
     @Test
     fun checkTransitionToggleAverageSpeed() {
@@ -634,7 +634,7 @@ class StatsFragmentTest {
     }
 
     /**
-     * Test that the transition by clicking n the toggle button are correct in the average duration view.
+     * Test that the transition by clicking on the toggle button are correct in the average duration view.
      */
     @Test
     fun checkTransitionToggleAverageDuration() {
@@ -670,7 +670,7 @@ class StatsFragmentTest {
     }
 
     /**
-     * Test that the transition by clicking n the toggle button are correct in the average distance view.
+     * Test that the transition by clicking on the toggle button are correct in the average distance view.
      */
     @Test
     fun checkTransitionToggleAverageDistance() {
