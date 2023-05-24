@@ -721,6 +721,12 @@ class MockDatabase : Database() {
         )
     }
 
+    override fun getFriendsList(userId: String): LiveData<List<String>> {
+        return MutableLiveData(
+            users[userId]?.friendList ?: emptyList(),
+        )
+    }
+
     override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {
         val current = chatPreviews[conversationId]
         chatPreviews[conversationId] = current!!.copy(title = newTitle)
