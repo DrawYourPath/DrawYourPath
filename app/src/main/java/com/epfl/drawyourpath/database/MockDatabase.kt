@@ -300,7 +300,6 @@ class MockDatabase : Database() {
                 startDate = LocalDateTime.now().plusDays(1L),
                 endDate = LocalDateTime.now().plusDays(2L),
                 participants = listOf(MOCK_USERS[0].userId!!, MOCK_USERS[1].userId!!),
-                // The next args are useless for now
                 posts = listOf(),
                 visibility = Tournament.Visibility.PUBLIC,
             ),
@@ -314,7 +313,6 @@ class MockDatabase : Database() {
                 startDate = LocalDateTime.now().plusDays(2L),
                 endDate = LocalDateTime.now().plusDays(3L),
                 participants = listOf(MOCK_USERS[1].userId!!),
-                // The next args are useless for now
                 posts = listOf(),
                 visibility = Tournament.Visibility.PUBLIC,
             ),
