@@ -7,6 +7,7 @@ import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
@@ -39,26 +40,28 @@ class MockNonWorkingDatabaseTest {
         mock.addTrophy("", Trophy("", "", "", LocalDate.of(2000, 2, 20), 1)).assertError(Unit)
         mock.addMilestone("", MilestoneEnum.HUNDRED_KILOMETERS, LocalDate.of(2000, 2, 20)).assertError(Unit)
         mock.createChatConversation("", emptyList(), "", "").assertError("")
-        mock.getChatPreview("")
+        assertThrows(Exception::class.java) { mock.getChatPreview("") }
         mock.setChatTitle("", "").assertError(Unit)
         mock.getChatMemberList("").assertError(mockChatMembers)
         mock.addChatMember("", "").assertError(Unit)
         mock.removeChatMember("", "").assertError(Unit)
-        mock.getChatMessages("")
-        mock.getFriendsList("")
+        assertThrows(Exception::class.java) { mock.getChatMessages("") }
+        assertThrows(Exception::class.java) { mock.getFriendsList("") }
         mock.addChatMessage("", mockChatMessages.value!!.get(0)).assertError(Unit)
         mock.removeChatMessage("", 0L).assertError(Unit)
         mock.modifyChatTextMessage("", 0L, "").assertError(Unit)
         mock.setUserData("", UserData()).assertError(Unit)
         mock.addRunToHistory("", Run(Path(), 1, 9, 10)).assertError(Unit)
         mock.removeRunFromHistory("", Run(Path(), 1, 9, 10)).assertError(Unit)
-        mock.addTournament(mockTournament).assertError(Unit)
+        mock.addTournament(mockTournament.value!!).assertError(Unit)
         mock.removeTournament("").assertError(Unit)
         mock.addUserToTournament("", "").assertError(Unit)
         mock.removeUserFromTournament("", "").assertError(Unit)
-        mock.getTournamentPosts("").assertError(emptyList())
+        assertThrows(Exception::class.java) { mock.getAllTournamentsId() }
+        assertThrows(Exception::class.java) { mock.getTournament("") }
+        assertThrows(Exception::class.java) { mock.getTournamentInfo("") }
+        assertThrows(Exception::class.java) { mock.getTournamentPosts("") }
         mock.getTournamentParticipantsId("").assertError(emptyList())
-        mock.getTournamentInfo("").assertError(mockTournament)
         mock.addPostToTournament("", TournamentPost("", "", Run(Path(), 1, 9, 10))).assertError(Unit)
         mock.voteOnPost("", "", "", 0).assertError(Unit)
     }

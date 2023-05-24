@@ -207,6 +207,12 @@ abstract class Database {
     ): CompletableFuture<Unit>
 
     /**
+     * Function to return the list of the tournaments Ids available in the database
+     * @return a live data that contains the list of the tournaments ids available in the database
+     */
+    abstract fun getAllTournamentsId(): LiveData<List<String>>
+
+    /**
      * Function used to get a unique ID for a new tournament. Never fails (because client side).
      * @return a unique ID or null if the operation failed.
      */
@@ -257,21 +263,21 @@ abstract class Database {
      * everything about a tournament (including posts and participants). Otherwise, you should use
      * [getTournamentInfo], [getTournamentPosts] or [getTournamentParticipantsId].
      * @param tournamentId the id of the tournaments to retrieve.
-     * @return a future that contains the tournament if successful, or an exception if an error
+     * @return a live data that contains the tournament if successful, or an exception if an error
      * occurred with the db.
      */
     abstract fun getTournament(
         tournamentId: String,
-    ): CompletableFuture<Tournament>
+    ): LiveData<Tournament>
 
     /**
      * Function used to retrieve all posts from the tournament corresponding to the ID.
      * @param tournamentId the id of the tournaments to retrieve.
-     * @return a future that contains the list of the posts of the tournament.
+     * @return a live data that contains the list of the posts of the tournament.
      */
     abstract fun getTournamentPosts(
         tournamentId: String,
-    ): CompletableFuture<List<TournamentPost>>
+    ): LiveData<List<TournamentPost>>
 
     /**
      * Function used to retrieve the participants of a tournament.
@@ -286,11 +292,11 @@ abstract class Database {
      * Function used to retrieve only the info about the tournament, not the posts or the participants
      * to avoid too much downloading.
      * @param tournamentId the id of the tournament from which we want the info.
-     * @return a future that contains the tournament which has empty posts and participants ids lists.
+     * @return a live data that contains the tournament which has empty posts and participants ids lists.
      */
     abstract fun getTournamentInfo(
         tournamentId: String,
-    ): CompletableFuture<Tournament>
+    ): LiveData<Tournament>
 
     /**
      * Function used to get a unique ID for a new post. Never fails (because client side).

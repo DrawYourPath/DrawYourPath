@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
@@ -100,6 +99,10 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
+    override fun getAllTournamentsId(): LiveData<List<String>> {
+        throw Exception("")
+    }
+
     override fun getTournamentUID(): String? {
         return null
     }
@@ -126,20 +129,20 @@ class MockNonWorkingDatabase : Database() {
         return failedFuture()
     }
 
-    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
-        return failedFuture()
+    override fun getTournament(tournamentId: String): LiveData<Tournament> {
+        throw Exception("")
     }
 
-    override fun getTournamentPosts(tournamentId: String): CompletableFuture<List<TournamentPost>> {
-        return failedFuture()
+    override fun getTournamentPosts(tournamentId: String): LiveData<List<TournamentPost>> {
+        throw Exception("")
     }
 
     override fun getTournamentParticipantsId(tournamentId: String): CompletableFuture<List<String>> {
         return failedFuture()
     }
 
-    override fun getTournamentInfo(tournamentId: String): CompletableFuture<Tournament> {
-        return failedFuture()
+    override fun getTournamentInfo(tournamentId: String): LiveData<Tournament> {
+        throw Exception("")
     }
 
     override fun getPostUID(): String? {
@@ -172,18 +175,15 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun getChatPreview(conversationId: String): LiveData<ChatPreview> {
-        // no error in this function
-        return MutableLiveData()
+        throw Exception("")
     }
 
     override fun getChatList(userId: String): LiveData<List<String>> {
-        // no error in this function
-        return MutableLiveData()
+        throw Exception("")
     }
 
     override fun getFriendsList(userId: String): LiveData<List<String>> {
-        // no error in this function
-        return MutableLiveData()
+        throw Exception("")
     }
 
     override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {
@@ -203,8 +203,7 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun getChatMessages(conversationId: String): LiveData<List<Message>> {
-        // no error in this function
-        return MutableLiveData()
+        throw Exception("")
     }
 
     override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {
