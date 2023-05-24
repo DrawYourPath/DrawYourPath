@@ -402,6 +402,7 @@ class FirebaseDatabaseUtilsTest {
     @Test
     fun transformPostReturnsExpectedData() {
         val post = TournamentPost(
+            postId = "post1",
             userId = "user1",
             run = Run(
                 Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
@@ -411,13 +412,13 @@ class FirebaseDatabaseUtilsTest {
                 "Lion",
                 0.8,
             ),
-            votes = 2,
             date = LocalDateTime.now().minusDays(2),
-            usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
+            usersVotes = mutableMapOf("user1" to -1, "user2" to -1),
         )
         val postSnapshot = mockTournamentPost(post)
         val transformedPost = FirebaseDatabaseUtils.transformPost(postSnapshot)
-        assertThat(transformedPost!!.userId, `is`(post.userId))
+        assertThat(transformedPost!!.postId, `is`(post.postId))
+        assertThat(transformedPost.userId, `is`(post.userId))
         // Just to know if the run is the same one
         assertThat(transformedPost.run.getCalories(), `is`(post.run.getCalories()))
         assertThat(transformedPost.getVotes(), `is`(post.getVotes()))
@@ -434,6 +435,7 @@ class FirebaseDatabaseUtilsTest {
     fun transformPostListReturnsExpectedData() {
         val posts = listOf(
             TournamentPost(
+                postId = "post1",
                 userId = "user1",
                 run = Run(
                     Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
@@ -443,19 +445,18 @@ class FirebaseDatabaseUtilsTest {
                     "Lion",
                     0.8,
                 ),
-                votes = 2,
                 date = LocalDateTime.now().minusDays(2),
                 usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
             ),
             TournamentPost(
-                "user2",
+                postId = "post2",
+                userId = "user2",
                 run = Run(
                     Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
                     30,
                     20,
                     50,
                 ),
-                votes = 0,
                 date = LocalDateTime.now().minusDays(3),
                 usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
             ),
@@ -580,6 +581,7 @@ class FirebaseDatabaseUtilsTest {
     fun mapToTournamentReturnsExpectedValue() {
         val posts = listOf(
             TournamentPost(
+                postId = "post1",
                 userId = "user1",
                 run = Run(
                     Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
@@ -589,11 +591,11 @@ class FirebaseDatabaseUtilsTest {
                     "Lion",
                     0.8,
                 ),
-                votes = 2,
                 date = LocalDateTime.now().minusDays(2),
                 usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
             ),
             TournamentPost(
+                "post2",
                 "user2",
                 run = Run(
                     Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
@@ -601,7 +603,6 @@ class FirebaseDatabaseUtilsTest {
                     20,
                     50,
                 ),
-                votes = 0,
                 date = LocalDateTime.now().minusDays(3),
                 usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
             ),
