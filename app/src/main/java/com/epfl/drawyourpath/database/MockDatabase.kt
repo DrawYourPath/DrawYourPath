@@ -1,6 +1,8 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,6 +22,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -724,8 +728,10 @@ class MockDatabase : Database() {
             throw Error("This tournament doesn't exist $tournamentId")
         }
         val postsLiveData = MutableLiveData<List<TournamentPost>>()
-        tournaments[tournamentId]!!.observeForever {
-            postsLiveData.postValue(it.posts)
+        Handler(Looper.getMainLooper()).post {
+            tournaments[tournamentId]!!.observeForever {
+                postsLiveData.postValue(it.posts)
+            }
         }
         return postsLiveData
     }
@@ -742,8 +748,10 @@ class MockDatabase : Database() {
             throw Error("This tournament doesn't exist $tournamentId")
         }
         val infoLiveData = MutableLiveData<Tournament>()
-        tournaments[tournamentId]!!.observeForever {
-            infoLiveData.postValue(it.copy(participants = emptyList(), posts = emptyList()))
+        Handler(Looper.getMainLooper()).post {
+            tournaments[tournamentId]!!.observeForever {
+                infoLiveData.postValue(it.copy(participants = emptyList(), posts = emptyList()))
+            }
         }
         return infoLiveData
     }

@@ -17,6 +17,7 @@ import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
+import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -921,6 +922,69 @@ class MockDatabaseTest {
         val obtainTournament = database.getTournament(expectedTournamentId)
         waitUntilAllThreadAreDone()
         assertEquals(expectedTournament, obtainTournament.value)
+    }
+
+    /**
+     * Test if trying to retrieve the info an non-existing tournament from the database throws.
+     */
+    @Test
+    fun getTournamentInfoThatDoesNotExistThrows() {
+        val database = MockDatabase()
+        val tournamentId = "NotAnID"
+        assertThrows(Throwable::class.java) {
+            database.getTournamentInfo(tournamentId)
+        }
+    }
+
+    /**
+     * Test if retrieving the info of an existing tournament from the database returns the tournament.
+     */
+    @Test
+    fun getTournamentInfoThatExistsReturnsTheTournament() {
+        val database = MockDatabase()
+        val expectedTournament = database.mockTournament.value!!.copy(participants = emptyList(), posts = emptyList())
+        val expectedTournamentid = expectedTournament.id
+        val expectedTournamentId = expectedTournamentid
+        val obtainTournament = database.getTournamentInfo(expectedTournamentId)
+        waitUntilAllThreadAreDone()
+        assertEquals(expectedTournament, obtainTournament.value)
+    }
+
+    /**
+     * Test if trying to retrieve the posts an non-existing tournament from the database throws.
+     */
+    @Test
+    fun getTournamentPostsThatDoesNotExistThrows() {
+        val database = MockDatabase()
+        val tournamentId = "NotAnID"
+        assertThrows(Throwable::class.java) {
+            database.getTournamentPosts(tournamentId)
+        }
+    }
+
+    /**
+     * Test if retrieving the posts of an existing tournament from the database returns the tournament.
+     */
+    @Test
+    fun getTournamentPostsThatExistsReturnsTheTournament() {
+        val database = MockDatabase()
+        val expectedPost = database.mockTournament.value!!.posts
+        val expectedTournamentId = database.mockTournament.value!!.id
+        val obtainPost = database.getTournamentPosts(expectedTournamentId)
+        waitUntilAllThreadAreDone()
+        assertEquals(expectedPost, obtainPost.value)
+    }
+
+    /**
+     * Check that getTournamentsId return the correct list of tournaments Id
+     */
+    @Test
+    fun getTournamentIdCorrectly() {
+        val database = MockDatabase()
+        val expectedList = database.MOCK_TOURNAMENTS_ID.value!!.toList()
+        val obtainList = database.getAllTournamentsId()
+        waitUntilAllThreadAreDone()
+        assertEquals(expectedList, obtainList.value)
     }
 
     /**
