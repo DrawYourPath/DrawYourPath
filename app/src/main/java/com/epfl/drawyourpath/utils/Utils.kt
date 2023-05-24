@@ -428,24 +428,14 @@ object Utils {
         val ink = coordinatesToInk(run.getPath().getPoints())
 
         val resultAutoDraw = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.AUTODRAW).thenComposeAsync {
-            DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
+            DigitalInk.recognizeDrawingML(ink, it)
         }
         val resultShapes = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.SHAPES).thenComposeAsync {
-            DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
+            DigitalInk.recognizeDrawingML(ink, it)
         }
 
         return resultAutoDraw.thenCombine(resultShapes) { resultAutoDraw, resultShapes ->
-            if (resultAutoDraw.candidates.isEmpty() && resultShapes.candidates.isEmpty()) {
-                null
-            } else if (resultAutoDraw.candidates.isEmpty()) {
-                resultAutoDraw.candidates[0]
-            } else if (resultShapes.candidates.isEmpty()) {
-                resultShapes.candidates[0]
-            } else if (resultAutoDraw.candidates[0].score!! < resultShapes.candidates[0].score!!) {
-                resultAutoDraw.candidates[0]
-            } else {
-                resultShapes.candidates[0]
-            }
+            (resultAutoDraw.candidates + resultShapes.candidates).sortedBy { it.score }.firstOrNull()
         }
     }
 
