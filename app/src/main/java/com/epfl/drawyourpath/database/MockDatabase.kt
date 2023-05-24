@@ -245,6 +245,16 @@ class MockDatabase : Database() {
         mockUser,
     )
 
+    val mockPost = TournamentPost(
+        postId = "mockPostID",
+        userId = mockUser.userId!!,
+        run = mockUser.runs!![0],
+        usersVotes = hashMapOf(
+            MOCK_USERS[0].userId!! to 1,
+            MOCK_USERS[1].userId!! to -1,
+        )
+    )
+
     val mockTournament = Tournament(
         id = "0",
         name = "mockTournament0",
@@ -254,7 +264,7 @@ class MockDatabase : Database() {
         endDate = LocalDateTime.now().plusDays(4L),
         participants = MOCK_USERS.map { it.userId!! },
         // The next args are useless for now
-        posts = listOf(),
+        posts = listOf(mockPost),
         visibility = Tournament.Visibility.PUBLIC,
     )
 
