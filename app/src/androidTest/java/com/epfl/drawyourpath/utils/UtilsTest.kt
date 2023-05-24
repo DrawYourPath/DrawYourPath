@@ -195,8 +195,8 @@ class UtilsTest {
         val result = getBestRunRecognitionCandidate(run).get()
 
         assertNotNull(result)
-        assertEquals("ARROW", result.text)
-        assertEquals(0.64F, result.score!!, 0.1F)
+        assertEquals("ARROW", result!!.text)
+        assertEquals(0.64F, result!!.score!!, 0.1F)
     }
 
     @Test
@@ -220,8 +220,8 @@ class UtilsTest {
         val result = getBestRunRecognitionCandidate(run).get()
 
         assertNotNull(result)
-        assertEquals("ELLIPSE", result.text)
-        assertEquals(0.0F, result.score!!, 0.1F)
+        assertEquals("ELLIPSE", result!!.text)
+        assertEquals(0.0F, result!!.score!!, 0.1F)
     }
 
     @Test

@@ -36,7 +36,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
 //        val result = Utils.getRunRecognition(pathDrawingModel.getRun()).thenApplyAsync {
 //            it.candidates[0]
 //        }
-        val result = Utils.getBestRunRecognitionCandidate(pathDrawingModel.getRun())
+        val result = Utils.getBestRunRecognitionCandidate(pathDrawingModel.getRun()).thenApplyAsync { it }
 
         val runToAdd = pathDrawingModel.getRun()
 
@@ -61,7 +61,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
         backMenuButton.setOnClickListener {
             cancel.set(true)
             result.thenApplyAsync {
-                Run(runToAdd.getPath(), runToAdd.getStartTime(), runToAdd.getDuration(), runToAdd.getEndTime(), it.text, it.score?.toDouble() ?: 0.0)
+                Run(runToAdd.getPath(), runToAdd.getStartTime(), runToAdd.getDuration(), runToAdd.getEndTime(), it!!.text, it!!.score?.toDouble() ?: 0.0)
             }.thenComposeAsync {
                 userCached.addNewRun(it)
             }

@@ -435,31 +435,29 @@ object Utils {
      * @param run the run to recognize
      * @return the recognition result
      */
-    fun getBestRunRecognitionCandidate(run: Run): CompletableFuture<RecognitionCandidate> {
-        val bestCandidate = CompletableFuture<RecognitionCandidate>()
+    fun getBestRunRecognitionCandidate(run: Run): CompletableFuture<RecognitionCandidate?> {
         val ink = coordinatesToInk(run.getPath().getPoints())
 
-        val modelAutodraw = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.AUTODRAW).get()
-        val modelShapes = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.SHAPES).get()
-        val candidateAutodraw = DigitalInk.recognizeDrawingML(ink, modelAutodraw).get()
-        val candidateShapes = DigitalInk.recognizeDrawingML(ink, modelShapes).get()
+        val resultAutoDraw = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.AUTODRAW).thenComposeAsync {
+            DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
+        }
+        val resultShapes = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.SHAPES).thenComposeAsync {
+            DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
+        }
 
-        if (candidateAutodraw.candidates.size > 0 && candidateShapes.candidates.size > 0) {
-            if (candidateAutodraw.candidates[0].score!! < candidateShapes.candidates[0].score!!) {
-                bestCandidate.complete(candidateAutodraw.candidates[0])
+        return resultAutoDraw.thenCombine(resultShapes) { resultAutoDraw, resultShapes ->
+            if (resultAutoDraw.candidates.isEmpty() && resultShapes.candidates.isEmpty()) {
+                null
+            } else if (resultAutoDraw.candidates.isEmpty()) {
+                resultAutoDraw.candidates[0]
+            } else if (resultShapes.candidates.isEmpty()) {
+                resultShapes.candidates[0]
+            } else if (resultAutoDraw.candidates[0].score!! < resultShapes.candidates[0].score!!) {
+                resultAutoDraw.candidates[0]
             } else {
-                bestCandidate.complete(candidateShapes.candidates[0])
-            }
-        } else {
-            if (candidateAutodraw.candidates.size > 0) {
-                bestCandidate.complete(candidateAutodraw.candidates[0])
-            } else if (candidateShapes.candidates.size > 0) {
-                bestCandidate.complete(candidateShapes.candidates[0])
-            } else {
-                bestCandidate.completeExceptionally(Error("Could not recognize the drawing on the run"))
+                resultShapes.candidates[0]
             }
         }
-        return bestCandidate
     }
 
     /**
