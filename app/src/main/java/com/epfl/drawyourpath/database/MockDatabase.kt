@@ -627,7 +627,7 @@ class MockDatabase : Database() {
         //add the tournament to the list of tournament ids
         MOCK_TOURNAMENTS_ID.postValue((MOCK_TOURNAMENTS_ID.value ?: emptyList()) + tournament.id)
         // Replaces if id already exists, which would happen with Firebase but should never happen as we generate unique ids.
-        tournaments[tournament.id]!!.postValue(tournament)
+        tournaments[tournament.id] = MutableLiveData(tournament)
         return CompletableFuture.completedFuture(Unit)
     }
 

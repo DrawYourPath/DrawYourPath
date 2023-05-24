@@ -184,8 +184,7 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun getFriendsList(userId: String): LiveData<List<String>> {
-        // no error in this function
-        return MutableLiveData()
+        throw Exception("")
     }
 
     override fun setChatTitle(conversationId: String, newTitle: String): CompletableFuture<Unit> {

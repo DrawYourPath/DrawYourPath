@@ -50,7 +50,7 @@ class MockDatabaseTest {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
-        Thread.sleep(50)
+        Thread.sleep(100)
     }
 
     /**
@@ -730,9 +730,10 @@ class MockDatabaseTest {
         assertTrue(!database.tournaments.containsKey(newTournament.id))
         // add the tournament
         database.addTournament(newTournament).get()
+        waitUntilAllThreadAreDone()
         // check that the tournament is stored with its id as key
         assertTrue(database.tournaments.containsKey(newTournament.id))
-        assertEquals(newTournament, database.tournaments[newTournament.id])
+        assertEquals(newTournament, database.tournaments[newTournament.id]!!.value)
     }
 
     /**
@@ -750,11 +751,12 @@ class MockDatabaseTest {
             endDate = LocalDateTime.now().plusDays(3L),
         )
         // check that the tournament is not the same beforehand
-        assertNotEquals(newTournament, database.tournaments[database.mockTournament.value!!.id])
+        assertNotEquals(newTournament, database.tournaments[database.mockTournament.value!!.id]!!.value)
         // add  the tournament
         database.addTournament(newTournament).get()
+        waitUntilAllThreadAreDone()
         // check that the tournament has been replaced
-        assertEquals(newTournament, database.tournaments[database.mockTournament.value!!.id])
+        assertEquals(newTournament, database.tournaments[database.mockTournament.value!!.id]!!.value)
     }
 
     /**
@@ -837,6 +839,7 @@ class MockDatabaseTest {
         assertTrue(!database.users[userId]!!.tournaments!!.contains(tournamentId))
         // add user to tournament
         database.addUserToTournament(userId, tournamentId).get()
+        waitUntilAllThreadAreDone()
         // check that user is in tournament's participants
         assertTrue(database.tournaments[tournamentId]!!.value!!.participants.contains(userId))
         // check that tournament is in user's tournaments list
@@ -876,6 +879,7 @@ class MockDatabaseTest {
         assertTrue(database.users[userId]!!.tournaments!!.contains(tournamentId))
         // remove user from tournament
         database.removeUserFromTournament(userId, tournamentId)
+        waitUntilAllThreadAreDone()
         // check that user is not in tournament's participants
         assertTrue(!database.tournaments[tournamentId]!!.value!!.participants.contains(userId))
         // check that tournament is not in user's tournaments list
@@ -911,10 +915,12 @@ class MockDatabaseTest {
     @Test
     fun getTournamentThatExistsReturnsTheTournament() {
         val database = MockDatabase()
-        val expectedTournament = database.mockTournament
-        val expectedTournamentid = expectedTournament.value!!.id
+        val expectedTournament = database.mockTournament.value!!.copy()
+        val expectedTournamentid = expectedTournament.id
         val expectedTournamentId = expectedTournamentid
-        assertEquals(expectedTournament, database.getTournament(expectedTournamentId).value)
+        val obtainTournament = database.getTournament(expectedTournamentId)
+        waitUntilAllThreadAreDone()
+        assertEquals(expectedTournament, obtainTournament.value)
     }
 
     /**
