@@ -274,11 +274,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      */
     private fun sampleWeekly(): Tournament {
         val posts = mutableListOf(
-            TournamentPost("xxDarkxx", sampleRun(), -13),
-            TournamentPost("Michel", sampleRun(), 158),
-            TournamentPost("MrPrefect", sampleRun(), 666),
-            TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0),
+            TournamentPost("0", "xxDarkxx", sampleRun()),
+            TournamentPost("1", "Michel", sampleRun()),
+            TournamentPost("2", "MrPrefect", sampleRun()),
+            TournamentPost("3","Me Myself and I", sampleRun()),
+            TournamentPost("4", "Invalid Username", sampleRun()),
         )
 
         return Tournament(
@@ -298,18 +298,18 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      */
     private fun sampleYourTournaments(): List<Tournament> {
         val posts = mutableListOf(
-            TournamentPost("xxDarkxx", sampleRun(), -13),
-            TournamentPost("Michel", sampleRun(), 158),
-            TournamentPost("MrPrefect", sampleRun(), 666),
-            TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0),
+            TournamentPost("0", "xxDarkxx", sampleRun()),
+            TournamentPost("1", "Michel", sampleRun()),
+            TournamentPost("2", "MrPrefect", sampleRun()),
+            TournamentPost("3","Me Myself and I", sampleRun()),
+            TournamentPost("4", "Invalid Username", sampleRun()),
         )
         val posts1 = mutableListOf(
-            TournamentPost("xD c moi", sampleRun(), 35),
-            TournamentPost("Jaqueline", sampleRun(), 356),
-            TournamentPost("Diabolos", sampleRun(), 666),
-            TournamentPost("me", sampleRun(), -563),
-            TournamentPost("IDK", sampleRun(), 0),
+            TournamentPost("0", "xD c moi", sampleRun()),
+            TournamentPost("1", "Jaqueline", sampleRun()),
+            TournamentPost("2", "Diabolos", sampleRun()),
+            TournamentPost("3","me", sampleRun()),
+            TournamentPost("4", "IDK", sampleRun()),
         )
         return mutableListOf(
             Tournament(
@@ -340,18 +340,18 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      */
     private fun sampleDiscoveryTournaments(): List<Tournament> {
         val posts = mutableListOf(
-            TournamentPost("xxDarkxx", sampleRun(), -13),
-            TournamentPost("Michel", sampleRun(), 158),
-            TournamentPost("MrPrefect", sampleRun(), 666),
-            TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0),
+            TournamentPost("0", "xxDarkxx", sampleRun()),
+            TournamentPost("1", "Michel", sampleRun()),
+            TournamentPost("2", "MrPrefect", sampleRun()),
+            TournamentPost("3","Me Myself and I", sampleRun()),
+            TournamentPost("4", "Invalid Username", sampleRun()),
         )
         val posts1 = mutableListOf(
-            TournamentPost("SpaceMan", sampleRun(), 35),
-            TournamentPost("NASA", sampleRun(), 124),
-            TournamentPost("Diabolos", sampleRun(), 666),
-            TournamentPost("Alien", sampleRun(), -3),
-            TournamentPost("IDK", sampleRun(), 0),
+            TournamentPost("0", "xD c moi", sampleRun()),
+            TournamentPost("1", "Jaqueline", sampleRun()),
+            TournamentPost("2", "Diabolos", sampleRun()),
+            TournamentPost("3","me", sampleRun()),
+            TournamentPost("4", "IDK", sampleRun()),
         )
         return mutableListOf(
             Tournament(
