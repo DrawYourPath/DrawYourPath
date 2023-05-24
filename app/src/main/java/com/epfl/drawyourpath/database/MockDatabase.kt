@@ -11,6 +11,7 @@ import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils
@@ -286,7 +287,7 @@ class MockDatabase : Database() {
 
     )
 
-    var mockTournamentUID = 1234567
+    var mockUID = 1234567
 
     var MOCK_CHAT_PREVIEWS = listOf(
         ChatPreview(
@@ -342,6 +343,10 @@ class MockDatabase : Database() {
         return Utils.failedFuture(Error("This tournament doesn't exist $tournamentId"))
     }
 
+    private fun <T> postDoesntExist(tournamentId: String, postId: String): CompletableFuture<T> {
+        return Utils.failedFuture(Error("This post doesn't exist $postId (in tournament $tournamentId)"))
+    }
+
     val unameToUid = MOCK_USERS.associate { it.username to it.userId }.toMutableMap()
 
     val users = MOCK_USERS.associateBy { it.userId }.toMutableMap()
@@ -358,6 +363,15 @@ class MockDatabase : Database() {
 
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(tournaments.containsKey(tournamentId))
+    }
+
+    override fun isPostInDatabase(
+        tournamentId: String,
+        postId: String,
+    ): CompletableFuture<Boolean> {
+        val postExists = tournaments.keys.contains(tournamentId) &&
+                tournaments[tournamentId]!!.posts.any { it.postId == postId }
+        return CompletableFuture.completedFuture(postExists)
     }
 
     override fun getUsername(userId: String): CompletableFuture<String> {
@@ -584,7 +598,7 @@ class MockDatabase : Database() {
     }
 
     override fun getTournamentUID(): String {
-        return mockTournamentUID++.toString()
+        return mockUID++.toString()
     }
 
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
@@ -673,6 +687,74 @@ class MockDatabase : Database() {
         }
 
         return CompletableFuture.completedFuture(tournaments[tournamentId])
+    }
+
+    override fun getTournamentPosts(tournamentId: String): CompletableFuture<List<TournamentPost>> {
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
+        return CompletableFuture.completedFuture(tournaments[tournamentId]!!.posts)
+    }
+
+    override fun getTournamentParticipantsId(tournamentId: String): CompletableFuture<List<String>> {
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
+        return CompletableFuture.completedFuture(tournaments[tournamentId]!!.participants)
+    }
+
+    override fun getTournamentInfo(tournamentId: String): CompletableFuture<Tournament> {
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
+        val completeTournament = tournaments[tournamentId]!!
+        val tournamentOnlyInfo = completeTournament.copy(participants = emptyList(), posts = emptyList())
+        return CompletableFuture.completedFuture(tournamentOnlyInfo)
+    }
+
+    override fun getPostUID(): String {
+        return mockUID++.toString()
+    }
+
+    override fun addPostToTournament(
+        tournamentId: String,
+        post: TournamentPost,
+    ): CompletableFuture<Unit> {
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
+        val oldTournament = tournaments[tournamentId]!!
+        val oldPosts = oldTournament.posts.filter { it.postId != post.postId }
+        val newTournament = oldTournament.copy(posts = oldPosts.plus(post))
+        tournaments[tournamentId] = newTournament
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun voteOnPost(
+        userId: String,
+        tournamentId: String,
+        postId: String,
+        vote: Int,
+    ): CompletableFuture<Unit> {
+        // check that the userId and postId exist
+        if (!users.contains(userId)) {
+            return userDoesntExist(userId)
+        }
+        if (!isPostInDatabase(tournamentId, postId).get()) {
+            return postDoesntExist(tournamentId, postId)
+        }
+
+        val oldTournament = tournaments[tournamentId]!!
+        val posts = oldTournament.posts
+        val oldPost = posts.first { it.postId == postId }
+        val oldPostIndex = posts.indexOf(oldPost)
+        val newUsersVotes = oldPost.getUsersVotes().plus(userId to vote).toMutableMap()
+        val newPost = oldPost.copy(usersVotes = newUsersVotes)
+        posts.toMutableList().set(oldPostIndex, newPost)
+
+        tournaments[tournamentId] = oldTournament.copy(posts = posts)
+
+        return CompletableFuture.completedFuture(Unit)
     }
 
     override fun createChatConversation(

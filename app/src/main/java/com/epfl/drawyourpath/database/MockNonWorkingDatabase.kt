@@ -8,6 +8,7 @@ import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Run
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
@@ -21,6 +22,13 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
+        return failedFuture()
+    }
+
+    override fun isPostInDatabase(
+        tournamentId: String,
+        postId: String,
+    ): CompletableFuture<Boolean> {
         return failedFuture()
     }
 
@@ -119,6 +127,38 @@ class MockNonWorkingDatabase : Database() {
     }
 
     override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
+        return failedFuture()
+    }
+
+    override fun getTournamentPosts(tournamentId: String): CompletableFuture<List<TournamentPost>> {
+        return failedFuture()
+    }
+
+    override fun getTournamentParticipantsId(tournamentId: String): CompletableFuture<List<String>> {
+        return failedFuture()
+    }
+
+    override fun getTournamentInfo(tournamentId: String): CompletableFuture<Tournament> {
+        return failedFuture()
+    }
+
+    override fun getPostUID(): String? {
+        return null
+    }
+
+    override fun addPostToTournament(
+        tournamentId: String,
+        post: TournamentPost,
+    ): CompletableFuture<Unit> {
+        return failedFuture()
+    }
+
+    override fun voteOnPost(
+        userId: String,
+        tournamentId: String,
+        postId: String,
+        vote: Int,
+    ): CompletableFuture<Unit> {
         return failedFuture()
     }
 

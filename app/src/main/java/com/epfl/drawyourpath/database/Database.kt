@@ -74,6 +74,14 @@ abstract class Database {
     abstract fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean>
 
     /**
+     * This function is used to know if a certain tournament is stored in the database
+     * @param tournamentId that corresponds to the tournament in which the post should be
+     * @param postId that corresponds to the post
+     * @return a future that indicates if the post is stored on the database
+     */
+    abstract fun isPostInDatabase(tournamentId: String, postId: String): CompletableFuture<Boolean>
+
+    /**
      * This function will return a future that give the username in function of the userId
      * @param userId of the user
      * @return a future that gives the username of the user
@@ -248,7 +256,7 @@ abstract class Database {
      * Function used to retrieve the tournament corresponding to the ID. USe only if you need to get
      * everything about a tournament (including posts and participants). Otherwise, you should use
      * [getTournamentInfo], [getTournamentPosts] or [getTournamentParticipantsId].
-     * @param tournamentId the id of the tournaments to retrieve
+     * @param tournamentId the id of the tournaments to retrieve.
      * @return a future that contains the tournament if successful, or an exception if an error
      * occurred with the db.
      */
@@ -258,7 +266,7 @@ abstract class Database {
 
     /**
      * Function used to retrieve all posts from the tournament corresponding to the ID.
-     * @param tournamentId the id of the tournaments to retrieve
+     * @param tournamentId the id of the tournaments to retrieve.
      * @return a future that contains the list of the posts of the tournament.
      */
     abstract fun getTournamentPosts(
@@ -267,7 +275,7 @@ abstract class Database {
 
     /**
      * Function used to retrieve the participants of a tournament.
-     * @param tournamentId the id of the tournaments from which we want the participants
+     * @param tournamentId the id of the tournaments from which we want the participants.
      * @return a future that contains the list of participants if successful.
      */
     abstract fun getTournamentParticipantsId(
@@ -277,12 +285,44 @@ abstract class Database {
     /**
      * Function used to retrieve only the info about the tournament, not the posts or the participants
      * to avoid too much downloading.
-     * @param tournamentId the id of the tournament from which we want the info
+     * @param tournamentId the id of the tournament from which we want the info.
      * @return a future that contains the tournament which has empty posts and participants ids lists.
      */
     abstract fun getTournamentInfo(
         tournamentId: String,
     ): CompletableFuture<Tournament>
+
+    /**
+     * Function used to get a unique ID for a new post. Never fails (because client side).
+     * @return a unique ID or null if the operation failed.
+     */
+    abstract fun getPostUID(): String?
+
+    /**
+     * Function used to add a post to a tournament.
+     * @param tournamentId the id of the tournament to which we want to add the post.
+     * @param post the post to add to the tournament.
+     * @return a future indicating if the operation was successful.
+     */
+    abstract fun addPostToTournament(
+        tournamentId: String,
+        post: TournamentPost,
+    ): CompletableFuture<Unit>
+
+    /**
+     * Function used to add or overwrite/change a vote on a post.
+     * @param tournamentId the tournament in which the post is.
+     * @param postId the id of the post.
+     * @param userId the id of the user who votes.
+     * @param vote the new vote value: downvote = -1, no vote = 0, upvote = 1.
+     * @return a future indicating if the operation was successful.
+     */
+    abstract fun voteOnPost(
+        userId: String,
+        tournamentId: String,
+        postId: String,
+        vote: Int,
+    ): CompletableFuture<Unit>
 
     /**
      * Function used to create a chat conversation with other users of the DrawYourPath community.

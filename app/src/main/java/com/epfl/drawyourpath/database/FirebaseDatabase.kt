@@ -29,6 +29,7 @@ object FirebaseKeys {
     const val USERS_ROOT = "users"
     const val USERNAMES_ROOT = "usernameToUid"
     const val TOURNAMENTS_ROOT = "tournaments"
+    const val TOURNAMENTS_IDS_ROOT = "tournamentIds"
     const val CHATS_ROOT = "chats"
     const val CHATS_MEMBERS_ROOT = "chatsMembers"
     const val CHATS_MESSAGES_ROOT = "chatsMessages"
@@ -75,6 +76,7 @@ object FirebaseKeys {
     const val TOURNAMENT_INFO = "info"
     const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
     const val TOURNAMENT_POSTS = "posts"
+    const val TOURNAMENT_POSTS_IDS = "posts_ids"
 
     // Tournaments info keys
     const val TOURNAMENT_ID = "id"
@@ -123,6 +125,10 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
 
     private fun tournamentsRoot(): DatabaseReference {
         return database.child(FirebaseKeys.TOURNAMENTS_ROOT)
+    }
+
+    private fun tournamentsKeysRoot(): DatabaseReference {
+        return database.child(FirebaseKeys.TOURNAMENTS_IDS_ROOT)
     }
 
     /**
@@ -203,8 +209,25 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
-        tournamentsRoot().child(tournamentId).get()
+        tournamentsKeysRoot().child(tournamentId).get()
             .addOnSuccessListener {
+                future.complete(it.value != null)
+            }
+            .addOnFailureListener {
+                future.completeExceptionally(it)
+            }
+
+        return future
+    }
+
+    override fun isPostInDatabase(
+        tournamentId: String,
+        postId: String,
+    ): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+
+        tournamentsRoot().child("$tournamentId/${FirebaseKeys.TOURNAMENT_POSTS_IDS}/$postId")
+            .get().addOnSuccessListener {
                 future.complete(it.value != null)
             }
             .addOnFailureListener {
@@ -491,8 +514,11 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         // add the tournament to all tournaments
-        tournamentsRoot().updateChildren(mapOf(tournament.id + "/" + FirebaseKeys.TOURNAMENT_INFO to tournament))
-            .addOnSuccessListener { future.complete(Unit) }
+        val changes: MutableMap<String, Any?> = hashMapOf(
+            "${FirebaseKeys.TOURNAMENTS_ROOT}/${FirebaseKeys.TOURNAMENT_INFO}/${tournament.id}" to tournament,
+            "${FirebaseKeys.TOURNAMENTS_IDS_ROOT}/${tournament.id}" to true,
+        )
+        database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
     }
@@ -592,11 +618,12 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
             } else {
                 // Get tournament posts
-                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_POSTS).get().addOnSuccessListener {
-                   future.complete(FirebaseDatabaseUtils.transformPostList(it))
-                }.addOnFailureListener {
-                    future.completeExceptionally(it)
-                }
+                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_POSTS).get()
+                    .addOnSuccessListener {
+                        future.complete(FirebaseDatabaseUtils.transformPostList(it))
+                    }.addOnFailureListener {
+                        future.completeExceptionally(it)
+                    }
             }
         }
         return future
@@ -610,11 +637,12 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
             } else {
                 // Get tournament posts
-                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get().addOnSuccessListener {
-                    future.complete(FirebaseDatabaseUtils.getKeys(it))
-                }.addOnFailureListener {
-                    future.completeExceptionally(it)
-                }
+                tournamentsRoot().child(tournamentId)
+                    .child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get().addOnSuccessListener {
+                        future.complete(FirebaseDatabaseUtils.getKeys(it))
+                    }.addOnFailureListener {
+                        future.completeExceptionally(it)
+                    }
             }
         }
         return future
@@ -628,16 +656,72 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
             } else {
                 // Get tournament info and check if corrupted
-                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_INFO).get().addOnSuccessListener {
-                    val tournament = FirebaseDatabaseUtils.mapToTournamentInfo(it)
-                    if (tournament == null) {
-                        future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
-                    } else {
-                        future.complete(tournament)
+                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_INFO).get()
+                    .addOnSuccessListener {
+                        val tournament = FirebaseDatabaseUtils.mapToTournamentInfo(it)
+                        if (tournament == null) {
+                            future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
+                        } else {
+                            future.complete(tournament)
+                        }
+                    }.addOnFailureListener {
+                        future.completeExceptionally(it)
                     }
-                }.addOnFailureListener {
-                    future.completeExceptionally(it)
-                }
+            }
+        }
+        return future
+    }
+
+    override fun getPostUID(): String? {
+        return database.child(FirebaseKeys.TOURNAMENTS_ROOT).child(FirebaseKeys.TOURNAMENT_POSTS)
+            .push().key
+    }
+
+    override fun addPostToTournament(
+        tournamentId: String,
+        post: TournamentPost,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // Check that the tournament exists
+        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
+            if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
+            } else {
+                val changes: MutableMap<String, Any?> = hashMapOf(
+                    "${FirebaseKeys.TOURNAMENT_POSTS}/${post.postId}" to post,
+                    "${FirebaseKeys.TOURNAMENT_POSTS_IDS}/${post.postId}" to true,
+                )
+                // If it exists, do the operation
+                tournamentsRoot().child(tournamentId).updateChildren(changes)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+            }
+        }
+        return future
+    }
+
+    override fun voteOnPost(
+        userId: String,
+        tournamentId: String,
+        postId: String,
+        vote: Int,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // check that the userId and tournamentId exist
+        isUserInDatabase(userId).thenCombine(
+            isPostInDatabase(
+                tournamentId,
+                postId
+            )
+        ) { userExists, postExists ->
+            if (!userExists) {
+                future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
+            } else if (!postExists) {
+                future.completeExceptionally(Exception("The post with id $postId doesn't exist in tournament $tournamentId"))
+            } else {
+                // if they exist, change/add the user vote
+                tournamentsRoot().child("$tournamentId/${FirebaseKeys.TOURNAMENT_POSTS}/$postId/userVotes/$userId")
+                    .setValue(vote)
             }
         }
         return future
@@ -704,7 +788,8 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                         conversationId = conversationId,
                         title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
                         lastMessage = FirebaseDatabaseUtils.transformMessage(
-                            snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList().get(0),
+                            snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList()
+                                .get(0),
                         ),
                     )
                     previewValues.postValue(preview)
@@ -712,7 +797,11 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                     val preview = ChatPreview(
                         conversationId = conversationId,
                         title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
-                        lastMessage = Message.createTextMessage("loading...", "loading...", LocalDate.now().toEpochDay()),
+                        lastMessage = Message.createTextMessage(
+                            "loading...",
+                            "loading...",
+                            LocalDate.now().toEpochDay(),
+                        ),
                     )
                     previewValues.postValue(preview)
                 }
@@ -741,7 +830,9 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             }
         }
         // add the listener on the database messages
-        userProfile(userId).child(FirebaseKeys.USER_CHATS).ref.addValueEventListener(chatValueEventListener)
+        userProfile(userId).child(FirebaseKeys.USER_CHATS).ref.addValueEventListener(
+            chatValueEventListener
+        )
         return chatValues
     }
 
@@ -806,7 +897,8 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    val listMessage = snapshot.children.map { FirebaseDatabaseUtils.transformMessage(it) }
+                    val listMessage =
+                        snapshot.children.map { FirebaseDatabaseUtils.transformMessage(it) }
                     messagesValues.postValue(listMessage)
                 } else {
                     messagesValues.postValue(emptyList())
@@ -934,7 +1026,8 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val future = CompletableFuture<Unit>()
 
         // obtain the previous friendList
-        userRoot(currentUserId).child(FirebaseKeys.PROFILE).child(FirebaseKeys.FRIENDS).child(removeUserId).removeValue()
+        userRoot(currentUserId).child(FirebaseKeys.PROFILE).child(FirebaseKeys.FRIENDS)
+            .child(removeUserId).removeValue()
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { err -> future.completeExceptionally(err) }
 
@@ -971,9 +1064,9 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val data = mapOf(
             FirebaseKeys.CHAT_TITLE to chatPreview.title,
             "${FirebaseKeys.CHAT_LAST_MESSAGE}/${chatPreview.lastMessage!!.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to
-                chatPreview.lastMessage.senderId,
+                    chatPreview.lastMessage.senderId,
             "${FirebaseKeys.CHAT_LAST_MESSAGE}/${chatPreview.lastMessage.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to
-                (chatPreview.lastMessage.content as MessageContent.Text?)?.text,
+                    (chatPreview.lastMessage.content as MessageContent.Text?)?.text,
         ).filter { it.value != null }
 
         chatPreview(conversationId).updateChildren(data)

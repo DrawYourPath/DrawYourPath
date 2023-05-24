@@ -145,20 +145,20 @@ object FirebaseDatabaseUtils {
      * @return the post, or null if an error occurred
      */
     fun transformPost(data: DataSnapshot?): TournamentPost? {
+        val postId = data?.child("postId")?.value as String?
         val userId = data?.child("userId")?.value as String?
         val run = transformRun(data?.child("run"))
-        val votes = getNumber(data?.child("votes"))?.toInt()
         val date = transformLocalDateTime(data?.child("date"))
         // Unchecked cast here but should work without problem
         val usersVotes =
             (data?.child("usersVotes")?.value ?: emptyMap<String, Int>()) as Map<String, Int>
 
-        if (userId == null || run == null || votes == null || date == null) {
+        if (postId == null || userId == null || run == null || date == null) {
             Log.e(this::class.java.name, "TournamentPost had null values")
             return null
         }
 
-        return TournamentPost(userId, run, votes, date, usersVotes.toMutableMap())
+        return TournamentPost(postId, userId, run, date, usersVotes.toMutableMap())
     }
 
     /**
