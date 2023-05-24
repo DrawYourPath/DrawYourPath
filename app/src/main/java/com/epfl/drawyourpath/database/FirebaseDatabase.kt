@@ -155,7 +155,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     /**
      * Used to get the database reference to the file containing the ids of all tournaments.
      */
-    private fun tournamentsKeysRoot(): DatabaseReference {
+    private fun tournamentsIdsRoot(): DatabaseReference {
         return database.child(FirebaseKeys.TOURNAMENTS_IDS_ROOT)
     }
 
@@ -237,7 +237,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
-        tournamentsKeysRoot().child(tournamentId).get()
+        tournamentsIdsRoot().child(tournamentId).get()
             .addOnSuccessListener {
                 future.complete(it.value != null)
             }
@@ -580,7 +580,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             }
         }
         // add the listener on the database tournaments root
-        tournamentsRoot().ref.addValueEventListener(tournamentsIdValueEventListener)
+        tournamentsIdsRoot().ref.addValueEventListener(tournamentsIdValueEventListener)
         return tournamentsIdValues
     }
 
@@ -592,7 +592,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val future = CompletableFuture<Unit>()
         // add the tournament to all tournaments
         val changes: MutableMap<String, Any?> = hashMapOf(
-            "${FirebaseKeys.TOURNAMENTS_ROOT}/${FirebaseKeys.TOURNAMENT_INFO}/${tournament.id}" to tournament,
+            "${FirebaseKeys.TOURNAMENTS_ROOT}/${tournament.id}/${FirebaseKeys.TOURNAMENT_INFO}" to tournament,
             "${FirebaseKeys.TOURNAMENTS_IDS_ROOT}/${tournament.id}" to true,
         )
         database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
@@ -690,7 +690,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             }
         }
         // add the listener on the database on the root of the tournament with tournament id
-        tournamentsKeysRoot().child(tournamentId).ref.addValueEventListener(tournamentValueEventListener)
+        tournamentsRoot().child(tournamentId).ref.addValueEventListener(tournamentValueEventListener)
         return tournamentValue
     }
 
@@ -819,6 +819,8 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                 // if they exist, change/add the user vote
                 tournamentsRoot().child("$tournamentId/${FirebaseKeys.TOURNAMENT_POSTS}/$postId/userVotes/$userId")
                     .setValue(vote)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
             }
         }
         return future
