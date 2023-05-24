@@ -254,7 +254,16 @@ class MockDatabase : Database() {
         usersVotes = hashMapOf(
             MOCK_USERS[0].userId!! to 1,
             MOCK_USERS[1].userId!! to -1,
-        )
+        ),
+    )
+
+    val MOCK_POSTS = listOf(
+        mockPost,
+        TournamentPost(
+            postId = "mockPostID2",
+            userId = MOCK_USERS[0].userId!!,
+            run = MOCK_USERS[0].runs!![0],
+        ),
     )
 
     val mockTournament = MutableLiveData(
@@ -267,12 +276,12 @@ class MockDatabase : Database() {
             endDate = LocalDateTime.now().plusDays(4L),
             participants = MOCK_USERS.map { it.userId!! },
             // The next args are useless for now
-            posts = listOf(),
+            posts = listOf(mockPost),
             visibility = Tournament.Visibility.PUBLIC,
         ),
     )
 
-    val MOCK_TOURNAMENTS_ID = MutableLiveData<List<String>>(
+    val MOCK_TOURNAMENTS_ID = MutableLiveData(
         listOf(
             "0",
             "1",
@@ -793,14 +802,15 @@ class MockDatabase : Database() {
         }
 
         val oldTournament = tournaments[tournamentId]!!.value!!
-        val posts = oldTournament.posts
-        val oldPost = posts.first { it.postId == postId }
-        val oldPostIndex = posts.indexOf(oldPost)
+        val oldPosts = oldTournament.posts
+        val oldPost = oldPosts.first { it.postId == postId }
+        val oldPostIndex = oldPosts.indexOf(oldPost)
         val newUsersVotes = oldPost.getUsersVotes().plus(userId to vote).toMutableMap()
         val newPost = oldPost.copy(usersVotes = newUsersVotes)
-        posts.toMutableList().set(oldPostIndex, newPost)
+        val newPosts = oldPosts.toMutableList()
+        newPosts.set(oldPostIndex, newPost)
 
-        tournaments[tournamentId]!!.postValue(oldTournament.copy(posts = posts))
+        tournaments[tournamentId]!!.postValue(oldTournament.copy(posts = newPosts))
 
         return CompletableFuture.completedFuture(Unit)
     }
