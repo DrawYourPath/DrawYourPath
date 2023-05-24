@@ -272,7 +272,7 @@ class CommunityFragmentTest {
      */
     private val postsYour = mutableListOf(
         TournamentPost("post1", "Michel", sampleRun()),
-        TournamentPost("post2","MrPrefect", sampleRun()),
+        TournamentPost("post2", "MrPrefect", sampleRun()),
         TournamentPost("post3", "Me Myself and I", sampleRun()),
         TournamentPost("post4", "Invalid Username", sampleRun()),
     )
@@ -281,7 +281,7 @@ class CommunityFragmentTest {
      * sample posts
      */
     private val postsDiscoverEarth = mutableListOf(
-        TournamentPost("post5","SpaceMan", sampleRun()),
+        TournamentPost("post5", "SpaceMan", sampleRun()),
         TournamentPost("post6", "NASA", sampleRun()),
         TournamentPost("post7", "Alien", sampleRun()),
     )
