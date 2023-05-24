@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.Auth
 import com.epfl.drawyourpath.authentication.FirebaseAuth
@@ -23,6 +24,8 @@ import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creation) {
+
+    private val tournament: TournamentModel by activityViewModels()
 
     private lateinit var title: TextView
     private lateinit var description: TextView
@@ -92,6 +95,17 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             ).show()
             return
         }
+
+        tournament.addTournament(
+            Tournament(
+                id,
+                newTournamentParameters.name,
+                newTournamentParameters.description,
+                creatorId,
+                newTournamentParameters.startDate,
+                newTournamentParameters.endDate
+            )
+        )
 
         // ask to store the tournament in the database and handle exceptions
         storeNewTournament(newTournamentParameters, id, creatorId, database)

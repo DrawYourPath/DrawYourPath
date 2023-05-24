@@ -171,7 +171,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      * create the tournament item of a subMenu
      */
     private fun createMenuItem(view: View, menu: SubMenu, tournament: Tournament) {
-        val item = menu.add(tournament.name)
+        menu.add(tournament.name)
             .setContentDescription("${tournament.name} details")
             .setActionView(R.layout.item_tournament)
             .setOnMenuItemClickListener {

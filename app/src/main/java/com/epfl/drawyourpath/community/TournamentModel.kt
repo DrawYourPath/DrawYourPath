@@ -1,8 +1,7 @@
 package com.epfl.drawyourpath.community
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.*
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.path.Path
@@ -18,20 +17,43 @@ class TournamentModel : ViewModel() {
 
     private var database: Database = FirebaseDatabase()
 
-    private val _yourTournament: MutableLiveData<List<Tournament>> = MutableLiveData(listOf(sampleWeekly()))
-    val yourTournament: LiveData<List<Tournament>> = _yourTournament
+    // TODO delete this ----------------------------------
+    private val _tournamentIds = mutableListOf("id1", "id2", "id3", "id4", "id5")
+    private val tournamentIds: MutableLiveData<List<String>> = MutableLiveData(_tournamentIds)
 
-    private val _startingSoonTournament: MutableLiveData<List<Tournament>> = MutableLiveData(sampleYourTournaments())
-    val startingSoonTournament: LiveData<List<Tournament>> = _startingSoonTournament
+    private fun getAllTournamentId(): LiveData<List<String>> {
+        return tournamentIds
+    }
+    // TODO until here ------------------------------------
 
-    private val _discoverTournament: MutableLiveData<List<Tournament>> = MutableLiveData(sampleDiscoveryTournaments())
-    val discoverTournament: LiveData<List<Tournament>> = _discoverTournament
+    private val allTournament: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
+        addSource(getAllTournamentId()) { tournamentIds ->
+            value = tournamentIds.mapNotNull { getTournament(it).value }
+        }
+    }
 
-    private val _posts: MutableLiveData<List<TournamentPost>> = MutableLiveData(sampleWeekly().posts)
-    val posts: LiveData<List<TournamentPost>> = _posts
+    val yourTournament: LiveData<List<Tournament>> = allTournament.map { tournaments ->
+        tournaments.filter { userTournaments.contains(it.id) && it.startDate <= LocalDateTime.now() }
+    }
 
-    fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
-        return CompletableFuture()
+    val startingSoonTournament: LiveData<List<Tournament>> = allTournament.map { tournaments ->
+        tournaments.filter {it.startDate > LocalDateTime.now() }
+    }
+
+    val discoverTournament: LiveData<List<Tournament>> = allTournament.map { tournaments ->
+        tournaments.filter { !userTournaments.contains(it.id) && it.startDate <= LocalDateTime.now() }
+    }
+
+    private val postOf: MutableLiveData<String?> = MutableLiveData(null)
+
+    val posts: LiveData<List<TournamentPost>> = postOf.switchMap {
+        it?.let { getTournamentPost(it) } ?: MutableLiveData(listOf())
+    }
+
+    fun addTournament(tournament: Tournament){
+        all_tournaments.add(tournament)
+        _tournamentIds.add(tournament.id)
+        tournamentIds.postValue(_tournamentIds)
     }
 
     fun addPost(tournamentId: String, post: TournamentPost): CompletableFuture<Unit> {
@@ -47,11 +69,23 @@ class TournamentModel : ViewModel() {
      * @param tournamentId the id of the tournament or null for all tournament
      */
     fun showPostOf(tournamentId: String?) {
-        return
+        postOf.postValue(tournamentId)
+
     }
 
     // TODO replace by real tournaments
     // everything from here are samples
+
+    private val userTournaments = mutableListOf("id1")
+
+    private val all_tournaments = mutableListOf(sampleWeekly()).also { it.addAll(sampleYourTournaments()) }.also { it.addAll(sampleDiscoveryTournaments()) }
+    private fun getTournament(id: String): LiveData<Tournament> {
+        return MutableLiveData(all_tournaments.find { it.id == id }!!)
+    }
+
+    private fun getTournamentPost(id: String): LiveData<List<TournamentPost>> {
+        return MutableLiveData(all_tournaments.find { it.id == id }!!.posts)
+    }
 
     /**
      * sample tournaments
@@ -70,8 +104,8 @@ class TournamentModel : ViewModel() {
             "Star Path",
             "draw a star path",
             "creator1",
-            LocalDateTime.now().plusDays(3L),
-            LocalDateTime.now().plusDays(4L),
+            LocalDateTime.now().minusDays(3L),
+            LocalDateTime.now().plusDays(10L),
             listOf(),
             posts,
         )
@@ -101,7 +135,7 @@ class TournamentModel : ViewModel() {
                 "best tournament ever",
                 "draw whatever you want",
                 "creator2",
-                LocalDateTime.now().plusDays(3L),
+                LocalDateTime.now().minusDays(3L),
                 LocalDateTime.now().plusDays(4L),
                 listOf(),
                 posts1,
@@ -111,7 +145,7 @@ class TournamentModel : ViewModel() {
                 "time square",
                 "draw a square",
                 "creator3",
-                LocalDateTime.now().plusDays(3L),
+                LocalDateTime.now().minusDays(3L),
                 LocalDateTime.now().plusDays(4L),
                 listOf(),
                 posts,
