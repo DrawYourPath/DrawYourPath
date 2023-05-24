@@ -1,6 +1,5 @@
 package com.epfl.drawyourpath.community
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
@@ -26,28 +25,32 @@ class TournamentModel : ViewModel() {
     }
     // TODO until here ------------------------------------
 
-    private val allTournament: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
+    private val allTournaments: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
         addSource(getAllTournamentId()) { tournamentIds ->
             value = tournamentIds.mapNotNull { getTournament(it).value }
         }
     }
 
-    val yourTournament: LiveData<List<Tournament>> = allTournament.map { tournaments ->
+    val yourTournament: LiveData<List<Tournament>> = allTournaments.map { tournaments ->
         tournaments.filter { userTournaments.contains(it.id) && it.startDate <= LocalDateTime.now() }
     }
 
-    val startingSoonTournament: LiveData<List<Tournament>> = allTournament.map { tournaments ->
-        tournaments.filter {it.startDate > LocalDateTime.now() }
+    val startingSoonTournament: LiveData<List<Tournament>> = allTournaments.map { tournaments ->
+        tournaments.filter { it.startDate > LocalDateTime.now() }
     }
 
-    val discoverTournament: LiveData<List<Tournament>> = allTournament.map { tournaments ->
+    val discoverTournament: LiveData<List<Tournament>> = allTournaments.map { tournaments ->
         tournaments.filter { !userTournaments.contains(it.id) && it.startDate <= LocalDateTime.now() }
     }
 
     private val postOf: MutableLiveData<String?> = MutableLiveData(null)
 
-    val posts: LiveData<List<TournamentPost>> = postOf.switchMap {
-        it?.let { getTournamentPost(it) } ?: MutableLiveData(listOf())
+    val posts: LiveData<List<TournamentPost>> = postOf.switchMap { id ->
+        id?.let { getTournamentPost(it) } ?: MediatorLiveData<List<TournamentPost>>().apply {
+            addSource(allTournaments) { tournament ->
+                value = tournament.mapNotNull { getTournamentPost(it.id).value }.flatten()
+            }
+        }
     }
 
     fun addTournament(tournament: Tournament){
