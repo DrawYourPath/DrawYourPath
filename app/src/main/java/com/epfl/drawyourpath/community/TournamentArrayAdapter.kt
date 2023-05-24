@@ -28,6 +28,4 @@ class TournamentArrayAdapter(context: Context, @LayoutRes val resource: Int = R.
 
         return view
     }
-
-
 }

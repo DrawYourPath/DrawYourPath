@@ -17,12 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.*
-import com.epfl.drawyourpath.path.Path
-import com.epfl.drawyourpath.path.Run
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import java.time.LocalDateTime
 
 /**
  * fragment used to display and vote for the tournament posts [TournamentPost]

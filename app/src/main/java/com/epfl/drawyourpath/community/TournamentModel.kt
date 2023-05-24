@@ -30,7 +30,6 @@ class TournamentModel : ViewModel() {
     private val _posts: MutableLiveData<List<TournamentPost>> = MutableLiveData(sampleWeekly().posts)
     val posts: LiveData<List<TournamentPost>> = _posts
 
-
     fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
         return CompletableFuture()
     }
@@ -48,9 +47,8 @@ class TournamentModel : ViewModel() {
      * @param tournamentId the id of the tournament or null for all tournament
      */
     fun showPostOf(tournamentId: String?) {
-
+        return
     }
-
 
     // TODO replace by real tournaments
     // everything from here are samples
@@ -175,5 +173,4 @@ class TournamentModel : ViewModel() {
         val endTime = startTime + 10
         return Run(path = path, startTime = startTime, endTime = endTime, duration = 10)
     }
-
 }

@@ -89,8 +89,7 @@ class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournam
     // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = posts.count()
 
-
-    //TODO change only the posts that got changed
+    // TODO change only the posts that got changed
     /**
      * update the recycler view to show the updated list of posts
      * @param posts the new list of posts

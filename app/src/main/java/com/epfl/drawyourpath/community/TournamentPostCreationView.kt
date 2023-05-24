@@ -2,14 +2,12 @@ package com.epfl.drawyourpath.community
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunArrayAdapter
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
