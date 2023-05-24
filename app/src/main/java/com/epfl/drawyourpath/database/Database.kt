@@ -259,7 +259,7 @@ abstract class Database {
     ): CompletableFuture<Unit>
 
     /**
-     * Function used to retrieve the tournament corresponding to the ID. USe only if you need to get
+     * Function used to retrieve the tournament corresponding to the ID. Use only if you need to get
      * everything about a tournament (including posts and participants). Otherwise, you should use
      * [getTournamentInfo], [getTournamentPosts] or [getTournamentParticipantsId].
      * @param tournamentId the id of the tournaments to retrieve.
