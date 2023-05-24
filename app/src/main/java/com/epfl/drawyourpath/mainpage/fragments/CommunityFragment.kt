@@ -127,19 +127,22 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val menu = view.findViewById<NavigationView>(R.id.community_navigation_view).menu
         createTournamentButton(menu)
 
-        val weekly = menu.addSubMenu("Your tournament")
-        /*if (tournament.getWeeklyTournament() != null) {
-            createMenuItem(view, weekly, tournament.getWeeklyTournament()!!)
-        }*/
+        val your = menu.addSubMenu("Your tournament")
+        tournamentModel.yourTournament.observe(viewLifecycleOwner) { tournaments ->
+            your.clear()
+            tournaments.forEach { createMenuItem(view, your, it) }
+        }
 
-        val your = menu.addSubMenu("Starting soon")
-        /*for (t in tournament.getYourTournaments("placeholder")) {
-            createMenuItem(view, your, t)
-        }*/
+        val soon = menu.addSubMenu("Starting soon")
+        tournamentModel.startingSoonTournament.observe(viewLifecycleOwner) { tournaments ->
+            soon.clear()
+            tournaments.forEach { createMenuItem(view, soon, it) }
+        }
         val discover = menu.addSubMenu("Discover")
-        /*for (t in tournament.getDiscoverTournaments("placeholder")) {
-            createMenuItem(view, discover, t)
-        }*/
+        tournamentModel.discoverTournament.observe(viewLifecycleOwner) { tournaments ->
+            discover.clear()
+            tournaments.forEach { createMenuItem(view, discover, it) }
+        }
     }
 
     private fun createTournamentButton(menu: Menu) {
