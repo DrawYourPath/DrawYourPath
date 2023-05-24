@@ -41,7 +41,7 @@ class CommunityFragmentTest {
             0.9,
         )
         val userVotes = mutableMapOf("test" to 1)
-        val post = TournamentPost("0", "testId", run, LocalDateTime.now(), usersVotes = userVotes)
+        val post = TournamentPost("postId", "testId", run, usersVotes = userVotes)
         assertThat(post.getUsersVotes(), `is`(userVotes))
     }
 
@@ -271,27 +271,27 @@ class CommunityFragmentTest {
      * sample posts
      */
     private val postsYour = mutableListOf(
-        TournamentPost("0", "Michel", sampleRun(), LocalDateTime.now()),
-        TournamentPost("1", "MrPrefect", sampleRun(), LocalDateTime.now()),
-        TournamentPost("2", "Me Myself and I", sampleRun(), LocalDateTime.now()),
-        TournamentPost("3", "Invalid Username", sampleRun(), LocalDateTime.now()),
+        TournamentPost("post1", "Michel", sampleRun()),
+        TournamentPost("post2", "MrPrefect", sampleRun()),
+        TournamentPost("post3", "Me Myself and I", sampleRun()),
+        TournamentPost("post4", "Invalid Username", sampleRun()),
     )
 
     /**
      * sample posts
      */
     private val postsDiscoverEarth = mutableListOf(
-        TournamentPost("0", "SpaceMan", sampleRun(), LocalDateTime.now()),
-        TournamentPost("1", "NASA", sampleRun(), LocalDateTime.now()),
-        TournamentPost("2","Alien", sampleRun(), LocalDateTime.now()),
+        TournamentPost("post5", "SpaceMan", sampleRun()),
+        TournamentPost("post6", "NASA", sampleRun()),
+        TournamentPost("post7", "Alien", sampleRun()),
     )
 
     /**
      * sample posts
      */
     private val postsDiscoverMoon = mutableListOf(
-        TournamentPost("0", "Diabolos", sampleRun(), LocalDateTime.now()),
-        TournamentPost("1","Jaqueline", sampleRun(), LocalDateTime.now()),
+        TournamentPost("post8", "Diabolos", sampleRun()),
+        TournamentPost("post9", "Jaqueline", sampleRun()),
     )
 
     /**
@@ -305,7 +305,7 @@ class CommunityFragmentTest {
         LocalDateTime.now().plusDays(4L),
         LocalDateTime.now().plusDays(3L),
         listOf(),
-        listOf(TournamentPost("0","xxDarkxx", sampleRun(), LocalDateTime.now())),
+        listOf(TournamentPost("post10", "xxDarkxx", sampleRun())),
     )
 
     /**
