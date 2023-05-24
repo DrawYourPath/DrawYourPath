@@ -13,11 +13,10 @@ import com.epfl.drawyourpath.R
 /**
  * used in a recycler view to display the [TournamentPost]
  */
-class CommunityTournamentPostViewAdapter(
-    private val tournamentPosts: List<Pair<Tournament, TournamentPost>>,
-    private val showTournamentName: Boolean,
-) :
-    RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
+class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
+
+    private var posts: List<TournamentPost> = listOf()
+    private var tournamentName: String? = null
 
     /**
      * Custom view holder using a custom layout for tournaments
@@ -52,12 +51,11 @@ class CommunityTournamentPostViewAdapter(
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val tournamentPost = tournamentPosts[viewHolder.adapterPosition]
-        val post = tournamentPost.second
+        val post = posts[viewHolder.adapterPosition]
 
         // if it displays posts from only one tournament the name is not displayed
-        if (showTournamentName) {
-            viewHolder.tournamentName.text = tournamentPost.first.name
+        if (tournamentName != null) {
+            viewHolder.tournamentName.text = tournamentName
         } else {
             viewHolder.tournamentName.visibility = View.GONE
         }
@@ -89,7 +87,19 @@ class CommunityTournamentPostViewAdapter(
     }
 
     // Return the size of the dataset (invoked by the layout manager)
-    override fun getItemCount() = tournamentPosts.count()
+    override fun getItemCount() = posts.count()
+
+
+    //TODO change only the posts that got changed
+    /**
+     * update the recycler view to show the updated list of posts
+     * @param posts the new list of posts
+     */
+    fun update(posts: List<TournamentPost>, tournamentName: String? = null) {
+        this.posts = posts
+        this.tournamentName = tournamentName
+        notifyItemRangeChanged(0, itemCount)
+    }
 
     /**
      * change the color of the upvote and downvote button

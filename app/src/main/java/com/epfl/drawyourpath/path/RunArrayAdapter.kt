@@ -16,10 +16,9 @@ import com.google.android.gms.maps.model.LatLng
 /**
  * this class is used in the spinner to display a dropdown list of run to select from
  * @param context the context
- * @param runs the runs to display
  * @param resource the resource layout
  */
-class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val resource: Int = R.layout.past_run) : ArrayAdapter<Run>(context, resource, runs) {
+class RunArrayAdapter(context: Context, @LayoutRes val resource: Int = R.layout.past_run) : ArrayAdapter<Run>(context, resource, mutableListOf()) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         return createView(position, convertView, parent)

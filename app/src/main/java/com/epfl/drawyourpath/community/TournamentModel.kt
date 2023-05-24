@@ -1,51 +1,179 @@
 package com.epfl.drawyourpath.community
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.epfl.drawyourpath.database.Database
+import com.epfl.drawyourpath.database.FirebaseDatabase
+import com.epfl.drawyourpath.path.Path
+import com.epfl.drawyourpath.path.Run
+import com.google.android.gms.maps.model.LatLng
+import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
+
 /**
- *
+ * this class is used to link the database to the UI for the tournaments
  */
-class TournamentModel : java.io.Serializable {
+class TournamentModel : ViewModel() {
 
-    private var weekly: Tournament? = null
-    private var your: List<Tournament> = mutableListOf()
-    private var discover: List<Tournament> = mutableListOf()
+    private var database: Database = FirebaseDatabase()
 
-    /**
-     * get the tournament of this week
-     * TODO link with the database to get the correct one
-     *
-     * @return the weekly tournament
-     */
-    fun getWeeklyTournament(): Tournament? {
-        return weekly
+    private val _yourTournament: MutableLiveData<List<Tournament>> = MutableLiveData(listOf(sampleWeekly()))
+    val yourTournament: LiveData<List<Tournament>> = _yourTournament
+
+    private val _startingSoonTournament: MutableLiveData<List<Tournament>> = MutableLiveData(sampleYourTournaments())
+    val startingSoonTournament: LiveData<List<Tournament>> = _startingSoonTournament
+
+    private val _discoverTournament: MutableLiveData<List<Tournament>> = MutableLiveData(sampleDiscoveryTournaments())
+    val discoverTournament: LiveData<List<Tournament>> = _discoverTournament
+
+    private val _posts: MutableLiveData<List<TournamentPost>> = MutableLiveData(sampleWeekly().posts)
+    val posts: LiveData<List<TournamentPost>> = _posts
+
+
+    fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
+        return CompletableFuture()
+    }
+
+    fun addPost(tournamentId: String, post: TournamentPost): CompletableFuture<Unit> {
+        return CompletableFuture()
+    }
+
+    fun addVote(vote: Int, postId: String): CompletableFuture<Unit> {
+        return CompletableFuture()
     }
 
     /**
-     * get the tournaments of the user
-     * TODO link with the database to get the tournament of the user
-     *
-     * @param userId the id of the user
-     * @return the list of tournaments of the user
+     * change the posts variable to show only posts from a specific tournament or from all tournament
+     * @param tournamentId the id of the tournament or null for all tournament
      */
-    fun getYourTournaments(userId: String): List<Tournament> {
-        return your.toList()
+    fun showPostOf(tournamentId: String?) {
+
+    }
+
+
+    // TODO replace by real tournaments
+    // everything from here are samples
+
+    /**
+     * sample tournaments
+     */
+    private fun sampleWeekly(): Tournament {
+        val posts = mutableListOf(
+            TournamentPost("xxDarkxx", sampleRun(), -13),
+            TournamentPost("Michel", sampleRun(), 158),
+            TournamentPost("MrPrefect", sampleRun(), 666),
+            TournamentPost("Me Myself and I", sampleRun(), 123456),
+            TournamentPost("Invalid Username", sampleRun(), 0),
+        )
+
+        return Tournament(
+            "id1",
+            "Star Path",
+            "draw a star path",
+            "creator1",
+            LocalDateTime.now().plusDays(3L),
+            LocalDateTime.now().plusDays(4L),
+            listOf(),
+            posts,
+        )
     }
 
     /**
-     * get the tournaments which the user might like
-     * TODO link with the database to get the tournaments
-     *
-     * @param userId the id of the user
-     * @return the list of tournaments the user might like
+     * sample tournaments
      */
-    fun getDiscoverTournaments(userId: String): List<Tournament> {
-        return discover.toList()
+    private fun sampleYourTournaments(): List<Tournament> {
+        val posts = mutableListOf(
+            TournamentPost("xxDarkxx", sampleRun(), -13),
+            TournamentPost("Michel", sampleRun(), 158),
+            TournamentPost("MrPrefect", sampleRun(), 666),
+            TournamentPost("Me Myself and I", sampleRun(), 123456),
+            TournamentPost("Invalid Username", sampleRun(), 0),
+        )
+        val posts1 = mutableListOf(
+            TournamentPost("xD c moi", sampleRun(), 35),
+            TournamentPost("Jaqueline", sampleRun(), 356),
+            TournamentPost("Diabolos", sampleRun(), 666),
+            TournamentPost("me", sampleRun(), -563),
+            TournamentPost("IDK", sampleRun(), 0),
+        )
+        return mutableListOf(
+            Tournament(
+                "id2",
+                "best tournament ever",
+                "draw whatever you want",
+                "creator2",
+                LocalDateTime.now().plusDays(3L),
+                LocalDateTime.now().plusDays(4L),
+                listOf(),
+                posts1,
+            ),
+            Tournament(
+                "id3",
+                "time square",
+                "draw a square",
+                "creator3",
+                LocalDateTime.now().plusDays(3L),
+                LocalDateTime.now().plusDays(4L),
+                listOf(),
+                posts,
+            ),
+        )
     }
 
-    fun setSample(sample: SampleTournamentModel) {
-        weekly = sample.weekly
-        your = sample.your
-        discover = sample.discover
+    /**
+     * sample tournaments
+     */
+    private fun sampleDiscoveryTournaments(): List<Tournament> {
+        val posts = mutableListOf(
+            TournamentPost("xxDarkxx", sampleRun(), -13),
+            TournamentPost("Michel", sampleRun(), 158),
+            TournamentPost("MrPrefect", sampleRun(), 666),
+            TournamentPost("Me Myself and I", sampleRun(), 123456),
+            TournamentPost("Invalid Username", sampleRun(), 0),
+        )
+        val posts1 = mutableListOf(
+            TournamentPost("SpaceMan", sampleRun(), 35),
+            TournamentPost("NASA", sampleRun(), 124),
+            TournamentPost("Diabolos", sampleRun(), 666),
+            TournamentPost("Alien", sampleRun(), -3),
+            TournamentPost("IDK", sampleRun(), 0),
+        )
+        return mutableListOf(
+            Tournament(
+                "id4",
+                "Discover the earth",
+                "draw the earth",
+                "creator4",
+                LocalDateTime.now().plusDays(3L),
+                LocalDateTime.now().plusDays(4L),
+                listOf(),
+                posts1,
+            ),
+            Tournament(
+                "id5",
+                "to the moon",
+                "draw the moon",
+                "creator5",
+                LocalDateTime.now().plusDays(3L),
+                LocalDateTime.now().plusDays(4L),
+                listOf(),
+                posts,
+            ),
+        )
     }
 
-    data class SampleTournamentModel(val weekly: Tournament, val your: List<Tournament>, val discover: List<Tournament>) : java.io.Serializable
+    /**
+     * sample run
+     */
+    private fun sampleRun(): Run {
+        val point1 = LatLng(0.0, 0.0)
+        val point2 = LatLng(0.001, 0.001)
+        val points = listOf(point1, point2)
+        val path = Path(listOf(points))
+        val startTime = System.currentTimeMillis()
+        val endTime = startTime + 10
+        return Run(path = path, startTime = startTime, endTime = endTime, duration = 10)
+    }
+
 }
