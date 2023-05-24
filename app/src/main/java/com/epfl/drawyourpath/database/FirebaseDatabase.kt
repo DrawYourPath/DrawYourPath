@@ -87,6 +87,28 @@ object FirebaseKeys {
     const val TOURNAMENT_END_DATE = "endDate"
     const val TOURNAMENT_VISIBILITY = "visibility"
 
+    // Posts keys
+    const val POST_ID = "postId"
+    const val POST_USER_ID = "userId"
+    const val POST_RUN = "run"
+    const val POST_DATE = "date"
+    const val POST_USERS_VOTES = "usersVotes"
+
+    // Run keys
+    const val RUN_PATH = "path"
+    const val RUN_START_TIME = "startTime"
+    const val RUN_DURATION = "duration"
+    const val RUN_END_TIME = "endTime"
+    const val RUN_SHAPE = "predictedShape"
+    const val RUN_SCORE = "similarityScore"
+
+    // Path keys
+    const val PATH_POINTS = "points"
+
+    // Points keys
+    const val POINT_LATITUDE = "latitude"
+    const val POINT_LONGITUDE = "longitude"
+
     // Chats keys top level
     const val CHAT_TITLE = "title"
     const val CHAT_LAST_MESSAGE = "lastMessage"

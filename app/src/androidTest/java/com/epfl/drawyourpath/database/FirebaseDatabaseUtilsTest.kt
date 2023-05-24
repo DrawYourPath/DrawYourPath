@@ -91,9 +91,9 @@ class FirebaseDatabaseUtilsTest {
         val snapshot = mock(DataSnapshot::class.java)
 
         val lat = mockNumberSnapshot(point.latitude)
-        `when`(snapshot.child("latitude")).thenReturn(lat)
+        `when`(snapshot.child(FirebaseKeys.POINT_LATITUDE)).thenReturn(lat)
         val long = mockNumberSnapshot(point.longitude)
-        `when`(snapshot.child("longitude")).thenReturn(long)
+        `when`(snapshot.child(FirebaseKeys.POINT_LONGITUDE)).thenReturn(long)
 
         return snapshot
     }
@@ -118,25 +118,25 @@ class FirebaseDatabaseUtilsTest {
             mockSection(it)
         }
 
-        `when`(path.child("points")).thenReturn(pathPoints)
+        `when`(path.child(FirebaseKeys.PATH_POINTS)).thenReturn(pathPoints)
         `when`(pathPoints.children).thenReturn(sectionsSnap)
 
-        `when`(snapshot.child("path")).thenReturn(path)
+        `when`(snapshot.child(FirebaseKeys.RUN_PATH)).thenReturn(path)
 
         val startTime = mockNumberSnapshot(run.getStartTime())
-        `when`(snapshot.child("startTime")).thenReturn(startTime)
+        `when`(snapshot.child(FirebaseKeys.RUN_START_TIME)).thenReturn(startTime)
 
         val duration = mockNumberSnapshot(run.getDuration())
-        `when`(snapshot.child("duration")).thenReturn(duration)
+        `when`(snapshot.child(FirebaseKeys.RUN_DURATION)).thenReturn(duration)
 
         val endTime = mockNumberSnapshot(run.getEndTime())
-        `when`(snapshot.child("endTime")).thenReturn(endTime)
+        `when`(snapshot.child(FirebaseKeys.RUN_END_TIME)).thenReturn(endTime)
 
         val predictedShape = mockSnapshot(run.predictedShape)
-        `when`(snapshot.child("predictedShape")).thenReturn(predictedShape)
+        `when`(snapshot.child(FirebaseKeys.RUN_SHAPE)).thenReturn(predictedShape)
 
         val similarityScore = mockNumberSnapshot(run.similarityScore)
-        `when`(snapshot.child("similarityScore")).thenReturn(similarityScore)
+        `when`(snapshot.child(FirebaseKeys.RUN_SCORE)).thenReturn(similarityScore)
 
         return snapshot
     }
@@ -166,15 +166,15 @@ class FirebaseDatabaseUtilsTest {
         val snapshot = mock(DataSnapshot::class.java)
 
         val postId = mockSnapshot(post.postId)
-        `when`(snapshot.child("postId")).thenReturn(postId)
+        `when`(snapshot.child(FirebaseKeys.POST_ID)).thenReturn(postId)
         val userId = mockSnapshot(post.userId)
-        `when`(snapshot.child("userId")).thenReturn(userId)
+        `when`(snapshot.child(FirebaseKeys.POST_USER_ID)).thenReturn(userId)
         val run = mockRun(post.run)
-        `when`(snapshot.child("run")).thenReturn(run)
+        `when`(snapshot.child(FirebaseKeys.POST_RUN)).thenReturn(run)
         val date = mockLocalDateTime(post.date)
-        `when`(snapshot.child("date")).thenReturn(date)
+        `when`(snapshot.child(FirebaseKeys.POST_DATE)).thenReturn(date)
         val usersVotes = mockSnapshot(post.getUsersVotes())
-        `when`(snapshot.child("usersVotes")).thenReturn(usersVotes)
+        `when`(snapshot.child(FirebaseKeys.POST_USERS_VOTES)).thenReturn(usersVotes)
 
         return snapshot
     }
@@ -704,9 +704,9 @@ class FirebaseDatabaseUtilsTest {
         // With only null values
         assertEquals(FirebaseDatabaseUtils.mapToTournament(null), null)
         // With existing visibility but other values null, to test other path
-        val mockVisibility = mockSnapshot("PUBLIC")
+        val mockVisibility = mockSnapshot(Tournament.Visibility.PUBLIC.toString())
         val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
-        `when`(nonNullVisibilitySnapshot.child("visibility"))
+        `when`(nonNullVisibilitySnapshot.child(FirebaseKeys.TOURNAMENT_VISIBILITY))
             .thenReturn(mockVisibility)
         assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
     }
@@ -716,7 +716,7 @@ class FirebaseDatabaseUtilsTest {
         // Create a mock that returns a "wrong" visibility for the tournament
         val mockVisibility = mockSnapshot("SomeVisibility")
         val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
-        `when`(nonNullVisibilitySnapshot.child("visibility"))
+        `when`(nonNullVisibilitySnapshot.child(FirebaseKeys.TOURNAMENT_VISIBILITY))
             .thenReturn(mockVisibility)
         assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
     }

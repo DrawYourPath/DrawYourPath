@@ -88,10 +88,10 @@ object FirebaseDatabaseUtils {
      * @return the run corresponding to the data
      */
     fun transformRun(data: DataSnapshot?): Run? {
-        val sections = data?.child("path")?.child("points")?.children?.map { section ->
+        val sections = data?.child(FirebaseKeys.RUN_PATH)?.child(FirebaseKeys.PATH_POINTS)?.children?.map { section ->
             section.children.mapNotNull { point ->
-                val lat = getNumber(point.child("latitude"))?.toDouble()
-                val lon = getNumber(point.child("longitude"))?.toDouble()
+                val lat = getNumber(point.child(FirebaseKeys.POINT_LATITUDE))?.toDouble()
+                val lon = getNumber(point.child(FirebaseKeys.POINT_LONGITUDE))?.toDouble()
                 if (lat != null && lon != null) {
                     LatLng(lat, lon)
                 } else {
@@ -101,11 +101,11 @@ object FirebaseDatabaseUtils {
             }
         } ?: emptyList()
 
-        val startTime = getNumber(data?.child("startTime"))?.toLong()
-        val duration = getNumber(data?.child("duration"))?.toLong()
-        val endTime = getNumber(data?.child("endTime"))?.toLong()
-        val predictedShape = (data?.child("predictedShape")?.value ?: "None") as String
-        val similarityScore = (getNumber(data?.child("similarityScore")) ?: 0.0).toDouble()
+        val startTime = getNumber(data?.child(FirebaseKeys.RUN_START_TIME))?.toLong()
+        val duration = getNumber(data?.child(FirebaseKeys.RUN_DURATION))?.toLong()
+        val endTime = getNumber(data?.child(FirebaseKeys.RUN_END_TIME))?.toLong()
+        val predictedShape = (data?.child(FirebaseKeys.RUN_SHAPE)?.value ?: "None") as String
+        val similarityScore = (getNumber(data?.child(FirebaseKeys.RUN_SCORE)) ?: 0.0).toDouble()
         if (startTime == null) {
             Log.e(this::class.java.name, "Run start time was null.")
             return null
@@ -145,13 +145,13 @@ object FirebaseDatabaseUtils {
      * @return the post, or null if an error occurred
      */
     fun transformPost(data: DataSnapshot?): TournamentPost? {
-        val postId = data?.child("postId")?.value as String?
-        val userId = data?.child("userId")?.value as String?
-        val run = transformRun(data?.child("run"))
-        val date = transformLocalDateTime(data?.child("date"))
+        val postId = data?.child(FirebaseKeys.POST_ID)?.value as String?
+        val userId = data?.child(FirebaseKeys.POST_USER_ID)?.value as String?
+        val run = transformRun(data?.child(FirebaseKeys.POST_RUN))
+        val date = transformLocalDateTime(data?.child(FirebaseKeys.POST_DATE))
         // Unchecked cast here but should work without problem
         val usersVotes =
-            (data?.child("usersVotes")?.value ?: emptyMap<String, Int>()) as Map<String, Int>
+            (data?.child(FirebaseKeys.POST_USERS_VOTES)?.value ?: emptyMap<String, Int>()) as Map<String, Int>
 
         if (postId == null || userId == null || run == null || date == null) {
             Log.e(this::class.java.name, "TournamentPost had null values")
