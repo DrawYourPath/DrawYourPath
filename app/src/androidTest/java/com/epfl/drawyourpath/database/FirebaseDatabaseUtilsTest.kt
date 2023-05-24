@@ -165,12 +165,12 @@ class FirebaseDatabaseUtilsTest {
     private fun mockTournamentPost(post: TournamentPost): DataSnapshot {
         val snapshot = mock(DataSnapshot::class.java)
 
+        val postId = mockSnapshot(post.postId)
+        `when`(snapshot.child("postId")).thenReturn(postId)
         val userId = mockSnapshot(post.userId)
         `when`(snapshot.child("userId")).thenReturn(userId)
         val run = mockRun(post.run)
         `when`(snapshot.child("run")).thenReturn(run)
-        val votes = mockNumberSnapshot(post.getVotes())
-        `when`(snapshot.child("votes")).thenReturn(votes)
         val date = mockLocalDateTime(post.date)
         `when`(snapshot.child("date")).thenReturn(date)
         val usersVotes = mockSnapshot(post.getUsersVotes())
@@ -190,26 +190,38 @@ class FirebaseDatabaseUtilsTest {
         return snapshot
     }
 
-    private fun mockTournament(tournament: Tournament): DataSnapshot {
+    private fun mockTournamentInfo(tournament: Tournament): DataSnapshot {
         val snapshot = mock(DataSnapshot::class.java)
 
         val id = mockSnapshot(tournament.id)
-        `when`(snapshot.child("id")).thenReturn(id)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_ID)).thenReturn(id)
 
         val name = mockSnapshot(tournament.name)
-        `when`(snapshot.child("name")).thenReturn(name)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_NAME)).thenReturn(name)
 
         val description = mockSnapshot(tournament.description)
-        `when`(snapshot.child("description")).thenReturn(description)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_DESCRIPTION)).thenReturn(description)
 
         val creatorId = mockSnapshot(tournament.creatorId)
-        `when`(snapshot.child("creatorId")).thenReturn(creatorId)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_CREATOR_ID)).thenReturn(creatorId)
 
         val startDate = mockLocalDateTime(tournament.startDate)
-        `when`(snapshot.child("startDate")).thenReturn(startDate)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_START_DATE)).thenReturn(startDate)
 
         val endDate = mockLocalDateTime(tournament.endDate)
-        `when`(snapshot.child("endDate")).thenReturn(endDate)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_END_DATE)).thenReturn(endDate)
+
+        val visibility = mockSnapshot(tournament.visibility.name)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_VISIBILITY)).thenReturn(visibility)
+
+        return snapshot
+    }
+
+    private fun mockTournament(tournament: Tournament): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        val tournamentInfo = mockTournamentInfo(tournament)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_INFO)).thenReturn(tournamentInfo)
 
         val participants = mock(DataSnapshot::class.java)
         val participantsSubNodes = tournament.participants.map {
@@ -218,14 +230,11 @@ class FirebaseDatabaseUtilsTest {
             `when`(participant.key).thenReturn(it)
             participant
         }
-        `when`(snapshot.child("participants")).thenReturn(participants)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS)).thenReturn(participants)
         `when`(participants.children).thenReturn(participantsSubNodes)
 
         val posts = mockTournamentPostList(tournament.posts)
-        `when`(snapshot.child("posts")).thenReturn(posts)
-
-        val visibility = mockSnapshot(tournament.visibility.name)
-        `when`(snapshot.child("visibility")).thenReturn(visibility)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_POSTS)).thenReturn(posts)
 
         return snapshot
     }
