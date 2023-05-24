@@ -91,9 +91,9 @@ class FirebaseDatabaseUtilsTest {
         val snapshot = mock(DataSnapshot::class.java)
 
         val lat = mockNumberSnapshot(point.latitude)
-        `when`(snapshot.child("latitude")).thenReturn(lat)
+        `when`(snapshot.child(FirebaseKeys.POINT_LATITUDE)).thenReturn(lat)
         val long = mockNumberSnapshot(point.longitude)
-        `when`(snapshot.child("longitude")).thenReturn(long)
+        `when`(snapshot.child(FirebaseKeys.POINT_LONGITUDE)).thenReturn(long)
 
         return snapshot
     }
@@ -118,25 +118,25 @@ class FirebaseDatabaseUtilsTest {
             mockSection(it)
         }
 
-        `when`(path.child("points")).thenReturn(pathPoints)
+        `when`(path.child(FirebaseKeys.PATH_POINTS)).thenReturn(pathPoints)
         `when`(pathPoints.children).thenReturn(sectionsSnap)
 
-        `when`(snapshot.child("path")).thenReturn(path)
+        `when`(snapshot.child(FirebaseKeys.RUN_PATH)).thenReturn(path)
 
         val startTime = mockNumberSnapshot(run.getStartTime())
-        `when`(snapshot.child("startTime")).thenReturn(startTime)
+        `when`(snapshot.child(FirebaseKeys.RUN_START_TIME)).thenReturn(startTime)
 
         val duration = mockNumberSnapshot(run.getDuration())
-        `when`(snapshot.child("duration")).thenReturn(duration)
+        `when`(snapshot.child(FirebaseKeys.RUN_DURATION)).thenReturn(duration)
 
         val endTime = mockNumberSnapshot(run.getEndTime())
-        `when`(snapshot.child("endTime")).thenReturn(endTime)
+        `when`(snapshot.child(FirebaseKeys.RUN_END_TIME)).thenReturn(endTime)
 
         val predictedShape = mockSnapshot(run.predictedShape)
-        `when`(snapshot.child("predictedShape")).thenReturn(predictedShape)
+        `when`(snapshot.child(FirebaseKeys.RUN_SHAPE)).thenReturn(predictedShape)
 
         val similarityScore = mockNumberSnapshot(run.similarityScore)
-        `when`(snapshot.child("similarityScore")).thenReturn(similarityScore)
+        `when`(snapshot.child(FirebaseKeys.RUN_SCORE)).thenReturn(similarityScore)
 
         return snapshot
     }
@@ -165,16 +165,16 @@ class FirebaseDatabaseUtilsTest {
     private fun mockTournamentPost(post: TournamentPost): DataSnapshot {
         val snapshot = mock(DataSnapshot::class.java)
 
+        val postId = mockSnapshot(post.postId)
+        `when`(snapshot.child(FirebaseKeys.POST_ID)).thenReturn(postId)
         val userId = mockSnapshot(post.userId)
-        `when`(snapshot.child("userId")).thenReturn(userId)
+        `when`(snapshot.child(FirebaseKeys.POST_USER_ID)).thenReturn(userId)
         val run = mockRun(post.run)
-        `when`(snapshot.child("run")).thenReturn(run)
-        val votes = mockNumberSnapshot(post.getVotes())
-        `when`(snapshot.child("votes")).thenReturn(votes)
+        `when`(snapshot.child(FirebaseKeys.POST_RUN)).thenReturn(run)
         val date = mockLocalDateTime(post.date)
-        `when`(snapshot.child("date")).thenReturn(date)
+        `when`(snapshot.child(FirebaseKeys.POST_DATE)).thenReturn(date)
         val usersVotes = mockSnapshot(post.getUsersVotes())
-        `when`(snapshot.child("usersVotes")).thenReturn(usersVotes)
+        `when`(snapshot.child(FirebaseKeys.POST_USERS_VOTES)).thenReturn(usersVotes)
 
         return snapshot
     }
@@ -190,26 +190,38 @@ class FirebaseDatabaseUtilsTest {
         return snapshot
     }
 
-    private fun mockTournament(tournament: Tournament): DataSnapshot {
+    private fun mockTournamentInfo(tournament: Tournament): DataSnapshot {
         val snapshot = mock(DataSnapshot::class.java)
 
         val id = mockSnapshot(tournament.id)
-        `when`(snapshot.child("id")).thenReturn(id)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_ID)).thenReturn(id)
 
         val name = mockSnapshot(tournament.name)
-        `when`(snapshot.child("name")).thenReturn(name)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_NAME)).thenReturn(name)
 
         val description = mockSnapshot(tournament.description)
-        `when`(snapshot.child("description")).thenReturn(description)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_DESCRIPTION)).thenReturn(description)
 
         val creatorId = mockSnapshot(tournament.creatorId)
-        `when`(snapshot.child("creatorId")).thenReturn(creatorId)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_CREATOR_ID)).thenReturn(creatorId)
 
         val startDate = mockLocalDateTime(tournament.startDate)
-        `when`(snapshot.child("startDate")).thenReturn(startDate)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_START_DATE)).thenReturn(startDate)
 
         val endDate = mockLocalDateTime(tournament.endDate)
-        `when`(snapshot.child("endDate")).thenReturn(endDate)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_END_DATE)).thenReturn(endDate)
+
+        val visibility = mockSnapshot(tournament.visibility.name)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_VISIBILITY)).thenReturn(visibility)
+
+        return snapshot
+    }
+
+    private fun mockTournament(tournament: Tournament): DataSnapshot {
+        val snapshot = mock(DataSnapshot::class.java)
+
+        val tournamentInfo = mockTournamentInfo(tournament)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_INFO)).thenReturn(tournamentInfo)
 
         val participants = mock(DataSnapshot::class.java)
         val participantsSubNodes = tournament.participants.map {
@@ -218,14 +230,11 @@ class FirebaseDatabaseUtilsTest {
             `when`(participant.key).thenReturn(it)
             participant
         }
-        `when`(snapshot.child("participants")).thenReturn(participants)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS)).thenReturn(participants)
         `when`(participants.children).thenReturn(participantsSubNodes)
 
         val posts = mockTournamentPostList(tournament.posts)
-        `when`(snapshot.child("posts")).thenReturn(posts)
-
-        val visibility = mockSnapshot(tournament.visibility.name)
-        `when`(snapshot.child("visibility")).thenReturn(visibility)
+        `when`(snapshot.child(FirebaseKeys.TOURNAMENT_POSTS)).thenReturn(posts)
 
         return snapshot
     }
@@ -402,6 +411,7 @@ class FirebaseDatabaseUtilsTest {
     @Test
     fun transformPostReturnsExpectedData() {
         val post = TournamentPost(
+            postId = "post1",
             userId = "user1",
             run = Run(
                 Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
@@ -411,13 +421,13 @@ class FirebaseDatabaseUtilsTest {
                 "Lion",
                 0.8,
             ),
-            votes = 2,
             date = LocalDateTime.now().minusDays(2),
-            usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
+            usersVotes = mutableMapOf("user1" to -1, "user2" to -1),
         )
         val postSnapshot = mockTournamentPost(post)
         val transformedPost = FirebaseDatabaseUtils.transformPost(postSnapshot)
-        assertThat(transformedPost!!.userId, `is`(post.userId))
+        assertThat(transformedPost!!.postId, `is`(post.postId))
+        assertThat(transformedPost.userId, `is`(post.userId))
         // Just to know if the run is the same one
         assertThat(transformedPost.run.getCalories(), `is`(post.run.getCalories()))
         assertThat(transformedPost.getVotes(), `is`(post.getVotes()))
@@ -434,6 +444,7 @@ class FirebaseDatabaseUtilsTest {
     fun transformPostListReturnsExpectedData() {
         val posts = listOf(
             TournamentPost(
+                postId = "post1",
                 userId = "user1",
                 run = Run(
                     Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
@@ -443,19 +454,18 @@ class FirebaseDatabaseUtilsTest {
                     "Lion",
                     0.8,
                 ),
-                votes = 2,
                 date = LocalDateTime.now().minusDays(2),
                 usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
             ),
             TournamentPost(
-                "user2",
+                postId = "post2",
+                userId = "user2",
                 run = Run(
                     Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
                     30,
                     20,
                     50,
                 ),
-                votes = 0,
                 date = LocalDateTime.now().minusDays(3),
                 usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
             ),
@@ -580,6 +590,7 @@ class FirebaseDatabaseUtilsTest {
     fun mapToTournamentReturnsExpectedValue() {
         val posts = listOf(
             TournamentPost(
+                postId = "post1",
                 userId = "user1",
                 run = Run(
                     Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
@@ -589,11 +600,11 @@ class FirebaseDatabaseUtilsTest {
                     "Lion",
                     0.8,
                 ),
-                votes = 2,
                 date = LocalDateTime.now().minusDays(2),
                 usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
             ),
             TournamentPost(
+                "post2",
                 "user2",
                 run = Run(
                     Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
@@ -601,7 +612,6 @@ class FirebaseDatabaseUtilsTest {
                     20,
                     50,
                 ),
-                votes = 0,
                 date = LocalDateTime.now().minusDays(3),
                 usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
             ),
@@ -633,13 +643,70 @@ class FirebaseDatabaseUtilsTest {
     }
 
     @Test
+    fun mapToTournamentInfoReturnsExpectedValue() {
+        val posts = listOf(
+            TournamentPost(
+                postId = "post1",
+                userId = "user1",
+                run = Run(
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
+                    10,
+                    10,
+                    20,
+                    "Lion",
+                    0.8,
+                ),
+                date = LocalDateTime.now().minusDays(2),
+                usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
+            ),
+            TournamentPost(
+                "post2",
+                "user2",
+                run = Run(
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
+                    30,
+                    20,
+                    50,
+                ),
+                date = LocalDateTime.now().minusDays(3),
+                usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
+            ),
+        )
+
+        val tournament = Tournament(
+            id = "testId",
+            name = "testName",
+            description = "testDescription",
+            creatorId = "testCreatorId",
+            startDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now().plusWeeks(1),
+            participants = listOf("user1", "user2"),
+            posts = posts,
+            visibility = Tournament.Visibility.PUBLIC,
+        )
+
+        val tournamentInfoDataSnapshot = mockTournamentInfo(tournament)
+        val reformedTournamentInfo = FirebaseDatabaseUtils.mapToTournamentInfo(tournamentInfoDataSnapshot)
+
+        assertThat(reformedTournamentInfo!!.id, `is`(tournament.id))
+        assertThat(reformedTournamentInfo.name, `is`(tournament.name))
+        assertThat(reformedTournamentInfo.description, `is`(tournament.description))
+        assertThat(reformedTournamentInfo.creatorId, `is`(tournament.creatorId))
+        assertThat(reformedTournamentInfo.startDate, `is`(tournament.startDate))
+        assertThat(reformedTournamentInfo.endDate, `is`(tournament.endDate))
+        assertThat(reformedTournamentInfo.participants.size, `is`(0))
+        assertThat(reformedTournamentInfo.posts.size, `is`(0))
+        assertThat(reformedTournamentInfo.visibility, `is`(tournament.visibility))
+    }
+
+    @Test
     fun mapToTournamentReturnsNullWithNullValues() {
         // With only null values
         assertEquals(FirebaseDatabaseUtils.mapToTournament(null), null)
         // With existing visibility but other values null, to test other path
-        val mockVisibility = mockSnapshot("PUBLIC")
+        val mockVisibility = mockSnapshot(Tournament.Visibility.PUBLIC.toString())
         val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
-        `when`(nonNullVisibilitySnapshot.child("visibility"))
+        `when`(nonNullVisibilitySnapshot.child(FirebaseKeys.TOURNAMENT_VISIBILITY))
             .thenReturn(mockVisibility)
         assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
     }
@@ -649,7 +716,7 @@ class FirebaseDatabaseUtilsTest {
         // Create a mock that returns a "wrong" visibility for the tournament
         val mockVisibility = mockSnapshot("SomeVisibility")
         val nonNullVisibilitySnapshot = mock(DataSnapshot::class.java)
-        `when`(nonNullVisibilitySnapshot.child("visibility"))
+        `when`(nonNullVisibilitySnapshot.child(FirebaseKeys.TOURNAMENT_VISIBILITY))
             .thenReturn(mockVisibility)
         assertEquals(FirebaseDatabaseUtils.mapToTournament(nonNullVisibilitySnapshot), null)
     }

@@ -74,6 +74,9 @@ class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_cr
         val post = view.findViewById<Button>(R.id.post_creation_post_button)
         post.setOnClickListener {
             // TODO add the post to the database
+            // 1. get a uid from db
+            // 2. create the TournamentPost object
+            // 3. call Database.addPostToTournament()
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
