@@ -507,6 +507,30 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
+    override fun getAllTournamentsId(): LiveData<List<String>> {
+        val tournamentsIdValues = MutableLiveData<List<String>>()
+        val tournamentsIdValueEventListener: ValueEventListener
+
+        // listener for data change
+        tournamentsIdValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Error("The tournamentsId list can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val tournamentsIdList = FirebaseDatabaseUtils.getKeys(snapshot)
+                    tournamentsIdValues.postValue(tournamentsIdList)
+                } else {
+                    tournamentsIdValues.postValue(emptyList())
+                }
+            }
+        }
+        // add the listener on the database tournaments root
+        tournamentsRoot().ref.addValueEventListener(tournamentsIdValueEventListener)
+        return tournamentsIdValues
+    }
+
     override fun getTournamentUID(): String? {
         return database.child(FirebaseKeys.TOURNAMENTS_ROOT).push().key
     }
@@ -587,46 +611,60 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
-    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
-        val future = CompletableFuture<Tournament>()
-        // Check that the tournament exists
-        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
-            if (!tournamentExists) {
-                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
-            } else {
-                // Get tournament data and check if corrupted
-                tournamentsRoot().child(tournamentId).get().addOnSuccessListener {
-                    val tournament = FirebaseDatabaseUtils.mapToTournament(it)
+    override fun getTournament(tournamentId: String): LiveData<Tournament> {
+        val tournamentValue = MutableLiveData<Tournament>()
+        val tournamentValueEventListener: ValueEventListener
+
+        // listener for data change
+        tournamentValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Exception("The tournament with tournamentId $tournamentId can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Check that the tournament exists
+                if (snapshot.exists()) {
+                    // Get tournament data and check if corrupted
+                    val tournament = FirebaseDatabaseUtils.mapToTournament(snapshot)
                     if (tournament == null) {
-                        future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
+                        throw Exception("Corrupted data for the tournament $tournamentId.")
                     } else {
-                        future.complete(tournament)
+                        tournamentValue.postValue(tournament!!)
                     }
-                }.addOnFailureListener {
-                    future.completeExceptionally(it)
+                } else {
+                    throw Exception("The tournament with tournamentId $tournamentId doesn't exist.")
                 }
             }
         }
-        return future
+        // add the listener on the database on the root of the tournament with tournament id
+        tournamentsKeysRoot().child(tournamentId).ref.addValueEventListener(tournamentValueEventListener)
+        return tournamentValue
     }
 
-    override fun getTournamentPosts(tournamentId: String): CompletableFuture<List<TournamentPost>> {
-        val future = CompletableFuture<List<TournamentPost>>()
-        // Check that the tournament exists
-        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
-            if (!tournamentExists) {
-                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
-            } else {
-                // Get tournament posts
-                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_POSTS).get()
-                    .addOnSuccessListener {
-                        future.complete(FirebaseDatabaseUtils.transformPostList(it))
-                    }.addOnFailureListener {
-                        future.completeExceptionally(it)
-                    }
+    override fun getTournamentPosts(tournamentId: String): LiveData<List<TournamentPost>> {
+        val tournamentPostsValue = MutableLiveData<List<TournamentPost>>()
+        val tournamentPostsValueEventListener: ValueEventListener
+
+        // listener for data change
+        tournamentPostsValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Exception("The tournament with tournamentId $tournamentId can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Check that the tournament exists
+                if (snapshot.exists()) {
+                    // Get tournament posts
+                    val posts = FirebaseDatabaseUtils.transformPostList(snapshot)
+                    tournamentPostsValue.postValue(posts)
+                } else {
+                    throw Exception("The tournament with tournamentId $tournamentId doesn't exist.")
+                }
             }
         }
-        return future
+        // add the listener on the database on the root of the tournament posts with tournament id
+        tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_POSTS).ref.addValueEventListener(tournamentPostsValueEventListener)
+        return tournamentPostsValue
     }
 
     override fun getTournamentParticipantsId(tournamentId: String): CompletableFuture<List<String>> {
@@ -648,28 +686,34 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
-    override fun getTournamentInfo(tournamentId: String): CompletableFuture<Tournament> {
-        val future = CompletableFuture<Tournament>()
-        // Check that the tournament exists
-        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
-            if (!tournamentExists) {
-                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
-            } else {
-                // Get tournament info and check if corrupted
-                tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_INFO).get()
-                    .addOnSuccessListener {
-                        val tournament = FirebaseDatabaseUtils.mapToTournamentInfo(it)
-                        if (tournament == null) {
-                            future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
-                        } else {
-                            future.complete(tournament)
-                        }
-                    }.addOnFailureListener {
-                        future.completeExceptionally(it)
+    override fun getTournamentInfo(tournamentId: String): LiveData<Tournament> {
+        val tournamentInfoValue = MutableLiveData<Tournament>()
+        val tournamentInfoValueEventListener: ValueEventListener
+
+        // listener for data change
+        tournamentInfoValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Exception("The tournament with tournamentId $tournamentId can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Check that the tournament exists
+                if (snapshot.exists()) {
+                    // Get tournament info
+                    val tournament = FirebaseDatabaseUtils.mapToTournamentInfo(snapshot)
+                    if (tournament == null) {
+                        throw Exception("Corrupted data for the tournament $tournamentId.")
+                    } else {
+                        tournamentInfoValue.postValue(tournament!!)
                     }
+                } else {
+                    throw Exception("The tournament with tournamentId $tournamentId doesn't exist.")
+                }
             }
         }
-        return future
+        // add the listener on the database on the root of the tournament info with tournament id
+        tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_INFO).ref.addValueEventListener(tournamentInfoValueEventListener)
+        return tournamentInfoValue
     }
 
     override fun getPostUID(): String? {
