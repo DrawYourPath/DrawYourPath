@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.*
 import android.location.Location
-import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
@@ -366,8 +365,6 @@ object Utils {
             origin.y - scale * padding,
         )
 
-        Log.e("DEBUG", "origin: $origin, scale: $scale")
-
         // Constructs the new strokes translated and scaled to fit in a 1:1 square
         return strokes.map { stroke ->
             Stroke.builder().also {
@@ -406,7 +403,7 @@ object Utils {
 
             // Associates idx (n) to (n + 1)
             points.zip(points.drop(1)).forEach {
-                canvas.drawLine(it.first.x * size, it.first.y * size, it.second.x * size, it.second.y * size, paint)
+                canvas.drawLine(it.first.x * size, size - it.first.y * size, it.second.x * size, size - it.second.y * size, paint)
             }
         }
 
@@ -415,12 +412,12 @@ object Utils {
 
     /**
      * Converts a list of coordinates to a bitmap image representation.
-     * @param stroke The list of coordinates we want to draw
+     * @param coordinates The list of coordinates we want to draw
      * @param size The size of the bitmap in pixels
      * @param paint The paint option used to draw the list of coordinates.
      */
-    fun coordinatesToBitmap(coordinates: List<LatLng>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
-        return strokesToBitmap(listOf(coordinatesToStroke(coordinates)), size, paint)
+    fun coordinatesToBitmap(coordinates: List<List<LatLng>>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
+        return strokesToBitmap(coordinates.map { coordinatesToStroke(it) }, size, paint)
     }
 
     /**

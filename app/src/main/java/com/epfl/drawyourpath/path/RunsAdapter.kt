@@ -15,7 +15,6 @@ import com.epfl.drawyourpath.mainpage.MainActivity
 import com.epfl.drawyourpath.mainpage.fragments.runStats.RunInfoStatsFragment
 import com.epfl.drawyourpath.utils.Utils
 import com.epfl.drawyourpath.utils.Utils.getStaticMapUrl
-import com.google.android.gms.maps.model.LatLng
 
 /**
  * This class is the adapter for the RecyclerView that displays the list of runs.
@@ -34,13 +33,14 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
 
         val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
 
-        val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten() // Get the coordinates for this specific run
-        holder.mapImageView.setImageBitmap(Utils.coordinatesToBitmap(runCoordinates))
+        // Get the coordinates for this specific run
+        val points = run.getPath().getPoints()
+
+        holder.mapImageView.setImageBitmap(Utils.coordinatesToBitmap(points))
 
         // Load the image using Glide
-
         Glide.with(holder.itemView.context)
-            .load(getStaticMapUrl(runCoordinates, apiKey))
+            .load(getStaticMapUrl(points.flatten(), apiKey))
             .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
             .into(holder.mapImageView)
 

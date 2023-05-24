@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
-import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
@@ -43,10 +42,12 @@ class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val r
         val staticMapUrl = Utils.getStaticMapUrl(runCoordinates, apiKey)
 
         // Load the image using Glide
+        /*
         Glide.with(context)
             .load(staticMapUrl)
             .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
             .into(viewHolder.mapImageView)
+         */
 
         // Set the data to the view items in the layout
         // holder.mapImageView.setImageResource(run.mapImage)
