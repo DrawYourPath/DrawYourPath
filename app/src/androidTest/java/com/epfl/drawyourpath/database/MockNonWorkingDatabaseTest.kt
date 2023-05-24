@@ -3,6 +3,7 @@ package com.epfl.drawyourpath.database
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import org.junit.Assert.assertEquals
@@ -24,6 +25,7 @@ class MockNonWorkingDatabaseTest {
 
         mock.isUserInDatabase("").assertError(true)
         mock.isTournamentInDatabase("").assertError(true)
+        mock.isPostInDatabase("", "").assertError(true)
         mock.getUsername("").assertError("")
         mock.getUserIdFromUsername("").assertError("")
         mock.isUsernameAvailable("").assertError(true)
@@ -54,15 +56,21 @@ class MockNonWorkingDatabaseTest {
         mock.removeTournament("").assertError(Unit)
         mock.addUserToTournament("", "").assertError(Unit)
         mock.removeUserFromTournament("", "").assertError(Unit)
+        mock.getTournamentPosts("").assertError(emptyList())
+        mock.getTournamentParticipantsId("").assertError(emptyList())
+        mock.getTournamentInfo("").assertError(mockTournament)
+        mock.addPostToTournament("", TournamentPost("", "", Run(Path(), 1, 9, 10))).assertError(Unit)
+        mock.voteOnPost("", "", "", 0).assertError(Unit)
     }
 
     /**
      * Test if getTournamentUID() returns null (as it doesn't return a future)
      */
     @Test
-    fun getTournamentUIDReturnsNull() {
+    fun getTournamentAndPostUIDReturnsNull() {
         val mock = MockNonWorkingDatabase()
         assertEquals(null, mock.getTournamentUID())
+        assertEquals(null, mock.getPostUID())
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {
