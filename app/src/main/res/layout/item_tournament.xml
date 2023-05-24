@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ToggleButton
+        android:id="@+id/item_tournament_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:textSize="12sp"
+        android:padding="10dp"
+        android:background="@drawable/toggle_register_tournament"
+        android:textOff="@string/register"
+        android:textOn="@string/check_mark"/>
+
+</LinearLayout>
