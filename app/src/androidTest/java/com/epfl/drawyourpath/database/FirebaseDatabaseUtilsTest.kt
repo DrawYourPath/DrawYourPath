@@ -643,6 +643,63 @@ class FirebaseDatabaseUtilsTest {
     }
 
     @Test
+    fun mapToTournamentInfoReturnsExpectedValue() {
+        val posts = listOf(
+            TournamentPost(
+                postId = "post1",
+                userId = "user1",
+                run = Run(
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)))),
+                    10,
+                    10,
+                    20,
+                    "Lion",
+                    0.8,
+                ),
+                date = LocalDateTime.now().minusDays(2),
+                usersVotes = mutableMapOf("user1" to 1, "user2" to 1),
+            ),
+            TournamentPost(
+                "post2",
+                "user2",
+                run = Run(
+                    Path(listOf(listOf(LatLng(0.1, 1.0), LatLng(1.1, 0.2)), listOf(LatLng(9.9, 10.11)))),
+                    30,
+                    20,
+                    50,
+                ),
+                date = LocalDateTime.now().minusDays(3),
+                usersVotes = mutableMapOf("user1" to -1, "user2" to 1),
+            ),
+        )
+
+        val tournament = Tournament(
+            id = "testId",
+            name = "testName",
+            description = "testDescription",
+            creatorId = "testCreatorId",
+            startDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now().plusWeeks(1),
+            participants = listOf("user1", "user2"),
+            posts = posts,
+            visibility = Tournament.Visibility.PUBLIC,
+        )
+
+        val tournamentInfoDataSnapshot = mockTournamentInfo(tournament)
+        val reformedTournamentInfo = FirebaseDatabaseUtils.mapToTournamentInfo(tournamentInfoDataSnapshot)
+
+        assertThat(reformedTournamentInfo!!.id, `is`(tournament.id))
+        assertThat(reformedTournamentInfo.name, `is`(tournament.name))
+        assertThat(reformedTournamentInfo.description, `is`(tournament.description))
+        assertThat(reformedTournamentInfo.creatorId, `is`(tournament.creatorId))
+        assertThat(reformedTournamentInfo.startDate, `is`(tournament.startDate))
+        assertThat(reformedTournamentInfo.endDate, `is`(tournament.endDate))
+        assertThat(reformedTournamentInfo.participants.size, `is`(0))
+        assertThat(reformedTournamentInfo.posts.size, `is`(0))
+        assertThat(reformedTournamentInfo.visibility, `is`(tournament.visibility))
+    }
+
+    @Test
     fun mapToTournamentReturnsNullWithNullValues() {
         // With only null values
         assertEquals(FirebaseDatabaseUtils.mapToTournament(null), null)
