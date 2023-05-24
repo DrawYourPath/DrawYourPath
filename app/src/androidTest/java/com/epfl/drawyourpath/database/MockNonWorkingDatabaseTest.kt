@@ -72,8 +72,8 @@ class MockNonWorkingDatabaseTest {
     @Test
     fun getTournamentAndPostUIDReturnsNull() {
         val mock = MockNonWorkingDatabase()
-        assertEquals(null, mock.getTournamentUID())
-        assertEquals(null, mock.getPostUID())
+        assertEquals(null, mock.getTournamentUniqueId())
+        assertEquals(null, mock.getPostUniqueId())
     }
 
     private fun <T> CompletableFuture<T>.assertError(ret: T) {

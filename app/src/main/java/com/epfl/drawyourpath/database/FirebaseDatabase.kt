@@ -584,7 +584,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return tournamentsIdValues
     }
 
-    override fun getTournamentUID(): String? {
+    override fun getTournamentUniqueId(): String? {
         return database.child(FirebaseKeys.TOURNAMENTS_ROOT).push().key
     }
 
@@ -769,7 +769,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return tournamentInfoValue
     }
 
-    override fun getPostUID(): String? {
+    override fun getPostUniqueId(): String? {
         return database.child(FirebaseKeys.TOURNAMENTS_ROOT).child(FirebaseKeys.TOURNAMENT_POSTS)
             .push().key
     }

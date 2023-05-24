@@ -704,9 +704,9 @@ class MockDatabaseTest {
     @Test
     fun getTournamentUIDReturnsANewID() {
         val database = MockDatabase()
-        var currUID = database.getTournamentUID()
+        var currUID = database.getTournamentUniqueId()
         for (i: Int in 0..9) {
-            val newID = database.getTournamentUID()
+            val newID = database.getTournamentUniqueId()
             assertEquals(currUID.toInt() + 1, newID.toInt())
             currUID = newID
         }
@@ -719,7 +719,7 @@ class MockDatabaseTest {
     fun addTournamentAddsNewTournamentToDatabase() {
         val database = MockDatabase()
         val newTournament = Tournament(
-            id = database.getTournamentUID(),
+            id = database.getTournamentUniqueId(),
             name = "testName",
             description = "testDesc",
             creatorId = "testCreator",

@@ -320,7 +320,7 @@ class MockDatabase : Database() {
 
     )
 
-    var mockUID = 1234567
+    var mockUniqueId = 1234567
 
     var MOCK_CHAT_PREVIEWS = listOf(
         ChatPreview(
@@ -634,8 +634,8 @@ class MockDatabase : Database() {
         return MOCK_TOURNAMENTS_ID
     }
 
-    override fun getTournamentUID(): String {
-        return mockUID++.toString()
+    override fun getTournamentUniqueId(): String {
+        return mockUniqueId++.toString()
     }
 
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
@@ -767,8 +767,8 @@ class MockDatabase : Database() {
         return infoLiveData
     }
 
-    override fun getPostUID(): String {
-        return mockUID++.toString()
+    override fun getPostUniqueId(): String {
+        return mockUniqueId++.toString()
     }
 
     override fun addPostToTournament(

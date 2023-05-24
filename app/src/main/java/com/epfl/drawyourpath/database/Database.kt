@@ -216,7 +216,7 @@ abstract class Database {
      * Function used to get a unique ID for a new tournament. Never fails (because client side).
      * @return a unique ID or null if the operation failed.
      */
-    abstract fun getTournamentUID(): String?
+    abstract fun getTournamentUniqueId(): String?
 
     /**
      * Function used to add a new tournament to the database. The participants and posts of the
@@ -302,7 +302,7 @@ abstract class Database {
      * Function used to get a unique ID for a new post. Never fails (because client side).
      * @return a unique ID or null if the operation failed.
      */
-    abstract fun getPostUID(): String?
+    abstract fun getPostUniqueId(): String?
 
     /**
      * Function used to add a post to a tournament.

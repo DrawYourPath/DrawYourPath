@@ -103,7 +103,7 @@ class MockNonWorkingDatabase : Database() {
         throw Exception("")
     }
 
-    override fun getTournamentUID(): String? {
+    override fun getTournamentUniqueId(): String? {
         return null
     }
 
@@ -145,7 +145,7 @@ class MockNonWorkingDatabase : Database() {
         throw Exception("")
     }
 
-    override fun getPostUID(): String? {
+    override fun getPostUniqueId(): String? {
         return null
     }
 

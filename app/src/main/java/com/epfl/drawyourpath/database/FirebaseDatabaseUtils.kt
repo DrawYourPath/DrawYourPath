@@ -290,17 +290,7 @@ object FirebaseDatabaseUtils {
             return null
         }
 
-        return Tournament(
-            tournamentInfo.id,
-            tournamentInfo.name,
-            tournamentInfo.description,
-            tournamentInfo.creatorId,
-            tournamentInfo.startDate,
-            tournamentInfo.endDate,
-            participants,
-            posts,
-            tournamentInfo.visibility,
-        )
+        return tournamentInfo.copy(participants = participants, posts = posts)
     }
 
     /**
