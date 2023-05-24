@@ -370,7 +370,7 @@ class MockDatabase : Database() {
         postId: String,
     ): CompletableFuture<Boolean> {
         val postExists = tournaments.keys.contains(tournamentId) &&
-                tournaments[tournamentId]!!.posts.any { it.postId == postId }
+            tournaments[tournamentId]!!.posts.any { it.postId == postId }
         return CompletableFuture.completedFuture(postExists)
     }
 

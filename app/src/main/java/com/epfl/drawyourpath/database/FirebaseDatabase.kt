@@ -711,8 +711,8 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         isUserInDatabase(userId).thenCombine(
             isPostInDatabase(
                 tournamentId,
-                postId
-            )
+                postId,
+            ),
         ) { userExists, postExists ->
             if (!userExists) {
                 future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
@@ -831,7 +831,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         }
         // add the listener on the database messages
         userProfile(userId).child(FirebaseKeys.USER_CHATS).ref.addValueEventListener(
-            chatValueEventListener
+            chatValueEventListener,
         )
         return chatValues
     }
@@ -1064,9 +1064,9 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val data = mapOf(
             FirebaseKeys.CHAT_TITLE to chatPreview.title,
             "${FirebaseKeys.CHAT_LAST_MESSAGE}/${chatPreview.lastMessage!!.timestamp}/${FirebaseKeys.CHAT_MESSAGE_SENDER}" to
-                    chatPreview.lastMessage.senderId,
+                chatPreview.lastMessage.senderId,
             "${FirebaseKeys.CHAT_LAST_MESSAGE}/${chatPreview.lastMessage.timestamp}/${FirebaseKeys.CHAT_MESSAGE_CONTENT_TEXT}" to
-                    (chatPreview.lastMessage.content as MessageContent.Text?)?.text,
+                (chatPreview.lastMessage.content as MessageContent.Text?)?.text,
         ).filter { it.value != null }
 
         chatPreview(conversationId).updateChildren(data)

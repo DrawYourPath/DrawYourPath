@@ -347,8 +347,6 @@ object FirebaseDatabaseUtils {
         )
     }
 
-
-
     /**
      * Helper function to transform a trophy object into an object to store in the database
      * The tournament id is not take into account since is used as a key for the trophy in the database.
