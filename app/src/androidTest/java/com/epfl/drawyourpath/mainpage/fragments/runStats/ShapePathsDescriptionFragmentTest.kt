@@ -7,6 +7,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ShapePathDescriptionFragment
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4

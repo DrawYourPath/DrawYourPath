@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.mainpage.fragments.runStats
+package com.epfl.drawyourpath.mainpage.fragments.helperClasses
 
 import android.os.Bundle
 import android.view.View
