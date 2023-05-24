@@ -351,6 +351,7 @@ object FirebaseDatabaseUtils {
      * Helper function to transform a trophy object into an object to store in the database
      * The tournament id is not take into account since is used as a key for the trophy in the database.
      * @param trophy to store in the database
+     * @return a map that can be stored in Firebase Database
      */
     fun transformTrophyToData(trophy: Trophy): HashMap<String, Any> {
         return hashMapOf(
@@ -397,6 +398,9 @@ object FirebaseDatabaseUtils {
     /**
      * Helper function to transform a milestone object enum with a date into an object to store in the database
      * The tournament id is not take into account since is used as a key for the trophy in the database.
+     * @param milestone the milestone object enum to store
+     * @param date the date to store alongside the milestone
+     * @return a map linking the milestone's name to the day of the date.
      */
     fun transformMilestoneToData(milestone: MilestoneEnum, date: LocalDate): HashMap<String, Any> {
         return hashMapOf(
