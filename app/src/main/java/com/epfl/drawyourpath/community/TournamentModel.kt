@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.community
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
@@ -7,7 +8,6 @@ import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
-import java.util.concurrent.CompletableFuture
 
 /**
  * this class is used to link the database to the UI for the tournaments
@@ -22,6 +22,22 @@ class TournamentModel : ViewModel() {
 
     private fun getAllTournamentId(): LiveData<List<String>> {
         return tournamentIds
+    }
+
+    private val userTournaments = mutableListOf("id1")
+
+    private val all_tournaments =
+        mutableListOf(sampleWeekly()).also { it.addAll(sampleYourTournaments()) }.also { it.addAll(sampleDiscoveryTournaments()) }
+
+    private val all_posts = all_tournaments.associate { Pair(it.id, it.posts) }.toMutableMap()
+    private val _all_posts = MutableLiveData(all_posts)
+
+    private fun getTournament(id: String): LiveData<Tournament> {
+        return MutableLiveData(all_tournaments.find { it.id == id }!!)
+    }
+
+    private fun getTournamentPost(id: String): LiveData<List<TournamentPost>> {
+        return _all_posts.switchMap { MutableLiveData(it[id] ?: listOf()) }
     }
     // TODO until here ------------------------------------
 
@@ -47,24 +63,28 @@ class TournamentModel : ViewModel() {
 
     val posts: LiveData<List<TournamentPost>> = postOf.switchMap { id ->
         id?.let { getTournamentPost(it) } ?: MediatorLiveData<List<TournamentPost>>().apply {
-            addSource(allTournaments) { tournament ->
-                value = tournament.mapNotNull { getTournamentPost(it.id).value }.flatten()
+            addSource(allTournaments) { tournaments ->
+                value = tournaments.mapNotNull { tournament ->
+                    getTournamentPost(tournament.id).also { addSource(it) { /* TODO */ } }.value
+                }.flatten()
             }
         }
     }
 
-    fun addTournament(tournament: Tournament){
+    fun addTournament(tournament: Tournament) {
         all_tournaments.add(tournament)
         _tournamentIds.add(tournament.id)
         tournamentIds.postValue(_tournamentIds)
     }
 
-    fun addPost(tournamentId: String, post: TournamentPost): CompletableFuture<Unit> {
-        return CompletableFuture()
+    fun addPost(tournamentId: String, run: Run) {
+        val posts = all_posts[tournamentId]!!
+        all_posts[tournamentId] = mutableListOf(TournamentPost("userid", run)).also { it.addAll(posts) }
+        _all_posts.postValue(all_posts)
     }
 
-    fun addVote(vote: Int, postId: String): CompletableFuture<Unit> {
-        return CompletableFuture()
+    fun addVote(vote: Int, postId: String) {
+        return
     }
 
     /**
@@ -78,17 +98,6 @@ class TournamentModel : ViewModel() {
 
     // TODO replace by real tournaments
     // everything from here are samples
-
-    private val userTournaments = mutableListOf("id1")
-
-    private val all_tournaments = mutableListOf(sampleWeekly()).also { it.addAll(sampleYourTournaments()) }.also { it.addAll(sampleDiscoveryTournaments()) }
-    private fun getTournament(id: String): LiveData<Tournament> {
-        return MutableLiveData(all_tournaments.find { it.id == id }!!)
-    }
-
-    private fun getTournamentPost(id: String): LiveData<List<TournamentPost>> {
-        return MutableLiveData(all_tournaments.find { it.id == id }!!.posts)
-    }
 
     /**
      * sample tournaments

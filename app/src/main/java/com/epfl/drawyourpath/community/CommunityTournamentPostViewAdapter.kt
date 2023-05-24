@@ -97,7 +97,7 @@ class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournam
     fun update(posts: List<TournamentPost>, tournamentName: String? = null) {
         this.posts = posts
         this.tournamentName = tournamentName
-        notifyItemRangeChanged(0, itemCount)
+        notifyDataSetChanged()
     }
 
     /**

@@ -8,13 +8,14 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunArrayAdapter
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
 /**
  * this class is used to create a post with a run to a specific tournament and then post it
  */
-class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_creation) {
+class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_post_creation) {
 
     private val user: UserModelCached by activityViewModels()
 
@@ -71,7 +72,7 @@ class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_cr
     private fun setupBackButton(view: View) {
         val back = view.findViewById<ImageButton>(R.id.post_creation_back_button)
         back.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            returnToCommunityFragment()
         }
     }
 
@@ -82,8 +83,31 @@ class TournamentPostCreationView : Fragment(R.layout.fragment_tournament_post_cr
     private fun setupPostButton(view: View) {
         val post = view.findViewById<Button>(R.id.post_creation_post_button)
         post.setOnClickListener {
-            // TODO tournament.addPost()
-            requireActivity().supportFragmentManager.popBackStack()
+            tournament.addPost(getSelectedTournamentId(), getSelectedRun())
+            returnToCommunityFragment()
         }
+    }
+
+    /**
+     * return to the community fragment
+     */
+    private fun returnToCommunityFragment() {
+        requireActivity().supportFragmentManager.popBackStack()
+    }
+
+    /**
+     * get the selected tournament id
+     * @return the tournament id
+     */
+    private fun getSelectedTournamentId(): String {
+        return (tournamentSpinner.selectedItem as Tournament).id
+    }
+
+    /**
+     * get the selected run
+     * @return the run
+     */
+    private fun getSelectedRun(): Run {
+        return runSpinner.selectedItem as Run
     }
 }
