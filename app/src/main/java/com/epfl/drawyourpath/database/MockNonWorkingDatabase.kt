@@ -2,7 +2,6 @@ package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy

@@ -17,7 +17,6 @@ import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
-import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test

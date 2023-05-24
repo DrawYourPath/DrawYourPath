@@ -6,7 +6,6 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
@@ -19,11 +18,6 @@ import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -628,7 +622,7 @@ class MockDatabase : Database() {
     }
 
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
-        //add the tournament to the list of tournament ids
+        // add the tournament to the list of tournament ids
         MOCK_TOURNAMENTS_ID.postValue((MOCK_TOURNAMENTS_ID.value ?: emptyList()) + tournament.id)
         // Replaces if id already exists, which would happen with Firebase but should never happen as we generate unique ids.
         tournaments[tournament.id] = MutableLiveData(tournament)
@@ -652,7 +646,7 @@ class MockDatabase : Database() {
         // 2. remove the tournament from the tournaments file
         tournaments.remove(tournamentId)
 
-        //3. remove tournament from the tournament id list
+        // 3. remove tournament from the tournament id list
         MOCK_TOURNAMENTS_ID.postValue((MOCK_TOURNAMENTS_ID.value ?: emptyList()).stream().toList().filter { it != tournamentId })
 
         return CompletableFuture.completedFuture(Unit)
