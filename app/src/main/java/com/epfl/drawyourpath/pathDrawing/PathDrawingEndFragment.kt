@@ -32,10 +32,6 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
         super.onViewCreated(view, savedInstanceState)
 
         // get the ml result
-        // TODO change to new implementation
-//        val result = Utils.getRunRecognition(pathDrawingModel.getRun()).thenApplyAsync {
-//            it.candidates[0]
-//        }
         val result = Utils.getBestRunRecognitionCandidate(pathDrawingModel.getRun()).thenApplyAsync { it }
 
         val runToAdd = pathDrawingModel.getRun()

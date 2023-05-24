@@ -420,20 +420,9 @@ object Utils {
     }
 
     /**
-     * Get the recognition result of a run
+     * Get the best recognition candidate of a run
      * @param run the run to recognize
-     * @return the recognition result
-     */
-    fun getRunRecognition(run: Run): CompletableFuture<RecognitionResult> {
-        return DigitalInk.downloadModelML().thenComposeAsync {
-            DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
-        }
-    }
-
-    /**
-     * Get the recognition result of a run
-     * @param run the run to recognize
-     * @return the recognition result
+     * @return the recognition candidate
      */
     fun getBestRunRecognitionCandidate(run: Run): CompletableFuture<RecognitionCandidate?> {
         val ink = coordinatesToInk(run.getPath().getPoints())
