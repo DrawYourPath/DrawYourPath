@@ -277,7 +277,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             TournamentPost("0", "xxDarkxx", sampleRun()),
             TournamentPost("1", "Michel", sampleRun()),
             TournamentPost("2", "MrPrefect", sampleRun()),
-            TournamentPost("3","Me Myself and I", sampleRun()),
+            TournamentPost("3", "Me Myself and I", sampleRun()),
             TournamentPost("4", "Invalid Username", sampleRun()),
         )
 
@@ -301,14 +301,14 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             TournamentPost("0", "xxDarkxx", sampleRun()),
             TournamentPost("1", "Michel", sampleRun()),
             TournamentPost("2", "MrPrefect", sampleRun()),
-            TournamentPost("3","Me Myself and I", sampleRun()),
+            TournamentPost("3", "Me Myself and I", sampleRun()),
             TournamentPost("4", "Invalid Username", sampleRun()),
         )
         val posts1 = mutableListOf(
             TournamentPost("0", "xD c moi", sampleRun()),
             TournamentPost("1", "Jaqueline", sampleRun()),
             TournamentPost("2", "Diabolos", sampleRun()),
-            TournamentPost("3","me", sampleRun()),
+            TournamentPost("3", "me", sampleRun()),
             TournamentPost("4", "IDK", sampleRun()),
         )
         return mutableListOf(
@@ -343,14 +343,14 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             TournamentPost("0", "xxDarkxx", sampleRun()),
             TournamentPost("1", "Michel", sampleRun()),
             TournamentPost("2", "MrPrefect", sampleRun()),
-            TournamentPost("3","Me Myself and I", sampleRun()),
+            TournamentPost("3", "Me Myself and I", sampleRun()),
             TournamentPost("4", "Invalid Username", sampleRun()),
         )
         val posts1 = mutableListOf(
             TournamentPost("0", "xD c moi", sampleRun()),
             TournamentPost("1", "Jaqueline", sampleRun()),
             TournamentPost("2", "Diabolos", sampleRun()),
-            TournamentPost("3","me", sampleRun()),
+            TournamentPost("3", "me", sampleRun()),
             TournamentPost("4", "IDK", sampleRun()),
         )
         return mutableListOf(
