@@ -396,6 +396,31 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         )
     }
 
+    override fun getFriendsList(userId: String): LiveData<List<String>> {
+        val friendsValues = MutableLiveData<List<String>>()
+        val friendsValueEventListener: ValueEventListener
+
+        // listener for data change
+        friendsValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Error("The friends list of the user of userId $userId can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val friendsList: List<String> =
+                        FirebaseDatabaseUtils.getKeys(snapshot)
+                    friendsValues.postValue(friendsList)
+                } else {
+                    friendsValues.postValue(emptyList())
+                }
+            }
+        }
+        // add the listener on the database friendsList
+        userProfile(userId).child(FirebaseKeys.FRIENDS).ref.addValueEventListener(friendsValueEventListener)
+        return friendsValues
+    }
+
     override fun removeRunFromHistory(userId: String, run: Run): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
 
@@ -981,18 +1006,17 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     private fun updateMembersProfileWithNewChat(
         conversationId: String,
         membersList: List<String>,
-    ): CompletableFuture<Unit> {
-        // TODO: THis is implemented wrong. Futures don't work like that.
-        //       Future.allOf() should be used.
-        //       Also, we can batch all these operations in a single write.
-        val future = CompletableFuture<Unit>()
-        for (memberId in membersList) {
-            val data = mapOf(conversationId to true)
-            userProfile(memberId).child(FirebaseKeys.USER_CHATS).updateChildren(data)
-                .addOnSuccessListener { future.complete(Unit) }
-                .addOnFailureListener { future.completeExceptionally(it) }
-        }
-        return future
+    ): CompletableFuture<Void> {
+        return CompletableFuture.allOf(
+            *membersList.map {
+                val future = CompletableFuture<Unit>()
+                val data = mapOf(conversationId to true)
+                userProfile(it).child(FirebaseKeys.USER_CHATS).updateChildren(data)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+                future
+            }.toTypedArray(),
+        )
     }
 
     /**

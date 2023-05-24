@@ -25,7 +25,6 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.anyOf
 import org.hamcrest.core.StringContains.containsString
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,12 +45,7 @@ class ChallengeFragmentTest {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
-        Thread.sleep(10)
-    }
-
-    @Before
-    fun clearDatabase() {
-        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("pm clear com.epfl.drawyourpath.package").close()
+        Thread.sleep(50)
     }
 
     @Test
@@ -233,6 +227,8 @@ class ChallengeFragmentTest {
 
     @Test
     fun displayMilestonesSample() {
+        InstrumentationRegistry.getInstrumentation().targetContext.deleteDatabase("UserDatabase")
+        waitUntilAllThreadAreDone()
         val scenario = FragmentScenario.launchInContainer(
             ChallengeFragment::class.java,
             Bundle(),

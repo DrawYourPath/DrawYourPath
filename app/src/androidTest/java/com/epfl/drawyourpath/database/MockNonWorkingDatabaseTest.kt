@@ -43,6 +43,7 @@ class MockNonWorkingDatabaseTest {
         mock.addChatMember("", "").assertError(Unit)
         mock.removeChatMember("", "").assertError(Unit)
         mock.getChatMessages("")
+        mock.getFriendsList("")
         mock.addChatMessage("", mockChatMessages.value!!.get(0)).assertError(Unit)
         mock.removeChatMessage("", 0L).assertError(Unit)
         mock.modifyChatTextMessage("", 0L, "").assertError(Unit)
