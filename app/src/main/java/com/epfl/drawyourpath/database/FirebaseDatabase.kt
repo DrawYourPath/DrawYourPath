@@ -145,10 +145,16 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return nameMappingRoot().child(username)
     }
 
+    /**
+     * Used to get the database reference of the file containing the (whole) tournaments.
+     */
     private fun tournamentsRoot(): DatabaseReference {
         return database.child(FirebaseKeys.TOURNAMENTS_ROOT)
     }
 
+    /**
+     * Used to get the database reference to the file containing the ids of all tournaments.
+     */
     private fun tournamentsKeysRoot(): DatabaseReference {
         return database.child(FirebaseKeys.TOURNAMENTS_IDS_ROOT)
     }
@@ -721,7 +727,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             if (!tournamentExists) {
                 future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
             } else {
-                // Get tournament posts
+                // Get tournament participants
                 tournamentsRoot().child(tournamentId)
                     .child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get().addOnSuccessListener {
                         future.complete(FirebaseDatabaseUtils.getKeys(it))
