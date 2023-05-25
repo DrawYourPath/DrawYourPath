@@ -243,7 +243,7 @@ class ChatFragmentTest {
         // Click the sendRunButton
         onView(withId(R.id.sendRunButton)).perform(click())
 
-        // Click the first run item in the popup list
+        // Click the first run item in the popup list!
         onData(anything())
             .inRoot(isPlatformPopup())
             .atPosition(0)
