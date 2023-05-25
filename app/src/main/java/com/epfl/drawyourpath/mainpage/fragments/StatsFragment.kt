@@ -10,10 +10,27 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDistance
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDistancePerMonth
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDistancePerYear
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDuration
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDurationPerMonth
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDurationPerYear
+import com.epfl.drawyourpath.challenge.Statistics.getAverageSpeed
+import com.epfl.drawyourpath.challenge.Statistics.getAverageSpeedPerMonth
+import com.epfl.drawyourpath.challenge.Statistics.getAverageSpeedPerYear
+import com.epfl.drawyourpath.challenge.Statistics.getDistancePerYear
+import com.epfl.drawyourpath.challenge.Statistics.getShapeDrawnCount
+import com.epfl.drawyourpath.challenge.Statistics.getShapeDrawnCountPerYear
+import com.epfl.drawyourpath.challenge.Statistics.getTimePerYear
+import com.epfl.drawyourpath.challenge.Statistics.getTotalDistance
+import com.epfl.drawyourpath.challenge.Statistics.getTotalTime
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.GlobalStatsFragment
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.GraphFromListFragment
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.TableFromListFragment
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.epfl.drawyourpath.utils.Utils
 
 /**
@@ -35,21 +52,21 @@ import com.epfl.drawyourpath.utils.Utils
  * @param totalPathNumberGoalPerYear number of path number goal reached per year(used for test, default value is null)
  */
 class StatsFragment(
-    private val averageSpeed: Double? = null, // getAverageSpeed(dailyGoals)
-    private val averageSpeedPerMonth: Map<Double, Double>? = null, // getAverageSpeedPerMonth(dailyGoals)
-    private val averageSpeedPerYear: Map<Double, Double>? = null, // getAverageSpeedPerYear(dailyGoals)
-    private val averageDuration: Double? = null, // getAverageDuration()
-    private val averageDurationPerMonth: Map<Double, Double>? = null, // getAverageDurationPerMonth(dailyGoals)
-    private val averageDurationPerYear: Map<Double, Double>? = null, // getAverageDurationPerYear(dailyGoals)
-    private val averageDistance: Double? = null, // getAverageDistance()
-    private val averageDistancePerMonth: Map<Double, Double>? = null, // getAverageDistancePerMonth(dailyGoals)
-    private val averageDistancePerYear: Map<Double, Double>? = null, // getAverageDistancePerYear(dailyGoals)
-    private val totalDistanceGoal: Double? = null, // getTotalDistance(dailyGoals)
-    private val totalDistanceGoalPerYear: Map<Double, Double>? = null, // getDistancePerYear(dailyGoals)
-    private val totalActivityTimeGoal: Double? = null, // getTotalTime(dailyGoals)
-    private val totalActivityTimeGoalPerYear: Map<Double, Double>? = null, // getTimePerYear(dailyGoals)
-    private val totalPathNumberGoal: Double? = null, // getShapeDrawnCount(dailyGoals)
-    private val totalPathNumberGoalPerYear: Map<Double, Double>? = null, // getShapeDrawnCountPerYear(dailyGoals)
+    private var averageSpeed: Double? = null,
+    private var averageSpeedPerMonth: Map<Double, Double>? = null,
+    private var averageSpeedPerYear: Map<Double, Double>? = null,
+    private var averageDuration: Double? = null,
+    private var averageDurationPerMonth: Map<Double, Double>? = null,
+    private var averageDurationPerYear: Map<Double, Double>? = null,
+    private var averageDistance: Double? = null,
+    private var averageDistancePerMonth: Map<Double, Double>? = null,
+    private var averageDistancePerYear: Map<Double, Double>? = null,
+    private var totalDistanceGoal: Double? = null,
+    private var totalDistanceGoalPerYear: Map<Double, Double>? = null,
+    private var totalActivityTimeGoal: Double? = null,
+    private var totalActivityTimeGoalPerYear: Map<Double, Double>? = null,
+    private var totalPathNumberGoal: Double? = null,
+    private var totalPathNumberGoalPerYear: Map<Double, Double>? = null,
 ) : Fragment(R.layout.fragment_stats) {
     private lateinit var titleText: TextView
     private lateinit var changeLeftButton: TextView
@@ -57,11 +74,14 @@ class StatsFragment(
     private lateinit var toggleDuration: ToggleButton
     private lateinit var descriptionLayout: FrameLayout
     private lateinit var currentStateView: StatsEnum
+    private val userModelCached: UserModelCached by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // init the elements of the view
         initViewElements(view)
+        // link the values to the data to be updated
+        initValuesToData()
         // at the initial state display the global statistics
         this.currentStateView = StatsEnum.GLOBAL_STATS
         show()
@@ -137,6 +157,27 @@ class StatsFragment(
         this.changeRightButton = view.findViewById(R.id.changeRightStats)
         this.toggleDuration = view.findViewById(R.id.toggleStats)
         this.descriptionLayout = view.findViewById(R.id.contentDescriptionStats)
+    }
+
+    /**
+     * Helper function to link the variables to the data.
+     */
+    private fun initValuesToData() {
+        averageSpeed ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageSpeed = getAverageSpeed(it) }
+        averageSpeedPerMonth ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageSpeedPerMonth = getAverageSpeedPerMonth(it) }
+        averageSpeedPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageSpeedPerYear = getAverageSpeedPerYear(it) }
+        averageDuration ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDuration = getAverageDuration(it) }
+        averageDurationPerMonth ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDurationPerMonth = getAverageDurationPerMonth(it) }
+        averageDurationPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDurationPerYear = getAverageDurationPerYear(it) }
+        averageDistance ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDistance = getAverageDistance(it) }
+        averageDistancePerMonth ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDistancePerMonth = getAverageDistancePerMonth(it) }
+        averageDistancePerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDistancePerYear = getAverageDistancePerYear(it) }
+        totalDistanceGoal ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalDistanceGoal = getTotalDistance(it) }
+        totalDistanceGoalPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalDistanceGoalPerYear = getDistancePerYear(it) }
+        totalActivityTimeGoal ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalActivityTimeGoal = getTotalTime(it) }
+        totalActivityTimeGoalPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalActivityTimeGoalPerYear = getTimePerYear(it) }
+        totalPathNumberGoal ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalPathNumberGoal = getShapeDrawnCount(it).toDouble() }
+        totalPathNumberGoalPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalPathNumberGoalPerYear = getShapeDrawnCountPerYear(it) }
     }
 
     /**
