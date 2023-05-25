@@ -125,7 +125,7 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
             }
         }
     }
-    Scompanion object {
+    companion object {
         private const val ARG_CHAT = "arg_chat"
         private const val ARG_CHAT_ID = "arg_chat_id"
 
