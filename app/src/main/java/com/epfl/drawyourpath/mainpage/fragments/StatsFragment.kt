@@ -35,9 +35,9 @@ import com.epfl.drawyourpath.utils.Utils
  * @param totalPathNumberGoalPerYear number of path number goal reached per year(used for test, default value is null)
  */
 class StatsFragment(
-    private val averageSpeed: Double? = null,
-    private val averageSpeedPerMonth: Map<Double, Double>? = null,
-    private val averageSpeedPerYear: Map<Double, Double>? = null,
+    private val averageSpeed: Double? = null, // getAverageSpeed(dailyGoals)
+    private val averageSpeedPerMonth: Map<Double, Double>? = null, // getAverageSpeedPerMonth(dailyGoals)
+    private val averageSpeedPerYear: Map<Double, Double>? = null, // getAverageSpeedPerYear(dailyGoals)
     private val averageDuration: Double? = null,
     private val averageDurationPerMonth: Map<Double, Double>? = null,
     private val averageDurationPerYear: Map<Double, Double>? = null,

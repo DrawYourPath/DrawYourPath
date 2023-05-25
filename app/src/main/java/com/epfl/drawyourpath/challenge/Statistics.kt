@@ -32,7 +32,7 @@ object Statistics {
             dailyGoal.date.monthValue.toDouble()
         }.mapValues { (month, dailyGoalOfDay) ->
             getTotalDistance(dailyGoalOfDay)
-        }
+        }.withDefault { 0.0 }
     }
 
     /**
@@ -58,7 +58,7 @@ object Statistics {
             dailyGoal.date.monthValue.toDouble()
         }.mapValues { (month, dailyGoalOfDay) ->
             getTotalTime(dailyGoalOfDay)
-        }
+        }.withDefault { 0.0 }
     }
 
     /**
@@ -86,6 +86,37 @@ object Statistics {
     }
 
     /**
+     * Computes the average speed per day in the current month.
+     * @param dailyGoals The list of goals we want to compute the average speed.
+     * @return A map from the day to the average speed in the current month.
+     */
+    fun getAverageSpeedPerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year &&
+                    dailyGoal.date.monthValue == LocalDate.now().monthValue
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.dayOfMonth.toDouble()
+        }.mapValues { (day, dailyGoalOfDay) ->
+            getAverageSpeed(dailyGoalOfDay)
+        }.withDefault { 0.0 }
+    }
+
+    /**
+     * Computes the average speed per month in the current year.
+     * @param dailyGoals The list of goals we want to compute the average speed.
+     * @return A map from the month to the average speed in the current year.
+     */
+    fun getAverageSpeedPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.monthValue.toDouble()
+        }.mapValues { (month, dailyGoalOfDay) ->
+            getAverageSpeed(dailyGoalOfDay)
+        }.withDefault { 0.0 }
+    }
+
+    /**
      * Computes the total number of shapes drawn for the specified goals.
      * @param dailyGoals The list of goals we want to compute the number of shapes drawn.
      * @return The total number of shapes drawn.
@@ -100,7 +131,7 @@ object Statistics {
     /**
      * Computes the number of shapes drawn for goals per month in the current year.
      * @param dailyGoals The list of goals we want to compute the number of shapes drawn.
-     * @return A map from the month to the total number of shapes drawn for goals in the current year.
+     * @return A map from the month to the number of shapes drawn for goals in the current year.
      */
     fun getShapeDrawnCountPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return dailyGoals.filter { dailyGoal ->
@@ -109,6 +140,6 @@ object Statistics {
             dailyGoal.date.monthValue.toDouble()
         }.mapValues { (month, dailyGoalOfDay) ->
             getShapeDrawnCount(dailyGoalOfDay).toDouble()
-        }
+        }.withDefault { 0.0 }
     }
 }
