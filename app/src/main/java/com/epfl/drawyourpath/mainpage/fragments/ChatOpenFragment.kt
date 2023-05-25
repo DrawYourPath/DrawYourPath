@@ -31,7 +31,6 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
     private lateinit var runPopupAdapter: RunPopupAdapter
     private lateinit var userModelCachedVar: UserModelCached
 
-
     // Initialize the list of messages
     private val messagesList = mutableListOf<Message>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -113,7 +112,7 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
                         val newMessage = Message.createRunPathMessage(
                             userId,
                             selectedRun,
-                            System.currentTimeMillis()
+                            System.currentTimeMillis(),
                         ) // replace with appropriate method to create run path message
                         messagesList.add(newMessage)
                         messagesAdapter.notifyDataSetChanged()
