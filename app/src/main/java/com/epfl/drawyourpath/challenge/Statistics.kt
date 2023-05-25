@@ -88,8 +88,7 @@ object Statistics {
      */
     fun getAverageSpeedPerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year &&
-                    dailyGoal.date.monthValue == LocalDate.now().monthValue
+            dailyGoal.date.year == LocalDate.now().year && dailyGoal.date.monthValue == LocalDate.now().monthValue
         }.groupBy { dailyGoal ->
             dailyGoal.date.dayOfMonth.toDouble()
         }.mapValues { (day, dailyGoalOfDay) ->
@@ -128,8 +127,7 @@ object Statistics {
      */
     fun getAverageDurationPerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year &&
-                    dailyGoal.date.monthValue == LocalDate.now().monthValue
+            dailyGoal.date.year == LocalDate.now().year && dailyGoal.date.monthValue == LocalDate.now().monthValue
         }.groupBy { dailyGoal ->
             dailyGoal.date.dayOfMonth.toDouble()
         }.mapValues { (day, dailyGoalOfDay) ->
@@ -168,8 +166,7 @@ object Statistics {
      */
     fun getAverageDistancePerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year &&
-                    dailyGoal.date.monthValue == LocalDate.now().monthValue
+            dailyGoal.date.year == LocalDate.now().year && dailyGoal.date.monthValue == LocalDate.now().monthValue
         }.groupBy { dailyGoal ->
             dailyGoal.date.dayOfMonth.toDouble()
         }.mapValues { (day, dailyGoalOfDay) ->
