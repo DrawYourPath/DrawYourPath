@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             userCached.setCurrentUser(userId)
             val tournamentModel = ViewModelProvider(
                 this,
-                TournamentModel.getFactory(FirebaseDatabase(), userId)
+                TournamentModel.getFactory(FirebaseDatabase(), userId),
             )[TournamentModel::class.java]
             tournamentModel.setCurrentUser(userId)
         } else {

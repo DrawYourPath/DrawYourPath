@@ -38,7 +38,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
 
         tournament = ViewModelProvider(
             requireActivity(),
-            TournamentModel.getFactory(userModel.getDatabase(), userModel.getUserId()!!)
+            TournamentModel.getFactory(userModel.getDatabase(), userModel.getUserId()!!),
         )[TournamentModel::class.java]
 
         initVariable(view)

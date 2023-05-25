@@ -31,7 +31,7 @@ class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_pos
 
         tournament = ViewModelProvider(
             requireActivity(),
-            TournamentModel.getFactory(user.getDatabase(), user.getUserId()!!)
+            TournamentModel.getFactory(user.getDatabase(), user.getUserId()!!),
         )[TournamentModel::class.java]
 
         setupTournamentSpinner(view)

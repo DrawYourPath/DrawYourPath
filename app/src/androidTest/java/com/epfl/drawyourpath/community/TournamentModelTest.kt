@@ -56,7 +56,8 @@ class TournamentModelTest {
         // 2 tournaments in starting soon
         assertEquals(
             mockDatabase.tournaments.values.drop(1).map { it.value!!.toString() },
-            tournamentModel.startingSoonTournament.getOrAwaitValue().map { it.first.toString() })
+            tournamentModel.startingSoonTournament.getOrAwaitValue().map { it.first.toString() },
+        )
     }
 
     @Test
@@ -67,11 +68,12 @@ class TournamentModelTest {
             "star shape",
             LocalDateTime.now().minusDays(2L),
             LocalDateTime.now().plusDays(2L),
-            Tournament.Visibility.PUBLIC
+            Tournament.Visibility.PUBLIC,
         )
         val tournamentModel = TournamentModel(mockDatabase, MockDatabase.mockUser.userId!!)
         tournamentModel.createTournament(
-            tournamentParameters, ApplicationProvider.getApplicationContext()
+            tournamentParameters,
+            ApplicationProvider.getApplicationContext(),
         ).get(2, TimeUnit.SECONDS)
 
         waitForLiveDataToUpdate(tournamentModel)
@@ -79,7 +81,7 @@ class TournamentModelTest {
         // new tournament in discover
         assertEquals(
             mockDatabase.tournaments.values.find { it.value!!.name == "star wars" }!!.value!!.toString(),
-            tournamentModel.discoverTournament.getOrAwaitValue()[0].toString()
+            tournamentModel.discoverTournament.getOrAwaitValue()[0].toString(),
         )
     }
 
@@ -91,11 +93,12 @@ class TournamentModelTest {
             "star shape",
             LocalDateTime.now().minusDays(2L),
             LocalDateTime.now().minusDays(1L),
-            Tournament.Visibility.PUBLIC
+            Tournament.Visibility.PUBLIC,
         )
         val tournamentModel = TournamentModel(mockDatabase, MockDatabase.mockUser.userId!!)
         tournamentModel.createTournament(
-            tournamentParameters, ApplicationProvider.getApplicationContext()
+            tournamentParameters,
+            ApplicationProvider.getApplicationContext(),
         ).get(2, TimeUnit.SECONDS)
 
         waitForLiveDataToUpdate(tournamentModel)
@@ -131,7 +134,7 @@ class TournamentModelTest {
         // all posts of registered tournament
         assertEquals(
             mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
-            tournamentModel.posts.getOrAwaitValue().toString()
+            tournamentModel.posts.getOrAwaitValue().toString(),
         )
     }
 
@@ -146,7 +149,7 @@ class TournamentModelTest {
         // created post in posts
         assertEquals(
             mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
-            tournamentModel.posts.getOrAwaitValue().toString()
+            tournamentModel.posts.getOrAwaitValue().toString(),
         )
     }
 
@@ -170,11 +173,12 @@ class TournamentModelTest {
             "star shape",
             LocalDateTime.now().minusDays(2L),
             LocalDateTime.now().plusDays(2L),
-            Tournament.Visibility.PUBLIC
+            Tournament.Visibility.PUBLIC,
         )
         val tournamentModel = TournamentModel(mockDatabase, MockDatabase.mockUser.userId!!)
         tournamentModel.createTournament(
-            tournamentParameters, ApplicationProvider.getApplicationContext()
+            tournamentParameters,
+            ApplicationProvider.getApplicationContext(),
         ).get(2, TimeUnit.SECONDS)
         tournamentModel.register(mockDatabase.tournaments.values.find { it.value!!.name == "star wars" }!!.value!!.id, true)
         tournamentModel.createPost(
@@ -186,8 +190,10 @@ class TournamentModelTest {
         waitForLiveDataToUpdate(tournamentModel)
 
         // new post in posts
-        assertEquals(mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
-            tournamentModel.posts.getOrAwaitValue().toString())
+        assertEquals(
+            mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
+            tournamentModel.posts.getOrAwaitValue().toString(),
+        )
     }
 
     @Test
@@ -199,8 +205,10 @@ class TournamentModelTest {
         waitForLiveDataToUpdate(tournamentModel)
 
         // updated vote in posts
-        assertEquals(mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
-            tournamentModel.posts.getOrAwaitValue().toString())
+        assertEquals(
+            mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
+            tournamentModel.posts.getOrAwaitValue().toString(),
+        )
     }
 
     @Test
@@ -213,8 +221,10 @@ class TournamentModelTest {
         waitForLiveDataToUpdate(tournamentModel)
 
         // updated vote in posts
-        assertEquals(mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
-            tournamentModel.posts.getOrAwaitValue().toString())
+        assertEquals(
+            mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
+            tournamentModel.posts.getOrAwaitValue().toString(),
+        )
     }
 
     /**

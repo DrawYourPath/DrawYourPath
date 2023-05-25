@@ -45,7 +45,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
 
         tournamentModel = ViewModelProvider(
             requireActivity(),
-            TournamentModel.getFactory(userModel.getDatabase(), userModel.getUserId()!!)
+            TournamentModel.getFactory(userModel.getDatabase(), userModel.getUserId()!!),
         )[TournamentModel::class.java]
 
         initVariable(view)
@@ -178,11 +178,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             .setOnMenuItemClickListener {
                 menuItemListener(view, tournament, registered)
             }.actionView!!.findViewById<ToggleButton>(R.id.item_tournament_toggle).also {
-                // auto format wants it that way but it is ugly
-                it.isChecked = registered
-            }.setOnCheckedChangeListener { _, isChecked ->
-                tournamentModel.register(tournament.id, isChecked)
-            }
+            // auto format wants it that way but it is ugly
+            it.isChecked = registered
+        }.setOnCheckedChangeListener { _, isChecked ->
+            tournamentModel.register(tournament.id, isChecked)
+        }
     }
 
     /**
