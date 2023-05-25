@@ -58,7 +58,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         val newTournamentParameters =
             checkTournamentConstraints(view) ?: return
 
-        tournament.createTournament(newTournamentParameters, requireContext())
+        tournament.createTournament(newTournamentParameters, requireActivity())
 
         // get back to community fragment without waiting for database
         requireActivity().supportFragmentManager.popBackStack()

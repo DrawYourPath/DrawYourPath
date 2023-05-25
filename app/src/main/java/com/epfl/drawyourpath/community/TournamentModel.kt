@@ -19,7 +19,7 @@ class TournamentModel : ViewModel() {
 
     private var currentUserId: String = MockDatabase.mockUser.userId!!
 
-    private val userTournaments: MutableList<String> = mutableListOf()
+    private val userTournaments: MutableList<String> = mutableListOf("-NWH9CjMRBKNtn88SLHG")
 
     private val allTournamentIds = database.getAllTournamentsId()
 
@@ -102,8 +102,28 @@ class TournamentModel : ViewModel() {
         }
     }
 
-    fun addPost(tournamentId: String, run: Run) {
-        return
+    /**
+     * create the new post to store in the database
+     * show toast message to tell if it is a success or a failure
+     * @param tournamentId the tournament where to post the tournament post
+     * @param run the run to post
+     * @param context to show the toast message
+     */
+    fun addPost(tournamentId: String, run: Run, context: Context): CompletableFuture<Unit> {
+        return CompletableFuture.supplyAsync {
+            val pid = database.getPostUniqueId() ?: throw Error("Can't get a tournament id!")
+            TournamentPost(
+                postId = pid,
+                userId = currentUserId,
+                run = run,
+            )
+        }.thenComposeAsync {
+            database.addPostToTournament(tournamentId, it)
+        }.thenApplyAsync {
+            Toast.makeText(context, "Post created!", Toast.LENGTH_LONG).show()
+        }.exceptionally {
+            Toast.makeText(context, "Operation failed: ${it.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     fun addVote(vote: Int, postId: String) {
