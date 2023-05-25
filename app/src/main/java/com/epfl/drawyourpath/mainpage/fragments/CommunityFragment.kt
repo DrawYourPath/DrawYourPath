@@ -170,10 +170,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             .setOnMenuItemClickListener {
                 menuItemListener(view, tournament, registered)
             }.actionView!!.findViewById<ToggleButton>(R.id.item_tournament_toggle).also {
-                it.isChecked = registered
-            }.setOnCheckedChangeListener { _, isChecked ->
-                tournamentModel.register(tournament.id, isChecked)
-            }
+            // auto format wants it that way but it is ugly
+            it.isChecked = registered
+        }.setOnCheckedChangeListener { _, isChecked ->
+            tournamentModel.register(tournament.id, isChecked)
+        }
     }
 
     /**
