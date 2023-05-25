@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.utils.Utils
 
 /**
  * used in a recycler view to display the [TournamentPost]
@@ -62,7 +63,7 @@ class CommunityTournamentPostViewAdapter(
             viewHolder.tournamentName.visibility = View.GONE
         }
 
-        // TODO change image(run) path of the post
+        viewHolder.imagePath.setImageBitmap(Utils.coordinatesToBitmap(post.run.getPath().getPoints()))
 
         viewHolder.userName.text = post.userId
 
