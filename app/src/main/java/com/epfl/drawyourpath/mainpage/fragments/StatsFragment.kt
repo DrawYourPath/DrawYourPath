@@ -162,15 +162,14 @@ class StatsFragment(
         }
         userModelCached.getDailyGoals().observe(viewLifecycleOwner) {
             when (currentStateView) {
-                StatsEnum.GLOBAL_STATS ->
-                    showGlobalStats(
+                StatsEnum.GLOBAL_STATS -> showGlobalStats(
                     averageSpeed ?: getAverageSpeed(it),
                     averageDuration ?: getAverageDuration(it),
                     averageDistance ?: getAverageDistance(it),
                     totalDistanceGoal ?: getTotalDistance(it),
                     totalActivityTimeGoal ?: getTotalTime(it),
                     totalPathNumberGoal ?: getShapeDrawnCount(it).toDouble(),
-                    )
+                )
                 StatsEnum.AVERAGE_SPEED_PER_YEAR ->
                     showAverageSpeedPerYear(averageSpeedPerYear ?: getAverageSpeedPerYear(it))
                 StatsEnum.AVERAGE_SPEED_PER_MONTH ->
