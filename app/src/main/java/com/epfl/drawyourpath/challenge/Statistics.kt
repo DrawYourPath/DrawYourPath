@@ -77,10 +77,8 @@ object Statistics {
      * @return The average speed for the goals.
      */
     fun getAverageSpeed(dailyGoals: List<DailyGoal>): Double {
-        return dailyGoals.fold(Pair(0.0, 0.0)) {
-                acc, dailyGoal ->
-            Pair(acc.first + dailyGoal.distance, acc.second + dailyGoal.time)
-        }.let { if (it.second == 0.0) 0.0 else it.first / it.second }
+        val totalTime = getTotalTime(dailyGoals)
+        return if (totalTime == 0.0) 0.0 else (getTotalDistance(dailyGoals) / totalTime)
     }
 
     /**
@@ -120,7 +118,7 @@ object Statistics {
      * @return The average duration for the goals.
      */
     fun getAverageDuration(dailyGoals: List<DailyGoal>): Double {
-        return if (dailyGoals.isEmpty()) (getTotalTime(dailyGoals) / dailyGoals.size) else 0.0
+        return if (dailyGoals.isEmpty()) 0.0 else (getTotalTime(dailyGoals) / dailyGoals.size)
     }
 
     /**
@@ -160,7 +158,7 @@ object Statistics {
      * @return The average distance for the goals.
      */
     fun getAverageDistance(dailyGoals: List<DailyGoal>): Double {
-        return if (dailyGoals.isEmpty()) (getTotalDistance(dailyGoals) / dailyGoals.size) else 0.0
+        return if (dailyGoals.isEmpty()) 0.0 else (getTotalDistance(dailyGoals) / dailyGoals.size)
     }
 
     /**
