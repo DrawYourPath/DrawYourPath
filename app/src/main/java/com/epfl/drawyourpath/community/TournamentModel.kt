@@ -23,7 +23,7 @@ class TournamentModel : ViewModel() {
 
     private val allTournamentIds = database.getAllTournamentsId()
 
-    private var allTournamentInfo: MutableMap<String, LiveData<Tournament>> = mutableMapOf()
+    private val allTournamentInfo: MutableMap<String, LiveData<Tournament>> = mutableMapOf()
 
     private val allTournaments: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
         addSource(allTournamentIds) { tournamentIds ->
@@ -54,14 +54,23 @@ class TournamentModel : ViewModel() {
 
     private val postOf: MutableLiveData<String?> = MutableLiveData(null)
 
+    private val allPosts: MutableMap<String, LiveData<List<TournamentPost>>> = mutableMapOf()
+
     val posts: LiveData<List<TournamentPost>> = postOf.switchMap { id ->
-        id?.let { database.getTournamentPosts(it) } ?: MutableLiveData(listOf())/*MediatorLiveData<List<TournamentPost>>().apply {
-            addSource(allTournaments) { tournaments ->
-                value = tournaments.mapNotNull { tournament ->
-                    database.getTournamentPosts(tournament.id).also { addSource(it) { /* TODO */ } }.value
-                }.flatten()
+        id?.let { database.getTournamentPosts(it) } ?: MediatorLiveData<List<TournamentPost>>().apply {
+            addSource(allTournamentIds) { tournamentIds ->
+                tournamentIds.forEach { id ->
+                    allPosts.getOrPut(id) {
+                        database.getTournamentPosts(id).also { livedata ->
+                            addSource(livedata) { posts ->
+                                value = value?.filterNot { posts.map { it.postId }.contains(it.postId) }?.plus(posts) ?: posts
+                            }
+                        }
+                    }
+                }
+                value = allPosts.values.mapNotNull { it.value }.flatten()
             }
-        }*/
+        }
     }
 
     /**
