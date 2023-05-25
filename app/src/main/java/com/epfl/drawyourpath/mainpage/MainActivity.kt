@@ -13,6 +13,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.community.TournamentModel
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.pathDrawing.PathDrawingContainerFragment
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private var qrScanResult: CompletableFuture<String>? = null
 
     private val userCached: UserModelCached by viewModels()
+    private val tournamentModel: TournamentModel by viewModels()
 
     private var isTest = false
 
@@ -91,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId != null) {
             userCached.setCurrentUser(userId)
+            tournamentModel.setCurrentUser(userId)
         } else {
             Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG)
                 .show()

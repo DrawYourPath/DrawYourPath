@@ -72,69 +72,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     }
 
     /**
-     * Helper function that returns a database based on the arguments passed to
-     */
-    private fun getDatabase(): Database {
-        return if (arguments?.getBoolean(USE_WORKING_MOCK_DB, false) == true) {
-            MockDatabase()
-        } else if (arguments?.getBoolean(USE_FAILING_MOCK_DB, false) == true) {
-            MockNonWorkingDatabase()
-        } else {
-            FirebaseDatabase()
-        }
-    }
-
-    private fun getAuth(): Auth {
-        return if (arguments?.getBoolean(USE_WORKING_MOCK_AUTH, false) == true) {
-            MockAuth(forceSigned = true)
-        } else if (arguments?.getBoolean(USE_FAILING_MOCK_AUTH, false) == true) {
-            MockAuth()
-        } else {
-            FirebaseAuth()
-        }
-    }
-
-    /**
-     * Helper function to store the newly created tournament asynchronously, displays toasts
-     * to notify of the success of failure of the operation.
-     *
-     * @param params the TournamentParameters data class containing the choices of the creator
-     * @param id the unique id of the tournament (given by the database)
-     * @param creatorId the id of the user creating the tournament
-     * @param db the database in which we store the tournament
-     */
-    private fun storeNewTournament(
-        params: Tournament.TournamentParameters,
-        id: String,
-        creatorId: String,
-        db: Database,
-    ) {
-        db.addTournament(
-            Tournament(
-                id = id,
-                name = params.name,
-                description = params.description,
-                creatorId = creatorId,
-                startDate = params.startDate,
-                endDate = params.endDate,
-                visibility = params.visibility,
-            ),
-        ).whenComplete { _, exception ->
-            // Display toasts when complete. Note that it does not complete while offline (but the tournament
-            // is stored when the user gets back online)
-            if (exception != null) {
-                Toast.makeText(
-                    activity,
-                    "Operation failed: ${exception.message}",
-                    Toast.LENGTH_LONG,
-                ).show()
-            } else {
-                Toast.makeText(activity, "Tournament created!", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    /**
      * check the constraints on the tournament
      *
      * @return the tournament if the constraints are satisfied else null
@@ -299,12 +236,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     }
 
     companion object {
-        // Debug parameters
-        const val USE_WORKING_MOCK_DB = "USE_WORKING_MOCK_DB"
-        const val USE_FAILING_MOCK_DB = "USE_FAILING_MOCK_DB"
-        const val USE_WORKING_MOCK_AUTH = "USE_WORKING_MOCK_AUTH"
-        const val USE_FAILING_MOCK_AUTH = "USE_FAILING_MOCK_AUTH"
-
         private const val DATE_SEPARATOR = " / "
         private const val TIME_SEPARATOR = " : "
         private val DEFAULT_START_DATE = LocalDate.now()

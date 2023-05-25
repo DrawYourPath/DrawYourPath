@@ -1,11 +1,11 @@
 package com.epfl.drawyourpath.community
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.path.Run
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
@@ -14,10 +14,10 @@ import java.util.concurrent.CompletableFuture
  * this class is used to link the database to the UI for the tournaments
  */
 class TournamentModel : ViewModel() {
-
+    // use mock by default
     private var database: Database = FirebaseDatabase()
 
-    private var currentUserId: String? = "userID" // TODO userid
+    private var currentUserId: String = MockDatabase.mockUser.userId!!
 
     private val userTournaments: MutableList<String> = mutableListOf()
 
@@ -77,7 +77,7 @@ class TournamentModel : ViewModel() {
                 id = tid,
                 name = tournament.name,
                 description = tournament.description,
-                creatorId = currentUserId!!,
+                creatorId = currentUserId,
                 startDate = tournament.startDate,
                 endDate = tournament.endDate,
                 visibility = tournament.visibility,
@@ -105,5 +105,13 @@ class TournamentModel : ViewModel() {
      */
     fun showPostOf(tournamentId: String?) {
         postOf.postValue(tournamentId)
+    }
+
+    /**
+     * set the current user
+     * @param userId the user id of the current user
+     */
+    fun setCurrentUser(userId: String) {
+        currentUserId = userId
     }
 }

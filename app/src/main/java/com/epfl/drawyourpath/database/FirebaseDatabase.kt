@@ -711,7 +711,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                     val posts = FirebaseDatabaseUtils.transformPostList(snapshot)
                     tournamentPostsValue.postValue(posts)
                 } else {
-                    throw Exception("The tournament with tournamentId $tournamentId doesn't exist.")
+                    tournamentPostsValue.postValue(listOf())
                 }
             }
         }
