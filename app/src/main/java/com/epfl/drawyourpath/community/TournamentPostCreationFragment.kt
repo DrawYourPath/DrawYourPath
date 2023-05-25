@@ -83,7 +83,7 @@ class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_pos
     private fun setupPostButton(view: View) {
         val post = view.findViewById<Button>(R.id.post_creation_post_button)
         post.setOnClickListener {
-            tournament.addPost(getSelectedTournamentId(), getSelectedRun(), requireContext())
+            tournament.addPost(getSelectedTournament(), getSelectedRun(), requireContext())
             returnToCommunityFragment()
         }
     }
@@ -96,12 +96,12 @@ class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_pos
     }
 
     /**
-     * get the selected tournament id
-     * @return the tournament id
+     * get the selected tournament
+     * @return the tournament
      */
-    private fun getSelectedTournamentId(): String {
+    private fun getSelectedTournament(): Tournament {
         // TODO test if null
-        return (tournamentSpinner.selectedItem as Tournament).id
+        return tournamentSpinner.selectedItem as Tournament
     }
 
     /**

@@ -73,8 +73,8 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     private fun createTournamentPostsView() {
         tournamentPostsView.layoutManager = LinearLayoutManager(context)
         tournamentPostsView.adapter = postViewAdapter
-        tournamentModel.posts.observe(viewLifecycleOwner) {
-            postViewAdapter.update(it)
+        tournamentModel.posts.observe(viewLifecycleOwner) { posts ->
+            postViewAdapter.update(posts, true)
         }
     }
 
@@ -150,20 +150,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         menu.add(getString(R.string.create_new_tournament))
             .setIcon(R.drawable.ic_add)
             .setOnMenuItemClickListener {
-                // Sends args for mock to tournament creation fragment, only used during testing
-                // When not testing, db and auth are null, so no args are passed to the
-                // TournamentCreationFragment.
-
-                // Get database and auth types from the activity's launching intent.
-                val db = activity?.intent?.getStringExtra("Database")
-                val auth = activity?.intent?.getStringExtra("Auth")
-                // Put the strings in the activity's intent as keys with values true in a bundle used
-                // by the TournamentCreationFragment to choose which database and auth to use.
-                val fragmentArgs = Bundle()
-                if (db != null) fragmentArgs.putBoolean(db, true)
-                if (auth != null) fragmentArgs.putBoolean(auth, true)
-                // Launches the fragment
-                replaceFragment<TournamentCreationFragment>(fragmentArgs)
+                replaceFragment<TournamentCreationFragment>()
                 true
             }
     }
@@ -194,7 +181,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         view.findViewById<TextView>(R.id.community_detail_date).text =
             tournament.getStartOrEndDate()
         view.findViewById<ToggleButton>(R.id.community_detail_toggle).also {
-            it.isChecked = registered 
+            it.isChecked = registered
         }.setOnCheckedChangeListener { _, isChecked ->
             tournamentModel.register(tournament.id, isChecked)
         }
@@ -210,10 +197,10 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     /**
      * replace this fragment by another one
      */
-    private inline fun <reified F : Fragment> replaceFragment(fragmentArgs: Bundle? = null) {
+    private inline fun <reified F : Fragment> replaceFragment() {
         requireActivity().supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace<F>(R.id.fragmentContainerView, args = fragmentArgs)
+            replace<F>(R.id.fragmentContainerView)
             addToBackStack("creation")
         }
     }

@@ -157,6 +157,8 @@ object FirebaseDatabaseUtils {
      */
     fun transformPost(data: DataSnapshot?): TournamentPost? {
         val postId = data?.child(FirebaseKeys.POST_ID)?.value as String?
+        val tournamentId = data?.child(FirebaseKeys.POST_TOURNAMENT_ID)?.value as String?
+        val tournamentName = data?.child(FirebaseKeys.POST_TOURNAMENT_NAME)?.value as String?
         val userId = data?.child(FirebaseKeys.POST_USER_ID)?.value as String?
         val run = transformRun(data?.child(FirebaseKeys.POST_RUN))
         val date = transformLocalDateTime(data?.child(FirebaseKeys.POST_DATE))
@@ -164,12 +166,12 @@ object FirebaseDatabaseUtils {
         val usersVotes =
             (data?.child(FirebaseKeys.POST_USERS_VOTES)?.value ?: emptyMap<String, Int>()) as Map<String, Int>
 
-        if (postId == null || userId == null || run == null || date == null) {
+        if (postId == null || tournamentId == null || tournamentName == null || userId == null || run == null || date == null) {
             Log.e(this::class.java.name, "TournamentPost had null values")
             return null
         }
 
-        return TournamentPost(postId, userId, run, date, usersVotes.toMutableMap())
+        return TournamentPost(postId, tournamentId, tournamentName, userId, run, date, usersVotes.toMutableMap())
     }
 
     /**

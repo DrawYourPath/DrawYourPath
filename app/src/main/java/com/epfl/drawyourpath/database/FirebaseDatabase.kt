@@ -89,6 +89,8 @@ object FirebaseKeys {
 
     // Posts keys
     const val POST_ID = "postId"
+    const val POST_TOURNAMENT_ID = "tournamentId"
+    const val POST_TOURNAMENT_NAME = "tournamentName"
     const val POST_USER_ID = "userId"
     const val POST_RUN = "run"
     const val POST_DATE = "date"

@@ -1,5 +1,6 @@
 package com.epfl.drawyourpath.community
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.utils.Utils
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * used in a recycler view to display the [TournamentPost]
@@ -16,7 +20,7 @@ import com.epfl.drawyourpath.R
 class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
 
     private var posts: List<TournamentPost> = listOf()
-    private var tournamentName: String? = null
+    private var showName: Boolean = false
 
     /**
      * Custom view holder using a custom layout for tournaments
@@ -28,6 +32,7 @@ class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournam
         val upvote: ImageButton
         val downvote: ImageButton
         val voteCount: TextView
+        val context: Context
 
         init {
             // Define click listener for the ViewHolder's View
@@ -37,6 +42,7 @@ class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournam
             upvote = view.findViewById(R.id.tournament_upvote_button)
             downvote = view.findViewById(R.id.tournament_downvote_button)
             voteCount = view.findViewById(R.id.tournament_vote_count_text)
+            context = view.context
         }
     }
 
@@ -54,13 +60,24 @@ class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournam
         val post = posts[viewHolder.adapterPosition]
 
         // if it displays posts from only one tournament the name is not displayed
-        if (tournamentName != null) {
-            viewHolder.tournamentName.text = tournamentName
+        if (showName) {
+            viewHolder.tournamentName.text = post.tournamentName
         } else {
             viewHolder.tournamentName.visibility = View.GONE
         }
 
-        // TODO change image(run) path of the post
+        // TODO: will be refactor with the creation of a bitmap directly with the run coordinates
+
+        val runCoordinates: List<LatLng> = post.run.getPath().getPoints().flatten() // Get the coordinates for this specific run
+        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
+
+        val staticMapUrl = Utils.getStaticMapUrl(runCoordinates, apiKey)
+
+        // Load the image using Glide
+        Glide.with(viewHolder.context)
+            .load(staticMapUrl)
+            .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
+            .into(viewHolder.imagePath)
 
         viewHolder.userName.text = post.userId
 
@@ -94,9 +111,9 @@ class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournam
      * update the recycler view to show the updated list of posts
      * @param posts the new list of posts
      */
-    fun update(posts: List<TournamentPost>, tournamentName: String? = null) {
+    fun update(posts: List<TournamentPost>, showName: Boolean) {
         this.posts = posts
-        this.tournamentName = tournamentName
+        this.showName = showName
         notifyDataSetChanged()
     }
 

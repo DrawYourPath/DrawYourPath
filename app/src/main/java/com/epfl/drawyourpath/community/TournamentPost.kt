@@ -7,6 +7,8 @@ import kotlin.collections.HashMap
 
 data class TournamentPost(
     val postId: String,
+    val tournamentId: String,
+    val tournamentName: String,
     val userId: String,
     val run: Run,
     val date: LocalDateTime = LocalDateTime.now(),

@@ -126,20 +126,22 @@ class TournamentModel : ViewModel() {
     /**
      * create the new post to store in the database
      * show toast message to tell if it is a success or a failure
-     * @param tournamentId the tournament where to post the tournament post
+     * @param tournament the tournament where to post the tournament post
      * @param run the run to post
      * @param context to show the toast message
      */
-    fun addPost(tournamentId: String, run: Run, context: Context): CompletableFuture<Unit> {
+    fun addPost(tournament: Tournament, run: Run, context: Context): CompletableFuture<Unit> {
         return CompletableFuture.supplyAsync {
             val pid = database.getPostUniqueId() ?: throw Error("Can't get a tournament id!")
             TournamentPost(
                 postId = pid,
+                tournamentId = tournament.id,
+                tournamentName = tournament.name,
                 userId = currentUserId,
                 run = run,
             )
         }.thenComposeAsync {
-            database.addPostToTournament(tournamentId, it)
+            database.addPostToTournament(tournament.id, it)
         }.thenApplyAsync {
             Toast.makeText(context, "Post created!", Toast.LENGTH_LONG).show()
         }.exceptionally {
