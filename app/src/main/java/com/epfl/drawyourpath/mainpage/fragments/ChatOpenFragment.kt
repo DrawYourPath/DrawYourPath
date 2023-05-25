@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.MockDatabase
