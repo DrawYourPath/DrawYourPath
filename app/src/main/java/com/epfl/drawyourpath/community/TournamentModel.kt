@@ -3,8 +3,9 @@ package com.epfl.drawyourpath.community
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.path.Run
 import java.time.LocalDateTime
@@ -13,12 +14,10 @@ import java.util.concurrent.CompletableFuture
 /**
  * this class is used to link the database to the UI for the tournaments
  */
-class TournamentModel : ViewModel() {
-    // use mock by default
-    val database: Database = FirebaseDatabase()
-
-    private var currentUserId: String = MockDatabase.mockUser.userId!!
-
+class TournamentModel(
+    val database: Database,
+    private var currentUserId: String,
+) : ViewModel() {
     private val _userTournaments: MutableList<String> = MockDatabase.mockUser.tournaments!!.toMutableList()
 
     private val userTournaments: MutableLiveData<List<String>> = MutableLiveData(_userTournaments)
@@ -44,28 +43,28 @@ class TournamentModel : ViewModel() {
 
     val yourTournament: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
         addSource(allTournaments) { tournaments ->
-            value = tournaments.filter { userTournaments.value!!.contains(it.id) && it.startDate <= LocalDateTime.now() }
+            value = tournaments.filter { userTournaments.value!!.contains(it.id) && it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now() }
         }
         addSource(userTournaments) { ids ->
-            value = allTournaments.value!!.filter { ids.contains(it.id) && it.startDate <= LocalDateTime.now() }
+            value = allTournaments.value!!.filter { ids.contains(it.id) && it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now() }
         }
     }
 
     val startingSoonTournament: LiveData<List<Pair<Tournament, Boolean>>> = MediatorLiveData<List<Pair<Tournament, Boolean>>>().apply {
         addSource(allTournaments) { tournaments ->
-            value = tournaments.filter { it.startDate > LocalDateTime.now() }.map { Pair(it, userTournaments.value!!.contains(it.id)) }
+            value = tournaments.filter { it.startDate > LocalDateTime.now() && it.endDate >= LocalDateTime.now() }.map { Pair(it, userTournaments.value!!.contains(it.id)) }
         }
         addSource(userTournaments) { ids ->
-            value = allTournaments.value!!.filter { it.startDate > LocalDateTime.now() }.map { Pair(it, ids.contains(it.id)) }
+            value = allTournaments.value!!.filter { it.startDate > LocalDateTime.now() && it.endDate >= LocalDateTime.now() }.map { Pair(it, ids.contains(it.id)) }
         }
     }
 
     val discoverTournament: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
         addSource(allTournaments) { tournaments ->
-            value = tournaments.filter { !userTournaments.value!!.contains(it.id) && it.startDate <= LocalDateTime.now() }
+            value = tournaments.filter { !userTournaments.value!!.contains(it.id) && it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now() }
         }
         addSource(userTournaments) { ids ->
-            value = allTournaments.value!!.filter { !ids.contains(it.id) && it.startDate <= LocalDateTime.now() }
+            value = allTournaments.value!!.filter { !ids.contains(it.id) && it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now() }
         }
     }
 
@@ -102,7 +101,7 @@ class TournamentModel : ViewModel() {
      * @param context to show the toast message
      */
     fun createTournament(tournament: Tournament.TournamentParameters, context: Context): CompletableFuture<Unit> {
-        return CompletableFuture.supplyAsync {
+        val future = CompletableFuture.supplyAsync {
             val tid = database.getTournamentUniqueId() ?: throw Error("Can't get a tournament id!")
             Tournament(
                 id = tid,
@@ -115,11 +114,15 @@ class TournamentModel : ViewModel() {
             )
         }.thenComposeAsync {
             database.addTournament(it)
-        }.thenApplyAsync {
-            Toast.makeText(context, "Tournament created!", Toast.LENGTH_LONG).show()
-        }.exceptionally {
-            Toast.makeText(context, "Operation failed: ${it.message}", Toast.LENGTH_LONG).show()
         }
+        future.whenComplete { _, error ->
+            if (error == null) {
+                Toast.makeText(context, "Tournament created!", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(context, "Operation failed: ${error.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+        return future
     }
 
     /**
@@ -129,23 +132,29 @@ class TournamentModel : ViewModel() {
      * @param run the run to post
      * @param context to show the toast message
      */
-    fun addPost(tournament: Tournament, run: Run, context: Context): CompletableFuture<Unit> {
-        return CompletableFuture.supplyAsync {
+    fun createPost(tournament: Tournament?, run: Run?, context: Context): CompletableFuture<Unit> {
+        val future = CompletableFuture.supplyAsync {
             val pid = database.getPostUniqueId() ?: throw Error("Can't get a tournament id!")
+            val tournamentNotNull = tournament ?: throw Error("Can't get a tournament!")
+            val runNotNull = run ?: throw Error("Can't get a run!")
             TournamentPost(
                 postId = pid,
-                tournamentId = tournament.id,
-                tournamentName = tournament.name,
+                tournamentId = tournamentNotNull.id,
+                tournamentName = tournamentNotNull.name,
                 userId = currentUserId,
-                run = run,
+                run = runNotNull,
             )
         }.thenComposeAsync {
-            database.addPostToTournament(tournament.id, it)
-        }.thenApplyAsync {
-            Toast.makeText(context, "Post created!", Toast.LENGTH_LONG).show()
-        }.exceptionally {
-            Toast.makeText(context, "Operation failed: ${it.message}", Toast.LENGTH_LONG).show()
+            database.addPostToTournament(tournament!!.id, it)
         }
+        future.whenComplete { _, error ->
+            if (error == null) {
+                Toast.makeText(context, "Post created!", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(context, "Operation failed: ${error.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+        return future
     }
 
     /**
@@ -224,6 +233,16 @@ class TournamentModel : ViewModel() {
                 _userTournaments.clear()
                 _userTournaments.addAll(it1)
                 userTournaments.postValue(_userTournaments)
+            }
+        }
+    }
+
+    companion object {
+        fun getFactory(database: Database, userId: String): ViewModelProvider.Factory {
+            return viewModelFactory {
+                initializer {
+                    TournamentModel(database, userId)
+                }
             }
         }
     }

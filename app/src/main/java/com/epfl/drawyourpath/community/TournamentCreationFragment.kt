@@ -9,7 +9,9 @@ import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -18,7 +20,8 @@ import java.time.temporal.ChronoUnit
 
 class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creation) {
 
-    private val tournament: TournamentModel by activityViewModels()
+    private val userModel: UserModelCached by activityViewModels()
+    private lateinit var tournament: TournamentModel
 
     private lateinit var title: TextView
     private lateinit var description: TextView
@@ -32,6 +35,11 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        tournament = ViewModelProvider(
+            requireActivity(),
+            TournamentModel.getFactory(userModel.getDatabase(), userModel.getUserId()!!)
+        )[TournamentModel::class.java]
 
         initVariable(view)
 

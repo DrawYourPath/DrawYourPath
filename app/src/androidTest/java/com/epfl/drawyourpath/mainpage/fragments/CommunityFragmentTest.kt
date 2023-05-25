@@ -16,6 +16,7 @@ import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.Tournament
 import com.epfl.drawyourpath.community.TournamentModel
 import com.epfl.drawyourpath.community.TournamentPost
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
@@ -26,6 +27,10 @@ import java.time.LocalDateTime
 
 @RunWith(AndroidJUnit4::class)
 class CommunityFragmentTest {
+
+    private val post = MockDatabase().mockPost
+
+    private val tournament = MockDatabase().mockTournament.value!!
 
     /**
      * test that the function getUserVotes return the correct result
@@ -41,7 +46,7 @@ class CommunityFragmentTest {
             0.9,
         )
         val userVotes = mutableMapOf("test" to 1)
-        val post = TournamentPost("postId", "testId", run, usersVotes = userVotes)
+        val post = TournamentPost("postId", "tournament id", "tournament name", "userid", run, usersVotes = userVotes)
         assertThat(post.getUsersVotes(), `is`(userVotes))
     }
 
@@ -52,16 +57,15 @@ class CommunityFragmentTest {
     fun upvoteOnceAddsVote() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly),
+            Bundle(),
             R.style.Theme_Bootcamp,
         )
-        val beginVotes = sampleWeekly.posts[0].getVotes()
 
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(post.getVotes().toString()))))
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_upvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes + 1).toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes() + 1).toString()))))
 
         scenario.close()
     }
@@ -73,22 +77,21 @@ class CommunityFragmentTest {
     fun upvoteTwiceAddsThenRemovesVote() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly),
+            Bundle(),
             R.style.Theme_Bootcamp,
         )
-        val beginVotes = sampleWeekly.posts[0].getVotes()
 
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(post.getVotes().toString()))))
         // first upvote
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_upvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes + 1).toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes() + 1).toString()))))
         // second upvote
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_upvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes).toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes()).toString()))))
         scenario.close()
     }
 
@@ -99,16 +102,15 @@ class CommunityFragmentTest {
     fun downvoteOnceSubtractsVote() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly),
+            Bundle(),
             R.style.Theme_Bootcamp,
         )
-        val beginVotes = sampleWeekly.posts[0].getVotes()
 
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(post.getVotes().toString()))))
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_downvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes - 1).toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes() - 1).toString()))))
 
         scenario.close()
     }
@@ -120,22 +122,21 @@ class CommunityFragmentTest {
     fun downvoteTwiceSubtractsThenRemovesVote() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly),
+            Bundle(),
             R.style.Theme_Bootcamp,
         )
-        val beginVotes = sampleWeekly.posts[0].getVotes()
 
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(post.getVotes().toString()))))
         // first downvote
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_downvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes - 1).toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes() - 1).toString()))))
         // second downvote
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_downvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes).toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes()).toString()))))
 
         scenario.close()
     }
@@ -147,31 +148,28 @@ class CommunityFragmentTest {
     fun multipleUpvoteDownvoteAddsAndSubtractsCorrectly() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(sampleWeekly),
+            Bundle(),
             R.style.Theme_Bootcamp,
         )
-        val beginVotes = sampleWeekly.posts[0].getVotes()
 
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(beginVotes.toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText(post.getVotes().toString()))))
 
-        // Suddenly started failing, without modification.
-        /*
         // upvote
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_upvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes + 1).toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes() + 1).toString()))))
         // downvote
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_downvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes - 1).toString()))))
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes() - 1).toString()))))
         // upvote
         onView(withId(R.id.display_community_tournaments_view)).perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, clickOnViewChild(R.id.tournament_upvote_button)),
         )
-        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((beginVotes + 1).toString()))))
-         */
+        onView(withId(R.id.display_community_tournaments_view)).check(matches(hasDescendant(withText((post.getVotes() + 1).toString()))))
+
         scenario.close()
     }
 
@@ -179,22 +177,20 @@ class CommunityFragmentTest {
      * check that the navigation to the details of the weekly tournament shows the details then go back
      */
     @Test
-    fun showDetailWeeklyShowsTheDetailsThenGoBack() {
-        val weekly = sampleWeekly
-
+    fun showDetailTournamentShowsTheDetailsThenGoBack() {
         val scenario = FragmentScenario.launchInContainer(
             CommunityFragment::class.java,
-            getBundle(weekly),
+            Bundle(),
             R.style.Theme_Bootcamp,
         )
 
         // go to weekly detail
         onView(withId(R.id.community_menu_button)).perform(click())
-        onView(withContentDescription("${weekly.name} details")).perform(click())
+        onView(withContentDescription("${tournament.name} details")).perform(click())
         // check details are shown
-        onView(withId(R.id.community_detail_name)).check(matches(withText(weekly.name)))
-        onView(withId(R.id.community_detail_description)).check(matches(withText(weekly.description)))
-        onView(withId(R.id.community_detail_date)).check(matches(withText(containsString("Start in"))))
+        onView(withId(R.id.community_detail_name)).check(matches(withText(tournament.name)))
+        onView(withId(R.id.community_detail_description)).check(matches(withText(tournament.description)))
+        onView(withId(R.id.community_detail_date)).check(matches(withText(containsString("End in"))))
         // go back
         onView(withId(R.id.community_back_button)).perform(click())
         // check details are not shown
@@ -204,163 +200,6 @@ class CommunityFragmentTest {
         onView(withId(R.id.community_back_button)).check(matches(not(isDisplayed())))
 
         scenario.close()
-    }
-
-    /**
-     * check that going to a detail tournament show only posts from this tournament
-     */
-    @Test
-    fun showDetailSomeTournamentShowOnlyPostsFromSomeTournament() {
-        val weekly = sampleWeekly
-        val your = sampleYourTournaments
-        val discover = sampleDiscoveryTournaments
-
-        val scenario = FragmentScenario.launchInContainer(
-            CommunityFragment::class.java,
-            getBundle(weekly, your, discover),
-            R.style.Theme_Bootcamp,
-        )
-
-        val postFromEarth = postsDiscoverEarth.map { p -> withText(p.userId) }
-        val postFromAllNotEarth = buildList {
-            this.addAll(sampleWeekly.posts)
-            this.addAll(postsYour)
-            this.addAll(postsDiscoverMoon)
-        }.map { p -> withText(p.userId) }
-        val postFromAll = listOf(postFromEarth, postFromAllNotEarth).flatten()
-
-        // go to earth detail
-        onView(withId(R.id.community_menu_button)).perform(click())
-        onView(withContentDescription("${discover[0].name} details")).perform(click())
-        // check details are shown
-        onView(withId(R.id.community_detail_name)).check(matches(withText(discover[0].name)))
-        onView(withId(R.id.community_detail_description)).check(matches(withText(discover[0].description)))
-        onView(withId(R.id.community_detail_date)).check(matches(withText(discover[0].getStartOrEndDate())))
-        // check posts for discover the earth are displayed but not for any other tournament
-        for (i in 0 until discover[0].posts.count()) {
-            onView(withId(R.id.display_community_tournaments_view))
-                .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(i))
-                .check(matches(hasDescendant(anyOf(postFromEarth))))
-                .check(matches(not(hasDescendant(anyOf(postFromAllNotEarth)))))
-        }
-        // go back
-        onView(withId(R.id.community_back_button)).perform(click())
-        // check details are not shown
-        onView(withId(R.id.community_detail_name)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.community_detail_description)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.community_detail_date)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.community_back_button)).check(matches(not(isDisplayed())))
-
-        // check posts for every tournament are displayed
-        for (i in 0 until postsYour.count() + postsDiscoverEarth.count() + postsDiscoverMoon.count() + 1) {
-            onView(withId(R.id.display_community_tournaments_view))
-                .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(i))
-                .check(matches(hasDescendant(anyOf(postFromAll))))
-        }
-
-        scenario.close()
-    }
-
-    private fun getBundle(weekly: Tournament, your: List<Tournament> = listOf(), discover: List<Tournament> = listOf()): Bundle {
-        val bundle = Bundle()
-        bundle.putSerializable("tournaments", TournamentModel.SampleTournamentModel(weekly, your, discover))
-        return bundle
-    }
-
-    /**
-     * sample posts
-     */
-    private val postsYour = mutableListOf(
-        TournamentPost("post1", "Michel", sampleRun()),
-        TournamentPost("post2", "MrPrefect", sampleRun()),
-        TournamentPost("post3", "Me Myself and I", sampleRun()),
-        TournamentPost("post4", "Invalid Username", sampleRun()),
-    )
-
-    /**
-     * sample posts
-     */
-    private val postsDiscoverEarth = mutableListOf(
-        TournamentPost("post5", "SpaceMan", sampleRun()),
-        TournamentPost("post6", "NASA", sampleRun()),
-        TournamentPost("post7", "Alien", sampleRun()),
-    )
-
-    /**
-     * sample posts
-     */
-    private val postsDiscoverMoon = mutableListOf(
-        TournamentPost("post8", "Diabolos", sampleRun()),
-        TournamentPost("post9", "Jaqueline", sampleRun()),
-    )
-
-    /**
-     * sample tournaments
-     */
-    private val sampleWeekly = Tournament(
-        "WeeklyId",
-        "Weekly tournament: Star Path",
-        "draw a star path",
-        "Anon1",
-        LocalDateTime.now().plusDays(4L),
-        LocalDateTime.now().plusDays(3L),
-        listOf(),
-        listOf(TournamentPost("post10", "xxDarkxx", sampleRun())),
-    )
-
-    /**
-     * sample tournaments
-     */
-    private val sampleYourTournaments = mutableListOf(
-        Tournament(
-            "YourId",
-            "time square",
-            "draw a square",
-            "Anon2",
-            LocalDateTime.now().plusDays(4L),
-            LocalDateTime.now().plusDays(3L),
-            listOf(),
-            postsYour,
-        ),
-    )
-
-    /**
-     * sample tournaments
-     */
-    private val sampleDiscoveryTournaments = mutableListOf(
-        Tournament(
-            "DiscoveryId1",
-            "Discover the earth",
-            "draw the earth",
-            "Anon3",
-            LocalDateTime.now().plusDays(4L),
-            LocalDateTime.now().plusDays(3L),
-            listOf(),
-            postsDiscoverEarth,
-        ),
-        Tournament(
-            "DiscoveryId2",
-            "to the moon",
-            "draw the moon",
-            "Anon4",
-            LocalDateTime.now().plusDays(4L),
-            LocalDateTime.now().plusDays(3L),
-            listOf(),
-            postsDiscoverMoon,
-        ),
-    )
-
-    /**
-     * sample run
-     */
-    private fun sampleRun(): Run {
-        val point1 = LatLng(0.0, 0.0)
-        val point2 = LatLng(0.001, 0.001)
-        val points = listOf(listOf(point1, point2))
-        val path = Path(points)
-        val startTime = System.currentTimeMillis()
-        val endTime = startTime + 10
-        return Run(path, startTime, 10, endTime)
     }
 
     /**

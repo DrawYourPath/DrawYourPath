@@ -85,4 +85,8 @@ data class Tournament(
     enum class Visibility {
         FRIENDS_ONLY, PUBLIC
     }
+
+    override fun toString(): String {
+        return "Tournament(id=$id, name=$name, description=$description, creatorId='$creatorId')"
+    }
 }

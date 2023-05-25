@@ -62,7 +62,7 @@ class MockNonWorkingDatabaseTest {
         assertThrows(Exception::class.java) { mock.getTournamentInfo("") }
         assertThrows(Exception::class.java) { mock.getTournamentPosts("") }
         mock.getTournamentParticipantsId("").assertError(emptyList())
-        mock.addPostToTournament("", TournamentPost("", "", Run(Path(), 1, 9, 10))).assertError(Unit)
+        mock.addPostToTournament("", TournamentPost("", "", "", "", Run(Path(), 1, 9, 10))).assertError(Unit)
         mock.voteOnPost("", "", "", 0).assertError(Unit)
     }
 

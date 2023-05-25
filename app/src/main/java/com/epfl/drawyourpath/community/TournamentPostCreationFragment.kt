@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.RunArrayAdapter
@@ -19,7 +20,7 @@ class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_pos
 
     private val user: UserModelCached by activityViewModels()
 
-    private val tournament: TournamentModel by activityViewModels()
+    private lateinit var tournament: TournamentModel
 
     private lateinit var tournamentSpinner: Spinner
 
@@ -27,6 +28,11 @@ class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_pos
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        tournament = ViewModelProvider(
+            requireActivity(),
+            TournamentModel.getFactory(user.getDatabase(), user.getUserId()!!)
+        )[TournamentModel::class.java]
 
         setupTournamentSpinner(view)
 
@@ -83,7 +89,7 @@ class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_pos
     private fun setupPostButton(view: View) {
         val post = view.findViewById<Button>(R.id.post_creation_post_button)
         post.setOnClickListener {
-            tournament.addPost(getSelectedTournament(), getSelectedRun(), requireContext())
+            tournament.createPost(getSelectedTournament(), getSelectedRun(), requireContext())
             returnToCommunityFragment()
         }
     }
@@ -99,17 +105,15 @@ class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_pos
      * get the selected tournament
      * @return the tournament
      */
-    private fun getSelectedTournament(): Tournament {
-        // TODO test if null
-        return tournamentSpinner.selectedItem as Tournament
+    private fun getSelectedTournament(): Tournament? {
+        return tournamentSpinner.selectedItem as Tournament?
     }
 
     /**
      * get the selected run
      * @return the run
      */
-    private fun getSelectedRun(): Run {
-        // TODO test if null
-        return runSpinner.selectedItem as Run
+    private fun getSelectedRun(): Run? {
+        return runSpinner.selectedItem as Run?
     }
 }

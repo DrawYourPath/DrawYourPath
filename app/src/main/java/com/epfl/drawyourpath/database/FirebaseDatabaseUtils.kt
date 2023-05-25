@@ -175,7 +175,6 @@ object FirebaseDatabaseUtils {
         val userId = data?.child(FirebaseKeys.POST_USER_ID)?.value as String?
         val run = transformRun(data?.child(FirebaseKeys.POST_RUN))
         val date = transformLocalDateTime(data?.child(FirebaseKeys.POST_DATE))
-        // Unchecked cast here but should work without problem
         val usersVotes = transformVotesToMap(data?.child(FirebaseKeys.POST_USERS_VOTES))
 
         if (postId == null || tournamentId == null || tournamentName == null || userId == null || run == null || date == null) {

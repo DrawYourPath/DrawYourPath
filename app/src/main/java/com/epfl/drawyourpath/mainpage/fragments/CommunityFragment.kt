@@ -15,10 +15,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.*
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 
@@ -27,7 +29,8 @@ import com.google.android.material.navigation.NavigationView
  */
 class CommunityFragment : Fragment(R.layout.fragment_community) {
 
-    private val tournamentModel: TournamentModel by activityViewModels()
+    private val userModel: UserModelCached by activityViewModels()
+    private lateinit var tournamentModel: TournamentModel
 
     private lateinit var postViewAdapter: CommunityTournamentPostViewAdapter
     private lateinit var drawer: DrawerLayout
@@ -39,6 +42,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        tournamentModel = ViewModelProvider(
+            requireActivity(),
+            TournamentModel.getFactory(userModel.getDatabase(), userModel.getUserId()!!)
+        )[TournamentModel::class.java]
 
         initVariable(view)
 
@@ -170,11 +178,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             .setOnMenuItemClickListener {
                 menuItemListener(view, tournament, registered)
             }.actionView!!.findViewById<ToggleButton>(R.id.item_tournament_toggle).also {
-            // auto format wants it that way but it is ugly
-            it.isChecked = registered
-        }.setOnCheckedChangeListener { _, isChecked ->
-            tournamentModel.register(tournament.id, isChecked)
-        }
+                // auto format wants it that way but it is ugly
+                it.isChecked = registered
+            }.setOnCheckedChangeListener { _, isChecked ->
+                tournamentModel.register(tournament.id, isChecked)
+            }
     }
 
     /**

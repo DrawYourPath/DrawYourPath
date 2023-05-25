@@ -276,7 +276,7 @@ class MockDatabase : Database() {
             name = "mockTournament0",
             description = "Mock tournament number 0",
             creatorId = MockAuth.MOCK_USER.getUid(),
-            startDate = LocalDateTime.now().plusDays(3L),
+            startDate = LocalDateTime.now().minusDays(3L),
             endDate = LocalDateTime.now().plusDays(4L),
             participants = MOCK_USERS.map { it.userId!! },
             // The next args are useless for now
