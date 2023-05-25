@@ -4,7 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.lessThan
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
@@ -161,7 +160,7 @@ class StatisticsTest {
         val map = Statistics.getDistancePerYear(goalsYear)
         val month = LocalDate.now().monthValue.toDouble()
         assertThat(map.getValue(month), `is`(20.0))
-        assertThat(map.getValue(month-1.0), `is`(0.0))
+        assertThat(map.getValue(month - 1.0), `is`(0.0))
     }
 
     @Test
@@ -185,7 +184,7 @@ class StatisticsTest {
         val map = Statistics.getTimePerYear(goalsYear)
         val month = LocalDate.now().monthValue.toDouble()
         assertThat(map.getValue(month), `is`(20.0))
-        assertThat(map.getValue(month-1.0), `is`(0.0))
+        assertThat(map.getValue(month - 1.0), `is`(0.0))
     }
 
     @Test
@@ -219,7 +218,7 @@ class StatisticsTest {
         val map = Statistics.getAverageSpeedPerMonth(goalsMonth)
         val day = LocalDate.now().dayOfMonth.toDouble()
         assertThat(map.getValue(day), `is`(1.0))
-        assertThat(map.getValue(day-1.0), `is`(0.0))
+        assertThat(map.getValue(day - 1.0), `is`(0.0))
     }
 
     @Test
@@ -233,7 +232,7 @@ class StatisticsTest {
         val map = Statistics.getAverageSpeedPerYear(goalsYear)
         val month = LocalDate.now().monthValue.toDouble()
         assertThat(map.getValue(month), `is`(1.0))
-        assertThat(map.getValue(month-1.0), `is`(0.0))
+        assertThat(map.getValue(month - 1.0), `is`(0.0))
     }
 
     @Test
@@ -257,7 +256,7 @@ class StatisticsTest {
         val map = Statistics.getAverageDurationPerMonth(goalsMonth)
         val day = LocalDate.now().dayOfMonth.toDouble()
         assertThat(map.getValue(day), `is`(5.0))
-        assertThat(map.getValue(day-1.0), `is`(0.0))
+        assertThat(map.getValue(day - 1.0), `is`(0.0))
     }
 
     @Test
@@ -271,7 +270,7 @@ class StatisticsTest {
         val map = Statistics.getAverageDurationPerYear(goalsYear)
         val month = LocalDate.now().monthValue.toDouble()
         assertThat(map.getValue(month), `is`(5.0))
-        assertThat(map.getValue(month-1.0), `is`(0.0))
+        assertThat(map.getValue(month - 1.0), `is`(0.0))
     }
 
     @Test
@@ -295,7 +294,7 @@ class StatisticsTest {
         val map = Statistics.getAverageDistancePerMonth(goalsMonth)
         val day = LocalDate.now().dayOfMonth.toDouble()
         assertThat(map.getValue(day), `is`(5.0))
-        assertThat(map.getValue(day-1.0), `is`(0.0))
+        assertThat(map.getValue(day - 1.0), `is`(0.0))
     }
 
     @Test
@@ -309,7 +308,7 @@ class StatisticsTest {
         val map = Statistics.getAverageDistancePerYear(goalsYear)
         val month = LocalDate.now().monthValue.toDouble()
         assertThat(map.getValue(month), `is`(5.0))
-        assertThat(map.getValue(month-1.0), `is`(0.0))
+        assertThat(map.getValue(month - 1.0), `is`(0.0))
     }
 
     @Test
@@ -333,6 +332,6 @@ class StatisticsTest {
         val map = Statistics.getShapeDrawnCountPerYear(goalsYear)
         val month = LocalDate.now().monthValue.toDouble()
         assertThat(map.getValue(month), `is`(20.0))
-        assertThat(map.getValue(month-1.0), `is`(0.0))
+        assertThat(map.getValue(month - 1.0), `is`(0.0))
     }
 }
