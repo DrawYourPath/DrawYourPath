@@ -37,15 +37,6 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
     // TODO add visibility to tournament
     private lateinit var visibility: RadioGroup
 
-    // data class used when the user has chosen the parameters of the tournament.
-    data class TournamentParameters(
-        val name: String,
-        val description: String,
-        val startDate: LocalDateTime,
-        val endDate: LocalDateTime,
-        val visibility: Tournament.Visibility,
-    )
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -74,41 +65,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         val newTournamentParameters =
             checkTournamentConstraints(view) ?: return
 
-        // get the auth and database (could be mock)
-        val database = getDatabase()
-        val auth = getAuth()
-
-        // get the id of the creator of the tournament from auth
-        val creatorId = auth.getUser()?.getUid()
-        if (creatorId == null) {
-            Toast.makeText(activity, "No user logged in!", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        // get a uid for the tournament from database (client side)
-        val id = database.getTournamentUniqueId()
-        if (id == null) {
-            Toast.makeText(
-                activity,
-                "Can't get a tournament id!",
-                Toast.LENGTH_LONG,
-            ).show()
-            return
-        }
-
-        tournament.addTournament(
-            Tournament(
-                id,
-                newTournamentParameters.name,
-                newTournamentParameters.description,
-                creatorId,
-                newTournamentParameters.startDate,
-                newTournamentParameters.endDate
-            )
-        )
-
-        // ask to store the tournament in the database and handle exceptions
-        storeNewTournament(newTournamentParameters, id, creatorId, database)
+        tournament.createTournament(newTournamentParameters, requireContext())
 
         // get back to community fragment without waiting for database
         requireActivity().supportFragmentManager.popBackStack()
@@ -147,7 +104,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
      * @param db the database in which we store the tournament
      */
     private fun storeNewTournament(
-        params: TournamentParameters,
+        params: Tournament.TournamentParameters,
         id: String,
         creatorId: String,
         db: Database,
@@ -182,7 +139,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
      *
      * @return the tournament if the constraints are satisfied else null
      */
-    private fun checkTournamentConstraints(view: View): TournamentParameters? {
+    private fun checkTournamentConstraints(view: View): Tournament.TournamentParameters? {
         val titleError = view.findViewById<TextView>(R.id.tournament_creation_title_error)
         val descriptionError =
             view.findViewById<TextView>(R.id.tournament_creation_description_error)
@@ -233,7 +190,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
             return null
         }
 
-        return TournamentParameters(
+        return Tournament.TournamentParameters(
             tournamentTitle.toString(),
             tournamentDescription.toString(),
             tournamentStartDate,

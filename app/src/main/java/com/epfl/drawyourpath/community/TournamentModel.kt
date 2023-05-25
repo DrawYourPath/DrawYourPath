@@ -1,13 +1,14 @@
 package com.epfl.drawyourpath.community
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.*
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.FirebaseDatabase
-import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
 
 /**
  * this class is used to link the database to the UI for the tournaments
@@ -16,34 +17,26 @@ class TournamentModel : ViewModel() {
 
     private var database: Database = FirebaseDatabase()
 
-    // TODO delete this ----------------------------------
-    private val _tournamentIds = mutableListOf("id1", "id2", "id3", "id4", "id5")
-    private val tournamentIds: MutableLiveData<List<String>> = MutableLiveData(_tournamentIds)
+    private var currentUserId: String? = "userID" // TODO userid
 
-    private fun getAllTournamentId(): LiveData<List<String>> {
-        return tournamentIds
-    }
+    private val userTournaments: MutableList<String> = mutableListOf()
 
-    private val userTournaments = mutableListOf("id1")
+    private val allTournamentIds = database.getAllTournamentsId()
 
-    private val all_tournaments =
-        mutableListOf(sampleWeekly()).also { it.addAll(sampleYourTournaments()) }.also { it.addAll(sampleDiscoveryTournaments()) }
-
-    private val all_posts = all_tournaments.associate { Pair(it.id, it.posts) }.toMutableMap()
-    private val _all_posts = MutableLiveData(all_posts)
-
-    private fun getTournament(id: String): LiveData<Tournament> {
-        return MutableLiveData(all_tournaments.find { it.id == id }!!)
-    }
-
-    private fun getTournamentPost(id: String): LiveData<List<TournamentPost>> {
-        return _all_posts.switchMap { MutableLiveData(it[id] ?: listOf()) }
-    }
-    // TODO until here ------------------------------------
+    private var allTournamentInfo: MutableMap<String, LiveData<Tournament>> = mutableMapOf()
 
     private val allTournaments: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
-        addSource(getAllTournamentId()) { tournamentIds ->
-            value = tournamentIds.mapNotNull { getTournament(it).value }
+        addSource(allTournamentIds) { tournamentIds ->
+            tournamentIds.forEach { id ->
+                allTournamentInfo.getOrPut(id) {
+                    database.getTournamentInfo(id).also { livedata ->
+                        addSource(livedata) { tournament ->
+                            value = value?.filterNot { it.id == tournament.id }?.plusElement(tournament) ?: listOf(tournament)
+                        }
+                    }
+                }
+            }
+            value = allTournamentInfo.values.mapNotNull { it.value }
         }
     }
 
@@ -62,25 +55,44 @@ class TournamentModel : ViewModel() {
     private val postOf: MutableLiveData<String?> = MutableLiveData(null)
 
     val posts: LiveData<List<TournamentPost>> = postOf.switchMap { id ->
-        id?.let { getTournamentPost(it) } ?: MediatorLiveData<List<TournamentPost>>().apply {
+        id?.let { database.getTournamentPosts(it) } ?: MutableLiveData(listOf())/*MediatorLiveData<List<TournamentPost>>().apply {
             addSource(allTournaments) { tournaments ->
                 value = tournaments.mapNotNull { tournament ->
-                    getTournamentPost(tournament.id).also { addSource(it) { /* TODO */ } }.value
+                    database.getTournamentPosts(tournament.id).also { addSource(it) { /* TODO */ } }.value
                 }.flatten()
             }
+        }*/
+    }
+
+    /**
+     * create the new tournament to store in the database
+     * show toast message to tell if it is a success or a failure
+     * @param tournament the new tournament to add to the database
+     * @param context to show the toast message
+     */
+    fun createTournament(tournament: Tournament.TournamentParameters, context: Context): CompletableFuture<Unit> {
+        return CompletableFuture.supplyAsync {
+            val tid = database.getTournamentUniqueId() ?: throw Error("Can't get a tournament id!")
+            Tournament(
+                id = tid,
+                name = tournament.name,
+                description = tournament.description,
+                creatorId = currentUserId!!,
+                startDate = tournament.startDate,
+                endDate = tournament.endDate,
+                visibility = tournament.visibility,
+            )
+        }.thenComposeAsync {
+            database.addTournament(it)
+        }.thenApplyAsync {
+            Toast.makeText(context, "Tournament created!", Toast.LENGTH_LONG).show()
+        }.exceptionally {
+            Toast.makeText(context, "Operation failed: ${it.message}", Toast.LENGTH_LONG,).show()
         }
     }
 
-    fun addTournament(tournament: Tournament) {
-        all_tournaments.add(tournament)
-        _tournamentIds.add(tournament.id)
-        tournamentIds.postValue(_tournamentIds)
-    }
-
     fun addPost(tournamentId: String, run: Run) {
-        val posts = all_posts[tournamentId]!!
-        all_posts[tournamentId] = mutableListOf(TournamentPost("userid", run)).also { it.addAll(posts) }
-        _all_posts.postValue(all_posts)
+
     }
 
     fun addVote(vote: Int, postId: String) {
@@ -93,130 +105,5 @@ class TournamentModel : ViewModel() {
      */
     fun showPostOf(tournamentId: String?) {
         postOf.postValue(tournamentId)
-
-    }
-
-    // TODO replace by real tournaments
-    // everything from here are samples
-
-    /**
-     * sample tournaments
-     */
-    private fun sampleWeekly(): Tournament {
-        val posts = mutableListOf(
-            TournamentPost("xxDarkxx", sampleRun(), -13),
-            TournamentPost("Michel", sampleRun(), 158),
-            TournamentPost("MrPrefect", sampleRun(), 666),
-            TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0),
-        )
-
-        return Tournament(
-            "id1",
-            "Star Path",
-            "draw a star path",
-            "creator1",
-            LocalDateTime.now().minusDays(3L),
-            LocalDateTime.now().plusDays(10L),
-            listOf(),
-            posts,
-        )
-    }
-
-    /**
-     * sample tournaments
-     */
-    private fun sampleYourTournaments(): List<Tournament> {
-        val posts = mutableListOf(
-            TournamentPost("xxDarkxx", sampleRun(), -13),
-            TournamentPost("Michel", sampleRun(), 158),
-            TournamentPost("MrPrefect", sampleRun(), 666),
-            TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0),
-        )
-        val posts1 = mutableListOf(
-            TournamentPost("xD c moi", sampleRun(), 35),
-            TournamentPost("Jaqueline", sampleRun(), 356),
-            TournamentPost("Diabolos", sampleRun(), 666),
-            TournamentPost("me", sampleRun(), -563),
-            TournamentPost("IDK", sampleRun(), 0),
-        )
-        return mutableListOf(
-            Tournament(
-                "id2",
-                "best tournament ever",
-                "draw whatever you want",
-                "creator2",
-                LocalDateTime.now().minusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                listOf(),
-                posts1,
-            ),
-            Tournament(
-                "id3",
-                "time square",
-                "draw a square",
-                "creator3",
-                LocalDateTime.now().minusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                listOf(),
-                posts,
-            ),
-        )
-    }
-
-    /**
-     * sample tournaments
-     */
-    private fun sampleDiscoveryTournaments(): List<Tournament> {
-        val posts = mutableListOf(
-            TournamentPost("xxDarkxx", sampleRun(), -13),
-            TournamentPost("Michel", sampleRun(), 158),
-            TournamentPost("MrPrefect", sampleRun(), 666),
-            TournamentPost("Me Myself and I", sampleRun(), 123456),
-            TournamentPost("Invalid Username", sampleRun(), 0),
-        )
-        val posts1 = mutableListOf(
-            TournamentPost("SpaceMan", sampleRun(), 35),
-            TournamentPost("NASA", sampleRun(), 124),
-            TournamentPost("Diabolos", sampleRun(), 666),
-            TournamentPost("Alien", sampleRun(), -3),
-            TournamentPost("IDK", sampleRun(), 0),
-        )
-        return mutableListOf(
-            Tournament(
-                "id4",
-                "Discover the earth",
-                "draw the earth",
-                "creator4",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                listOf(),
-                posts1,
-            ),
-            Tournament(
-                "id5",
-                "to the moon",
-                "draw the moon",
-                "creator5",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                listOf(),
-                posts,
-            ),
-        )
-    }
-
-    /**
-     * sample run
-     */
-    private fun sampleRun(): Run {
-        val point1 = LatLng(0.0, 0.0)
-        val point2 = LatLng(0.001, 0.001)
-        val points = listOf(point1, point2)
-        val path = Path(listOf(points))
-        val startTime = System.currentTimeMillis()
-        val endTime = startTime + 10
-        return Run(path = path, startTime = startTime, endTime = endTime, duration = 10)
     }
 }

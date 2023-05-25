@@ -72,6 +72,17 @@ data class Tournament(
         return res.toString()
     }
 
+    /**
+     * data class used when the user has chosen the parameters of the tournament.
+     */
+    data class TournamentParameters(
+        val name: String,
+        val description: String,
+        val startDate: LocalDateTime,
+        val endDate: LocalDateTime,
+        val visibility: Visibility,
+    )
+
     enum class Visibility {
         FRIENDS_ONLY, PUBLIC
     }
