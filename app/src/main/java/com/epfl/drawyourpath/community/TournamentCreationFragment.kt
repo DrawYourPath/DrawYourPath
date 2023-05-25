@@ -10,13 +10,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.authentication.Auth
-import com.epfl.drawyourpath.authentication.FirebaseAuth
-import com.epfl.drawyourpath.authentication.MockAuth
-import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FirebaseDatabase
-import com.epfl.drawyourpath.database.MockDatabase
-import com.epfl.drawyourpath.database.MockNonWorkingDatabase
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -98,12 +98,12 @@ class TournamentModel : ViewModel() {
         }.thenApplyAsync {
             Toast.makeText(context, "Tournament created!", Toast.LENGTH_LONG).show()
         }.exceptionally {
-            Toast.makeText(context, "Operation failed: ${it.message}", Toast.LENGTH_LONG,).show()
+            Toast.makeText(context, "Operation failed: ${it.message}", Toast.LENGTH_LONG).show()
         }
     }
 
     fun addPost(tournamentId: String, run: Run) {
-
+        return
     }
 
     fun addVote(vote: Int, postId: String) {
