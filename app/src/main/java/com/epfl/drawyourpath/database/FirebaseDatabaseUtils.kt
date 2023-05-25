@@ -129,6 +129,17 @@ object FirebaseDatabaseUtils {
     }
 
     /**
+     * Helper function to obtain the tournaments ids from the database
+     * @param data the data snapshot containing the tournaments ids
+     * @return a list containing the tournaments ids
+     */
+    fun transformTournamentIdList(data: DataSnapshot?): List<String> {
+        return data?.children?.mapNotNull {
+            it.key as String
+        } ?: emptyList()
+    }
+
+    /**
      * Helper function to obtain the posts of a tournament from the database
      * @param data the data snapshot containing the posts
      * @return a list containing the posts of the tournament
@@ -250,6 +261,7 @@ object FirebaseDatabaseUtils {
     fun mapToUserData(data: DataSnapshot, userId: String): UserData {
         val profile = data.child(FirebaseKeys.PROFILE)
         val goals = data.child(FirebaseKeys.GOALS)
+        val tournaments = data.child(FirebaseKeys.USER_TOURNAMENTS)
 
         return UserData(
             userId = userId,
@@ -268,7 +280,8 @@ object FirebaseDatabaseUtils {
             runs = transformRunList(data.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
             chatList = transformChatList(profile.child(FirebaseKeys.USER_CHATS)),
-
+            //"${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to true,
+            tournaments = transformTournamentIdList(tournaments),
             trophies = transformTrophyFromData(data.child(FirebaseKeys.TROPHIES)),
             milestones = transformMilestoneFromData(data.child(FirebaseKeys.MILESTONES)),
 

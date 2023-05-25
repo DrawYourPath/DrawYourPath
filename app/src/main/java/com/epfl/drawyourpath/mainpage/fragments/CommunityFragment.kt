@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.core.widget.NestedScrollView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -130,18 +131,18 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val your = menu.addSubMenu("Your tournament")
         tournamentModel.yourTournament.observe(viewLifecycleOwner) { tournaments ->
             your.clear()
-            tournaments.forEach { createMenuItem(view, your, it) }
+            tournaments.forEach { createMenuItem(view, your, it, true) }
         }
 
         val soon = menu.addSubMenu("Starting soon")
         tournamentModel.startingSoonTournament.observe(viewLifecycleOwner) { tournaments ->
             soon.clear()
-            tournaments.forEach { createMenuItem(view, soon, it) }
+            tournaments.forEach { createMenuItem(view, soon, it.first, it.second) }
         }
         val discover = menu.addSubMenu("Discover")
         tournamentModel.discoverTournament.observe(viewLifecycleOwner) { tournaments ->
             discover.clear()
-            tournaments.forEach { createMenuItem(view, discover, it) }
+            tournaments.forEach { createMenuItem(view, discover, it, false) }
         }
     }
 
@@ -170,23 +171,33 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     /**
      * create the tournament item of a subMenu
      */
-    private fun createMenuItem(view: View, menu: SubMenu, tournament: Tournament) {
+    private fun createMenuItem(view: View, menu: SubMenu, tournament: Tournament, registered: Boolean) {
         menu.add(tournament.name)
             .setContentDescription("${tournament.name} details")
             .setActionView(R.layout.item_tournament)
             .setOnMenuItemClickListener {
-                menuItemListener(view, tournament)
+                menuItemListener(view, tournament, registered)
+            }
+            .actionView!!.findViewById<ToggleButton>(R.id.item_tournament_toggle).also {
+                it.isChecked = registered
+            }.setOnCheckedChangeListener { _, isChecked ->
+                tournamentModel.register(tournament.id, isChecked)
             }
     }
 
     /**
      * the menu item click listener that will change the view to display the corresponding tournament
      */
-    private fun menuItemListener(view: View, tournament: Tournament): Boolean {
+    private fun menuItemListener(view: View, tournament: Tournament, registered: Boolean): Boolean {
         view.findViewById<TextView>(R.id.community_detail_name).text = tournament.name
         view.findViewById<TextView>(R.id.community_detail_description).text = tournament.description
         view.findViewById<TextView>(R.id.community_detail_date).text =
             tournament.getStartOrEndDate()
+        view.findViewById<ToggleButton>(R.id.community_detail_toggle).also {
+            it.isChecked = registered 
+        }.setOnCheckedChangeListener { _, isChecked ->
+            tournamentModel.register(tournament.id, isChecked)
+        }
         tournamentModel.showPostOf(tournament.id)
         scroll.scrollTo(0, 0)
         headlineHome.visibility = View.GONE

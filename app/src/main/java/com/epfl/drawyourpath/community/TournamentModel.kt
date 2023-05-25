@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.community
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import com.epfl.drawyourpath.database.Database
@@ -19,7 +20,9 @@ class TournamentModel : ViewModel() {
 
     private var currentUserId: String = MockDatabase.mockUser.userId!!
 
-    private val userTournaments: MutableList<String> = mutableListOf("-NWH9CjMRBKNtn88SLHG")
+    private val _userTournaments: MutableList<String> = MockDatabase.mockUser.tournaments!!.toMutableList()
+
+    private val userTournaments: MutableLiveData<List<String>> = MutableLiveData(_userTournaments)
 
     private val allTournamentIds = database.getAllTournamentsId()
 
@@ -40,16 +43,31 @@ class TournamentModel : ViewModel() {
         }
     }
 
-    val yourTournament: LiveData<List<Tournament>> = allTournaments.map { tournaments ->
-        tournaments.filter { userTournaments.contains(it.id) && it.startDate <= LocalDateTime.now() }
+    val yourTournament: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
+        addSource(allTournaments) { tournaments ->
+            value = tournaments.filter { userTournaments.value!!.contains(it.id) && it.startDate <= LocalDateTime.now() }
+        }
+        addSource(userTournaments) { ids ->
+            value = allTournaments.value!!.filter { ids.contains(it.id) && it.startDate <= LocalDateTime.now() }
+        }
     }
 
-    val startingSoonTournament: LiveData<List<Tournament>> = allTournaments.map { tournaments ->
-        tournaments.filter { it.startDate > LocalDateTime.now() }
+    val startingSoonTournament: LiveData<List<Pair<Tournament, Boolean>>> = MediatorLiveData<List<Pair<Tournament, Boolean>>>().apply {
+        addSource(allTournaments) { tournaments ->
+            value = tournaments.filter {  it.startDate > LocalDateTime.now() }.map { Pair(it, userTournaments.value!!.contains(it.id)) }
+        }
+        addSource(userTournaments) { ids ->
+            value = allTournaments.value!!.filter { it.startDate > LocalDateTime.now() }.map { Pair(it, ids.contains(it.id)) }
+        }
     }
 
-    val discoverTournament: LiveData<List<Tournament>> = allTournaments.map { tournaments ->
-        tournaments.filter { !userTournaments.contains(it.id) && it.startDate <= LocalDateTime.now() }
+    val discoverTournament: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
+        addSource(allTournaments) { tournaments ->
+            value = tournaments.filter { !userTournaments.value!!.contains(it.id) && it.startDate <= LocalDateTime.now() }
+        }
+        addSource(userTournaments) { ids ->
+            value = allTournaments.value!!.filter { !ids.contains(it.id) && it.startDate <= LocalDateTime.now() }
+        }
     }
 
     private val postOf: MutableLiveData<String?> = MutableLiveData(null)
@@ -58,19 +76,22 @@ class TournamentModel : ViewModel() {
 
     val posts: LiveData<List<TournamentPost>> = postOf.switchMap { id ->
         id?.let { database.getTournamentPosts(it) } ?: MediatorLiveData<List<TournamentPost>>().apply {
+            addSource(userTournaments) { ids ->
+                value = allPosts.filterKeys { ids.contains(it) }.values.mapNotNull { it.value }.flatten()
+            }
             addSource(allTournamentIds) { tournamentIds ->
-                tournamentIds.filter {
-                    userTournaments.contains(it)
-                }.forEach { id ->
+                tournamentIds.forEach { id ->
                     allPosts.getOrPut(id) {
                         database.getTournamentPosts(id).also { livedata ->
                             addSource(livedata) { posts ->
-                                value = value?.filterNot { post -> posts.map { it.postId }.contains(post.postId) }?.plus(posts) ?: posts
+                                if (userTournaments.value!!.contains(id)) {
+                                    value = value?.filterNot { post -> posts.map { it.postId }.contains(post.postId) }?.plus(posts) ?: posts
+                                }
                             }
                         }
                     }
                 }
-                value = allPosts.values.mapNotNull { it.value }.flatten()
+                value = allPosts.filterKeys { userTournaments.value!!.contains(it) }.values.mapNotNull { it.value }.flatten()
             }
         }
     }
@@ -126,8 +147,31 @@ class TournamentModel : ViewModel() {
         }
     }
 
-    fun addVote(vote: Int, postId: String) {
-        return
+    /**
+     * register or unregister from a tournament
+     * @param tournamentId the tournament to register/unregister to
+     * @param register true to register or false to unregister
+     */
+    fun register(tournamentId: String, register: Boolean): CompletableFuture<Unit> {
+        val future = CompletableFuture.supplyAsync {  }
+        if (register) {
+            future.thenComposeAsync {
+                database.addUserToTournament(currentUserId, tournamentId)
+            }
+        } else {
+            future.thenComposeAsync {
+                database.removeUserFromTournament(currentUserId, tournamentId)
+            }
+        }
+        return future.thenApplyAsync {
+            // once stored in database wait to get updated value
+            Thread.sleep(500)
+            updateUserTournaments()
+        }
+    }
+
+    fun addVote(vote: Int, postId: String): CompletableFuture<Unit> {
+        return CompletableFuture()
     }
 
     /**
@@ -144,5 +188,22 @@ class TournamentModel : ViewModel() {
      */
     fun setCurrentUser(userId: String) {
         currentUserId = userId
+        updateUserTournaments(true)
     }
+
+    private fun updateUserTournaments(firstClear: Boolean = false): CompletableFuture<Unit> {
+        if (firstClear) {
+            _userTournaments.clear()
+            userTournaments.postValue(_userTournaments)
+        }
+        return database.getUserData(currentUserId).thenApplyAsync {
+            Log.d("test", it.tournaments.toString())
+            it.tournaments?.let { it1 ->
+                _userTournaments.clear()
+                _userTournaments.addAll(it1)
+                userTournaments.postValue(_userTournaments)
+            }
+        }
+    }
+
 }

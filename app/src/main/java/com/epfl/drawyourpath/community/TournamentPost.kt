@@ -11,7 +11,7 @@ data class TournamentPost(
     val run: Run,
     val date: LocalDateTime = LocalDateTime.now(),
     private var usersVotes: MutableMap<String, Int> = HashMap(),
-) : java.io.Serializable {
+) {
 
     private var votes = usersVotes.values.sum()
 

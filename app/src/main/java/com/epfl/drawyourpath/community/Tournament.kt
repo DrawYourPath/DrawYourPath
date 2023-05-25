@@ -19,8 +19,7 @@ data class Tournament(
     @get:Exclude val participants: List<String> = mutableListOf(),
     val posts: List<TournamentPost> = mutableListOf(),
     var visibility: Visibility = Visibility.PUBLIC,
-    // val result: List<User>?
-) : java.io.Serializable {
+) {
 
     /**
      * return a string representing either when it starts, when it ends or when it has ended
