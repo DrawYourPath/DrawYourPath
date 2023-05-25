@@ -294,7 +294,6 @@ object FirebaseDatabaseUtils {
             runs = transformRunList(data.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
             chatList = transformChatList(profile.child(FirebaseKeys.USER_CHATS)),
-            //"${FirebaseKeys.USERS_ROOT}/$userId/${FirebaseKeys.USER_TOURNAMENTS}/$tournamentId" to true,
             tournaments = transformTournamentIdList(tournaments),
             trophies = transformTrophyFromData(data.child(FirebaseKeys.TROPHIES)),
             milestones = transformMilestoneFromData(data.child(FirebaseKeys.MILESTONES)),

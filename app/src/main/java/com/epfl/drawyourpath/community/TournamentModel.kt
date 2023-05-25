@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.community
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import com.epfl.drawyourpath.database.Database
@@ -54,7 +53,7 @@ class TournamentModel : ViewModel() {
 
     val startingSoonTournament: LiveData<List<Pair<Tournament, Boolean>>> = MediatorLiveData<List<Pair<Tournament, Boolean>>>().apply {
         addSource(allTournaments) { tournaments ->
-            value = tournaments.filter {  it.startDate > LocalDateTime.now() }.map { Pair(it, userTournaments.value!!.contains(it.id)) }
+            value = tournaments.filter { it.startDate > LocalDateTime.now() }.map { Pair(it, userTournaments.value!!.contains(it.id)) }
         }
         addSource(userTournaments) { ids ->
             value = allTournaments.value!!.filter { it.startDate > LocalDateTime.now() }.map { Pair(it, ids.contains(it.id)) }
@@ -155,7 +154,7 @@ class TournamentModel : ViewModel() {
      * @param register true to register or false to unregister
      */
     fun register(tournamentId: String, register: Boolean): CompletableFuture<Unit> {
-        val future = CompletableFuture.supplyAsync {  }
+        val future = CompletableFuture.supplyAsync { }
         if (register) {
             future.thenComposeAsync {
                 database.addUserToTournament(currentUserId, tournamentId)
@@ -228,5 +227,4 @@ class TournamentModel : ViewModel() {
             }
         }
     }
-
 }

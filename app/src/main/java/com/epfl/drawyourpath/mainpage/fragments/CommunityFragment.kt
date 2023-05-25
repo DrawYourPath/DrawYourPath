@@ -169,8 +169,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             .setActionView(R.layout.item_tournament)
             .setOnMenuItemClickListener {
                 menuItemListener(view, tournament, registered)
-            }
-            .actionView!!.findViewById<ToggleButton>(R.id.item_tournament_toggle).also {
+            }.actionView!!.findViewById<ToggleButton>(R.id.item_tournament_toggle).also {
                 it.isChecked = registered
             }.setOnCheckedChangeListener { _, isChecked ->
                 tournamentModel.register(tournament.id, isChecked)
