@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.*
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
@@ -77,7 +78,9 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             tournamentModel.addVote(vote, postId, tournamentId)
         }, {
             tournamentModel.getUsernameWithId(it)
-        })
+        }, {
+            displayPostDetails(it)
+        },)
     }
 
     /**
@@ -205,6 +208,18 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         detailsLayout.visibility = View.VISIBLE
         drawer.close()
         return true
+    }
+
+    /**
+     * function that displays the run details
+     * @param run the run to display
+     */
+    private fun displayPostDetails(run: Run) {
+        requireActivity().supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace(R.id.fragmentContainerView, TournamentPostDetail(run))
+            addToBackStack("run details")
+        }
     }
 
     /**

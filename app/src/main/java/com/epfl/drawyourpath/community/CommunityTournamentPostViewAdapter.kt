@@ -11,6 +11,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils
 import java.util.concurrent.CompletableFuture
 
@@ -20,6 +21,7 @@ import java.util.concurrent.CompletableFuture
 class CommunityTournamentPostViewAdapter(
     private val vote: (vote: Int, postId: String, tournamentId: String) -> CompletableFuture<Unit>,
     private val getUsername: (id: String) -> CompletableFuture<String>,
+    private val showRunDetail: (run: Run) -> Unit,
 ) : RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
 
     private var posts: List<TournamentPost> = mutableListOf()
@@ -72,6 +74,10 @@ class CommunityTournamentPostViewAdapter(
         }
 
         viewHolder.imagePath.setImageBitmap(Utils.coordinatesToBitmap(post.run.getPath().getPoints()))
+
+        viewHolder.imagePath.setOnClickListener {
+            showRunDetail(post.run)
+        }
 
         viewHolder.userName.text = userIdToUsername[post.userId] ?: post.userId
         if (!userIdToUsername.containsKey(post.userId)) {
