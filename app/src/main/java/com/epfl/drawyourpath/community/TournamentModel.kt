@@ -59,11 +59,13 @@ class TournamentModel : ViewModel() {
     val posts: LiveData<List<TournamentPost>> = postOf.switchMap { id ->
         id?.let { database.getTournamentPosts(it) } ?: MediatorLiveData<List<TournamentPost>>().apply {
             addSource(allTournamentIds) { tournamentIds ->
-                tournamentIds.forEach { id ->
+                tournamentIds.filter {
+                    userTournaments.contains(it)
+                }.forEach { id ->
                     allPosts.getOrPut(id) {
                         database.getTournamentPosts(id).also { livedata ->
                             addSource(livedata) { posts ->
-                                value = value?.filterNot { posts.map { it.postId }.contains(it.postId) }?.plus(posts) ?: posts
+                                value = value?.filterNot { post -> posts.map { it.postId }.contains(post.postId) }?.plus(posts) ?: posts
                             }
                         }
                     }
