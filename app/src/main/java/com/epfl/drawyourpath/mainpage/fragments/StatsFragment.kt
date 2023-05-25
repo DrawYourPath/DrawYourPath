@@ -44,12 +44,12 @@ class StatsFragment(
     private val averageDistance: Double? = null,
     private val averageDistancePerMonth: Map<Double, Double>? = null,
     private val averageDistancePerYear: Map<Double, Double>? = null,
-    private val totalDistanceGoal: Double? = null,
-    private val totalDistanceGoalPerYear: Map<Double, Double>? = null,
-    private val totalActivityTimeGoal: Double? = null,
-    private val totalActivityTimeGoalPerYear: Map<Double, Double>? = null,
-    private val totalPathNumberGoal: Double? = null,
-    private val totalPathNumberGoalPerYear: Map<Double, Double>? = null,
+    private val totalDistanceGoal: Double? = null, // getTotalDistance(dailyGoals)
+    private val totalDistanceGoalPerYear: Map<Double, Double>? = null, // getDistancePerYear(dailyGoals)
+    private val totalActivityTimeGoal: Double? = null, // getTotalTime(dailyGoals)
+    private val totalActivityTimeGoalPerYear: Map<Double, Double>? = null, // getTimePerYear(dailyGoals)
+    private val totalPathNumberGoal: Double? = null, // getShapeDrawnCount(dailyGoals)
+    private val totalPathNumberGoalPerYear: Map<Double, Double>? = null, // getShapeDrawnCountPerYear(dailyGoals)
 ) : Fragment(R.layout.fragment_stats) {
     private lateinit var titleText: TextView
     private lateinit var changeLeftButton: TextView

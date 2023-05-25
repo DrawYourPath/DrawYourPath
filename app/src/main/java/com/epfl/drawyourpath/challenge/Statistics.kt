@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.challenge
 
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
+import java.time.LocalDate
 
 /**
  * Helper object to compute all kind of statistics.
@@ -20,6 +21,21 @@ object Statistics {
     }
 
     /**
+     * Computes the distance of the specified goals per month in the current year.
+     * @param dailyGoals The list of goals we want to compute the distance.
+     * @return A map from the month to the distance of the goals in the current year.
+     */
+    fun getDistancePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.monthValue.toDouble()
+        }.mapValues { (month, dailyGoalOfDay) ->
+            getTotalDistance(dailyGoalOfDay)
+        }
+    }
+
+    /**
      * Computes the total time of the specified goals.
      * @param dailyGoals The list of goals we want to compute the time.
      * @return The total time of the goals.
@@ -27,6 +43,21 @@ object Statistics {
     fun getTotalTime(dailyGoals: List<DailyGoal>): Double {
         return dailyGoals.fold(0.0) { acc, dailyGoal ->
             acc + dailyGoal.time
+        }
+    }
+
+    /**
+     * Computes the time of the specified goals per month in the current year.
+     * @param dailyGoals The list of goals we want to compute the time.
+     * @return A map from the month to the time of the goals in the current year.
+     */
+    fun getTimePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.monthValue.toDouble()
+        }.mapValues { (month, dailyGoalOfDay) ->
+            getTotalTime(dailyGoalOfDay)
         }
     }
 
@@ -56,13 +87,28 @@ object Statistics {
 
     /**
      * Computes the total number of shapes drawn for the specified goals.
-     * @param dailyGoals The list of goals we want to compute the distance.
+     * @param dailyGoals The list of goals we want to compute the number of shapes drawn.
      * @return The total number of shapes drawn.
      */
     fun getShapeDrawnCount(dailyGoals: List<DailyGoal>): Int {
         return dailyGoals.fold(0) {
                 acc, dailyGoal ->
             acc + dailyGoal.paths
+        }
+    }
+
+    /**
+     * Computes the number of shapes drawn for goals per month in the current year.
+     * @param dailyGoals The list of goals we want to compute the number of shapes drawn.
+     * @return A map from the month to the total number of shapes drawn for goals in the current year.
+     */
+    fun getShapeDrawnCountPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.monthValue.toDouble()
+        }.mapValues { (month, dailyGoalOfDay) ->
+            getShapeDrawnCount(dailyGoalOfDay).toDouble()
         }
     }
 }
