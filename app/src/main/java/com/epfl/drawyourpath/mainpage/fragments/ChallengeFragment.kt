@@ -16,13 +16,9 @@ import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneViewAdapter
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.challenge.trophy.TrophyViewAdapter
-import com.epfl.drawyourpath.community.Tournament
-import com.epfl.drawyourpath.database.Database
-import com.epfl.drawyourpath.database.FirebaseKeys
 import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import java.time.LocalDateTime
-import java.util.concurrent.CompletableFuture
 
 /**
  * Fragment used to display different challenge about the user :
@@ -84,23 +80,23 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
      */
     private fun getTrophiesList() {
         val database = user.getDatabase()
-        //get the list of tournaments where the user is present
+        // get the list of tournaments where the user is present
         database.getUserData(user.getUserId()!!).thenApplyAsync { userData ->
             val listTournamentId = userData.tournaments ?: emptyList()
-            //get the list of trophies of the user
+            // get the list of trophies of the user
             val actualListTrophies = userData.trophies ?: emptyList()
             trophiesList.postValue(actualListTrophies)
-            //obtain the list of tournament associated to a trophy
+            // obtain the list of tournament associated to a trophy
             val listTournamentWithTrophy: List<String> = actualListTrophies.map { trophy ->
                 trophy.tournamentId
             }
-            //check that the list of trophy is potentially complete(all the tournaments where the user is present is associated to a trophy)
+            // check that the list of trophy is potentially complete(all the tournaments where the user is present is associated to a trophy)
             if (!listTournamentWithTrophy.containsAll(listTournamentId)) {
-                //if it is not the case then complete it by checking all the tournaments not associated to a trophy.
+                // if it is not the case then complete it by checking all the tournaments not associated to a trophy.
                 val remainingTournament = listTournamentId.filter { !listTournamentWithTrophy.contains(it) }
                 val remainingTrophies = checkTournaments(listOfTournamentsId = remainingTournament, userId = user.getUserId()!!)
-                remainingTrophies.observe(viewLifecycleOwner) {trophies ->
-                    trophies.map {trophy ->
+                remainingTrophies.observe(viewLifecycleOwner) { trophies ->
+                    trophies.map { trophy ->
                         trophiesList.postValue(trophiesList.value?.plus(trophy) ?: listOf(trophy))
                         database.addTrophy(user.getUserId()!!, trophy)
                     }
