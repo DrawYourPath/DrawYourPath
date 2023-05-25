@@ -17,6 +17,7 @@ import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.MessagesAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.RunPopupAdapter
+import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
 class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
@@ -98,32 +99,45 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
         sendRunButton.setOnClickListener {
             // Observe the LiveData object
             userModelCached.getRunHistory().observe(viewLifecycleOwner) { runHistory ->
-                val runPopupMenu = PopupMenu(requireContext(), sendRunButton)
-                runHistory.forEach { run ->
-                    runPopupMenu.menu.add(run.getDate())
-                }
-                runPopupMenu.setOnMenuItemClickListener { menuItem ->
-                    val selectedRunTitle = menuItem.title.toString()
-                    // Find the selected run in the user's run history
-                    val selectedRun =
-                        runHistory.firstOrNull { it.getDate() == selectedRunTitle }
-                    if (selectedRun != null) {
-                        // If a run is selected, create a new Message
-                        val newMessage = Message.createRunPathMessage(
-                            userId,
-                            selectedRun,
-                            System.currentTimeMillis(),
-                        ) // replace with appropriate method to create run path message
-                        messagesList.add(newMessage)
-                        messagesAdapter.notifyDataSetChanged()
-                        database.addChatMessage(chatId, newMessage)
-                    }
-                    true
-                }
-                runPopupMenu.show()
+                openPopup(runHistory, userId)
             }
         }
     }
+
+    /**
+     * Helper function to open a popup menu to select a run from the user's run history
+     * @param runHistory the user's run history
+     * @param userId the user's ID
+     */
+    private fun openPopup(runHistory: List<Run>, userId: String) {
+        val runPopupMenu = PopupMenu(requireContext(), sendRunButton)
+        runHistory.forEach { run ->
+            runPopupMenu.menu.add(run.getDate())
+        }
+        runPopupMenu.setOnMenuItemClickListener { menuItem ->
+            val selectedRunTitle = menuItem.title.toString()
+            // Find the selected run in the user's run history
+            val selectedRun =
+                runHistory.firstOrNull { it.getDate() == selectedRunTitle }
+            if (selectedRun != null) {
+                // If a run is selected, create a new Message
+                val newMessage = Message.createRunPathMessage(
+                    userId,
+                    selectedRun,
+                    System.currentTimeMillis(),
+                ) // replace with appropriate method to create run path message
+                messagesList.add(newMessage)
+                messagesAdapter.notifyDataSetChanged()
+                database.addChatMessage(chatId, newMessage)
+            }
+            true
+        }
+        runPopupMenu.show()
+
+    }
+
+
+
     companion object {
         private const val ARG_CHAT = "arg_chat"
         private const val ARG_CHAT_ID = "arg_chat_id"
