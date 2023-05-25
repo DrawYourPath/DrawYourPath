@@ -20,12 +20,14 @@ import java.util.concurrent.CompletableFuture
  * used in a recycler view to display the [TournamentPost]
  */
 class CommunityTournamentPostViewAdapter(
-    private val vote: (vote: Int, postId: String, tournamentId: String) -> CompletableFuture<Unit>
+    private val vote: (vote: Int, postId: String, tournamentId: String) -> CompletableFuture<Unit>,
+    private val getUsername: (id: String) -> CompletableFuture<String>,
 ) : RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
 
-    private var posts: MutableList<TournamentPost> = mutableListOf()
+    private var posts: List<TournamentPost> = mutableListOf()
     private var showName: Boolean = false
     private var userId: String = MockDatabase.mockUser.userId!!
+    private val userIdToUsername: MutableMap<String, String> = mutableMapOf()
 
     /**
      * Custom view holder using a custom layout for tournaments
@@ -84,7 +86,15 @@ class CommunityTournamentPostViewAdapter(
             .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
             .into(viewHolder.imagePath)
 
-        viewHolder.userName.text = post.userId
+        viewHolder.userName.text = userIdToUsername[post.userId] ?: post.userId
+        if (!userIdToUsername.containsKey(post.userId)) {
+            getUsername(post.userId).whenComplete { it, error ->
+                if (error == null && it != null) {
+                    userIdToUsername[post.userId] = it
+                    viewHolder.userName.text = it
+                }
+            }
+        }
 
         viewHolder.voteCount.text = post.getVotes().toString()
 
@@ -118,13 +128,12 @@ class CommunityTournamentPostViewAdapter(
     // Return the size of the dataset (invoked by the layout manager)
     override fun getItemCount() = posts.count()
 
-    // TODO change only the posts that got changed
     /**
      * update the recycler view to show the updated list of posts
      * @param posts the new list of posts
      */
     fun update(posts: List<TournamentPost>, showName: Boolean, userId: String) {
-        this.posts = posts.toMutableList()
+        this.posts = posts.sortedBy { it.postId }
         this.showName = showName
         this.userId = userId
         notifyDataSetChanged()

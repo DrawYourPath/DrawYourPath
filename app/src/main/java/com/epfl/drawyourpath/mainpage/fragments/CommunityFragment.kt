@@ -19,8 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.*
-import com.epfl.drawyourpath.database.FirebaseDatabase
-import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 
@@ -67,7 +65,11 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         detailsLayout = view.findViewById(R.id.community_detail_layout)
         tournamentPostsView = view.findViewById(R.id.display_community_tournaments_view)
         scroll = view.findViewById(R.id.community_nested_scroll_view)
-        postViewAdapter = CommunityTournamentPostViewAdapter { vote, postId, tournamentId -> tournamentModel.addVote(vote, postId, tournamentId) }
+        postViewAdapter = CommunityTournamentPostViewAdapter({ vote, postId, tournamentId ->
+            tournamentModel.addVote(vote, postId, tournamentId)
+        }, {
+            tournamentModel.getUsernameWithId(it)
+        })
     }
 
     /**

@@ -183,6 +183,15 @@ class TournamentModel : ViewModel() {
     }
 
     /**
+     * get the username from an id
+     * @param id the id
+     * @return the username
+     */
+    fun getUsernameWithId(id: String): CompletableFuture<String> {
+        return database.getUsername(id)
+    }
+
+    /**
      * change the posts variable to show only posts from a specific tournament or from all tournament
      * @param tournamentId the id of the tournament or null for all tournament
      */
