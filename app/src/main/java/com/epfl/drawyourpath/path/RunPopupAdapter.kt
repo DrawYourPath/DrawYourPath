@@ -16,7 +16,7 @@ class RunPopupAdapter(private var runs: List<Run>, private val runClickListener:
         val runTitle: TextView = itemView.findViewById(R.id.runTitle)
 
         fun bind(run: Run) {
-            runTitle.text = run.getDate() + " - " + run.getDistance() + " km"
+            runTitle.text = "${run.getDate()} - ${run.getDistance()}km"
             itemView.setOnClickListener {
                 runClickListener(run)
             }

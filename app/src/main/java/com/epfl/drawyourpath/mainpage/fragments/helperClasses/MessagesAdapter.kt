@@ -79,14 +79,8 @@ class MessagesAdapter(private val messages: List<Message>, private val userId: S
                 val run = content.run
 
                 val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten()
-                val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
 
-                val staticMapUrl = Utils.getStaticMapUrl(runCoordinates, apiKey)
-                // TODO: will be refactor with the creation of a bitmap directly with the run coordinates
-                Glide.with(holder.itemView.context)
-                    .load(staticMapUrl)
-                    .placeholder(R.drawable.map_loading_placeholder)
-                    .into(runPathHolder.mapImageView)
+                Utils.loadMapImage(holder.itemView.context, runCoordinates, runPathHolder.mapImageView)
 
                 runPathHolder.dateTextView.text = run.getDate()
                 runPathHolder.distanceTextView.text = holder.itemView.context.getString(R.string.display_distance).format(Utils.getStringDistance(run.getDistance()))

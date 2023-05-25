@@ -38,15 +38,9 @@ class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val r
         // TODO: will be refactor with the creation of a bitmap directly with the run coordinates
 
         val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten() // Get the coordinates for this specific run
-        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
+        // Use the utility function to load the map image
+        Utils.loadMapImage(context, runCoordinates, viewHolder.mapImageView)
 
-        val staticMapUrl = Utils.getStaticMapUrl(runCoordinates, apiKey)
-
-        // Load the image using Glide
-        Glide.with(context)
-            .load(staticMapUrl)
-            .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
-            .into(viewHolder.mapImageView)
 
         // Set the data to the view items in the layout
         // holder.mapImageView.setImageResource(run.mapImage)
