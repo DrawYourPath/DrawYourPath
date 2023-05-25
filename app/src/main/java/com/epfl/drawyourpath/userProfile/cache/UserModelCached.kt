@@ -77,9 +77,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }.sortedByDescending { it.getStartTime() }
     }
 
-    // trophies TODO remove sample
-    private val trophies: MutableLiveData<List<Trophy>> = MutableLiveData(Trophy.sample)
-
     // milestones
     private val milestones: LiveData<List<Milestone>> =
         _currentUserID.switchMap { dailyGoalCache.getMilestonesById(it) }.map { entities ->
@@ -186,16 +183,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * get the trophies
-     *
-     * @return the [LiveData] of a list of [Trophy]
-     */
-    fun getTrophies(): LiveData<List<Trophy>> {
-        checkCurrentUser()
-        return trophies
-    }
-
-    /**
      * get the milestones
      *
      * @return the [LiveData] of a list of [Milestone]
@@ -210,6 +197,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @return the current user id
      */
     fun getUserId(): String? {
+        checkCurrentUser()
         return currentUserID
     }
 

@@ -206,6 +206,8 @@ class ChallengeFragmentTest {
     // TODO change to mock user's trophies when in mock database
     @Test
     fun displayTrophiesSample() {
+        InstrumentationRegistry.getInstrumentation().targetContext.deleteDatabase("UserDatabase")
+        waitUntilAllThreadAreDone()
         val scenario = FragmentScenario.launchInContainer(
             ChallengeFragment::class.java,
             Bundle(),
@@ -214,7 +216,7 @@ class ChallengeFragmentTest {
 
         waitUntilAllThreadAreDone()
 
-        Trophy.sample.forEach { trophy ->
+        mockUser.trophies!!.forEach { trophy ->
             onView(withText(trophy.tournamentName)).perform(scrollTo())
             onView(withId(R.id.trophies_view)).check(matches(hasDescendant(withText(trophy.tournamentName))))
                 .check(matches(hasDescendant(withText(trophy.tournamentDescription))))
