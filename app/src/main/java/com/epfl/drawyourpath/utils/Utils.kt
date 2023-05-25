@@ -397,12 +397,12 @@ object Utils {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        normalizeStrokes(strokes, 0.1f).forEach { stroke ->
+        normalizeStrokes(strokes, 0f).forEach { stroke ->
             val points = stroke.points
 
             // Associates idx (n) to (n + 1)
             points.zip(points.drop(1)).forEach {
-                canvas.drawLine(it.first.x * size, it.first.y * size, it.second.x * size, it.second.y * size, paint)
+                canvas.drawLine(it.first.x * size, size - it.first.y * size, it.second.x * size, size - it.second.y * size, paint)
             }
         }
 
@@ -411,12 +411,12 @@ object Utils {
 
     /**
      * Converts a list of coordinates to a bitmap image representation.
-     * @param stroke The list of coordinates we want to draw
+     * @param coordinates The list of coordinates we want to draw
      * @param size The size of the bitmap in pixels
      * @param paint The paint option used to draw the list of coordinates.
      */
-    fun coordinatesToBitmap(coordinates: List<LatLng>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
-        return strokesToBitmap(listOf(coordinatesToStroke(coordinates)), size, paint)
+    fun coordinatesToBitmap(coordinates: List<List<LatLng>>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
+        return strokesToBitmap(coordinates.map { coordinatesToStroke(it) }, size, paint)
     }
 
     /**

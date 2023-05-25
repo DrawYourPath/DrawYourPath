@@ -168,9 +168,11 @@ class UtilsTest {
     fun coordinatesToBitmapDoesNotThrow() {
         coordinatesToBitmap(
             listOf(
-                LatLng(1.0, 1.0),
-                LatLng(2.0, 2.0),
-                LatLng(3.0, 3.0),
+                listOf(
+                    LatLng(1.0, 1.0),
+                    LatLng(2.0, 2.0),
+                    LatLng(3.0, 3.0),
+                ),
             ),
         )
     }

@@ -97,7 +97,7 @@ class ProfileFragmentTest {
         val targetUser = MockDatabase.mockUser
 
         launchFragment(userId = targetUser.userId!!, brokenDatabase = true)
-        // TODO: fix this:
+
         // Started failing in CI only.
         // onView(withId(R.id.TV_Error)).check(matches(isDisplayed()))
     }
