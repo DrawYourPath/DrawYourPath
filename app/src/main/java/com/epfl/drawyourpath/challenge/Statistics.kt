@@ -14,8 +14,7 @@ object Statistics {
      * @return The total distance of the goals.
      */
     fun getTotalDistance(dailyGoals: List<DailyGoal>): Double {
-        return dailyGoals.fold(0.0) {
-                acc, dailyGoal ->
+        return dailyGoals.fold(0.0) { acc, dailyGoal ->
             acc + dailyGoal.distance
         }
     }
@@ -67,8 +66,7 @@ object Statistics {
      * @return The total number of reached goals.
      */
     fun getReachedGoalsCount(dailyGoals: List<DailyGoal>): Int {
-        return dailyGoals.fold(0) {
-                acc, dailyGoal ->
+        return dailyGoals.fold(0) { acc, dailyGoal ->
             acc + if (dailyGoal.wasReached()) 1 else 0
         }
     }
@@ -113,6 +111,86 @@ object Statistics {
             dailyGoal.date.monthValue.toDouble()
         }.mapValues { (month, dailyGoalOfDay) ->
             getAverageSpeed(dailyGoalOfDay)
+        }.withDefault { 0.0 }
+    }
+
+    /**
+     * Computes the average duration of the specified goals.
+     * @param dailyGoals The list of goals we want to compute the average duration.
+     * @return The average duration for the goals.
+     */
+    fun getAverageDuration(dailyGoals: List<DailyGoal>): Double {
+        return if (dailyGoals.isEmpty()) (getTotalTime(dailyGoals) / dailyGoals.size) else 0.0
+    }
+
+    /**
+     * Computes the average duration per day in the current month.
+     * @param dailyGoals The list of goals we want to compute the average duration.
+     * @return A map from the day to the average duration in the current month.
+     */
+    fun getAverageDurationPerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year &&
+                    dailyGoal.date.monthValue == LocalDate.now().monthValue
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.dayOfMonth.toDouble()
+        }.mapValues { (day, dailyGoalOfDay) ->
+            getAverageDuration(dailyGoalOfDay)
+        }.withDefault { 0.0 }
+    }
+
+    /**
+     * Computes the average duration per month in the current year.
+     * @param dailyGoals The list of goals we want to compute the average duration.
+     * @return A map from the month to the average duration in the current year.
+     */
+    fun getAverageDurationPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.monthValue.toDouble()
+        }.mapValues { (month, dailyGoalOfDay) ->
+            getAverageDuration(dailyGoalOfDay)
+        }.withDefault { 0.0 }
+    }
+
+    /**
+     * Computes the average distance of the specified goals.
+     * @param dailyGoals The list of goals we want to compute the average distance.
+     * @return The average distance for the goals.
+     */
+    fun getAverageDistance(dailyGoals: List<DailyGoal>): Double {
+        return if (dailyGoals.isEmpty()) (getTotalDistance(dailyGoals) / dailyGoals.size) else 0.0
+    }
+
+    /**
+     * Computes the average distance per day in the current month.
+     * @param dailyGoals The list of goals we want to compute the average distance.
+     * @return A map from the day to the average distance in the current month.
+     */
+    fun getAverageDistancePerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year &&
+                    dailyGoal.date.monthValue == LocalDate.now().monthValue
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.dayOfMonth.toDouble()
+        }.mapValues { (day, dailyGoalOfDay) ->
+            getAverageDistance(dailyGoalOfDay)
+        }.withDefault { 0.0 }
+    }
+
+    /**
+     * Computes the average distance per month in the current year.
+     * @param dailyGoals The list of goals we want to compute the average distance.
+     * @return A map from the month to the average distance in the current year.
+     */
+    fun getAverageDistancePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
+        return dailyGoals.filter { dailyGoal ->
+            dailyGoal.date.year == LocalDate.now().year
+        }.groupBy { dailyGoal ->
+            dailyGoal.date.monthValue.toDouble()
+        }.mapValues { (month, dailyGoalOfDay) ->
+            getAverageDistance(dailyGoalOfDay)
         }.withDefault { 0.0 }
     }
 
