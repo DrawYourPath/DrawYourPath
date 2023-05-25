@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.authentication.FirebaseAuth
 import com.epfl.drawyourpath.authentication.MockAuth
+import com.epfl.drawyourpath.chat.Chat
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.database.Database
 import com.epfl.drawyourpath.database.MockDatabase
@@ -131,8 +132,8 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
     }
     companion object {
         private const val ARG_CHAT_ID = "arg_chat_id"
-        fun newInstance(chat: Chat, chatId: String): ChatOpenFragment {
-            
+
+        fun newInstance(chatId: String): ChatOpenFragment {
             val fragment = ChatOpenFragment()
             val args = Bundle()
             args.putString(ARG_CHAT_ID, chatId)
