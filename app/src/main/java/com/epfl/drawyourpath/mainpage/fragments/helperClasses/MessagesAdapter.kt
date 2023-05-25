@@ -12,9 +12,6 @@ import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 // This is a class for the RecyclerView adapter for messages
 class MessagesAdapter(private val messages: List<Message>, private val userId: String) :
@@ -121,6 +118,4 @@ class MessagesAdapter(private val messages: List<Message>, private val userId: S
         val shapeRecognizedTextView: TextView = itemView.findViewById(R.id.shapeTextView)
         val shapeScoreTextView: TextView = itemView.findViewById(R.id.scoreTextView)
     }
-
-
 }

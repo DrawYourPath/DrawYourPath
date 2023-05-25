@@ -1,13 +1,10 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
@@ -20,7 +17,6 @@ import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.login.launchLoginActivity
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.MessagesAdapter
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.RunPopupAdapter
-import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 
 class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
@@ -38,7 +34,6 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
 
     // Initialize the list of messages
     private val messagesList = mutableListOf<Message>()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -67,10 +62,6 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
             launchLoginActivity(requireActivity())
             return
         }
-
-
-
-
 
         val userId = currentUser.getUid()
 
