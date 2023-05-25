@@ -85,6 +85,10 @@ class TournamentPostCreationFragment : Fragment(R.layout.fragment_tournament_pos
         post.setOnClickListener {
             tournament.addPost(getSelectedTournamentId(), getSelectedRun())
             returnToCommunityFragment()
+            // TODO add the post to the database
+            // 1. get a uid from db
+            // 2. create the TournamentPost object
+            // 3. call Database.addPostToTournament()
         }
     }
 

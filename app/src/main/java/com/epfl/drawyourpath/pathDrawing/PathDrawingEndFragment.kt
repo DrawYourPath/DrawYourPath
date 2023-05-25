@@ -9,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.fragments.MainFragment
-import com.epfl.drawyourpath.mainpage.fragments.runStats.ShapePathDescriptionFragment
+import com.epfl.drawyourpath.mainpage.fragments.helperClasses.ShapePathDescriptionFragment
 import com.epfl.drawyourpath.map.MapFragment
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.userProfile.cache.UserModelCached
@@ -32,9 +32,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
         super.onViewCreated(view, savedInstanceState)
 
         // get the ml result
-        val result = Utils.getRunRecognition(pathDrawingModel.getRun()).thenApplyAsync {
-            it.candidates[0]
-        }
+        val result = Utils.getBestRunRecognitionCandidate(pathDrawingModel.getRun()).thenApplyAsync { it }
 
         val runToAdd = pathDrawingModel.getRun()
 
@@ -59,7 +57,7 @@ class PathDrawingEndFragment(private val run: Run? = null) : Fragment(R.layout.f
         backMenuButton.setOnClickListener {
             cancel.set(true)
             result.thenApplyAsync {
-                Run(runToAdd.getPath(), runToAdd.getStartTime(), runToAdd.getDuration(), runToAdd.getEndTime(), it.text, it.score?.toDouble() ?: 0.0)
+                Run(runToAdd.getPath(), runToAdd.getStartTime(), runToAdd.getDuration(), runToAdd.getEndTime(), it!!.text, it!!.score?.toDouble() ?: 0.0)
             }.thenComposeAsync {
                 userCached.addNewRun(it)
             }

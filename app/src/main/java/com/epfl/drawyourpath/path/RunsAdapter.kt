@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
-import com.epfl.drawyourpath.mainpage.fragments.runStats.RunInfoStatsFragment
 import com.epfl.drawyourpath.utils.Utils
 import com.epfl.drawyourpath.utils.Utils.getStaticMapUrl
 import com.google.android.gms.maps.model.LatLng

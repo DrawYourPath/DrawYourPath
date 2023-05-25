@@ -10,6 +10,7 @@ import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformMilestoneToData
 import com.epfl.drawyourpath.database.FirebaseDatabaseUtils.transformTrophyToData
 import com.epfl.drawyourpath.path.Run
@@ -28,6 +29,7 @@ object FirebaseKeys {
     const val USERS_ROOT = "users"
     const val USERNAMES_ROOT = "usernameToUid"
     const val TOURNAMENTS_ROOT = "tournaments"
+    const val TOURNAMENTS_IDS_ROOT = "tournamentIds"
     const val CHATS_ROOT = "chats"
     const val CHATS_MEMBERS_ROOT = "chatsMembers"
     const val CHATS_MESSAGES_ROOT = "chatsMessages"
@@ -71,15 +73,41 @@ object FirebaseKeys {
     const val TROPHY_RANKING: String = "ranking"
 
     // Tournaments keys
+    const val TOURNAMENT_INFO = "info"
+    const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
+    const val TOURNAMENT_POSTS = "posts"
+    const val TOURNAMENT_POSTS_IDS = "posts_ids"
+
+    // Tournaments info keys
     const val TOURNAMENT_ID = "id"
     const val TOURNAMENT_NAME = "name"
     const val TOURNAMENT_DESCRIPTION = "description"
     const val TOURNAMENT_CREATOR_ID = "creatorId"
     const val TOURNAMENT_START_DATE = "startDate"
     const val TOURNAMENT_END_DATE = "endDate"
-    const val TOURNAMENT_PARTICIPANTS_IDS = "participants"
-    const val TOURNAMENT_POSTS = "posts"
     const val TOURNAMENT_VISIBILITY = "visibility"
+
+    // Posts keys
+    const val POST_ID = "postId"
+    const val POST_USER_ID = "userId"
+    const val POST_RUN = "run"
+    const val POST_DATE = "date"
+    const val POST_USERS_VOTES = "usersVotes"
+
+    // Run keys
+    const val RUN_PATH = "path"
+    const val RUN_START_TIME = "startTime"
+    const val RUN_DURATION = "duration"
+    const val RUN_END_TIME = "endTime"
+    const val RUN_SHAPE = "predictedShape"
+    const val RUN_SCORE = "similarityScore"
+
+    // Path keys
+    const val PATH_POINTS = "points"
+
+    // Points keys
+    const val POINT_LATITUDE = "latitude"
+    const val POINT_LONGITUDE = "longitude"
 
     // Chats keys top level
     const val CHAT_TITLE = "title"
@@ -117,8 +145,18 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return nameMappingRoot().child(username)
     }
 
+    /**
+     * Used to get the database reference of the file containing the (whole) tournaments.
+     */
     private fun tournamentsRoot(): DatabaseReference {
         return database.child(FirebaseKeys.TOURNAMENTS_ROOT)
+    }
+
+    /**
+     * Used to get the database reference to the file containing the ids of all tournaments.
+     */
+    private fun tournamentsIdsRoot(): DatabaseReference {
+        return database.child(FirebaseKeys.TOURNAMENTS_IDS_ROOT)
     }
 
     /**
@@ -199,8 +237,25 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
         val future = CompletableFuture<Boolean>()
 
-        tournamentsRoot().child(tournamentId).get()
+        tournamentsIdsRoot().child(tournamentId).get()
             .addOnSuccessListener {
+                future.complete(it.value != null)
+            }
+            .addOnFailureListener {
+                future.completeExceptionally(it)
+            }
+
+        return future
+    }
+
+    override fun isPostInDatabase(
+        tournamentId: String,
+        postId: String,
+    ): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
+
+        tournamentsRoot().child("$tournamentId/${FirebaseKeys.TOURNAMENT_POSTS_IDS}/$postId")
+            .get().addOnSuccessListener {
                 future.complete(it.value != null)
             }
             .addOnFailureListener {
@@ -505,15 +560,42 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
-    override fun getTournamentUID(): String? {
+    override fun getAllTournamentsId(): LiveData<List<String>> {
+        val tournamentsIdValues = MutableLiveData<List<String>>()
+        val tournamentsIdValueEventListener: ValueEventListener
+
+        // listener for data change
+        tournamentsIdValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Error("The tournamentsId list can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val tournamentsIdList = FirebaseDatabaseUtils.getKeys(snapshot)
+                    tournamentsIdValues.postValue(tournamentsIdList)
+                } else {
+                    tournamentsIdValues.postValue(emptyList())
+                }
+            }
+        }
+        // add the listener on the database tournaments root
+        tournamentsIdsRoot().ref.addValueEventListener(tournamentsIdValueEventListener)
+        return tournamentsIdValues
+    }
+
+    override fun getTournamentUniqueId(): String? {
         return database.child(FirebaseKeys.TOURNAMENTS_ROOT).push().key
     }
 
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
         val future = CompletableFuture<Unit>()
         // add the tournament to all tournaments
-        tournamentsRoot().updateChildren(mapOf(tournament.id to tournament))
-            .addOnSuccessListener { future.complete(Unit) }
+        val changes: MutableMap<String, Any?> = hashMapOf(
+            "${FirebaseKeys.TOURNAMENTS_ROOT}/${tournament.id}/${FirebaseKeys.TOURNAMENT_INFO}" to tournament,
+            "${FirebaseKeys.TOURNAMENTS_IDS_ROOT}/${tournament.id}" to true,
+        )
+        database.updateChildren(changes).addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { future.completeExceptionally(it) }
         return future
     }
@@ -582,24 +664,163 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         return future
     }
 
-    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
-        val future = CompletableFuture<Tournament>()
+    override fun getTournament(tournamentId: String): LiveData<Tournament> {
+        val tournamentValue = MutableLiveData<Tournament>()
+        val tournamentValueEventListener: ValueEventListener
+
+        // listener for data change
+        tournamentValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Exception("The tournament with tournamentId $tournamentId can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Check that the tournament exists
+                if (snapshot.exists()) {
+                    // Get tournament data and check if corrupted
+                    val tournament = FirebaseDatabaseUtils.mapToTournament(snapshot)
+                    if (tournament == null) {
+                        throw Exception("Corrupted data for the tournament $tournamentId.")
+                    } else {
+                        tournamentValue.postValue(tournament!!)
+                    }
+                } else {
+                    throw Exception("The tournament with tournamentId $tournamentId doesn't exist.")
+                }
+            }
+        }
+        // add the listener on the database on the root of the tournament with tournament id
+        tournamentsRoot().child(tournamentId).ref.addValueEventListener(tournamentValueEventListener)
+        return tournamentValue
+    }
+
+    override fun getTournamentPosts(tournamentId: String): LiveData<List<TournamentPost>> {
+        val tournamentPostsValue = MutableLiveData<List<TournamentPost>>()
+        val tournamentPostsValueEventListener: ValueEventListener
+
+        // listener for data change
+        tournamentPostsValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Exception("The tournament with tournamentId $tournamentId can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Check that the tournament exists
+                if (snapshot.exists()) {
+                    // Get tournament posts
+                    val posts = FirebaseDatabaseUtils.transformPostList(snapshot)
+                    tournamentPostsValue.postValue(posts)
+                } else {
+                    throw Exception("The tournament with tournamentId $tournamentId doesn't exist.")
+                }
+            }
+        }
+        // add the listener on the database on the root of the tournament posts with tournament id
+        tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_POSTS).ref.addValueEventListener(tournamentPostsValueEventListener)
+        return tournamentPostsValue
+    }
+
+    override fun getTournamentParticipantsId(tournamentId: String): CompletableFuture<List<String>> {
+        val future = CompletableFuture<List<String>>()
         // Check that the tournament exists
         isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
             if (!tournamentExists) {
                 future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
             } else {
-                // Get tournament data and check if corrupted
-                tournamentsRoot().child(tournamentId).get().addOnSuccessListener {
-                    val tournament = FirebaseDatabaseUtils.mapToTournament(it)
-                    if (tournament == null) {
-                        future.completeExceptionally(Exception("Corrupted data for the tournament $tournamentId."))
-                    } else {
-                        future.complete(tournament)
+                // Get tournament participants
+                tournamentsRoot().child(tournamentId)
+                    .child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS).get().addOnSuccessListener {
+                        future.complete(FirebaseDatabaseUtils.getKeys(it))
+                    }.addOnFailureListener {
+                        future.completeExceptionally(it)
                     }
-                }.addOnFailureListener {
-                    future.completeExceptionally(it)
+            }
+        }
+        return future
+    }
+
+    override fun getTournamentInfo(tournamentId: String): LiveData<Tournament> {
+        val tournamentInfoValue = MutableLiveData<Tournament>()
+        val tournamentInfoValueEventListener: ValueEventListener
+
+        // listener for data change
+        tournamentInfoValueEventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                throw Exception("The tournament with tournamentId $tournamentId can't be fetched from the database.")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Check that the tournament exists
+                if (snapshot.exists()) {
+                    // Get tournament info
+                    val tournament = FirebaseDatabaseUtils.mapToTournamentInfo(snapshot)
+                    if (tournament == null) {
+                        throw Exception("Corrupted data for the tournament $tournamentId.")
+                    } else {
+                        tournamentInfoValue.postValue(tournament!!)
+                    }
+                } else {
+                    throw Exception("The tournament with tournamentId $tournamentId doesn't exist.")
                 }
+            }
+        }
+        // add the listener on the database on the root of the tournament info with tournament id
+        tournamentsRoot().child(tournamentId).child(FirebaseKeys.TOURNAMENT_INFO).ref.addValueEventListener(tournamentInfoValueEventListener)
+        return tournamentInfoValue
+    }
+
+    override fun getPostUniqueId(): String? {
+        return database.child(FirebaseKeys.TOURNAMENTS_ROOT).child(FirebaseKeys.TOURNAMENT_POSTS)
+            .push().key
+    }
+
+    override fun addPostToTournament(
+        tournamentId: String,
+        post: TournamentPost,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // Check that the tournament exists
+        isTournamentInDatabase(tournamentId).thenApply { tournamentExists ->
+            if (!tournamentExists) {
+                future.completeExceptionally(Exception("The tournament with tournamentId $tournamentId doesn't exist."))
+            } else {
+                val changes: MutableMap<String, Any?> = hashMapOf(
+                    "${FirebaseKeys.TOURNAMENT_POSTS}/${post.postId}" to post,
+                    "${FirebaseKeys.TOURNAMENT_POSTS_IDS}/${post.postId}" to true,
+                )
+                // If it exists, do the operation
+                tournamentsRoot().child(tournamentId).updateChildren(changes)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
+            }
+        }
+        return future
+    }
+
+    override fun voteOnPost(
+        userId: String,
+        tournamentId: String,
+        postId: String,
+        vote: Int,
+    ): CompletableFuture<Unit> {
+        val future = CompletableFuture<Unit>()
+        // check that the userId and tournamentId exist
+        isUserInDatabase(userId).thenCombine(
+            isPostInDatabase(
+                tournamentId,
+                postId,
+            ),
+        ) { userExists, postExists ->
+            if (!userExists) {
+                future.completeExceptionally(Exception("The user with userId $userId doesn't exist."))
+            } else if (!postExists) {
+                future.completeExceptionally(Exception("The post with id $postId doesn't exist in tournament $tournamentId"))
+            } else {
+                // if they exist, change/add the user vote
+                tournamentsRoot().child("$tournamentId/${FirebaseKeys.TOURNAMENT_POSTS}/$postId/userVotes/$userId")
+                    .setValue(vote)
+                    .addOnSuccessListener { future.complete(Unit) }
+                    .addOnFailureListener { future.completeExceptionally(it) }
             }
         }
         return future
@@ -666,7 +887,8 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                         conversationId = conversationId,
                         title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
                         lastMessage = FirebaseDatabaseUtils.transformMessage(
-                            snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList().get(0),
+                            snapshot.child(FirebaseKeys.CHAT_LAST_MESSAGE).children.toMutableList()
+                                .get(0),
                         ),
                     )
                     previewValues.postValue(preview)
@@ -674,7 +896,11 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                     val preview = ChatPreview(
                         conversationId = conversationId,
                         title = snapshot.child(FirebaseKeys.CHAT_TITLE).value as String?,
-                        lastMessage = Message.createTextMessage("loading...", "loading...", LocalDate.now().toEpochDay()),
+                        lastMessage = Message.createTextMessage(
+                            "loading...",
+                            "loading...",
+                            LocalDate.now().toEpochDay(),
+                        ),
                     )
                     previewValues.postValue(preview)
                 }
@@ -703,7 +929,9 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
             }
         }
         // add the listener on the database messages
-        userProfile(userId).child(FirebaseKeys.USER_CHATS).ref.addValueEventListener(chatValueEventListener)
+        userProfile(userId).child(FirebaseKeys.USER_CHATS).ref.addValueEventListener(
+            chatValueEventListener,
+        )
         return chatValues
     }
 
@@ -768,7 +996,8 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    val listMessage = snapshot.children.map { FirebaseDatabaseUtils.transformMessage(it) }
+                    val listMessage =
+                        snapshot.children.map { FirebaseDatabaseUtils.transformMessage(it) }
                     messagesValues.postValue(listMessage)
                 } else {
                     messagesValues.postValue(emptyList())
@@ -896,7 +1125,8 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
         val future = CompletableFuture<Unit>()
 
         // obtain the previous friendList
-        userRoot(currentUserId).child(FirebaseKeys.PROFILE).child(FirebaseKeys.FRIENDS).child(removeUserId).removeValue()
+        userRoot(currentUserId).child(FirebaseKeys.PROFILE).child(FirebaseKeys.FRIENDS)
+            .child(removeUserId).removeValue()
             .addOnSuccessListener { future.complete(Unit) }
             .addOnFailureListener { err -> future.completeExceptionally(err) }
 

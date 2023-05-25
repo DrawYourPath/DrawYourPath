@@ -17,7 +17,6 @@ data class Tournament(
     val endDate: LocalDateTime,
     // Exclude to avoid storing the participants as a list
     @get:Exclude val participants: List<String> = mutableListOf(),
-    // Could also exclude, but need a key to get the posts
     val posts: List<TournamentPost> = mutableListOf(),
     var visibility: Visibility = Visibility.PUBLIC,
     // val result: List<User>?

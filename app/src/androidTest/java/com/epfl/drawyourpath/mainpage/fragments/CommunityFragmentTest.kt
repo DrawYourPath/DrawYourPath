@@ -41,7 +41,7 @@ class CommunityFragmentTest {
             0.9,
         )
         val userVotes = mutableMapOf("test" to 1)
-        val post = TournamentPost("testId", run, 1, usersVotes = userVotes)
+        val post = TournamentPost("postId", "testId", run, usersVotes = userVotes)
         assertThat(post.getUsersVotes(), `is`(userVotes))
     }
 
@@ -271,27 +271,27 @@ class CommunityFragmentTest {
      * sample posts
      */
     private val postsYour = mutableListOf(
-        TournamentPost("Michel", sampleRun(), 158),
-        TournamentPost("MrPrefect", sampleRun(), 666),
-        TournamentPost("Me Myself and I", sampleRun(), 123456),
-        TournamentPost("Invalid Username", sampleRun(), 0),
+        TournamentPost("post1", "Michel", sampleRun()),
+        TournamentPost("post2", "MrPrefect", sampleRun()),
+        TournamentPost("post3", "Me Myself and I", sampleRun()),
+        TournamentPost("post4", "Invalid Username", sampleRun()),
     )
 
     /**
      * sample posts
      */
     private val postsDiscoverEarth = mutableListOf(
-        TournamentPost("SpaceMan", sampleRun(), 35),
-        TournamentPost("NASA", sampleRun(), 124),
-        TournamentPost("Alien", sampleRun(), -3),
+        TournamentPost("post5", "SpaceMan", sampleRun()),
+        TournamentPost("post6", "NASA", sampleRun()),
+        TournamentPost("post7", "Alien", sampleRun()),
     )
 
     /**
      * sample posts
      */
     private val postsDiscoverMoon = mutableListOf(
-        TournamentPost("Diabolos", sampleRun(), 666),
-        TournamentPost("Jaqueline", sampleRun(), 356),
+        TournamentPost("post8", "Diabolos", sampleRun()),
+        TournamentPost("post9", "Jaqueline", sampleRun()),
     )
 
     /**
@@ -305,7 +305,7 @@ class CommunityFragmentTest {
         LocalDateTime.now().plusDays(4L),
         LocalDateTime.now().plusDays(3L),
         listOf(),
-        listOf(TournamentPost("xxDarkxx", sampleRun(), -13)),
+        listOf(TournamentPost("post10", "xxDarkxx", sampleRun())),
     )
 
     /**

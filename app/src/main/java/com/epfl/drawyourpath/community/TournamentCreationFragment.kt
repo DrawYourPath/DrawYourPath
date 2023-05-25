@@ -86,7 +86,7 @@ class TournamentCreationFragment : Fragment(R.layout.fragment_tournament_creatio
         }
 
         // get a uid for the tournament from database (client side)
-        val id = database.getTournamentUID()
+        val id = database.getTournamentUniqueId()
         if (id == null) {
             Toast.makeText(
                 activity,

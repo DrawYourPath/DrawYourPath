@@ -88,10 +88,10 @@ object FirebaseDatabaseUtils {
      * @return the run corresponding to the data
      */
     fun transformRun(data: DataSnapshot?): Run? {
-        val sections = data?.child("path")?.child("points")?.children?.map { section ->
+        val sections = data?.child(FirebaseKeys.RUN_PATH)?.child(FirebaseKeys.PATH_POINTS)?.children?.map { section ->
             section.children.mapNotNull { point ->
-                val lat = getNumber(point.child("latitude"))?.toDouble()
-                val lon = getNumber(point.child("longitude"))?.toDouble()
+                val lat = getNumber(point.child(FirebaseKeys.POINT_LATITUDE))?.toDouble()
+                val lon = getNumber(point.child(FirebaseKeys.POINT_LONGITUDE))?.toDouble()
                 if (lat != null && lon != null) {
                     LatLng(lat, lon)
                 } else {
@@ -101,11 +101,11 @@ object FirebaseDatabaseUtils {
             }
         } ?: emptyList()
 
-        val startTime = getNumber(data?.child("startTime"))?.toLong()
-        val duration = getNumber(data?.child("duration"))?.toLong()
-        val endTime = getNumber(data?.child("endTime"))?.toLong()
-        val predictedShape = (data?.child("predictedShape")?.value ?: "None") as String
-        val similarityScore = (getNumber(data?.child("similarityScore")) ?: 0.0).toDouble()
+        val startTime = getNumber(data?.child(FirebaseKeys.RUN_START_TIME))?.toLong()
+        val duration = getNumber(data?.child(FirebaseKeys.RUN_DURATION))?.toLong()
+        val endTime = getNumber(data?.child(FirebaseKeys.RUN_END_TIME))?.toLong()
+        val predictedShape = (data?.child(FirebaseKeys.RUN_SHAPE)?.value ?: "None") as String
+        val similarityScore = (getNumber(data?.child(FirebaseKeys.RUN_SCORE)) ?: 0.0).toDouble()
         if (startTime == null) {
             Log.e(this::class.java.name, "Run start time was null.")
             return null
@@ -145,20 +145,20 @@ object FirebaseDatabaseUtils {
      * @return the post, or null if an error occurred
      */
     fun transformPost(data: DataSnapshot?): TournamentPost? {
-        val userId = data?.child("userId")?.value as String?
-        val run = transformRun(data?.child("run"))
-        val votes = getNumber(data?.child("votes"))?.toInt()
-        val date = transformLocalDateTime(data?.child("date"))
+        val postId = data?.child(FirebaseKeys.POST_ID)?.value as String?
+        val userId = data?.child(FirebaseKeys.POST_USER_ID)?.value as String?
+        val run = transformRun(data?.child(FirebaseKeys.POST_RUN))
+        val date = transformLocalDateTime(data?.child(FirebaseKeys.POST_DATE))
         // Unchecked cast here but should work without problem
         val usersVotes =
-            (data?.child("usersVotes")?.value ?: emptyMap<String, Int>()) as Map<String, Int>
+            (data?.child(FirebaseKeys.POST_USERS_VOTES)?.value ?: emptyMap<String, Int>()) as Map<String, Int>
 
-        if (userId == null || run == null || votes == null || date == null) {
+        if (postId == null || userId == null || run == null || date == null) {
             Log.e(this::class.java.name, "TournamentPost had null values")
             return null
         }
 
-        return TournamentPost(userId, run, votes, date, usersVotes.toMutableMap())
+        return TournamentPost(postId, userId, run, date, usersVotes.toMutableMap())
     }
 
     /**
@@ -281,14 +281,30 @@ object FirebaseDatabaseUtils {
      * @return the tournament, or null if an error occurred
      */
     fun mapToTournament(data: DataSnapshot?): Tournament? {
+        val tournamentInfo = mapToTournamentInfo(data?.child(FirebaseKeys.TOURNAMENT_INFO))
+        val participants = getKeys(data?.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
+        val posts = transformPostList(data?.child(FirebaseKeys.TOURNAMENT_POSTS))
+
+        if (tournamentInfo == null) {
+            Log.e(this::class.java.name, "Tournament had null values")
+            return null
+        }
+
+        return tournamentInfo.copy(participants = participants, posts = posts)
+    }
+
+    /**
+     * Helper function to convert a data snapshot to a tournament
+     * @param data the data snapshot containing the tournament info
+     * @return the tournament info, or null if an error occurred
+     */
+    fun mapToTournamentInfo(data: DataSnapshot?): Tournament? {
         val id = data?.child(FirebaseKeys.TOURNAMENT_ID)?.value as String?
         val name = data?.child(FirebaseKeys.TOURNAMENT_NAME)?.value as String?
         val description = data?.child(FirebaseKeys.TOURNAMENT_DESCRIPTION)?.value as String?
         val creatorId = data?.child(FirebaseKeys.TOURNAMENT_CREATOR_ID)?.value as String?
         val startDate = transformLocalDateTime(data?.child(FirebaseKeys.TOURNAMENT_START_DATE))
         val endDate = transformLocalDateTime(data?.child(FirebaseKeys.TOURNAMENT_END_DATE))
-        val participants = getKeys(data?.child(FirebaseKeys.TOURNAMENT_PARTICIPANTS_IDS))
-        val posts = transformPostList(data?.child(FirebaseKeys.TOURNAMENT_POSTS))
         val visibilityString = data?.child(FirebaseKeys.TOURNAMENT_VISIBILITY)?.value as String?
 
         // Get the visibility back to an enum value
@@ -311,22 +327,21 @@ object FirebaseDatabaseUtils {
         }
 
         return Tournament(
-            id,
-            name,
-            description,
-            creatorId,
-            startDate,
-            endDate,
-            participants,
-            posts,
-            visibility,
+            id = id,
+            name = name,
+            description = description,
+            creatorId = creatorId,
+            startDate = startDate,
+            endDate = endDate,
+            visibility = visibility,
         )
     }
 
     /**
      * Helper function to transform a trophy object into an object to store in the database
      * The tournament id is not take into account since is used as a key for the trophy in the database.
-     * @param tropy to store in the database
+     * @param trophy to store in the database
+     * @return a map that can be stored in Firebase Database
      */
     fun transformTrophyToData(trophy: Trophy): HashMap<String, Any> {
         return hashMapOf(
@@ -373,7 +388,9 @@ object FirebaseDatabaseUtils {
     /**
      * Helper function to transform a milestone object enum with a date into an object to store in the database
      * The tournament id is not take into account since is used as a key for the trophy in the database.
-     * @param tropy to store in the database
+     * @param milestone the milestone object enum to store
+     * @param date the date to store alongside the milestone
+     * @return a map linking the milestone's name to the day of the date.
      */
     fun transformMilestoneToData(milestone: MilestoneEnum, date: LocalDate): HashMap<String, Any> {
         return hashMapOf(

@@ -11,10 +11,9 @@ import com.epfl.drawyourpath.machineLearning.DigitalInk
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.google.android.gms.maps.model.LatLng
-import com.google.mlkit.vision.digitalink.Ink
+import com.google.mlkit.vision.digitalink.*
 import com.google.mlkit.vision.digitalink.Ink.Point
 import com.google.mlkit.vision.digitalink.Ink.Stroke
-import com.google.mlkit.vision.digitalink.RecognitionResult
 import java.io.ByteArrayOutputStream
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -421,13 +420,22 @@ object Utils {
     }
 
     /**
-     * get the recognition result of a run
+     * Get the best recognition candidate of a run
      * @param run the run to recognize
-     * @return the recognition result
+     * @return the recognition candidate
      */
-    fun getRunRecognition(run: Run): CompletableFuture<RecognitionResult> {
-        return DigitalInk.downloadModelML().thenComposeAsync {
-            DigitalInk.recognizeDrawingML(coordinatesToInk(run.getPath().getPoints()), it)
+    fun getBestRunRecognitionCandidate(run: Run): CompletableFuture<RecognitionCandidate?> {
+        val ink = coordinatesToInk(run.getPath().getPoints())
+
+        val resultAutoDraw = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.AUTODRAW).thenComposeAsync {
+            DigitalInk.recognizeDrawingML(ink, it)
+        }
+        val resultShapes = DigitalInk.downloadModelML(DigitalInkRecognitionModelIdentifier.SHAPES).thenComposeAsync {
+            DigitalInk.recognizeDrawingML(ink, it)
+        }
+
+        return resultAutoDraw.thenCombine(resultShapes) { resultAutoDraw, resultShapes ->
+            (resultAutoDraw.candidates + resultShapes.candidates).sortedBy { it.score }.firstOrNull()
         }
     }
 
