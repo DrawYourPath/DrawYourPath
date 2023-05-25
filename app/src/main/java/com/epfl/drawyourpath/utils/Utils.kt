@@ -1,10 +1,13 @@
 package com.epfl.drawyourpath.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.location.Location
+import android.widget.ImageView
 import androidx.core.graphics.drawable.toBitmap
+import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.machineLearning.DigitalInk
@@ -195,6 +198,23 @@ object Utils {
      */
     fun getALL_CAPSFromString(value: String): String {
         return value.uppercase().replace(" ", "_")
+    }
+
+    /**
+     * load the map image of the run into an imageView
+     * @param context the context
+     * @param runCoordinates the coordinates of the run
+     * @param imageView the imageView where the map will be loaded
+     */
+    fun loadMapImage(context: Context, runCoordinates: List<LatLng>, imageView: ImageView, run: Run) {
+        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
+        imageView.setImageBitmap(Utils.coordinatesToBitmap(run.getPath().getPoints()))
+        val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey)
+
+        Glide.with(context)
+            .load(staticMapUrl)
+            .placeholder(R.drawable.map_loading_placeholder)
+            .into(imageView)
     }
 
     /**

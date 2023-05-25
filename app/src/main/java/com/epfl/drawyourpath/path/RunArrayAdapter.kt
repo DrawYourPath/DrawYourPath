@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
-import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
@@ -38,15 +37,8 @@ class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val r
         // TODO: will be refactor with the creation of a bitmap directly with the run coordinates
 
         val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten() // Get the coordinates for this specific run
-        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
-
-        val staticMapUrl = Utils.getStaticMapUrl(runCoordinates, apiKey)
-
-        // Load the image using Glide
-        Glide.with(context)
-            .load(staticMapUrl)
-            .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
-            .into(viewHolder.mapImageView)
+        // Use the utility function to load the map image
+        Utils.loadMapImage(context, runCoordinates, viewHolder.mapImageView, run)
 
         // Set the data to the view items in the layout
         // holder.mapImageView.setImageResource(run.mapImage)

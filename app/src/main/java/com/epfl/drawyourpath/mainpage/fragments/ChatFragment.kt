@@ -144,7 +144,7 @@ class ChatFragment() : Fragment(R.layout.fragment_chat_list) {
                         }
                         if (selectedFriendId != null) {
                             // If a friend is selected, create a new chat conversation
-                            val chatName = "Chat with $selectedFriendUsername"
+                            val chatName = "Chat with $selectedFriendUsername and ${userData.username}"
                             val membersList = listOf(userId, selectedFriendId)
                             val welcomeMessage = getString(R.string.chat_welcome_message)
                             database.createChatConversation(
