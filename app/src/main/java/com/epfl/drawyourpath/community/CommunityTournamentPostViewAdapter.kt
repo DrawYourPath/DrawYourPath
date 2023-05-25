@@ -9,11 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.utils.Utils
-import com.google.android.gms.maps.model.LatLng
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -53,7 +51,7 @@ class CommunityTournamentPostViewAdapter(
         }
     }
 
-    // Create new views (invoked by the layout manager)
+    // Create new views (invoked by the layout manager )
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
@@ -73,18 +71,7 @@ class CommunityTournamentPostViewAdapter(
             viewHolder.tournamentName.visibility = View.GONE
         }
 
-        // TODO: will be refactor with the creation of a bitmap directly with the run coordinates
-
-        val runCoordinates: List<LatLng> = post.run.getPath().getPoints().flatten() // Get the coordinates for this specific run
-        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
-
-        val staticMapUrl = Utils.getStaticMapUrl(runCoordinates, apiKey)
-
-        // Load the image using Glide
-        Glide.with(viewHolder.context)
-            .load(staticMapUrl)
-            .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
-            .into(viewHolder.imagePath)
+        viewHolder.imagePath.setImageBitmap(Utils.coordinatesToBitmap(post.run.getPath().getPoints()))
 
         viewHolder.userName.text = userIdToUsername[post.userId] ?: post.userId
         if (!userIdToUsername.containsKey(post.userId)) {

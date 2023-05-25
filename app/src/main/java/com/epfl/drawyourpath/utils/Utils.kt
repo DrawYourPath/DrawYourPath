@@ -1,10 +1,13 @@
 package com.epfl.drawyourpath.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.location.Location
+import android.widget.ImageView
 import androidx.core.graphics.drawable.toBitmap
+import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.database.UserGoals
 import com.epfl.drawyourpath.machineLearning.DigitalInk
@@ -195,6 +198,23 @@ object Utils {
      */
     fun getALL_CAPSFromString(value: String): String {
         return value.uppercase().replace(" ", "_")
+    }
+
+    /**
+     * load the map image of the run into an imageView
+     * @param context the context
+     * @param runCoordinates the coordinates of the run
+     * @param imageView the imageView where the map will be loaded
+     */
+    fun loadMapImage(context: Context, runCoordinates: List<LatLng>, imageView: ImageView, run: Run) {
+        val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
+        imageView.setImageBitmap(Utils.coordinatesToBitmap(run.getPath().getPoints()))
+        val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey)
+
+        Glide.with(context)
+            .load(staticMapUrl)
+            .placeholder(R.drawable.map_loading_placeholder)
+            .into(imageView)
     }
 
     /**
@@ -397,12 +417,12 @@ object Utils {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        normalizeStrokes(strokes, 0.1f).forEach { stroke ->
+        normalizeStrokes(strokes, 0f).forEach { stroke ->
             val points = stroke.points
 
             // Associates idx (n) to (n + 1)
             points.zip(points.drop(1)).forEach {
-                canvas.drawLine(it.first.x * size, it.first.y * size, it.second.x * size, it.second.y * size, paint)
+                canvas.drawLine(it.first.x * size, size - it.first.y * size, it.second.x * size, size - it.second.y * size, paint)
             }
         }
 
@@ -411,12 +431,12 @@ object Utils {
 
     /**
      * Converts a list of coordinates to a bitmap image representation.
-     * @param stroke The list of coordinates we want to draw
+     * @param coordinates The list of coordinates we want to draw
      * @param size The size of the bitmap in pixels
      * @param paint The paint option used to draw the list of coordinates.
      */
-    fun coordinatesToBitmap(coordinates: List<LatLng>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
-        return strokesToBitmap(listOf(coordinatesToStroke(coordinates)), size, paint)
+    fun coordinatesToBitmap(coordinates: List<List<LatLng>>, size: Int = 100, paint: Paint = defaultPaint): Bitmap {
+        return strokesToBitmap(coordinates.map { coordinatesToStroke(it) }, size, paint)
     }
 
     /**

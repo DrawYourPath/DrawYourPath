@@ -234,4 +234,23 @@ class ChatFragmentTest {
         onView(withId(R.id.chatListRecyclerView))
             .check(matches(hasDescendant(withId(R.id.chatTitleTextView))))
     }
+
+    @Test
+    fun testSendRunButtonOpensPopupAndAddsRunToChat() {
+        // Navigate to the chat open fragment
+        navigateToChatOpenFragment()
+
+        // Click the sendRunButton
+        onView(withId(R.id.sendRunButton)).perform(click())
+
+        // Click the first run item in the popup list!
+        onData(anything())
+            .inRoot(isPlatformPopup())
+            .atPosition(0)
+            .perform(click())
+
+        // Check if a new run item has been added to the messages RecyclerView
+        onView(withId(R.id.messagesRecyclerView))
+            .check(matches(hasDescendant(withId(R.id.run_item_layout))))
+    }
 }

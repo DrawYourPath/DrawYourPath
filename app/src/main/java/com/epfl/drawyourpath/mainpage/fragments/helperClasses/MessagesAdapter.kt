@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
+import com.epfl.drawyourpath.utils.Utils
+import com.google.android.gms.maps.model.LatLng
 
 // This is a class for the RecyclerView adapter for messages
 class MessagesAdapter(private val messages: List<Message>, private val userId: String) :
@@ -48,7 +50,7 @@ class MessagesAdapter(private val messages: List<Message>, private val userId: S
                 PictureMessageViewHolder(view)
             }
             VIEW_TYPE_RUN_PATH -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_message_run_path, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.past_run, parent, false)
                 RunPathMessageViewHolder(view)
             }
             else -> throw IllegalArgumentException("Invalid view type")
@@ -71,7 +73,19 @@ class MessagesAdapter(private val messages: List<Message>, private val userId: S
             }
             VIEW_TYPE_RUN_PATH -> {
                 val runPathHolder = holder as RunPathMessageViewHolder
-                // Customization for RunPath message content can be added here
+                val content = message.content as MessageContent.RunPath
+
+                val run = content.run
+
+                val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten()
+
+                Utils.loadMapImage(holder.itemView.context, runCoordinates, runPathHolder.mapImageView, run)
+
+                runPathHolder.dateTextView.text = run.getDate()
+                runPathHolder.distanceTextView.text = holder.itemView.context.getString(R.string.display_distance).format(Utils.getStringDistance(run.getDistance()))
+                runPathHolder.timeTakenTextView.text = holder.itemView.context.getString(R.string.display_duration).format(Utils.getStringDuration(run.getDuration()))
+                runPathHolder.shapeRecognizedTextView.text = holder.itemView.context.getString(R.string.display_shape).format(run.predictedShape)
+                runPathHolder.shapeScoreTextView.text = holder.itemView.context.getString(R.string.display_score).format(run.similarityScore)
             }
         }
     }
@@ -90,6 +104,11 @@ class MessagesAdapter(private val messages: List<Message>, private val userId: S
     }
 
     class RunPathMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // TODO: Define views for displaying RunPath message content here
+        val mapImageView: ImageView = itemView.findViewById(R.id.mapImageView)
+        val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
+        val distanceTextView: TextView = itemView.findViewById(R.id.distanceTextView)
+        val timeTakenTextView: TextView = itemView.findViewById(R.id.timeTakenTextView)
+        val shapeRecognizedTextView: TextView = itemView.findViewById(R.id.shapeTextView)
+        val shapeScoreTextView: TextView = itemView.findViewById(R.id.scoreTextView)
     }
 }
