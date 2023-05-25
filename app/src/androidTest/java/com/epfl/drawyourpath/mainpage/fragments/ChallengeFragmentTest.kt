@@ -18,7 +18,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.epfl.drawyourpath.R
-import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.utils.Utils
 import org.hamcrest.Matcher

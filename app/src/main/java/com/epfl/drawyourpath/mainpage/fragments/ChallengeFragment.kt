@@ -30,7 +30,7 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
 
     private val user: UserModelCached by activityViewModels()
 
-    //live data of list of trophies
+    // live data of list of trophies
     private val trophiesList = MutableLiveData(listOf<Trophy>())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
