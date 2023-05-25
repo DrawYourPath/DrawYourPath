@@ -80,8 +80,6 @@ class StatsFragment(
         super.onViewCreated(view, savedInstanceState)
         // init the elements of the view
         initViewElements(view)
-        // link the values to the data to be updated
-        initValuesToData()
         // at the initial state display the global statistics
         this.currentStateView = StatsEnum.GLOBAL_STATS
         show()
@@ -160,27 +158,6 @@ class StatsFragment(
     }
 
     /**
-     * Helper function to link the variables to the data.
-     */
-    private fun initValuesToData() {
-        averageSpeed ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageSpeed = getAverageSpeed(it) }
-        averageSpeedPerMonth ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageSpeedPerMonth = getAverageSpeedPerMonth(it) }
-        averageSpeedPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageSpeedPerYear = getAverageSpeedPerYear(it) }
-        averageDuration ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDuration = getAverageDuration(it) }
-        averageDurationPerMonth ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDurationPerMonth = getAverageDurationPerMonth(it) }
-        averageDurationPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDurationPerYear = getAverageDurationPerYear(it) }
-        averageDistance ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDistance = getAverageDistance(it) }
-        averageDistancePerMonth ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDistancePerMonth = getAverageDistancePerMonth(it) }
-        averageDistancePerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { averageDistancePerYear = getAverageDistancePerYear(it) }
-        totalDistanceGoal ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalDistanceGoal = getTotalDistance(it) }
-        totalDistanceGoalPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalDistanceGoalPerYear = getDistancePerYear(it) }
-        totalActivityTimeGoal ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalActivityTimeGoal = getTotalTime(it) }
-        totalActivityTimeGoalPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalActivityTimeGoalPerYear = getTimePerYear(it) }
-        totalPathNumberGoal ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalPathNumberGoal = getShapeDrawnCount(it).toDouble() }
-        totalPathNumberGoalPerYear ?: userModelCached.getDailyGoal().observe(viewLifecycleOwner) { totalPathNumberGoalPerYear = getShapeDrawnCountPerYear(it) }
-    }
-
-    /**
      * Helper function to show a graph with the given data and the given title elements in the preview layout of the stats fragments
      * @param data that will be show in the graph
      * @param lineText title of the X axe
@@ -248,15 +225,29 @@ class StatsFragment(
         // show the global stats
         val fragTransaction: FragmentTransaction =
             requireActivity().supportFragmentManager.beginTransaction()
+        var currentAverageSpeed = averageSpeed ?: 0.0
+        var currentAverageDuration = averageDuration ?: 0.0
+        var currentAverageDistance = averageDistance ?: 0.0
+        var currentTotalDistanceGoal = totalDistanceGoal ?: 0.0
+        var currentTotalActivityTimeGoal = totalActivityTimeGoal ?: 0.0
+        var currentTotalPathNumberGoal = totalPathNumberGoal ?: 0.0
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) {
+            currentAverageSpeed = averageSpeed ?: getAverageSpeed(it)
+            currentAverageDuration = averageDuration ?: getAverageDuration(it)
+            currentAverageDistance = averageDistance ?: getAverageDistance(it)
+            currentTotalDistanceGoal = totalDistanceGoal ?: getTotalDistance(it)
+            currentTotalActivityTimeGoal = totalActivityTimeGoal ?: getTotalTime(it)
+            currentTotalPathNumberGoal = totalPathNumberGoal ?: getShapeDrawnCount(it).toDouble()
+        }
         fragTransaction.replace(
             R.id.contentPreviewStats,
             GlobalStatsFragment(
-                averageSpeed = averageSpeed ?: 0.0,
-                averageDuration = averageDuration ?: 0.0,
-                averageDistance = averageDistance ?: 0.0,
-                totalDistanceGoal = totalDistanceGoal ?: 0.0,
-                totalActivityTimeGoal = totalActivityTimeGoal ?: 0.0,
-                totalPathNumberGoal = totalPathNumberGoal ?: 0.0,
+                averageSpeed = currentAverageSpeed,
+                averageDuration = currentAverageDuration,
+                averageDistance = currentAverageDistance,
+                totalDistanceGoal = currentTotalDistanceGoal,
+                totalActivityTimeGoal = currentTotalActivityTimeGoal,
+                totalPathNumberGoal = currentTotalPathNumberGoal,
             ),
         ).commit()
         // set the description layout an empty fragment
@@ -273,10 +264,12 @@ class StatsFragment(
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average speed in function of the year
-        showGraphInPreview(data = averageSpeedPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = averageSpeedPerYear ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = averageSpeedPerYear ?: getAverageSpeedPerYear(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average speed in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageSpeedPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringSpeed(speed = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -292,10 +285,12 @@ class StatsFragment(
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average speed in function of the month
-        showGraphInPreview(data = averageSpeedPerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = averageSpeedPerMonth ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = averageSpeedPerMonth ?: getAverageSpeedPerMonth(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average speed in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerMonth ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringSpeed(speed = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -311,10 +306,12 @@ class StatsFragment(
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average duration in function of the year
-        showGraphInPreview(data = averageDurationPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = averageDurationPerYear ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = averageDurationPerYear ?: getAverageDurationPerYear(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average duration in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageDurationPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -330,10 +327,12 @@ class StatsFragment(
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average duration in function of the month
-        showGraphInPreview(data = averageDurationPerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = averageDurationPerMonth ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = averageDurationPerMonth ?: getAverageDurationPerMonth(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average duration in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDurationPerMonth ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -349,10 +348,12 @@ class StatsFragment(
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average distance in function of the year
-        showGraphInPreview(data = averageDistancePerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = averageDistancePerYear ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = averageDistancePerYear ?: getAverageDistancePerYear(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average distance in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -368,10 +369,12 @@ class StatsFragment(
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average distance in function of the month
-        showGraphInPreview(data = averageDistancePerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = averageDistancePerMonth ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = averageDistancePerMonth ?: getAverageDistancePerMonth(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average distance in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerMonth ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -387,10 +390,12 @@ class StatsFragment(
         // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the distance goal in function of the year
-        showGraphInPreview(data = totalDistanceGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = totalDistanceGoalPerYear ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = totalDistanceGoalPerYear ?: getDistancePerYear(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the distance goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalDistanceGoalPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -406,10 +411,12 @@ class StatsFragment(
         // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the activity time goal in function of the year
-        showGraphInPreview(data = totalActivityTimeGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = totalActivityTimeGoalPerYear ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = totalActivityTimeGoalPerYear ?: getTimePerYear(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the activity time goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalActivityTimeGoalPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -425,10 +432,12 @@ class StatsFragment(
         // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the distance goal in function of the year
-        showGraphInPreview(data = totalPathNumberGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        var data: Map<Double, Double> = totalPathNumberGoalPerYear ?: emptyMap()
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) { data = totalPathNumberGoalPerYear ?: getShapeDrawnCountPerYear(it) }
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the distance goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalPathNumberGoalPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = value.toString()
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)

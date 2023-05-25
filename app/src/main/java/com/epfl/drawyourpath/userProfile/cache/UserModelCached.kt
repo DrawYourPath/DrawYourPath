@@ -175,7 +175,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      *
      * @return the [LiveData] of a list of [DailyGoal]
      */
-    fun getDailyGoal(): LiveData<List<DailyGoal>> {
+    fun getDailyGoals(): LiveData<List<DailyGoal>> {
         checkCurrentUser()
         return dailyGoals
     }
