@@ -8,20 +8,25 @@
         android:id="@+id/mapMenuFragmentContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center|bottom"
+        android:orientation="vertical"
         android:translationZ="2dp">
 
         <Button
+            android:id="@+id/button_start_drawing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:textSize="30sp"
+            android:paddingLeft="34dp"
+            android:paddingTop="10dp"
+            android:paddingRight="34dp"
+            android:paddingBottom="10dp"
             android:text="@string/start_drawing"
-            android:id="@+id/button_start_drawing"/>
+            android:textSize="18sp" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

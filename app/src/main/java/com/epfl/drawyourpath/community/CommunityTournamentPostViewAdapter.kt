@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.utils.Utils
 
 /**
  * used in a recycler view to display the [TournamentPost]
@@ -41,7 +42,7 @@ class CommunityTournamentPostViewAdapter(
         }
     }
 
-    // Create new views (invoked by the layout manager)
+    // Create new views (invoked by the layout manager )
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
@@ -62,7 +63,7 @@ class CommunityTournamentPostViewAdapter(
             viewHolder.tournamentName.visibility = View.GONE
         }
 
-        // TODO change image(run) path of the post
+        viewHolder.imagePath.setImageBitmap(Utils.coordinatesToBitmap(post.run.getPath().getPoints()))
 
         viewHolder.userName.text = post.userId
 

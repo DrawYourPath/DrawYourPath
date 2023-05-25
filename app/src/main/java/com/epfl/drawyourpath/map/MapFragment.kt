@@ -149,6 +149,7 @@ class MapFragment(private val focusedOnPosition: Boolean = true, private val pat
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
