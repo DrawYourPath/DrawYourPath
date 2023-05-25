@@ -1,22 +1,26 @@
 package com.epfl.drawyourpath.community
 
 import com.epfl.drawyourpath.path.Run
+import com.google.firebase.database.Exclude
 import java.time.LocalDateTime
 import kotlin.collections.HashMap
 
 data class TournamentPost(
+    val postId: String,
     val userId: String,
     val run: Run,
-    private var votes: Int = 0,
     val date: LocalDateTime = LocalDateTime.now(),
     private var usersVotes: MutableMap<String, Int> = HashMap(),
 ) : java.io.Serializable {
+
+    private var votes = usersVotes.values.sum()
 
     /**
      * get the total number of votes
      *
      * @return the total number of votes
      */
+    @Exclude
     fun getVotes(): Int {
         return votes
     }

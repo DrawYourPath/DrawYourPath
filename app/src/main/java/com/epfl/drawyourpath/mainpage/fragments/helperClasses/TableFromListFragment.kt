@@ -1,4 +1,4 @@
-package com.epfl.drawyourpath.mainpage.fragments.runStats
+package com.epfl.drawyourpath.mainpage.fragments.helperClasses
 
 import android.graphics.Color
 import android.os.Bundle

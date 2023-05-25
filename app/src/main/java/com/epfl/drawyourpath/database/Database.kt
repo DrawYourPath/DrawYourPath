@@ -1,14 +1,16 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
 import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Run
 import java.time.LocalDate
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 data class UserGoals(
@@ -48,7 +50,7 @@ data class ChatMembers(
 
 data class ChatMessages(
     val conversationId: String? = null,
-    val chat: List<Message>? = null,
+    val chat: MutableLiveData<List<Message>>? = null,
 )
 
 data class MilestoneData(
@@ -70,6 +72,14 @@ abstract class Database {
      * @return a future that indicates if the tournament is stored on the database
      */
     abstract fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean>
+
+    /**
+     * This function is used to know if a certain tournament is stored in the database
+     * @param tournamentId that corresponds to the tournament in which the post should be
+     * @param postId that corresponds to the post
+     * @return a future that indicates if the post is stored on the database
+     */
+    abstract fun isPostInDatabase(tournamentId: String, postId: String): CompletableFuture<Boolean>
 
     /**
      * This function will return a future that give the username in function of the userId
@@ -179,7 +189,7 @@ abstract class Database {
 
     /**
      * This function is used to add a trophy to the user profile of the user in the database
-     * @param tropy to be stored in the database
+     * @param trophy to be stored in the database
      * @return a future to indicate if the trophy was correctly added to the user profile on the database
      */
     abstract fun addTrophy(userId: String, trophy: Trophy): CompletableFuture<Unit>
@@ -197,10 +207,16 @@ abstract class Database {
     ): CompletableFuture<Unit>
 
     /**
+     * Function to return the list of the tournaments Ids available in the database
+     * @return a live data that contains the list of the tournaments ids available in the database
+     */
+    abstract fun getAllTournamentsId(): LiveData<List<String>>
+
+    /**
      * Function used to get a unique ID for a new tournament. Never fails (because client side).
      * @return a unique ID or null if the operation failed.
      */
-    abstract fun getTournamentUID(): String?
+    abstract fun getTournamentUniqueId(): String?
 
     /**
      * Function used to add a new tournament to the database. The participants and posts of the
@@ -243,14 +259,76 @@ abstract class Database {
     ): CompletableFuture<Unit>
 
     /**
-     * Function used to retrieve the tournament corresponding to the ID.
-     * @param tournamentId the id of the tournaments to retrieve
-     * @return a future that contains the tournament if successful, or an exception if an error
+     * Function used to retrieve the tournament corresponding to the ID. Use only if you need to get
+     * everything about a tournament (including posts and participants). Otherwise, you should use
+     * [getTournamentInfo], [getTournamentPosts] or [getTournamentParticipantsId].
+     * @param tournamentId the id of the tournaments to retrieve.
+     * @return a live data that contains the tournament if successful, or an exception if an error
      * occurred with the db.
      */
     abstract fun getTournament(
         tournamentId: String,
-    ): CompletableFuture<Tournament>
+    ): LiveData<Tournament>
+
+    /**
+     * Function used to retrieve all posts from the tournament corresponding to the ID.
+     * @param tournamentId the id of the tournaments to retrieve.
+     * @return a live data that contains the list of the posts of the tournament.
+     */
+    abstract fun getTournamentPosts(
+        tournamentId: String,
+    ): LiveData<List<TournamentPost>>
+
+    /**
+     * Function used to retrieve the participants of a tournament.
+     * @param tournamentId the id of the tournaments from which we want the participants.
+     * @return a future that contains the list of participants if successful.
+     */
+    abstract fun getTournamentParticipantsId(
+        tournamentId: String,
+    ): CompletableFuture<List<String>>
+
+    /**
+     * Function used to retrieve only the info about the tournament, not the posts or the participants
+     * to avoid too much downloading.
+     * @param tournamentId the id of the tournament from which we want the info.
+     * @return a live data that contains the tournament which has empty posts and participants ids lists.
+     */
+    abstract fun getTournamentInfo(
+        tournamentId: String,
+    ): LiveData<Tournament>
+
+    /**
+     * Function used to get a unique ID for a new post. Never fails (because client side).
+     * @return a unique ID or null if the operation failed.
+     */
+    abstract fun getPostUniqueId(): String?
+
+    /**
+     * Function used to add a post to a tournament.
+     * @param tournamentId the id of the tournament to which we want to add the post.
+     * @param post the post to add to the tournament.
+     * @return a future indicating if the operation was successful.
+     */
+    abstract fun addPostToTournament(
+        tournamentId: String,
+        post: TournamentPost,
+    ): CompletableFuture<Unit>
+
+    /**
+     * Function used to add or overwrite/change a vote on a post.
+     * @param tournamentId the tournament in which the post is.
+     * @param postId the id of the post.
+     * @param userId the id of the user who votes.
+     * @param vote the new vote value: downvote = -1, no vote = 0, upvote = 1.
+     * @return a future indicating if the operation was successful.
+     */
+    abstract fun voteOnPost(
+        userId: String,
+        tournamentId: String,
+        postId: String,
+        vote: Int,
+    ): CompletableFuture<Unit>
 
     /**
      * Function used to create a chat conversation with other users of the DrawYourPath community.
@@ -268,11 +346,25 @@ abstract class Database {
     ): CompletableFuture<String>
 
     /**
+     * Function used to obtained the list of conversationId where the user with the given given userId is present.
+     * @param userId of the user
+     * @return a live data that contains a list of conversationId where the user is present.
+     */
+    abstract fun getChatList(userId: String): LiveData<List<String>>
+
+    /**
+     * Function used to obtain the list of friends of the user with the given userId.
+     * @param userId of the user that we want to obtain the friends list
+     * @return a live data that contains the friends list(a list of friend's userId).
+     */
+    abstract fun getFriendsList(userId: String): LiveData<List<String>>
+
+    /**
      * Function used to obtain the chat preview of a given conversation with his conversationId
      * @param conversationId that we want to obtain the chat preview
      * @return a future containing a chat preview object that contains the information of the chat preview
      */
-    abstract fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview>
+    abstract fun getChatPreview(conversationId: String): LiveData<ChatPreview>
 
     /**
      * Function used to modify the title of a given conversation with his conversationId
@@ -310,7 +402,7 @@ abstract class Database {
      * @param conversationId of the conversation
      * @return a future that contains the messages of the given conversation
      */
-    abstract fun getChatMessages(conversationId: String): CompletableFuture<List<Message>>
+    abstract fun getChatMessages(conversationId: String): LiveData<List<Message>>
 
     /**
      * Function used to add a message to the messages list of a given conversation with his conversationId

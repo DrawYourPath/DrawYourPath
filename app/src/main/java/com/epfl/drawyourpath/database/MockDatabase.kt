@@ -1,7 +1,11 @@
 package com.epfl.drawyourpath.database
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.epfl.drawyourpath.authentication.MockAuth
 import com.epfl.drawyourpath.challenge.dailygoal.DailyGoal
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
@@ -9,6 +13,7 @@ import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.chat.Message
 import com.epfl.drawyourpath.chat.MessageContent
 import com.epfl.drawyourpath.community.Tournament
+import com.epfl.drawyourpath.community.TournamentPost
 import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.utils.Utils
@@ -242,49 +247,80 @@ class MockDatabase : Database() {
         mockUser,
     )
 
-    val mockTournament = Tournament(
-        id = "0",
-        name = "mockTournament0",
-        description = "Mock tournament number 0",
-        creatorId = MockAuth.MOCK_USER.getUid(),
-        startDate = LocalDateTime.now().plusDays(3L),
-        endDate = LocalDateTime.now().plusDays(4L),
-        participants = MOCK_USERS.map { it.userId!! },
-        // The next args are useless for now
-        posts = listOf(),
-        visibility = Tournament.Visibility.PUBLIC,
+    val mockPost = TournamentPost(
+        postId = "mockPostID",
+        userId = mockUser.userId!!,
+        run = mockUser.runs!![0],
+        usersVotes = hashMapOf(
+            MOCK_USERS[0].userId!! to 1,
+            MOCK_USERS[1].userId!! to -1,
+        ),
+    )
+
+    val MOCK_POSTS = listOf(
+        mockPost,
+        TournamentPost(
+            postId = "mockPostID2",
+            userId = MOCK_USERS[0].userId!!,
+            run = MOCK_USERS[0].runs!![0],
+        ),
+    )
+
+    val mockTournament = MutableLiveData(
+        Tournament(
+            id = "0",
+            name = "mockTournament0",
+            description = "Mock tournament number 0",
+            creatorId = MockAuth.MOCK_USER.getUid(),
+            startDate = LocalDateTime.now().plusDays(3L),
+            endDate = LocalDateTime.now().plusDays(4L),
+            participants = MOCK_USERS.map { it.userId!! },
+            // The next args are useless for now
+            posts = listOf(mockPost),
+            visibility = Tournament.Visibility.PUBLIC,
+        ),
+    )
+
+    val MOCK_TOURNAMENTS_ID = MutableLiveData(
+        listOf(
+            "0",
+            "1",
+            "2",
+        ),
     )
 
     val MOCK_TOURNAMENTS = listOf(
         mockTournament,
-        Tournament(
-            id = "1",
-            name = "mockTournament1",
-            description = "Mock tournament number 1",
-            creatorId = MOCK_USERS[0].userId!!,
-            startDate = LocalDateTime.now().plusDays(1L),
-            endDate = LocalDateTime.now().plusDays(2L),
-            participants = listOf(MOCK_USERS[0].userId!!, MOCK_USERS[1].userId!!),
-            // The next args are useless for now
-            posts = listOf(),
-            visibility = Tournament.Visibility.PUBLIC,
+        MutableLiveData(
+            Tournament(
+                id = "1",
+                name = "mockTournament1",
+                description = "Mock tournament number 1",
+                creatorId = MOCK_USERS[0].userId!!,
+                startDate = LocalDateTime.now().plusDays(1L),
+                endDate = LocalDateTime.now().plusDays(2L),
+                participants = listOf(MOCK_USERS[0].userId!!, MOCK_USERS[1].userId!!),
+                posts = listOf(),
+                visibility = Tournament.Visibility.PUBLIC,
+            ),
         ),
-        Tournament(
-            id = "2",
-            name = "mockTournament2",
-            description = "Mock tournament number 2",
-            creatorId = MOCK_USERS[1].userId!!,
-            startDate = LocalDateTime.now().plusDays(2L),
-            endDate = LocalDateTime.now().plusDays(3L),
-            participants = listOf(MOCK_USERS[1].userId!!),
-            // The next args are useless for now
-            posts = listOf(),
-            visibility = Tournament.Visibility.PUBLIC,
+        MutableLiveData(
+            Tournament(
+                id = "2",
+                name = "mockTournament2",
+                description = "Mock tournament number 2",
+                creatorId = MOCK_USERS[1].userId!!,
+                startDate = LocalDateTime.now().plusDays(2L),
+                endDate = LocalDateTime.now().plusDays(3L),
+                participants = listOf(MOCK_USERS[1].userId!!),
+                posts = listOf(),
+                visibility = Tournament.Visibility.PUBLIC,
+            ),
         ),
 
     )
 
-    var mockTournamentUID = 1234567
+    var mockUniqueId = 1234567
 
     var MOCK_CHAT_PREVIEWS = listOf(
         ChatPreview(
@@ -304,18 +340,20 @@ class MockDatabase : Database() {
     val MOCK_CHAT_MESSAGES = listOf(
         ChatMessages(
             conversationId = "0",
-            chat = listOf(
-                Message(
-                    id = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
-                    senderId = MOCK_USERS[1].userId!!,
-                    timestamp = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
-                    content = MessageContent.Text("Hello"),
-                ),
-                Message(
-                    id = LocalDate.of(2000, 2, 20).atTime(10, 0).toEpochSecond(ZoneOffset.UTC),
-                    senderId = mockUser.userId!!,
-                    timestamp = LocalDate.of(2000, 2, 20).atTime(10, 0).toEpochSecond(ZoneOffset.UTC),
-                    content = MessageContent.Text("Hi"),
+            chat = MutableLiveData(
+                listOf(
+                    Message(
+                        id = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
+                        senderId = MOCK_USERS[1].userId!!,
+                        timestamp = LocalDate.of(2000, 2, 20).atTime(11, 0).toEpochSecond(ZoneOffset.UTC),
+                        content = MessageContent.Text("Hello"),
+                    ),
+                    Message(
+                        id = LocalDate.of(2000, 2, 20).atTime(10, 0).toEpochSecond(ZoneOffset.UTC),
+                        senderId = mockUser.userId!!,
+                        timestamp = LocalDate.of(2000, 2, 20).atTime(10, 0).toEpochSecond(ZoneOffset.UTC),
+                        content = MessageContent.Text("Hi"),
+                    ),
                 ),
             ),
         ),
@@ -338,11 +376,15 @@ class MockDatabase : Database() {
         return Utils.failedFuture(Error("This tournament doesn't exist $tournamentId"))
     }
 
+    private fun <T> postDoesntExist(tournamentId: String, postId: String): CompletableFuture<T> {
+        return Utils.failedFuture(Error("This post doesn't exist $postId (in tournament $tournamentId)"))
+    }
+
     val unameToUid = MOCK_USERS.associate { it.username to it.userId }.toMutableMap()
 
     val users = MOCK_USERS.associateBy { it.userId }.toMutableMap()
 
-    val tournaments = MOCK_TOURNAMENTS.associateBy { it.id }.toMutableMap()
+    val tournaments = MOCK_TOURNAMENTS.associateBy { it.value!!.id }.toMutableMap()
 
     val chatPreviews = MOCK_CHAT_PREVIEWS.associateBy { it.conversationId }.toMutableMap()
     val chatMembers = MOCK_CHAT_MEMBERS.associateBy { it.conversationId }.toMutableMap()
@@ -354,6 +396,15 @@ class MockDatabase : Database() {
 
     override fun isTournamentInDatabase(tournamentId: String): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(tournaments.containsKey(tournamentId))
+    }
+
+    override fun isPostInDatabase(
+        tournamentId: String,
+        postId: String,
+    ): CompletableFuture<Boolean> {
+        val postExists = tournaments.keys.contains(tournamentId) &&
+            tournaments[tournamentId]!!.value!!.posts.any { it.postId == postId }
+        return CompletableFuture.completedFuture(postExists)
     }
 
     override fun getUsername(userId: String): CompletableFuture<String> {
@@ -579,13 +630,19 @@ class MockDatabase : Database() {
         return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun getTournamentUID(): String {
-        return mockTournamentUID++.toString()
+    override fun getAllTournamentsId(): LiveData<List<String>> {
+        return MOCK_TOURNAMENTS_ID
+    }
+
+    override fun getTournamentUniqueId(): String {
+        return mockUniqueId++.toString()
     }
 
     override fun addTournament(tournament: Tournament): CompletableFuture<Unit> {
+        // add the tournament to the list of tournament ids
+        MOCK_TOURNAMENTS_ID.postValue((MOCK_TOURNAMENTS_ID.value ?: emptyList()) + tournament.id)
         // Replaces if id already exists, which would happen with Firebase but should never happen as we generate unique ids.
-        tournaments[tournament.id] = tournament
+        tournaments[tournament.id] = MutableLiveData(tournament)
         return CompletableFuture.completedFuture(Unit)
     }
 
@@ -595,7 +652,7 @@ class MockDatabase : Database() {
             return CompletableFuture.completedFuture(Unit)
         }
         // 1. remove the tournament from the list of tournaments of all participants
-        tournaments[tournamentId]!!.participants.forEach { userId ->
+        tournaments[tournamentId]!!.value!!.participants.forEach { userId ->
             if (users.contains(userId)) {
                 val currentUser = users[userId]!!
                 users[userId] = currentUser.copy(
@@ -605,6 +662,9 @@ class MockDatabase : Database() {
         }
         // 2. remove the tournament from the tournaments file
         tournaments.remove(tournamentId)
+
+        // 3. remove tournament from the tournament id list
+        MOCK_TOURNAMENTS_ID.postValue((MOCK_TOURNAMENTS_ID.value ?: emptyList()).stream().toList().filter { it != tournamentId })
 
         return CompletableFuture.completedFuture(Unit)
     }
@@ -631,13 +691,15 @@ class MockDatabase : Database() {
                 ),
         )
         // add user to tournament
-        val currentTournament = tournaments[tournamentId]!!
-        tournaments[tournamentId] = currentTournament.copy(
-            participants = (
-                currentTournament.participants.filter {
-                    it != userId
-                } + userId
-                ),
+        val currentTournament = tournaments[tournamentId]!!.value
+        tournaments[tournamentId]!!.postValue(
+            currentTournament!!.copy(
+                participants = (
+                    currentTournament.participants.filter {
+                        it != userId
+                    } + userId
+                    ),
+            ),
         )
 
         return CompletableFuture.completedFuture(Unit)
@@ -655,20 +717,100 @@ class MockDatabase : Database() {
             )
         }
         if (tournaments.contains(tournamentId)) {
-            val currentTournament = tournaments[tournamentId]!!
-            tournaments[tournamentId] = currentTournament.copy(
-                participants = currentTournament.participants.filter { it != userId },
+            val currentTournament = tournaments[tournamentId]!!.value!!
+            tournaments[tournamentId]!!.postValue(
+                currentTournament.copy(
+                    participants = currentTournament.participants.filter { it != userId },
+                ),
             )
         }
         return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun getTournament(tournamentId: String): CompletableFuture<Tournament> {
+    override fun getTournament(tournamentId: String): LiveData<Tournament> {
+        if (!tournaments.contains(tournamentId)) {
+            throw Error("This tournament doesn't exist $tournamentId")
+        }
+        return tournaments[tournamentId]!!
+    }
+
+    override fun getTournamentPosts(tournamentId: String): LiveData<List<TournamentPost>> {
+        if (!tournaments.contains(tournamentId)) {
+            throw Error("This tournament doesn't exist $tournamentId")
+        }
+        val postsLiveData = MutableLiveData<List<TournamentPost>>()
+        Handler(Looper.getMainLooper()).post {
+            tournaments[tournamentId]!!.observeForever {
+                postsLiveData.postValue(it.posts)
+            }
+        }
+        return postsLiveData
+    }
+
+    override fun getTournamentParticipantsId(tournamentId: String): CompletableFuture<List<String>> {
         if (!tournaments.contains(tournamentId)) {
             return tournamentDoesntExist(tournamentId)
         }
+        return CompletableFuture.completedFuture(tournaments[tournamentId]!!.value!!.participants)
+    }
 
-        return CompletableFuture.completedFuture(tournaments[tournamentId])
+    override fun getTournamentInfo(tournamentId: String): LiveData<Tournament> {
+        if (!tournaments.contains(tournamentId)) {
+            throw Error("This tournament doesn't exist $tournamentId")
+        }
+        val infoLiveData = MutableLiveData<Tournament>()
+        Handler(Looper.getMainLooper()).post {
+            tournaments[tournamentId]!!.observeForever {
+                infoLiveData.postValue(it.copy(participants = emptyList(), posts = emptyList()))
+            }
+        }
+        return infoLiveData
+    }
+
+    override fun getPostUniqueId(): String {
+        return mockUniqueId++.toString()
+    }
+
+    override fun addPostToTournament(
+        tournamentId: String,
+        post: TournamentPost,
+    ): CompletableFuture<Unit> {
+        if (!tournaments.contains(tournamentId)) {
+            return tournamentDoesntExist(tournamentId)
+        }
+        val oldTournament = tournaments[tournamentId]!!.value
+        val oldPosts = oldTournament!!.posts.filter { it.postId != post.postId }
+        val newTournament = oldTournament.copy(posts = oldPosts.plus(post))
+        tournaments[tournamentId]!!.postValue(newTournament)
+        return CompletableFuture.completedFuture(Unit)
+    }
+
+    override fun voteOnPost(
+        userId: String,
+        tournamentId: String,
+        postId: String,
+        vote: Int,
+    ): CompletableFuture<Unit> {
+        // check that the userId and postId exist
+        if (!users.contains(userId)) {
+            return userDoesntExist(userId)
+        }
+        if (!isPostInDatabase(tournamentId, postId).get()) {
+            return postDoesntExist(tournamentId, postId)
+        }
+
+        val oldTournament = tournaments[tournamentId]!!.value!!
+        val oldPosts = oldTournament.posts
+        val oldPost = oldPosts.first { it.postId == postId }
+        val oldPostIndex = oldPosts.indexOf(oldPost)
+        val newUsersVotes = oldPost.getUsersVotes().plus(userId to vote).toMutableMap()
+        val newPost = oldPost.copy(usersVotes = newUsersVotes)
+        val newPosts = oldPosts.toMutableList()
+        newPosts.set(oldPostIndex, newPost)
+
+        tournaments[tournamentId]!!.postValue(oldTournament.copy(posts = newPosts))
+
+        return CompletableFuture.completedFuture(Unit)
     }
 
     override fun createChatConversation(
@@ -701,13 +843,25 @@ class MockDatabase : Database() {
             }
     }
 
-    override fun getChatPreview(conversationId: String): CompletableFuture<ChatPreview> {
-        return CompletableFuture.completedFuture(
+    override fun getChatPreview(conversationId: String): LiveData<ChatPreview> {
+        return MutableLiveData(
             ChatPreview(
                 conversationId = conversationId,
                 title = chatPreviews[conversationId]!!.title,
                 lastMessage = chatPreviews[conversationId]!!.lastMessage,
             ),
+        )
+    }
+
+    override fun getChatList(userId: String): LiveData<List<String>> {
+        return MutableLiveData(
+            users[userId]!!.chatList,
+        )
+    }
+
+    override fun getFriendsList(userId: String): LiveData<List<String>> {
+        return MutableLiveData(
+            users[userId]?.friendList ?: emptyList(),
         )
     }
 
@@ -741,14 +895,14 @@ class MockDatabase : Database() {
         return CompletableFuture.completedFuture(Unit)
     }
 
-    override fun getChatMessages(conversationId: String): CompletableFuture<List<Message>> {
-        return CompletableFuture.completedFuture(chatMessages[conversationId]!!.chat)
+    override fun getChatMessages(conversationId: String): LiveData<List<Message>> {
+        return chatMessages[conversationId]!!.chat!!
     }
 
     override fun addChatMessage(conversationId: String, message: Message): CompletableFuture<Unit> {
         // update the messages list
         val current = chatMessages[conversationId]!!
-        chatMessages[conversationId] = current.copy(chat = listOf(message) + (current.chat ?: emptyList()))
+        chatMessages[conversationId]!!.chat!!.postValue(listOf(message) + (current.chat!!.value ?: emptyList()))
         // update the preview
         val currentPreview = chatPreviews[conversationId]!!
         chatPreviews[conversationId] = currentPreview.copy(lastMessage = message)
@@ -761,7 +915,7 @@ class MockDatabase : Database() {
     ): CompletableFuture<Unit> {
         // update the messages list
         val current = chatMessages[conversationId]!!
-        chatMessages[conversationId] = current.copy(chat = (current.chat ?: emptyList()).stream().filter { it.timestamp != messageId }.toList())
+        chatMessages[conversationId]!!.chat!!.postValue((current.chat?.value ?: emptyList()).stream().filter { it.timestamp != messageId }.toList())
         // update the preview if needed
         if (chatPreviews[conversationId]!!.lastMessage!!.timestamp == messageId) {
             val currentPreview = chatPreviews[conversationId]!!
@@ -778,8 +932,8 @@ class MockDatabase : Database() {
     ): CompletableFuture<Unit> {
         // update the messages list
         val current = chatMessages[conversationId]!!
-        chatMessages[conversationId] = current.copy(
-            chat = (current.chat ?: emptyList()).stream().map {
+        chatMessages[conversationId]!!.chat!!.postValue(
+            (current.chat?.value ?: emptyList()).stream().map {
                 if (it.timestamp == messageId) it.copy(content = MessageContent.Text(message)) else it
             }.toList(),
         )
@@ -838,12 +992,14 @@ class MockDatabase : Database() {
     ): CompletableFuture<Unit> {
         chatMessages[conversationId] = ChatMessages(
             conversationId = conversationId,
-            chat = listOf(
-                Message(
-                    id = firstMessage.id,
-                    content = firstMessage.content,
-                    senderId = firstMessage.senderId,
-                    timestamp = firstMessage.timestamp,
+            chat = MutableLiveData(
+                listOf(
+                    Message(
+                        id = firstMessage.id,
+                        content = firstMessage.content,
+                        senderId = firstMessage.senderId,
+                        timestamp = firstMessage.timestamp,
+                    ),
                 ),
             ),
         )

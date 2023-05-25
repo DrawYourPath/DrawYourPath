@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:gravity="center|top"
+    android:id="@+id/global_stats_fragment"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/average_speed_global_stats"
+        android:text="@string/average_speed_in_m_s_title"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/average_duration_global_stats"
+        android:text="@string/average_duration_in_s_title"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/average_distance_global_stats"
+        android:text="@string/average_distance_in_km_title"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/distance_goal_global_stats"
+        android:text="@string/number_of_distance_goal_reached"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/time_goal_global_stats"
+        android:text="@string/number_of_time_goal_reached"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/path_goal_global_stats"
+        android:text="@string/number_of_path_goal_reached"
+        android:textStyle="bold"
+        android:layout_margin="5dp"/>
+
+</LinearLayout>

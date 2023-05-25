@@ -57,6 +57,15 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
     }
 
+    fun openProfileForUser(userId: String) {
+        replaceFragment<ProfileFragment>(
+            bundleOf(
+                PROFILE_USER_ID_KEY to userId,
+                PROFILE_TEST_KEY to isTest,
+            ),
+        )
+    }
+
     private fun setupTopBar(view: View) {
         val topAppBar: Toolbar = view.findViewById(R.id.topAppBar)
         // Make this toolbar behave like the main action bar

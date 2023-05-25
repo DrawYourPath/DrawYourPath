@@ -12,10 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.mainpage.MainActivity
-import com.epfl.drawyourpath.mainpage.fragments.runStats.RunInfoStatsFragment
 import com.epfl.drawyourpath.utils.Utils
 import com.epfl.drawyourpath.utils.Utils.getStaticMapUrl
-import com.google.android.gms.maps.model.LatLng
 
 /**
  * This class is the adapter for the RecyclerView that displays the list of runs.
@@ -23,8 +21,7 @@ import com.google.android.gms.maps.model.LatLng
 class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.past_run, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.past_run, parent, false))
     }
 
     @SuppressLint("SetTextI18n")
@@ -33,14 +30,16 @@ class RunsAdapter(private var runs: List<Run>) : RecyclerView.Adapter<RunsAdapte
 
         // TODO: will be refactor with the creation of a bitmap directly with the run coordinates
 
-        val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten() // Get the coordinates for this specific run
         val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
 
-        val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey)
+        // Get the coordinates for this specific run
+        val points = run.getPath().getPoints()
+
+        holder.mapImageView.setImageBitmap(Utils.coordinatesToBitmap(points))
 
         // Load the image using Glide
         Glide.with(holder.itemView.context)
-            .load(staticMapUrl)
+            .load(getStaticMapUrl(points.flatten(), apiKey))
             .placeholder(R.drawable.map_loading_placeholder) // Set a placeholder image while loading
             .into(holder.mapImageView)
 
