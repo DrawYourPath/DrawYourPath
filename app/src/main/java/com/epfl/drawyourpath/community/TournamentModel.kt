@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture
  */
 class TournamentModel : ViewModel() {
     // use mock by default
-    private var database: Database = FirebaseDatabase()
+    val database: Database = FirebaseDatabase()
 
     private var currentUserId: String = MockDatabase.mockUser.userId!!
 
@@ -172,8 +172,14 @@ class TournamentModel : ViewModel() {
         }
     }
 
-    fun addVote(vote: Int, postId: String): CompletableFuture<Unit> {
-        return CompletableFuture()
+    /**
+     * add a vote to a post
+     * @param vote the vote (-1, 0, 1)
+     * @param postId the post
+     * @param tournamentId the tournament
+     */
+    fun addVote(vote: Int, postId: String, tournamentId: String): CompletableFuture<Unit> {
+        return database.voteOnPost(currentUserId, tournamentId, postId, vote)
     }
 
     /**
@@ -193,13 +199,19 @@ class TournamentModel : ViewModel() {
         updateUserTournaments(true)
     }
 
+    /**
+     * get the current user
+     */
+    fun getCurrentUser(): String {
+        return currentUserId
+    }
+
     private fun updateUserTournaments(firstClear: Boolean = false): CompletableFuture<Unit> {
         if (firstClear) {
             _userTournaments.clear()
             userTournaments.postValue(_userTournaments)
         }
         return database.getUserData(currentUserId).thenApplyAsync {
-            Log.d("test", it.tournaments.toString())
             it.tournaments?.let { it1 ->
                 _userTournaments.clear()
                 _userTournaments.addAll(it1)

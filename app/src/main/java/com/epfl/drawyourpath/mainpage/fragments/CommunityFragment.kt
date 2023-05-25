@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -18,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.*
+import com.epfl.drawyourpath.database.FirebaseDatabase
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 
@@ -28,8 +31,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
 
     private val tournamentModel: TournamentModel by activityViewModels()
 
-    private val postViewAdapter = CommunityTournamentPostViewAdapter()
-
+    private lateinit var postViewAdapter: CommunityTournamentPostViewAdapter
     private lateinit var drawer: DrawerLayout
     private lateinit var headlineHome: LinearLayout
     private lateinit var headlineDetailsLayout: LinearLayout
@@ -65,6 +67,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         detailsLayout = view.findViewById(R.id.community_detail_layout)
         tournamentPostsView = view.findViewById(R.id.display_community_tournaments_view)
         scroll = view.findViewById(R.id.community_nested_scroll_view)
+        postViewAdapter = CommunityTournamentPostViewAdapter { vote, postId, tournamentId -> tournamentModel.addVote(vote, postId, tournamentId) }
     }
 
     /**
@@ -74,7 +77,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         tournamentPostsView.layoutManager = LinearLayoutManager(context)
         tournamentPostsView.adapter = postViewAdapter
         tournamentModel.posts.observe(viewLifecycleOwner) { posts ->
-            postViewAdapter.update(posts, true)
+            postViewAdapter.update(posts, headlineHome.isVisible, tournamentModel.getCurrentUser())
         }
     }
 

@@ -94,7 +94,7 @@ object FirebaseKeys {
     const val POST_USER_ID = "userId"
     const val POST_RUN = "run"
     const val POST_DATE = "date"
-    const val POST_USERS_VOTES = "usersVotes"
+    const val POST_USERS_VOTES = "userVotes"
 
     // Run keys
     const val RUN_PATH = "path"

@@ -11,16 +11,21 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.database.MockDatabase
 import com.epfl.drawyourpath.utils.Utils
 import com.google.android.gms.maps.model.LatLng
+import java.util.concurrent.CompletableFuture
 
 /**
  * used in a recycler view to display the [TournamentPost]
  */
-class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
+class CommunityTournamentPostViewAdapter(
+    private val vote: (vote: Int, postId: String, tournamentId: String) -> CompletableFuture<Unit>
+) : RecyclerView.Adapter<CommunityTournamentPostViewAdapter.ViewHolder>() {
 
-    private var posts: List<TournamentPost> = listOf()
+    private var posts: MutableList<TournamentPost> = mutableListOf()
     private var showName: Boolean = false
+    private var userId: String = MockDatabase.mockUser.userId!!
 
     /**
      * Custom view holder using a custom layout for tournaments
@@ -83,23 +88,30 @@ class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournam
 
         viewHolder.voteCount.text = post.getVotes().toString()
 
+        updateButtonColor(post.getUsersVotes()[userId], viewHolder)
+
         viewHolder.upvote.setOnClickListener {
-            if (post.upvote("user")) {
-                changeButtonColor(viewHolder, it, R.color.red, R.color.grey)
+            if (post.getUsersVotes()[userId] != null && post.getUsersVotes()[userId] == 1) {
+                updateButtonColor(0, viewHolder)
+                viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], 0).toString()
+                vote(0, post.postId, post.tournamentId)
             } else {
-                changeButtonColor(viewHolder, it, R.color.grey, R.color.grey)
+                updateButtonColor(1, viewHolder)
+                viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], 1).toString()
+                vote(1, post.postId, post.tournamentId)
             }
-            viewHolder.voteCount.text = post.getVotes().toString()
         }
 
         viewHolder.downvote.setOnClickListener {
-            if (post.downvote("user")) {
-                changeButtonColor(viewHolder, it, R.color.grey, R.color.blue)
+            if (post.getUsersVotes()[userId] != null && post.getUsersVotes()[userId] == -1) {
+                updateButtonColor(0, viewHolder)
+                viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], 0).toString()
+                vote(0, post.postId, post.tournamentId)
             } else {
-                changeButtonColor(viewHolder, it, R.color.grey, R.color.grey)
+                updateButtonColor(-1, viewHolder)
+                viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], -1).toString()
+                vote(-1, post.postId, post.tournamentId)
             }
-
-            viewHolder.voteCount.text = post.getVotes().toString()
         }
     }
 
@@ -111,10 +123,35 @@ class CommunityTournamentPostViewAdapter : RecyclerView.Adapter<CommunityTournam
      * update the recycler view to show the updated list of posts
      * @param posts the new list of posts
      */
-    fun update(posts: List<TournamentPost>, showName: Boolean) {
-        this.posts = posts
+    fun update(posts: List<TournamentPost>, showName: Boolean, userId: String) {
+        this.posts = posts.toMutableList()
         this.showName = showName
+        this.userId = userId
         notifyDataSetChanged()
+    }
+
+    /**
+     * calculate the new total vote base on the last vote and new vote to display the total before the database is updated
+     * @param total the total vote
+     * @param currentVote the current vote
+     * @param newVote the new vote
+     * @return the new total
+     */
+    private fun newVoteTotal(total: Int, currentVote: Int?, newVote: Int): Int {
+        return total - (currentVote ?: 0) + newVote
+    }
+
+    /**
+     * update the upvote and downvote color based on the current vote (-1 downvote, 0 or null no vote, 1 upvote)
+     * @param currentVote the current vote
+     * @param viewHolder the viewHolder
+     */
+    private fun updateButtonColor(currentVote: Int?, viewHolder: ViewHolder) {
+        when (currentVote) {
+            1 -> changeButtonColor(viewHolder, viewHolder.itemView, R.color.red, R.color.grey)
+            -1 -> changeButtonColor(viewHolder, viewHolder.itemView, R.color.grey, R.color.blue)
+            else -> changeButtonColor(viewHolder, viewHolder.itemView, R.color.grey, R.color.grey)
+        }
     }
 
     /**

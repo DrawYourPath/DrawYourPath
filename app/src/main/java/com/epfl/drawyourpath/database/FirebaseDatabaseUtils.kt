@@ -151,6 +151,19 @@ object FirebaseDatabaseUtils {
     }
 
     /**
+     * Helper function to obtain the votes of a post from the database
+     * @param data the data snapshot containing the votes
+     * @return a list containing the votes of a post
+     */
+    fun transformVotesToMap(data: DataSnapshot?): Map<String, Int> {
+        val votes = mutableMapOf<String, Int>()
+        data?.children?.mapNotNull {
+            votes.put(it.key as String, (it.value as Long).toInt())
+        }
+        return votes
+    }
+
+    /**
      * Helper function to obtain a post from a database snapshot
      * @param data the data snapshot containing the post
      * @return the post, or null if an error occurred
@@ -163,8 +176,7 @@ object FirebaseDatabaseUtils {
         val run = transformRun(data?.child(FirebaseKeys.POST_RUN))
         val date = transformLocalDateTime(data?.child(FirebaseKeys.POST_DATE))
         // Unchecked cast here but should work without problem
-        val usersVotes =
-            (data?.child(FirebaseKeys.POST_USERS_VOTES)?.value ?: emptyMap<String, Int>()) as Map<String, Int>
+        val usersVotes = transformVotesToMap(data?.child(FirebaseKeys.POST_USERS_VOTES))
 
         if (postId == null || tournamentId == null || tournamentName == null || userId == null || run == null || date == null) {
             Log.e(this::class.java.name, "TournamentPost had null values")
