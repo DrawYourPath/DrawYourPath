@@ -17,9 +17,7 @@ class TournamentPostDetail(private val run: Run) : Fragment(R.layout.fragment_to
         view.findViewById<ImageButton>(R.id.post_detail_back_button).setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
-        
         val fragTransaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragTransaction.add(R.id.post_detail_fragment_container, RunInfoStatsFragment(run)).commit()
     }
-
 }

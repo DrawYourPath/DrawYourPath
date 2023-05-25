@@ -80,7 +80,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             tournamentModel.getUsernameWithId(it)
         }, {
             displayPostDetails(it)
-        },)
+        })
     }
 
     /**
