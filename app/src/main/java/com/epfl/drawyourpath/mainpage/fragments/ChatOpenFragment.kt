@@ -133,7 +133,6 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
             true
         }
         runPopupMenu.show()
-
     }
     companion object {
         private const val ARG_CHAT = "arg_chat"

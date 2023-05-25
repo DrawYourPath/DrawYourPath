@@ -234,6 +234,7 @@ class ChatFragmentTest {
         onView(withId(R.id.chatListRecyclerView))
             .check(matches(hasDescendant(withId(R.id.chatTitleTextView))))
     }
+
     @Test
     fun testSendRunButtonOpensPopupAndAddsRunToChat() {
         // Navigate to the chat open fragment

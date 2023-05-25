@@ -38,7 +38,7 @@ class RunArrayAdapter(context: Context, runs: MutableList<Run>, @LayoutRes val r
 
         val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten() // Get the coordinates for this specific run
         // Use the utility function to load the map image
-        Utils.loadMapImage(context, runCoordinates, viewHolder.mapImageView)
+        Utils.loadMapImage(context, runCoordinates, viewHolder.mapImageView, run)
 
         // Set the data to the view items in the layout
         // holder.mapImageView.setImageResource(run.mapImage)

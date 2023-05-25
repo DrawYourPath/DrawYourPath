@@ -79,7 +79,7 @@ class MessagesAdapter(private val messages: List<Message>, private val userId: S
 
                 val runCoordinates: List<LatLng> = run.getPath().getPoints().flatten()
 
-                Utils.loadMapImage(holder.itemView.context, runCoordinates, runPathHolder.mapImageView)
+                Utils.loadMapImage(holder.itemView.context, runCoordinates, runPathHolder.mapImageView, run)
 
                 runPathHolder.dateTextView.text = run.getDate()
                 runPathHolder.distanceTextView.text = holder.itemView.context.getString(R.string.display_distance).format(Utils.getStringDistance(run.getDistance()))

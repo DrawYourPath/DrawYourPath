@@ -207,9 +207,9 @@ object Utils {
      * @param runCoordinates the coordinates of the run
      * @param imageView the imageView where the map will be loaded
      */
-    fun loadMapImage(context: Context, runCoordinates: List<LatLng>, imageView: ImageView) {
+    fun loadMapImage(context: Context, runCoordinates: List<LatLng>, imageView: ImageView, run: Run) {
         val apiKey = "AIzaSyCE8covSYZE_sOv4Z-HaoljRlNOTV8cKRk"
-
+        imageView.setImageBitmap(Utils.coordinatesToBitmap(run.getPath().getPoints().flatten()))
         val staticMapUrl = getStaticMapUrl(runCoordinates, apiKey)
 
         Glide.with(context)
