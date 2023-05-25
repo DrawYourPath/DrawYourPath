@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture
 const val IS_TEST_KEY = "isTest"
 const val USE_MOCK_CHALLENGE_REMINDER = "useMockChallengeReminder"
 const val SCAN_QR_REQ_CODE = 8233
+const val MAIN_FRAGMENT_TAG = "MAIN_FRAG"
 
 /**
  * Main activity of the application, should be launched after the login activity.
@@ -79,12 +80,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun openProfileForUser(userId: String) {
-        replaceFragment<ProfileFragment>(
-            bundleOf(
-                PROFILE_USER_ID_KEY to userId,
-                PROFILE_TEST_KEY to isTest,
-            ),
-        )
+        val mainFragment = supportFragmentManager.findFragmentByTag(MAIN_FRAGMENT_TAG) as MainFragment?
+        if (mainFragment != null) {
+            mainFragment.openProfileForUser(userId)
+        } else {
+            replaceFragment<ProfileFragment>(
+                bundleOf(
+                    PROFILE_USER_ID_KEY to userId,
+                    PROFILE_TEST_KEY to isTest,
+                ),
+            )
+        }
     }
 
     private fun setupUser() {
@@ -104,6 +110,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.main_fragment_container_view,
                 F::class.java,
                 bundleOf(IS_TEST_KEY to isTest).also { it.putAll(args ?: bundleOf()) },
+                MAIN_FRAGMENT_TAG,
             )
         }
     }
