@@ -135,13 +135,9 @@ class ChatOpenFragment : Fragment(R.layout.fragment_chat) {
         runPopupMenu.show()
 
     }
-
-
-
     companion object {
         private const val ARG_CHAT = "arg_chat"
         private const val ARG_CHAT_ID = "arg_chat_id"
-
         fun newInstance(chat: Chat, chatId: String): ChatOpenFragment {
             val fragment = ChatOpenFragment()
             val args = Bundle()

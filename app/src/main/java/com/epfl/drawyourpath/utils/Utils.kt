@@ -218,7 +218,6 @@ object Utils {
             .into(imageView)
     }
 
-
     /**
      * Get current date and time in epoch seconds
      * @return current date and time in epoch seconds
