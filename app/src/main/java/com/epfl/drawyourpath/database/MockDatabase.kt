@@ -334,6 +334,8 @@ class MockDatabase : Database() {
                 posts = listOf(
                     TournamentPost(
                         postId = "winPost",
+                        tournamentId = "personalTournament",
+                        tournamentName = "personalTournamentName",
                         userId = mockUser.userId!!,
                         run = mockUser.runs!!.get(0)!!,
                         date = LocalDateTime.now().minusDays(2L),

@@ -58,7 +58,7 @@ class TournamentModelTest {
         assertEquals(mockDatabase.tournaments["0"]?.value!!.toString(), tournamentModel.yourTournament.getOrAwaitValue()[0].toString())
         // 2 tournaments in starting soon
         assertEquals(
-            mockDatabase.tournaments.values.drop(1).map { it.value!!.toString() },
+            mockDatabase.tournaments.values.drop(1).dropLast(1) .map { it.value!!.toString() },
             tournamentModel.startingSoonTournament.getOrAwaitValue().map { it.first.toString() },
         )
     }
@@ -136,7 +136,7 @@ class TournamentModelTest {
 
         // all posts of registered tournament
         assertEquals(
-            mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
+            mockDatabase.tournaments.values.filterNot { it.value!!.name == "personalTournamentName" }.map { it.value!!.posts }.flatten().toString(),
             tournamentModel.posts.getOrAwaitValue().toString(),
         )
     }
@@ -151,7 +151,7 @@ class TournamentModelTest {
 
         // created post in posts
         assertEquals(
-            mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
+            mockDatabase.tournaments.values.filterNot { it.value!!.name == "personalTournamentName" }.map { it.value!!.posts }.flatten().toString(),
             tournamentModel.posts.getOrAwaitValue().toString(),
         )
     }
@@ -194,7 +194,7 @@ class TournamentModelTest {
 
         // new post in posts
         assertEquals(
-            mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
+            mockDatabase.tournaments.values.filterNot { it.value!!.name == "personalTournamentName" }.map { it.value!!.posts }.flatten().toString(),
             tournamentModel.posts.getOrAwaitValue().toString(),
         )
     }
@@ -209,7 +209,7 @@ class TournamentModelTest {
 
         // updated vote in posts
         assertEquals(
-            mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
+            mockDatabase.tournaments.values.filterNot { it.value!!.name == "personalTournamentName" }.map { it.value!!.posts }.flatten().toString(),
             tournamentModel.posts.getOrAwaitValue().toString(),
         )
     }
@@ -225,7 +225,7 @@ class TournamentModelTest {
 
         // updated vote in posts
         assertEquals(
-            mockDatabase.tournaments.values.map { it.value!!.posts }.flatten().toString(),
+            mockDatabase.tournaments.values.filterNot { it.value!!.name == "personalTournamentName" }.map { it.value!!.posts }.flatten().toString(),
             tournamentModel.posts.getOrAwaitValue().toString(),
         )
     }
