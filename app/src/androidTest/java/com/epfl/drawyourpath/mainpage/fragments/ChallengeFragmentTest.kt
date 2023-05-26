@@ -33,10 +33,6 @@ import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class ChallengeFragmentTest {
-
-    @get:Rule
-    val instant = InstantTaskExecutorRule()
-
     @get:Rule
     val executorRule = CountingTaskExecutorRule()
 
