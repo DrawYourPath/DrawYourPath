@@ -25,12 +25,12 @@ object Statistics {
      * @return A map from the month to the distance of the goals in the current year.
      */
     fun getDistancePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.monthValue.toDouble()
-        }.mapValues { (month, dailyGoalOfDay) ->
-            getTotalDistance(dailyGoalOfDay)
+        return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
+            getTotalDistance(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                },
+            )
         }.withDefault { 0.0 }
     }
 
@@ -51,12 +51,12 @@ object Statistics {
      * @return A map from the month to the time of the goals in the current year.
      */
     fun getTimePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.monthValue.toDouble()
-        }.mapValues { (month, dailyGoalOfDay) ->
-            getTotalTime(dailyGoalOfDay)
+        return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
+            getTotalTime(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                },
+            )
         }.withDefault { 0.0 }
     }
 
@@ -87,12 +87,12 @@ object Statistics {
      * @return A map from the day to the average speed in the current month.
      */
     fun getAverageSpeedPerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year && dailyGoal.date.monthValue == LocalDate.now().monthValue
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.dayOfMonth.toDouble()
-        }.mapValues { (day, dailyGoalOfDay) ->
-            getAverageSpeed(dailyGoalOfDay)
+        return (1..LocalDate.now().dayOfMonth).map { it.toDouble() }.associateWith { day ->
+            getAverageSpeed(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
+                },
+            )
         }.withDefault { 0.0 }
     }
 
@@ -102,12 +102,12 @@ object Statistics {
      * @return A map from the month to the average speed in the current year.
      */
     fun getAverageSpeedPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.monthValue.toDouble()
-        }.mapValues { (month, dailyGoalOfDay) ->
-            getAverageSpeed(dailyGoalOfDay)
+        return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
+            getAverageSpeed(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                },
+            )
         }.withDefault { 0.0 }
     }
 
@@ -126,12 +126,12 @@ object Statistics {
      * @return A map from the day to the average duration in the current month.
      */
     fun getAverageDurationPerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year && dailyGoal.date.monthValue == LocalDate.now().monthValue
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.dayOfMonth.toDouble()
-        }.mapValues { (day, dailyGoalOfDay) ->
-            getAverageDuration(dailyGoalOfDay)
+        return (1..LocalDate.now().dayOfMonth).map { it.toDouble() }.associateWith { day ->
+            getAverageDuration(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
+                },
+            )
         }.withDefault { 0.0 }
     }
 
@@ -141,12 +141,12 @@ object Statistics {
      * @return A map from the month to the average duration in the current year.
      */
     fun getAverageDurationPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.monthValue.toDouble()
-        }.mapValues { (month, dailyGoalOfDay) ->
-            getAverageDuration(dailyGoalOfDay)
+        return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
+            getAverageDuration(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                },
+            )
         }.withDefault { 0.0 }
     }
 
@@ -165,12 +165,12 @@ object Statistics {
      * @return A map from the day to the average distance in the current month.
      */
     fun getAverageDistancePerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year && dailyGoal.date.monthValue == LocalDate.now().monthValue
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.dayOfMonth.toDouble()
-        }.mapValues { (day, dailyGoalOfDay) ->
-            getAverageDistance(dailyGoalOfDay)
+        return (1..LocalDate.now().dayOfMonth).map { it.toDouble() }.associateWith { day ->
+            getAverageDistance(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
+                },
+            )
         }.withDefault { 0.0 }
     }
 
@@ -180,12 +180,12 @@ object Statistics {
      * @return A map from the month to the average distance in the current year.
      */
     fun getAverageDistancePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.monthValue.toDouble()
-        }.mapValues { (month, dailyGoalOfDay) ->
-            getAverageDistance(dailyGoalOfDay)
+        return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
+            getAverageDistance(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                },
+            )
         }.withDefault { 0.0 }
     }
 
@@ -195,8 +195,7 @@ object Statistics {
      * @return The total number of shapes drawn.
      */
     fun getShapeDrawnCount(dailyGoals: List<DailyGoal>): Int {
-        return dailyGoals.fold(0) {
-                acc, dailyGoal ->
+        return dailyGoals.fold(0) { acc, dailyGoal ->
             acc + dailyGoal.paths
         }
     }
@@ -207,12 +206,12 @@ object Statistics {
      * @return A map from the month to the number of shapes drawn for goals in the current year.
      */
     fun getShapeDrawnCountPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
-        return dailyGoals.filter { dailyGoal ->
-            dailyGoal.date.year == LocalDate.now().year
-        }.groupBy { dailyGoal ->
-            dailyGoal.date.monthValue.toDouble()
-        }.mapValues { (month, dailyGoalOfDay) ->
-            getShapeDrawnCount(dailyGoalOfDay).toDouble()
+        return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
+            getShapeDrawnCount(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                },
+            ).toDouble()
         }.withDefault { 0.0 }
     }
 }

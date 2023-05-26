@@ -175,6 +175,7 @@
     <string name="average_duration">Average Duration</string>
     <string name="average_duration_in_s">Average Duration (s)</string>
     <string name="average_distance_in_m">Average Distance (in m)</string>
+    <string name="average_distance_in_km">Average Distance (in km)</string>
     <string name="average_distance">Average Distance</string>
     <string name="distance_goal">Distance Goal</string>
     <string name="distance_goal_in_m">Distance Goal (in m)</string>

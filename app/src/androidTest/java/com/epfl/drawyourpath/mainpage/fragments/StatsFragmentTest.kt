@@ -211,7 +211,7 @@ class StatsFragmentTest {
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.year))))
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
-            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_distance_in_m))))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_distance_in_km))))
         // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -237,7 +237,7 @@ class StatsFragmentTest {
             .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.month))))
         // check the column2 title is display
         Espresso.onView(ViewMatchers.withId(TableFromListFragment.ID_COLUMN_TITLE_2))
-            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_distance_in_m))))
+            .check(ViewAssertions.matches(ViewMatchers.withText(context.getString(R.string.average_distance_in_km))))
         // check the toggle button
         Espresso.onView(ViewMatchers.withId(R.id.toggleStats))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

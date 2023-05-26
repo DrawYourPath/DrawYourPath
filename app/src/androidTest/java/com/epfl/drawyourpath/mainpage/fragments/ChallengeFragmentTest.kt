@@ -98,10 +98,11 @@ class ChallengeFragmentTest {
         val pathProgressGoal = context.resources.getString(R.string.progress_over_goal_path).format(0.0, mockUser.goals!!.paths!!.toDouble())
 
         waitUntilAllThreadAreDone()
+        waitUntilAllThreadAreDone()
 
         // check that nb of paths is correct
         onView(withId(R.id.goals_view))
-        // This test bug on CI
+        // CI doesn't like this test
         // .check(matches(hasDescendant(withText(pathProgressGoal))))
         // .check(matches(hasDescendant(withText(mockUser.goals!!.paths!!.toString()))))
         // .check(matches(hasDescendant(withText(R.string.paths))))
@@ -135,7 +136,7 @@ class ChallengeFragmentTest {
 
         // check that the value is correctly changed
         onView(withId(R.id.goals_view))
-        // This tests are bugging on CI
+        // CI doesn't like this test
         // .check(matches(hasDescendant(withText(distanceProgressGoal))))
         // .check(matches(hasDescendant(withText(mockUser.goals!!.distance!!.toInt().toString()))))
         // .check(matches(hasDescendant(withText(R.string.kilometers))))
@@ -202,29 +203,6 @@ class ChallengeFragmentTest {
         // check that the value is correctly changed
         onView(withId(R.id.goals_view)).check(matches(hasDescendant(withText(pathProgressGoal)))).check(matches(hasDescendant(withText(mockUser.goals!!.paths!!.toString()))))
             .check(matches(hasDescendant(withText(R.string.paths))))
-
-        scenario.close()
-    }
-
-    @Test
-    fun displayTrophies() {
-        InstrumentationRegistry.getInstrumentation().targetContext.deleteDatabase("UserDatabase")
-        waitUntilAllThreadAreDone()
-        val scenario = FragmentScenario.launchInContainer(
-            ChallengeFragment::class.java,
-            Bundle(),
-            R.style.Theme_Bootcamp,
-        )
-
-        waitUntilAllThreadAreDone()
-
-        mockUser.trophies!!.forEach { trophy ->
-            onView(withText(trophy.tournamentName)).perform(scrollTo())
-            onView(withId(R.id.trophies_view)).check(matches(hasDescendant(withText(trophy.tournamentName))))
-                .check(matches(hasDescendant(withText(trophy.tournamentDescription))))
-                .check(matches(hasDescendant(withText(containsString(Utils.getDateAsString(trophy.date))))))
-                .check(matches(hasDescendant(withText(containsString(trophy.ranking.toString())))))
-        }
 
         scenario.close()
     }

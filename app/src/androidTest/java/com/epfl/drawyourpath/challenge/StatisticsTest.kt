@@ -152,7 +152,7 @@ class StatisticsTest {
     @Test
     fun distancePerYearForEmptyGoalsIsZero() {
         val map = Statistics.getDistancePerYear(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
@@ -177,7 +177,7 @@ class StatisticsTest {
     @Test
     fun timePerYearForEmptyGoalsIsZero() {
         val map = Statistics.getTimePerYear(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
@@ -212,7 +212,7 @@ class StatisticsTest {
     @Test
     fun averageSpeedPerMonthForEmptyGoalsIsZero() {
         val map = Statistics.getAverageSpeedPerMonth(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
@@ -227,7 +227,7 @@ class StatisticsTest {
     @Test
     fun averageSpeedPerYearForEmptyGoalsIsZero() {
         val map = Statistics.getAverageSpeedPerYear(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
@@ -252,7 +252,7 @@ class StatisticsTest {
     @Test
     fun averageDurationPerMonthForEmptyGoalsIsZero() {
         val map = Statistics.getAverageDurationPerMonth(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
@@ -267,7 +267,7 @@ class StatisticsTest {
     @Test
     fun averageDurationPerYearForEmptyGoalsIsZero() {
         val map = Statistics.getAverageDurationPerYear(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
@@ -292,7 +292,7 @@ class StatisticsTest {
     @Test
     fun averageDistancePerMonthForEmptyGoalsIsZero() {
         val map = Statistics.getAverageDistancePerMonth(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
@@ -307,7 +307,7 @@ class StatisticsTest {
     @Test
     fun averageDistancePerYearForEmptyGoalsIsZero() {
         val map = Statistics.getAverageDistancePerYear(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
@@ -332,7 +332,7 @@ class StatisticsTest {
     @Test
     fun shapeDrawnCountPerYearForEmptyGoalsIsZero() {
         val map = Statistics.getShapeDrawnCountPerYear(emptyList())
-        assertThat(map.isEmpty(), `is`(true))
+        assertThat(map.values.all { it == 0.0 }, `is`(true))
         assertThat(map.getValue(1.0), `is`(0.0))
     }
 
