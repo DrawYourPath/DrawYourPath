@@ -48,7 +48,7 @@ class ChallengeFragmentTest {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
-        Thread.sleep(50)
+        Thread.sleep(100)
     }
 
     @Test
@@ -119,6 +119,8 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
+        waitUntilAllThreadAreDone()
+
         // change value of distance
         onView(withId(R.id.goals_view)).perform(
             actionOnItemAtPosition<RecyclerView.ViewHolder>(
@@ -151,6 +153,8 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
+        waitUntilAllThreadAreDone()
+
         // change value of time
         onView(withId(R.id.goals_view)).perform(
             actionOnItemAtPosition<RecyclerView.ViewHolder>(
@@ -182,6 +186,8 @@ class ChallengeFragmentTest {
             Bundle(),
             R.style.Theme_Bootcamp,
         )
+
+        waitUntilAllThreadAreDone()
 
         // change value of path
         onView(withId(R.id.goals_view)).perform(
