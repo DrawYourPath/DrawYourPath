@@ -13,7 +13,6 @@ import com.epfl.drawyourpath.challenge.dailygoal.DailyGoalEntity
 import com.epfl.drawyourpath.challenge.milestone.Milestone
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEntity
 import com.epfl.drawyourpath.challenge.milestone.MilestoneEnum
-import com.epfl.drawyourpath.challenge.trophy.Trophy
 import com.epfl.drawyourpath.database.*
 import com.epfl.drawyourpath.path.Run
 import com.epfl.drawyourpath.path.cache.RunEntity
@@ -79,9 +78,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     private val runHistory: LiveData<List<Run>> = _currentUserID.switchMap { runCache.getAllRunsAndPoints(it) }.map { runAndPoints ->
         runAndPoints.map { RunEntity.fromEntityToRun(it.key, it.value) }.sortedByDescending { it.getStartTime() }
     }
-
-    // trophies TODO remove sample
-    private val trophies: MutableLiveData<List<Trophy>> = MutableLiveData(Trophy.sample)
 
     // milestones
     private val milestones: LiveData<List<Milestone>> =
@@ -199,16 +195,6 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * get the trophies
-     *
-     * @return the [LiveData] of a list of [Trophy]
-     */
-    fun getTrophies(): LiveData<List<Trophy>> {
-        checkCurrentUser()
-        return trophies
-    }
-
-    /**
      * get the milestones
      *
      * @return the [LiveData] of a list of [Milestone]
@@ -223,6 +209,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @return the current user id
      */
     fun getUserId(): String? {
+        checkCurrentUser()
         return currentUserID
     }
 
