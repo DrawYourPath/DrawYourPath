@@ -10,10 +10,27 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.activityViewModels
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDistance
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDistancePerMonth
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDistancePerYear
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDuration
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDurationPerMonth
+import com.epfl.drawyourpath.challenge.Statistics.getAverageDurationPerYear
+import com.epfl.drawyourpath.challenge.Statistics.getAverageSpeed
+import com.epfl.drawyourpath.challenge.Statistics.getAverageSpeedPerMonth
+import com.epfl.drawyourpath.challenge.Statistics.getAverageSpeedPerYear
+import com.epfl.drawyourpath.challenge.Statistics.getDistancePerYear
+import com.epfl.drawyourpath.challenge.Statistics.getShapeDrawnCount
+import com.epfl.drawyourpath.challenge.Statistics.getShapeDrawnCountPerYear
+import com.epfl.drawyourpath.challenge.Statistics.getTimePerYear
+import com.epfl.drawyourpath.challenge.Statistics.getTotalDistance
+import com.epfl.drawyourpath.challenge.Statistics.getTotalTime
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.GlobalStatsFragment
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.GraphFromListFragment
 import com.epfl.drawyourpath.mainpage.fragments.helperClasses.TableFromListFragment
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.epfl.drawyourpath.utils.Utils
 
 /**
@@ -35,21 +52,21 @@ import com.epfl.drawyourpath.utils.Utils
  * @param totalPathNumberGoalPerYear number of path number goal reached per year(used for test, default value is null)
  */
 class StatsFragment(
-    private val averageSpeed: Double? = null,
-    private val averageSpeedPerMonth: Map<Double, Double>? = null,
-    private val averageSpeedPerYear: Map<Double, Double>? = null,
-    private val averageDuration: Double? = null,
-    private val averageDurationPerMonth: Map<Double, Double>? = null,
-    private val averageDurationPerYear: Map<Double, Double>? = null,
-    private val averageDistance: Double? = null,
-    private val averageDistancePerMonth: Map<Double, Double>? = null,
-    private val averageDistancePerYear: Map<Double, Double>? = null,
-    private val totalDistanceGoal: Double? = null,
-    private val totalDistanceGoalPerYear: Map<Double, Double>? = null,
-    private val totalActivityTimeGoal: Double? = null,
-    private val totalActivityTimeGoalPerYear: Map<Double, Double>? = null,
-    private val totalPathNumberGoal: Double? = null,
-    private val totalPathNumberGoalPerYear: Map<Double, Double>? = null,
+    private var averageSpeed: Double? = null,
+    private var averageSpeedPerMonth: Map<Double, Double>? = null,
+    private var averageSpeedPerYear: Map<Double, Double>? = null,
+    private var averageDuration: Double? = null,
+    private var averageDurationPerMonth: Map<Double, Double>? = null,
+    private var averageDurationPerYear: Map<Double, Double>? = null,
+    private var averageDistance: Double? = null,
+    private var averageDistancePerMonth: Map<Double, Double>? = null,
+    private var averageDistancePerYear: Map<Double, Double>? = null,
+    private var totalDistanceGoal: Double? = null,
+    private var totalDistanceGoalPerYear: Map<Double, Double>? = null,
+    private var totalActivityTimeGoal: Double? = null,
+    private var totalActivityTimeGoalPerYear: Map<Double, Double>? = null,
+    private var totalPathNumberGoal: Double? = null,
+    private var totalPathNumberGoalPerYear: Map<Double, Double>? = null,
 ) : Fragment(R.layout.fragment_stats) {
     private lateinit var titleText: TextView
     private lateinit var changeLeftButton: TextView
@@ -57,6 +74,7 @@ class StatsFragment(
     private lateinit var toggleDuration: ToggleButton
     private lateinit var descriptionLayout: FrameLayout
     private lateinit var currentStateView: StatsEnum
+    private val userModelCached: UserModelCached by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -114,16 +132,63 @@ class StatsFragment(
      */
     private fun show() {
         when (currentStateView) {
-            StatsEnum.GLOBAL_STATS -> showGlobalStats()
-            StatsEnum.AVERAGE_SPEED_PER_YEAR -> showAverageSpeedPerYear()
-            StatsEnum.AVERAGE_SPEED_PER_MONTH -> showAverageSpeedPerMonth()
-            StatsEnum.AVERAGE_DURATION_PER_YEAR -> showAverageDurationPerYear()
-            StatsEnum.AVERAGE_DURATION_PER_MONTH -> showAverageDurationPerMonth()
-            StatsEnum.AVERAGE_DISTANCE_PER_YEAR -> showAverageDistancePerYear()
-            StatsEnum.AVERAGE_DISTANCE_PER_MONTH -> showAverageDistancePerMonth()
-            StatsEnum.TOTAL_DISTANCE_GOAL_PER_YEAR -> showTotalDistanceGoalPerYear()
-            StatsEnum.TOTAL_ACTIVITY_TIME_GOAL_PER_YEAR -> showTotalActivityTimeGoalPerYear()
-            StatsEnum.TOTAL_PATH_NUMBER_GOAL_PER_YEAR -> showTotalPathNumberGoalPerYear()
+            StatsEnum.GLOBAL_STATS ->
+                showGlobalStats(
+                    averageSpeed ?: 0.0,
+                    averageDuration ?: 0.0,
+                    averageDistance ?: 0.0,
+                    totalDistanceGoal ?: 0.0,
+                    totalActivityTimeGoal ?: 0.0,
+                    totalPathNumberGoal ?: 0.0,
+                )
+            StatsEnum.AVERAGE_SPEED_PER_YEAR ->
+                showAverageSpeedPerYear(averageSpeedPerYear ?: emptyMap())
+            StatsEnum.AVERAGE_SPEED_PER_MONTH ->
+                showAverageSpeedPerMonth(averageSpeedPerMonth ?: emptyMap())
+            StatsEnum.AVERAGE_DURATION_PER_YEAR ->
+                showAverageDurationPerYear(averageDurationPerYear ?: emptyMap())
+            StatsEnum.AVERAGE_DURATION_PER_MONTH ->
+                showAverageDurationPerMonth(averageDurationPerMonth ?: emptyMap())
+            StatsEnum.AVERAGE_DISTANCE_PER_YEAR ->
+                showAverageDistancePerYear(averageDistancePerYear ?: emptyMap())
+            StatsEnum.AVERAGE_DISTANCE_PER_MONTH ->
+                showAverageDistancePerMonth(averageDistancePerMonth ?: emptyMap())
+            StatsEnum.TOTAL_DISTANCE_GOAL_PER_YEAR ->
+                showTotalDistanceGoalPerYear(totalDistanceGoalPerYear ?: emptyMap())
+            StatsEnum.TOTAL_ACTIVITY_TIME_GOAL_PER_YEAR ->
+                showTotalActivityTimeGoalPerYear(totalActivityTimeGoalPerYear ?: emptyMap())
+            StatsEnum.TOTAL_PATH_NUMBER_GOAL_PER_YEAR ->
+                showTotalPathNumberGoalPerYear(totalPathNumberGoalPerYear ?: emptyMap())
+        }
+        userModelCached.getDailyGoals().observe(viewLifecycleOwner) {
+            when (currentStateView) {
+                StatsEnum.GLOBAL_STATS -> showGlobalStats(
+                    averageSpeed ?: getAverageSpeed(it),
+                    averageDuration ?: getAverageDuration(it),
+                    averageDistance ?: getAverageDistance(it),
+                    totalDistanceGoal ?: getTotalDistance(it),
+                    totalActivityTimeGoal ?: getTotalTime(it),
+                    totalPathNumberGoal ?: getShapeDrawnCount(it).toDouble(),
+                )
+                StatsEnum.AVERAGE_SPEED_PER_YEAR ->
+                    showAverageSpeedPerYear(averageSpeedPerYear ?: getAverageSpeedPerYear(it))
+                StatsEnum.AVERAGE_SPEED_PER_MONTH ->
+                    showAverageSpeedPerMonth(averageSpeedPerMonth ?: getAverageSpeedPerMonth(it))
+                StatsEnum.AVERAGE_DURATION_PER_YEAR ->
+                    showAverageDurationPerYear(averageDurationPerYear ?: getAverageDurationPerYear(it))
+                StatsEnum.AVERAGE_DURATION_PER_MONTH ->
+                    showAverageDurationPerMonth(averageDurationPerMonth ?: getAverageDurationPerMonth(it))
+                StatsEnum.AVERAGE_DISTANCE_PER_YEAR ->
+                    showAverageDistancePerYear(averageDistancePerYear ?: getAverageDistancePerYear(it))
+                StatsEnum.AVERAGE_DISTANCE_PER_MONTH ->
+                    showAverageDistancePerMonth(averageDistancePerMonth ?: getAverageDistancePerMonth(it))
+                StatsEnum.TOTAL_DISTANCE_GOAL_PER_YEAR ->
+                    showTotalDistanceGoalPerYear(totalDistanceGoalPerYear ?: getDistancePerYear(it))
+                StatsEnum.TOTAL_ACTIVITY_TIME_GOAL_PER_YEAR ->
+                    showTotalActivityTimeGoalPerYear(totalActivityTimeGoalPerYear ?: getTimePerYear(it))
+                StatsEnum.TOTAL_PATH_NUMBER_GOAL_PER_YEAR ->
+                    showTotalPathNumberGoalPerYear(totalPathNumberGoalPerYear ?: getShapeDrawnCountPerYear(it))
+            }
         }
     }
 
@@ -200,7 +265,14 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display the global stats of the user during his drawing session.
      */
-    private fun showGlobalStats() {
+    private fun showGlobalStats(
+        currentAverageSpeed: Double,
+        currentAverageDuration: Double,
+        currentAverageDistance: Double,
+        currentTotalDistanceGoal: Double,
+        currentTotalActivityTimeGoal: Double,
+        currentTotalPathNumberGoal: Double,
+    ) {
         this.titleText.text = getString(R.string.global_stats)
         // not show the toggle button
         setToggleInvisible()
@@ -210,12 +282,12 @@ class StatsFragment(
         fragTransaction.replace(
             R.id.contentPreviewStats,
             GlobalStatsFragment(
-                averageSpeed = averageSpeed ?: 0.0,
-                averageDuration = averageDuration ?: 0.0,
-                averageDistance = averageDistance ?: 0.0,
-                totalDistanceGoal = totalDistanceGoal ?: 0.0,
-                totalActivityTimeGoal = totalActivityTimeGoal ?: 0.0,
-                totalPathNumberGoal = totalPathNumberGoal ?: 0.0,
+                averageSpeed = currentAverageSpeed,
+                averageDuration = currentAverageDuration,
+                averageDistance = currentAverageDistance,
+                totalDistanceGoal = currentTotalDistanceGoal,
+                totalActivityTimeGoal = currentTotalActivityTimeGoal,
+                totalPathNumberGoal = currentTotalPathNumberGoal,
             ),
         ).commit()
         // set the description layout an empty fragment
@@ -225,17 +297,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display a graph and a table to display the average speed per year.
      */
-    private fun showAverageSpeedPerYear() {
+    private fun showAverageSpeedPerYear(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.average_speed)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.average_speed_in_m_s)
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average speed in function of the year
-        showGraphInPreview(data = averageSpeedPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average speed in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageSpeedPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringSpeed(speed = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -244,17 +316,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display a graph and a table to display the average speed per month.
      */
-    private fun showAverageSpeedPerMonth() {
+    private fun showAverageSpeedPerMonth(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.average_speed)
         val columnText = getString(R.string.month)
         val lineText = getString(R.string.average_speed_in_m_s)
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average speed in function of the month
-        showGraphInPreview(data = averageSpeedPerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average speed in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerMonth ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringSpeed(speed = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -263,17 +335,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display a graph and a table to display the average duration per year.
      */
-    private fun showAverageDurationPerYear() {
+    private fun showAverageDurationPerYear(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.average_duration)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.average_duration_in_s)
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average duration in function of the year
-        showGraphInPreview(data = averageDurationPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average duration in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageDurationPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -282,17 +354,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display a graph and a table to display the average speed per month.
      */
-    private fun showAverageDurationPerMonth() {
+    private fun showAverageDurationPerMonth(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.average_duration)
         val columnText = getString(R.string.month)
         val lineText = getString(R.string.average_duration_in_s)
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average duration in function of the month
-        showGraphInPreview(data = averageDurationPerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average duration in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDurationPerMonth ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -301,17 +373,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display a graph and a table to display the average distance per year.
      */
-    private fun showAverageDistancePerYear() {
+    private fun showAverageDistancePerYear(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.average_distance)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.average_distance_in_m)
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average distance in function of the year
-        showGraphInPreview(data = averageDistancePerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average distance in function of the year
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -320,17 +392,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display a graph and a table to display the average distance per month.
      */
-    private fun showAverageDistancePerMonth() {
+    private fun showAverageDistancePerMonth(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.average_distance)
         val columnText = getString(R.string.month)
         val lineText = getString(R.string.average_distance_in_m)
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average distance in function of the month
-        showGraphInPreview(data = averageDistancePerMonth ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average distance in function of the month
         val mapString = hashMapOf<String, String>()
-        (averageDistancePerMonth ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -339,17 +411,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display a graph and a table to display the total distance goal per year.
      */
-    private fun showTotalDistanceGoalPerYear() {
+    private fun showTotalDistanceGoalPerYear(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.distance_goal)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.distance_goal)
         // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the distance goal in function of the year
-        showGraphInPreview(data = totalDistanceGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the distance goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalDistanceGoalPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -358,17 +430,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view with a graph and a table to display the total activity time goal per year.
      */
-    private fun showTotalActivityTimeGoalPerYear() {
+    private fun showTotalActivityTimeGoalPerYear(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.activity_time_goal)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.activity_time_goal)
         // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the activity time goal in function of the year
-        showGraphInPreview(data = totalActivityTimeGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the activity time goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalActivityTimeGoalPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -377,17 +449,17 @@ class StatsFragment(
     /**
      * Helper function to adapt the view to display a graph and a table to display the total path number goal per year.
      */
-    private fun showTotalPathNumberGoalPerYear() {
+    private fun showTotalPathNumberGoalPerYear(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.path_number_goal)
         val columnText = getString(R.string.year)
         val lineText = getString(R.string.path_number_goal)
         // show the toggle button and block it to year
         setToggleInSelectableOnYear()
         // show a graph of the distance goal in function of the year
-        showGraphInPreview(data = totalPathNumberGoalPerYear ?: emptyMap(), lineText = lineText, columnText = columnText)
+        showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the distance goal in function of the year
         val mapString = hashMapOf<String, String>()
-        (totalPathNumberGoalPerYear ?: emptyMap()).forEach { (key, value) ->
+        data.forEach { (key, value) ->
             mapString[key.toString()] = value.toString()
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)

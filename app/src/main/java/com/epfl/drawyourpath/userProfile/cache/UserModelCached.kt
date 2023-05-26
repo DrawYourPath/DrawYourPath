@@ -66,6 +66,9 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
         .map { entity -> entity?.let { UserProfile(it) } ?: UserProfile(UserEntity("empty user")) }
 
     // dailyGoal
+    private val dailyGoals: LiveData<List<DailyGoal>> = _currentUserID.switchMap {
+        dailyGoalCache.getDailyGoalById(it)
+    }.map { entities -> entities.map { DailyGoal(it) } }
     private val todayDailyGoal: LiveData<DailyGoal> = user.switchMap { user ->
         dailyGoalCache.getDailyGoalById(user.userId).map { entities ->
             getTodayDailyGoal(user.goals, entities.maxByOrNull { it.date })
@@ -163,6 +166,16 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
     fun getUser(): LiveData<UserProfile> {
         checkCurrentUser()
         return user
+    }
+
+    /**
+     * get all daily goal (read-only).
+     *
+     * @return the [LiveData] of a list of [DailyGoal]
+     */
+    fun getDailyGoals(): LiveData<List<DailyGoal>> {
+        checkCurrentUser()
+        return dailyGoals
     }
 
     /**
