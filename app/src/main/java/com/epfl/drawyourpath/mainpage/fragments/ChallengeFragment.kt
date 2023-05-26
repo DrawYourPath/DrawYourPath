@@ -1,7 +1,10 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
@@ -94,58 +97,41 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
             if (!listTournamentWithTrophy.containsAll(listTournamentId)) {
                 // if it is not the case then complete it by checking all the tournaments not associated to a trophy.
                 val remainingTournament = listTournamentId.filter { !listTournamentWithTrophy.contains(it) }
-                val remainingTrophies = checkTournaments(listOfTournamentsId = remainingTournament, userId = user.getUserId()!!)
-                remainingTrophies.observe(viewLifecycleOwner) { trophies ->
-                    trophies.map { trophy ->
-                        trophiesList.postValue(trophiesList.value?.plus(trophy) ?: listOf(trophy))
-                        database.addTrophy(user.getUserId()!!, trophy)
-                    }
-                }
+                checkTournaments(listOfTournamentsId = remainingTournament, userId = user.getUserId()!!)
             }
         }
     }
 
     /**
-     *  Check that the given list of tournament is not associated to a ptropy win by the uer with the given userId
+     *  Check that the given list of tournament is not associated to a trophy win by the uer with the given userId
+     *  and add them if it is the case to the database and to the view
      *  @param listOfTournamentsId list of tournaments id to check
      *  @param userId associated to a trophy
      *  @return the list of trophy win by the user in this tournaments
      */
-    private fun checkTournaments(listOfTournamentsId: List<String>, userId: String): LiveData<List<Trophy>> {
-        val remainingTrophies = MutableLiveData(listOf<Trophy>())
+    private fun checkTournaments(listOfTournamentsId: List<String>, userId: String) {
         listOfTournamentsId.forEach { tournamentId ->
             user.getDatabase().getTournament(tournamentId).observe(viewLifecycleOwner) { tournament ->
-                if (tournament.endDate > LocalDateTime.now()) {
-                    val top3 = mutableMapOf<Int, String>()
-                    var numberOfVotePlayer3: Int = Integer.MIN_VALUE
-                    tournament.posts.forEach { post ->
-                        if (post.getVotes() > numberOfVotePlayer3) {
-                            if (top3.size >= 3) {
-                                top3.remove(numberOfVotePlayer3)
-                            }
-                            top3.put(post.getVotes(), post.userId)
-                            numberOfVotePlayer3 = post.getVotes()
-                        } else if (top3.size < 3) {
-                            top3.put(post.getVotes(), post.userId)
-                        }
-                    }
-                    val ranking = top3.keys.sorted()
+                if (tournament.endDate < LocalDateTime.now()) {
+                    val ranking = tournament.posts.sortedByDescending { it.getVotes() }.take(3)
                     ranking.forEachIndexed { index, elem ->
-                        if (top3.get(elem) == user.getUserId()!!) {
+                        if (elem.userId == userId) {
                             val trophy = Trophy(
                                 tournamentId = tournamentId,
                                 tournamentName = tournament.name,
                                 tournamentDescription = tournament.description,
                                 date = tournament.endDate.toLocalDate(),
-                                ranking = index,
+                                ranking = index + 1,
                             )
-                            remainingTrophies.postValue(remainingTrophies.value?.plus(trophy) ?: listOf(trophy))
+                            trophiesList.postValue(
+                                trophiesList.value?.plus(trophy) ?: listOf(trophy)
+                            )
                         }
                     }
+
                 }
             }
         }
-        return remainingTrophies
     }
 
     /**

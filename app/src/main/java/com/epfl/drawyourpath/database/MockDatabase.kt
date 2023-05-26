@@ -87,7 +87,7 @@ class MockDatabase : Database() {
                 MilestoneData(MilestoneEnum.THE_FIRST_KILOMETER, LocalDate.of(2001, 2, 20)),
                 MilestoneData(MilestoneEnum.THE_FIRST_DAY, LocalDate.of(2002, 2, 20)),
             ),
-            tournaments = listOf("0"),
+            tournaments = listOf("0", "personalTournament"),
             chatList = listOf("0"),
         )
     }
@@ -286,6 +286,7 @@ class MockDatabase : Database() {
             "0",
             "1",
             "2",
+            "personalTournament",
         ),
     )
 
@@ -317,7 +318,27 @@ class MockDatabase : Database() {
                 visibility = Tournament.Visibility.PUBLIC,
             ),
         ),
-
+        MutableLiveData(
+            Tournament(
+                id = "personalTournament",
+                name = "personalTournamentName",
+                description = "Mock tournament number personalTournament",
+                creatorId = mockUser.userId!!,
+                startDate = LocalDateTime.now().minusDays(2L),
+                endDate = LocalDateTime.now().minusDays(1L),
+                participants = listOf(mockUser.userId!!, MOCK_USERS[0].userId!!),
+                posts = listOf(
+                    TournamentPost(
+                        postId = "winPost",
+                        userId = mockUser.userId!!,
+                        run = mockUser.runs!!.get(0)!!,
+                        date = LocalDateTime.now().minusDays(2L),
+                        usersVotes = mutableMapOf(MOCK_USERS[0].userId!! to 1),
+                    ),
+                ),
+                visibility = Tournament.Visibility.PUBLIC,
+            ),
+        ),
     )
 
     var mockUniqueId = 1234567
