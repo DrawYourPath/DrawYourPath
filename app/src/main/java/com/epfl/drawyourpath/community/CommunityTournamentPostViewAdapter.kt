@@ -73,12 +73,15 @@ class CommunityTournamentPostViewAdapter(
             viewHolder.tournamentName.visibility = View.GONE
         }
 
+        // show the image
         viewHolder.imagePath.setImageBitmap(Utils.coordinatesToBitmap(post.run.getPath().getPoints()))
 
+        // go to run details if the image is clicked
         viewHolder.imagePath.setOnClickListener {
             showRunDetail(post.run)
         }
 
+        // set the username of the user who posted
         viewHolder.userName.text = userIdToUsername[post.userId] ?: post.userId
         if (!userIdToUsername.containsKey(post.userId)) {
             getUsername(post.userId).whenComplete { it, error ->
@@ -89,31 +92,27 @@ class CommunityTournamentPostViewAdapter(
             }
         }
 
+        // display the vote count
         viewHolder.voteCount.text = post.getVotes().toString()
 
+        // update the buttons
         updateButtonColor(post.getUsersVotes()[userId], viewHolder)
 
+        // upvote logic
         viewHolder.upvote.setOnClickListener {
             if (post.getUsersVotes()[userId] != null && post.getUsersVotes()[userId] == 1) {
-                updateButtonColor(0, viewHolder)
-                viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], 0).toString()
-                vote(0, post.postId, post.tournamentId)
+                updateVote(0, post, viewHolder)
             } else {
-                updateButtonColor(1, viewHolder)
-                viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], 1).toString()
-                vote(1, post.postId, post.tournamentId)
+                updateVote(1, post, viewHolder)
             }
         }
 
+        // downvote logic
         viewHolder.downvote.setOnClickListener {
             if (post.getUsersVotes()[userId] != null && post.getUsersVotes()[userId] == -1) {
-                updateButtonColor(0, viewHolder)
-                viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], 0).toString()
-                vote(0, post.postId, post.tournamentId)
+                updateVote(0, post, viewHolder)
             } else {
-                updateButtonColor(-1, viewHolder)
-                viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], -1).toString()
-                vote(-1, post.postId, post.tournamentId)
+                updateVote(-1, post, viewHolder)
             }
         }
     }
@@ -130,6 +129,18 @@ class CommunityTournamentPostViewAdapter(
         this.showName = showName
         this.userId = userId
         notifyDataSetChanged()
+    }
+
+    /**
+     * update the vote of the post
+     * @param vote the new vote
+     * @param post the post where to vote
+     * @param viewHolder the view holder
+     */
+    private fun updateVote(vote: Int, post: TournamentPost, viewHolder: ViewHolder) {
+        updateButtonColor(vote, viewHolder)
+        viewHolder.voteCount.text = newVoteTotal(post.getVotes(), post.getUsersVotes()[userId], vote).toString()
+        vote(vote, post.postId, post.tournamentId)
     }
 
     /**

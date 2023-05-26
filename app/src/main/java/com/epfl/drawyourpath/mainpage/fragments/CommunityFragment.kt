@@ -144,17 +144,21 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val menu = view.findViewById<NavigationView>(R.id.community_navigation_view).menu
         createTournamentButton(menu)
 
+        // create the your tournament sub menu for registered tournaments
         val your = menu.addSubMenu("Your tournament")
         tournamentModel.yourTournament.observe(viewLifecycleOwner) { tournaments ->
             your.clear()
             tournaments.forEach { createMenuItem(view, your, it, true) }
         }
 
+        // create the starting soon tournament sub menu
         val soon = menu.addSubMenu("Starting soon")
         tournamentModel.startingSoonTournament.observe(viewLifecycleOwner) { tournaments ->
             soon.clear()
             tournaments.forEach { createMenuItem(view, soon, it.first, it.second) }
         }
+
+        // create the discovery tournament sub menu for unregistered tournaments
         val discover = menu.addSubMenu("Discover")
         tournamentModel.discoverTournament.observe(viewLifecycleOwner) { tournaments ->
             discover.clear()

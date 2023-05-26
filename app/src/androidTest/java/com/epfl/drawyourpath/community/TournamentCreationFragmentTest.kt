@@ -156,33 +156,6 @@ class TournamentCreationFragmentTest {
         scenario.close()
     }
 
-    /*@Test
-    fun createTournamentWithCorrectValuesGoesToCommunity() {
-        val scenario = launchFragmentFromMainActivity()
-
-        selectCorrectOptionsAndCreate()
-
-        /*
-        TODO try to test toast... unable to find a working solution
-
-        var decorView: View? = null
-
-        scenario.onActivity { activity ->
-            decorView = activity.window.decorView
-        }
-
-        onView(withText("Tournament created!"))
-            .inRoot(withDecorView(not(decorView)))
-            .check(matches(isDisplayed()))
-
-         */
-
-        onView(withId(R.id.fragment_community)).check(matches(isDisplayed()))
-
-        scenario.close()
-        Intents.release()
-    }*/
-
     @Test
     fun backButtonGoesToCommunity() {
         val scenario = launchFragmentFromMainActivity()
@@ -194,34 +167,6 @@ class TournamentCreationFragmentTest {
         scenario.close()
         Intents.release()
     }
-
-    /*@Test
-    fun nonWorkingDBDoesNotLeaveTournamentCreation() {
-        val scenario = launchFragmentFromMainActivity()
-
-        selectCorrectOptionsAndCreate()
-
-        // TODO also test toast
-
-        onView(withId(R.id.tournament_creation_fragment)).check(matches(isDisplayed()))
-
-        scenario.close()
-        Intents.release()
-    }*/
-
-    /*@Test
-    fun nonWorkingAuthDoesNotLeaveTournamentCreation() {
-        val scenario = launchFragmentFromMainActivity()
-
-        selectCorrectOptionsAndCreate()
-
-        // TODO also test toast
-
-        onView(withId(R.id.tournament_creation_fragment)).check(matches(isDisplayed()))
-
-        scenario.close()
-        Intents.release()
-    }*/
 
     private fun typeTitle(title: String) {
         onView(withId(R.id.tournament_creation_title)).perform(scrollTo(), replaceText(title))

@@ -29,6 +29,9 @@ class TournamentModelTest {
         Thread.sleep(100)
     }
 
+    /**
+     * wait for the live data to update several times to display the full lists
+     */
     private fun waitForLiveDataToUpdate(tournamentModel: TournamentModel) {
         tournamentModel.startingSoonTournament.getOrAwaitValue()
         waitUntilAllThreadAreDone()

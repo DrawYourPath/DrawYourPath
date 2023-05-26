@@ -713,7 +713,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                     val posts = FirebaseDatabaseUtils.transformPostList(snapshot)
                     tournamentPostsValue.postValue(posts)
                 } else {
-                    tournamentPostsValue.postValue(listOf())
+                    tournamentPostsValue.postValue(emptyList())
                 }
             }
         }

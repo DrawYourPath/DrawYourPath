@@ -18,19 +18,38 @@ class TournamentModel(
     val database: Database,
     private var currentUserId: String,
 ) : ViewModel() {
+
+    /**
+     * registered tournaments by the user used to post to the livedata
+     */
     private val _userTournaments: MutableList<String> = MockDatabase.mockUser.tournaments!!.toMutableList()
 
+    /**
+     * registered tournaments by the user
+     */
     private val userTournaments: MutableLiveData<List<String>> = MutableLiveData(_userTournaments)
 
+    /**
+     * all tournaments id on the database
+     */
     private val allTournamentIds = database.getAllTournamentsId()
 
+    /**
+     * map of all the tournament info
+     */
     private val allTournamentInfo: MutableMap<String, LiveData<Tournament>> = mutableMapOf()
 
+    /**
+     * all tournaments in the database
+     */
     private val allTournaments: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
+        // add a source for all tournaments id
         addSource(allTournamentIds) { tournamentIds ->
             tournamentIds.forEach { id ->
+                // put in map only if it does not exist
                 allTournamentInfo.getOrPut(id) {
                     database.getTournamentInfo(id).also { livedata ->
+                        // add a source to all tournament info to listen to the changes of each tournament
                         addSource(livedata) { tournament ->
                             value = value?.filterNot { it.id == tournament.id }?.plusElement(tournament) ?: listOf(tournament)
                         }
@@ -41,46 +60,75 @@ class TournamentModel(
         }
     }
 
+    /**
+     * your tournament is the list of registered tournament that are currently open
+     */
     val yourTournament: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
+        // add a source to all the tournaments
         addSource(allTournaments) { tournaments ->
             value = tournaments.filter { userTournaments.value!!.contains(it.id) && it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now() }
         }
+        // add a source to the registered tournaments
         addSource(userTournaments) { ids ->
             value = allTournaments.value!!.filter { ids.contains(it.id) && it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now() }
         }
     }
 
+    /**
+     * starting soon tournament is the list of tournament that will open soon
+     */
     val startingSoonTournament: LiveData<List<Pair<Tournament, Boolean>>> = MediatorLiveData<List<Pair<Tournament, Boolean>>>().apply {
+        // add a source to all the tournaments
         addSource(allTournaments) { tournaments ->
             value = tournaments.filter { it.startDate > LocalDateTime.now() && it.endDate >= LocalDateTime.now() }.map { Pair(it, userTournaments.value!!.contains(it.id)) }
         }
+        // add a source to the registered tournaments
         addSource(userTournaments) { ids ->
             value = allTournaments.value!!.filter { it.startDate > LocalDateTime.now() && it.endDate >= LocalDateTime.now() }.map { Pair(it, ids.contains(it.id)) }
         }
     }
 
+    /**
+     * discover tournament is the list of unregistered tournament that are currently open
+     */
     val discoverTournament: LiveData<List<Tournament>> = MediatorLiveData<List<Tournament>>().apply {
+        // add a source to all the tournaments
         addSource(allTournaments) { tournaments ->
             value = tournaments.filter { !userTournaments.value!!.contains(it.id) && it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now() }
         }
+        // add a source to the registered tournaments
         addSource(userTournaments) { ids ->
             value = allTournaments.value!!.filter { !ids.contains(it.id) && it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now() }
         }
     }
 
+    /**
+     * to know the post of which tournament to display (null = all tournaments)
+     */
     private val postOf: MutableLiveData<String?> = MutableLiveData(null)
 
+    /**
+     * map of all posts by tournaments
+     */
     private val allPosts: MutableMap<String, LiveData<List<TournamentPost>>> = mutableMapOf()
 
+    /**
+     * displayed posts of either all the registered tournaments or of some tournaments
+     */
     val posts: LiveData<List<TournamentPost>> = postOf.switchMap { id ->
+        // if postOf is set to a tournament then show its posts
         id?.let { database.getTournamentPosts(it) } ?: MediatorLiveData<List<TournamentPost>>().apply {
+            // add a source to the registered tournaments
             addSource(userTournaments) { ids ->
                 value = allPosts.filterKeys { ids.contains(it) }.values.mapNotNull { it.value }.flatten()
             }
+            // add a source to all the tournaments id
             addSource(allTournamentIds) { tournamentIds ->
                 tournamentIds.forEach { id ->
+                    // put in map only if it does not exist
                     allPosts.getOrPut(id) {
                         database.getTournamentPosts(id).also { livedata ->
+                            // add a source to all tournament posts to listen to the changes of each posts
                             addSource(livedata) { posts ->
                                 if (userTournaments.value!!.contains(id)) {
                                     value = value?.filterNot { post -> posts.map { it.postId }.contains(post.postId) }?.plus(posts) ?: posts
@@ -223,6 +271,10 @@ class TournamentModel(
         return currentUserId
     }
 
+    /**
+     * update the user tournaments to get the new registered tournaments by the user
+     * @param firstClear if set then clear the variables before getting the values
+     */
     private fun updateUserTournaments(firstClear: Boolean = false): CompletableFuture<Unit> {
         if (firstClear) {
             _userTournaments.clear()
@@ -238,6 +290,12 @@ class TournamentModel(
     }
 
     companion object {
+        /**
+         * get the factory of this model to choose the database and userId to use
+         * @param database the database
+         * @param userId the user id
+         * @return the corresponding factory
+         */
         fun getFactory(database: Database, userId: String): ViewModelProvider.Factory {
             return viewModelFactory {
                 initializer {
