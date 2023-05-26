@@ -64,14 +64,6 @@ class TableFromListFragment(private val map: Map<String, String>, private val co
      */
     private fun addMapInfo() {
         var i = 0
-        val comparator = object : Comparator<String> {
-            override fun compare(o1: String?, o2: String?): Int {
-                if (o1 != null && o2 != null) {
-                    return o1.toDouble().compareTo(o2.toDouble())
-                }
-                return 0
-            }
-        }
         map.toSortedMap(comparator).forEach { (key, value) ->
             val row = TableRow(context)
             row.id = ID_ROW_VALUE + i
@@ -104,5 +96,17 @@ class TableFromListFragment(private val map: Map<String, String>, private val co
         val ID_ROW_VALUE = "IDRowValue".hashCode()
         val ID_KEY_INIT = "IDKeyTable".hashCode()
         val ID_VALUE_INIT = "IDValueTable".hashCode()
+    }
+
+    /**
+     * comparator used to compare to numbers from string
+     */
+    private val comparator = object : Comparator<String> {
+        override fun compare(o1: String?, o2: String?): Int {
+            if (o1 != null && o2 != null) {
+                return o1.toDouble().compareTo(o2.toDouble())
+            }
+            return 0
+        }
     }
 }
