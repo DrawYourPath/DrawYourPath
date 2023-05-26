@@ -35,9 +35,6 @@ import java.util.concurrent.TimeUnit
 class ChallengeFragmentTest {
 
     @get:Rule
-    val instant = InstantTaskExecutorRule()
-
-    @get:Rule
     val executorRule = CountingTaskExecutorRule()
 
     private var mockUser = MockDatabase.mockUser
