@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.arch.core.executor.testing.CountingTaskExecutorRule
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.recyclerview.widget.RecyclerView
