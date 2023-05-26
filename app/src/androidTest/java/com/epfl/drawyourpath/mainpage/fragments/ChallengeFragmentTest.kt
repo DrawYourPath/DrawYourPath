@@ -115,8 +115,6 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        waitUntilAllThreadAreDone()
-
         // change value of distance
         onView(withId(R.id.goals_view)).perform(
             actionOnItemAtPosition<RecyclerView.ViewHolder>(
@@ -149,8 +147,6 @@ class ChallengeFragmentTest {
             R.style.Theme_Bootcamp,
         )
 
-        waitUntilAllThreadAreDone()
-
         // change value of time
         onView(withId(R.id.goals_view)).perform(
             actionOnItemAtPosition<RecyclerView.ViewHolder>(
@@ -182,8 +178,6 @@ class ChallengeFragmentTest {
             Bundle(),
             R.style.Theme_Bootcamp,
         )
-
-        waitUntilAllThreadAreDone()
 
         // change value of path
         onView(withId(R.id.goals_view)).perform(
