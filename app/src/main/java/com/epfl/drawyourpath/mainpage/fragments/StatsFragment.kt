@@ -378,7 +378,7 @@ class StatsFragment(
     private fun showAverageDistancePerYear(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.average_distance)
         val columnText = getString(R.string.year)
-        val lineText = getString(R.string.average_distance_in_m)
+        val lineText = getString(R.string.average_distance_in_km)
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average distance in function of the year
@@ -386,7 +386,7 @@ class StatsFragment(
         // show a table containing the average distance in function of the year
         val mapString = hashMapOf<String, String>()
         data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
-            mapString[key.toString()] = Utils.getStringDistance(distance = value)
+            mapString[key.toString()] = Utils.getStringDistance(distance = value * 1000.0)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
     }
@@ -397,7 +397,7 @@ class StatsFragment(
     private fun showAverageDistancePerMonth(data: Map<Double, Double>) {
         this.titleText.text = getString(R.string.average_distance)
         val columnText = getString(R.string.month)
-        val lineText = getString(R.string.average_distance_in_m)
+        val lineText = getString(R.string.average_distance_in_km)
         // show the toggle button
         setToggleVisibleSelectable(currentState = columnText)
         // show a graph of the average distance in function of the month
@@ -405,7 +405,7 @@ class StatsFragment(
         // show a table containing the average distance in function of the month
         val mapString = hashMapOf<String, String>()
         data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
-            mapString[key.toString()] = Utils.getStringDistance(distance = value)
+            mapString[key.toString()] = Utils.getStringDistance(distance = value * 1000)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
     }
