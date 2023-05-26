@@ -343,6 +343,7 @@ class UserModelCached(application: Application) : AndroidViewModel(application) 
      * @return the database
      */
     fun getDatabase(): Database {
+        checkCurrentUser()
         return database
     }
 

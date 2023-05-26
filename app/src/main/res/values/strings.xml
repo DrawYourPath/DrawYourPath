@@ -189,4 +189,5 @@
     <string name="number_of_path_goal_reached">Number of path goal reached :</string>
     <string name="register">&#10010; register</string>
     <string name="check_mark">✔</string>
+    <string name="post_details">post details</string>
 </resources>

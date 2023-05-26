@@ -7,42 +7,49 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.ToggleButton
+import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
 import com.epfl.drawyourpath.community.*
-import com.epfl.drawyourpath.path.Path
 import com.epfl.drawyourpath.path.Run
-import com.google.android.gms.maps.model.LatLng
+import com.epfl.drawyourpath.userProfile.cache.UserModelCached
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import java.time.LocalDateTime
 
 /**
  * fragment used to display and vote for the tournament posts [TournamentPost]
- * TODO make it asynchronous when linked with the database
  */
 class CommunityFragment : Fragment(R.layout.fragment_community) {
 
+    private val userModel: UserModelCached by activityViewModels()
+    private lateinit var tournamentModel: TournamentModel
+
+    private lateinit var postViewAdapter: CommunityTournamentPostViewAdapter
     private lateinit var drawer: DrawerLayout
     private lateinit var headlineHome: LinearLayout
     private lateinit var headlineDetailsLayout: LinearLayout
     private lateinit var detailsLayout: LinearLayout
     private lateinit var tournamentPostsView: RecyclerView
     private lateinit var scroll: NestedScrollView
-    private val tournament = TournamentModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initVariable(view)
+        tournamentModel = ViewModelProvider(
+            requireActivity(),
+            TournamentModel.getFactory(userModel.getDatabase(), userModel.getUserId()!!),
+        )[TournamentModel::class.java]
 
-        getTournaments()
+        initVariable(view)
 
         createTournamentPostsView()
 
@@ -67,24 +74,13 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         detailsLayout = view.findViewById(R.id.community_detail_layout)
         tournamentPostsView = view.findViewById(R.id.display_community_tournaments_view)
         scroll = view.findViewById(R.id.community_nested_scroll_view)
-
-        tournament.setSample(
-            TournamentModel.SampleTournamentModel(
-                sampleWeekly(),
-                sampleYourTournaments(),
-                sampleDiscoveryTournaments(),
-            ),
-        )
-    }
-
-    /**
-     * get the tournaments to display
-     * TODO change from sample to real tournaments
-     */
-    private fun getTournaments() {
-        if (arguments?.getSerializable("tournaments") != null) {
-            tournament.setSample(arguments?.getSerializable("tournaments") as TournamentModel.SampleTournamentModel)
-        }
+        postViewAdapter = CommunityTournamentPostViewAdapter({ vote, postId, tournamentId ->
+            tournamentModel.addVote(vote, postId, tournamentId)
+        }, {
+            tournamentModel.getUsernameWithId(it)
+        }, {
+            displayPostDetails(it)
+        })
     }
 
     /**
@@ -92,7 +88,10 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
      */
     private fun createTournamentPostsView() {
         tournamentPostsView.layoutManager = LinearLayoutManager(context)
-        tournamentPostsView.adapter = CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
+        tournamentPostsView.adapter = postViewAdapter
+        tournamentModel.posts.observe(viewLifecycleOwner) { posts ->
+            postViewAdapter.update(posts, headlineHome.isVisible, tournamentModel.getCurrentUser())
+        }
     }
 
     /**
@@ -122,9 +121,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
             headlineHome.visibility = View.VISIBLE
             headlineDetailsLayout.visibility = View.GONE
             detailsLayout.visibility = View.GONE
-            tournamentPostsView.adapter =
-                CommunityTournamentPostViewAdapter(getAllPostsFromAll(), true)
-            tournamentPostsView.invalidate()
+            tournamentModel.showPostOf(null)
             scroll.scrollTo(0, 0)
         }
     }
@@ -136,7 +133,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     private fun createAddPostButton(view: View) {
         val addButton = view.findViewById<FloatingActionButton>(R.id.community_add_post_button)
         addButton.setOnClickListener {
-            replaceFragment<TournamentPostCreationView>()
+            replaceFragment<TournamentPostCreationFragment>()
         }
     }
 
@@ -147,18 +144,25 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         val menu = view.findViewById<NavigationView>(R.id.community_navigation_view).menu
         createTournamentButton(menu)
 
-        val weekly = menu.addSubMenu("Weekly tournament")
-        if (tournament.getWeeklyTournament() != null) {
-            createMenuItem(view, weekly, tournament.getWeeklyTournament()!!)
+        // create the your tournament sub menu for registered tournaments
+        val your = menu.addSubMenu("Your tournament")
+        tournamentModel.yourTournament.observe(viewLifecycleOwner) { tournaments ->
+            your.clear()
+            tournaments.forEach { createMenuItem(view, your, it, true) }
         }
 
-        val your = menu.addSubMenu("Your tournament")
-        for (t in tournament.getYourTournaments("placeholder")) {
-            createMenuItem(view, your, t)
+        // create the starting soon tournament sub menu
+        val soon = menu.addSubMenu("Starting soon")
+        tournamentModel.startingSoonTournament.observe(viewLifecycleOwner) { tournaments ->
+            soon.clear()
+            tournaments.forEach { createMenuItem(view, soon, it.first, it.second) }
         }
+
+        // create the discovery tournament sub menu for unregistered tournaments
         val discover = menu.addSubMenu("Discover")
-        for (t in tournament.getDiscoverTournaments("placeholder")) {
-            createMenuItem(view, discover, t)
+        tournamentModel.discoverTournament.observe(viewLifecycleOwner) { tournaments ->
+            discover.clear()
+            tournaments.forEach { createMenuItem(view, discover, it, false) }
         }
     }
 
@@ -166,20 +170,7 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
         menu.add(getString(R.string.create_new_tournament))
             .setIcon(R.drawable.ic_add)
             .setOnMenuItemClickListener {
-                // Sends args for mock to tournament creation fragment, only used during testing
-                // When not testing, db and auth are null, so no args are passed to the
-                // TournamentCreationFragment.
-
-                // Get database and auth types from the activity's launching intent.
-                val db = activity?.intent?.getStringExtra("Database")
-                val auth = activity?.intent?.getStringExtra("Auth")
-                // Put the strings in the activity's intent as keys with values true in a bundle used
-                // by the TournamentCreationFragment to choose which database and auth to use.
-                val fragmentArgs = Bundle()
-                if (db != null) fragmentArgs.putBoolean(db, true)
-                if (auth != null) fragmentArgs.putBoolean(auth, true)
-                // Launches the fragment
-                replaceFragment<TournamentCreationFragment>(fragmentArgs)
+                replaceFragment<TournamentCreationFragment>()
                 true
             }
     }
@@ -187,26 +178,34 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     /**
      * create the tournament item of a subMenu
      */
-    private fun createMenuItem(view: View, menu: SubMenu, tournament: Tournament) {
-        val item = menu.add(tournament.name)
+    private fun createMenuItem(view: View, menu: SubMenu, tournament: Tournament, registered: Boolean) {
+        menu.add(tournament.name)
             .setContentDescription("${tournament.name} details")
             .setActionView(R.layout.item_tournament)
             .setOnMenuItemClickListener {
-                menuItemListener(view, tournament)
-            }
+                menuItemListener(view, tournament, registered)
+            }.actionView!!.findViewById<ToggleButton>(R.id.item_tournament_toggle).also {
+            // auto format wants it that way but it is ugly
+            it.isChecked = registered
+        }.setOnCheckedChangeListener { _, isChecked ->
+            tournamentModel.register(tournament.id, isChecked)
+        }
     }
 
     /**
      * the menu item click listener that will change the view to display the corresponding tournament
      */
-    private fun menuItemListener(view: View, tournament: Tournament): Boolean {
+    private fun menuItemListener(view: View, tournament: Tournament, registered: Boolean): Boolean {
         view.findViewById<TextView>(R.id.community_detail_name).text = tournament.name
         view.findViewById<TextView>(R.id.community_detail_description).text = tournament.description
         view.findViewById<TextView>(R.id.community_detail_date).text =
             tournament.getStartOrEndDate()
-        tournamentPostsView.adapter =
-            CommunityTournamentPostViewAdapter(getPostsFrom(tournament), false)
-        tournamentPostsView.invalidate()
+        view.findViewById<ToggleButton>(R.id.community_detail_toggle).also {
+            it.isChecked = registered
+        }.setOnCheckedChangeListener { _, isChecked ->
+            tournamentModel.register(tournament.id, isChecked)
+        }
+        tournamentModel.showPostOf(tournament.id)
         scroll.scrollTo(0, 0)
         headlineHome.visibility = View.GONE
         headlineDetailsLayout.visibility = View.VISIBLE
@@ -216,178 +215,25 @@ class CommunityFragment : Fragment(R.layout.fragment_community) {
     }
 
     /**
-     * get all the posts from the given tournament
-     *
-     * @param tournament the tournament
-     * @return the list of pair of tournament and posts
+     * function that displays the run details
+     * @param run the run to display
      */
-    private fun getPostsFrom(tournament: Tournament): List<Pair<Tournament, TournamentPost>> {
-        return tournament.posts.map { p -> Pair(tournament, p) }
-    }
-
-    /**
-     * get all the posts from all tournaments
-     *
-     * @return the list of all pairs of tournament and posts
-     */
-    private fun getAllPostsFromAll(): List<Pair<Tournament, TournamentPost>> {
-        return getAllTournaments().flatMap { tournament ->
-            tournament.posts.map { p ->
-                Pair(
-                    tournament,
-                    p,
-                )
-            }
+    private fun displayPostDetails(run: Run) {
+        requireActivity().supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace(R.id.fragmentContainerView, TournamentPostDetail(run))
+            addToBackStack("run details")
         }
-    }
-
-    /**
-     * get all the tournaments from weekly tournament, your tournament and discover tournament
-     *
-     * @return the list of all tournaments
-     */
-    private fun getAllTournaments(): List<Tournament> {
-        val list = mutableListOf<Tournament>()
-        if (tournament.getWeeklyTournament() != null) {
-            list.add(tournament.getWeeklyTournament()!!)
-        }
-        list.addAll(tournament.getYourTournaments("placeholder"))
-        list.addAll(tournament.getDiscoverTournaments("placeholder"))
-        return list
     }
 
     /**
      * replace this fragment by another one
      */
-    private inline fun <reified F : Fragment> replaceFragment(fragmentArgs: Bundle? = null) {
+    private inline fun <reified F : Fragment> replaceFragment() {
         requireActivity().supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace<F>(R.id.fragmentContainerView, args = fragmentArgs)
+            replace<F>(R.id.fragmentContainerView)
             addToBackStack("creation")
         }
-    }
-
-    // TODO replace by real tournaments
-    // everything from here are samples
-
-    /**
-     * sample tournaments
-     */
-    private fun sampleWeekly(): Tournament {
-        val posts = mutableListOf(
-            TournamentPost("0", "xxDarkxx", sampleRun()),
-            TournamentPost("1", "Michel", sampleRun()),
-            TournamentPost("2", "MrPrefect", sampleRun()),
-            TournamentPost("3", "Me Myself and I", sampleRun()),
-            TournamentPost("4", "Invalid Username", sampleRun()),
-        )
-
-        return Tournament(
-            "id1",
-            "Weekly tournament: Star Path",
-            "draw a star path",
-            "creator1",
-            LocalDateTime.now().plusDays(3L),
-            LocalDateTime.now().plusDays(4L),
-            listOf(),
-            posts,
-        )
-    }
-
-    /**
-     * sample tournaments
-     */
-    private fun sampleYourTournaments(): List<Tournament> {
-        val posts = mutableListOf(
-            TournamentPost("0", "xxDarkxx", sampleRun()),
-            TournamentPost("1", "Michel", sampleRun()),
-            TournamentPost("2", "MrPrefect", sampleRun()),
-            TournamentPost("3", "Me Myself and I", sampleRun()),
-            TournamentPost("4", "Invalid Username", sampleRun()),
-        )
-        val posts1 = mutableListOf(
-            TournamentPost("0", "xD c moi", sampleRun()),
-            TournamentPost("1", "Jaqueline", sampleRun()),
-            TournamentPost("2", "Diabolos", sampleRun()),
-            TournamentPost("3", "me", sampleRun()),
-            TournamentPost("4", "IDK", sampleRun()),
-        )
-        return mutableListOf(
-            Tournament(
-                "id2",
-                "best tournament ever",
-                "draw whatever you want",
-                "creator2",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                listOf(),
-                posts1,
-            ),
-            Tournament(
-                "id3",
-                "time square",
-                "draw a square",
-                "creator3",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                listOf(),
-                posts,
-            ),
-        )
-    }
-
-    /**
-     * sample tournaments
-     */
-    private fun sampleDiscoveryTournaments(): List<Tournament> {
-        val posts = mutableListOf(
-            TournamentPost("0", "xxDarkxx", sampleRun()),
-            TournamentPost("1", "Michel", sampleRun()),
-            TournamentPost("2", "MrPrefect", sampleRun()),
-            TournamentPost("3", "Me Myself and I", sampleRun()),
-            TournamentPost("4", "Invalid Username", sampleRun()),
-        )
-        val posts1 = mutableListOf(
-            TournamentPost("0", "xD c moi", sampleRun()),
-            TournamentPost("1", "Jaqueline", sampleRun()),
-            TournamentPost("2", "Diabolos", sampleRun()),
-            TournamentPost("3", "me", sampleRun()),
-            TournamentPost("4", "IDK", sampleRun()),
-        )
-        return mutableListOf(
-            Tournament(
-                "id4",
-                "Discover the earth",
-                "draw the earth",
-                "creator4",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                listOf(),
-                posts1,
-            ),
-            Tournament(
-                "id5",
-                "to the moon",
-                "draw the moon",
-                "creator5",
-                LocalDateTime.now().plusDays(3L),
-                LocalDateTime.now().plusDays(4L),
-                listOf(),
-                posts,
-            ),
-        )
-    }
-
-    /**
-     * sample run
-     */
-    private fun sampleRun(): Run {
-        val point1 = LatLng(0.0, 0.0)
-        val point2 = LatLng(0.001, 0.001)
-        val points = listOf(point1, point2)
-        val path = Path(listOf(points))
-        val startTime = System.currentTimeMillis()
-        val endTime = startTime + 10
-        return Run(path = path, startTime = startTime, endTime = endTime, duration = 10)
     }
 }

@@ -89,10 +89,12 @@ object FirebaseKeys {
 
     // Posts keys
     const val POST_ID = "postId"
+    const val POST_TOURNAMENT_ID = "tournamentId"
+    const val POST_TOURNAMENT_NAME = "tournamentName"
     const val POST_USER_ID = "userId"
     const val POST_RUN = "run"
     const val POST_DATE = "date"
-    const val POST_USERS_VOTES = "usersVotes"
+    const val POST_USERS_VOTES = "userVotes"
 
     // Run keys
     const val RUN_PATH = "path"
@@ -711,7 +713,7 @@ class FirebaseDatabase(reference: DatabaseReference = Firebase.database.referenc
                     val posts = FirebaseDatabaseUtils.transformPostList(snapshot)
                     tournamentPostsValue.postValue(posts)
                 } else {
-                    throw Exception("The tournament with tournamentId $tournamentId doesn't exist.")
+                    tournamentPostsValue.postValue(emptyList())
                 }
             }
         }

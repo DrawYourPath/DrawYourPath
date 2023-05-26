@@ -12,7 +12,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.ViewModelProvider
 import com.epfl.drawyourpath.R
+import com.epfl.drawyourpath.community.TournamentModel
+import com.epfl.drawyourpath.database.FirebaseDatabase
 import com.epfl.drawyourpath.mainpage.fragments.*
 import com.epfl.drawyourpath.notifications.NotificationsHelper
 import com.epfl.drawyourpath.pathDrawing.PathDrawingContainerFragment
@@ -97,6 +100,11 @@ class MainActivity : AppCompatActivity() {
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         if (userId != null) {
             userCached.setCurrentUser(userId)
+            val tournamentModel = ViewModelProvider(
+                this,
+                TournamentModel.getFactory(FirebaseDatabase(), userId),
+            )[TournamentModel::class.java]
+            tournamentModel.setCurrentUser(userId)
         } else {
             Toast.makeText(applicationContext, R.string.toast_test_error_message, Toast.LENGTH_LONG)
                 .show()

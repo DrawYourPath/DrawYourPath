@@ -181,6 +181,7 @@ class FirebaseDatabaseTest {
                 FirebaseKeys.DAILY_GOALS to mockSnapshot(null),
                 FirebaseKeys.RUN_HISTORY to mockSnapshot(null),
                 FirebaseKeys.USER_CHATS to mockSnapshot(null),
+                FirebaseKeys.USER_TOURNAMENTS to mockSnapshot(null),
             ),
         )
 

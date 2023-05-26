@@ -1276,7 +1276,7 @@ class MockDatabaseTest {
         val expected = listOf(messageSent) + (database.MOCK_CHAT_MESSAGES[0].copy().chat?.value ?: emptyList())
         // wait for the live data
         waitUntilAllThreadAreDone()
-        // check the chat messages clist
+        // check the chat messages list
         assertEquals(
             expected,
             database.chatMessages[conversationId]!!.chat!!.value,

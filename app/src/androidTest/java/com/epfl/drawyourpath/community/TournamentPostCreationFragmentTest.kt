@@ -25,8 +25,9 @@ import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
-class TournamentPostCreationViewTest {
+class TournamentPostCreationFragmentTest {
     private val runs = MockDatabase.mockUser.runs!!.sortedByDescending { it.getStartTime() }
+    private val tournament = MockDatabase().mockTournament.value!!
 
     @get:Rule
     val permissionLocation: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -49,18 +50,17 @@ class TournamentPostCreationViewTest {
 
     @Test
     fun selectTournamentDisplayCorrectTournament() {
-        // TODO change this when everything is linked
         val scenario = launchFragmentInContainer {
-            TournamentPostCreationView()
+            TournamentPostCreationFragment()
         }
         // check default is first tournament in list
-        onView(withId(R.id.post_creation_tournament_spinner)).check(matches(withSpinnerText(TournamentPostCreationView.TOURNAMENT_SAMPLE[0])))
+        onView(withId(R.id.post_creation_tournament_spinner)).check(matches(withSpinnerText(tournament.toString())))
         // click on spinner
         onView(withId(R.id.post_creation_tournament_spinner)).perform(click())
         // select third option
-        onData(anything()).atPosition(2).perform(click())
+        onData(anything()).atPosition(0).perform(click())
         // check that third tournament is selected
-        onView(withId(R.id.post_creation_tournament_spinner)).check(matches(withSpinnerText(TournamentPostCreationView.TOURNAMENT_SAMPLE[2])))
+        onView(withId(R.id.post_creation_tournament_spinner)).check(matches(withSpinnerText(tournament.toString())))
 
         scenario.close()
     }
@@ -68,7 +68,7 @@ class TournamentPostCreationViewTest {
     @Test
     fun selectRunDisplayCorrectRun() {
         val scenario = launchFragmentInContainer {
-            TournamentPostCreationView()
+            TournamentPostCreationFragment()
         }
 
         // wait for the runs to load

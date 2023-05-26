@@ -249,6 +249,8 @@ class MockDatabase : Database() {
 
     val mockPost = TournamentPost(
         postId = "mockPostID",
+        tournamentId = "0",
+        tournamentName = "mockTournament0",
         userId = mockUser.userId!!,
         run = mockUser.runs!![0],
         usersVotes = hashMapOf(
@@ -261,6 +263,8 @@ class MockDatabase : Database() {
         mockPost,
         TournamentPost(
             postId = "mockPostID2",
+            tournamentId = "0",
+            tournamentName = "mockTournament0",
             userId = MOCK_USERS[0].userId!!,
             run = MOCK_USERS[0].runs!![0],
         ),
@@ -272,7 +276,7 @@ class MockDatabase : Database() {
             name = "mockTournament0",
             description = "Mock tournament number 0",
             creatorId = MockAuth.MOCK_USER.getUid(),
-            startDate = LocalDateTime.now().plusDays(3L),
+            startDate = LocalDateTime.now().minusDays(3L),
             endDate = LocalDateTime.now().plusDays(4L),
             participants = MOCK_USERS.map { it.userId!! },
             // The next args are useless for now

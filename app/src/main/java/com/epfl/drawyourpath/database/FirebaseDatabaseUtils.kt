@@ -129,6 +129,17 @@ object FirebaseDatabaseUtils {
     }
 
     /**
+     * Helper function to obtain the tournaments ids from the database
+     * @param data the data snapshot containing the tournaments ids
+     * @return a list containing the tournaments ids
+     */
+    fun transformTournamentIdList(data: DataSnapshot?): List<String> {
+        return data?.children?.mapNotNull {
+            it.key as String
+        } ?: emptyList()
+    }
+
+    /**
      * Helper function to obtain the posts of a tournament from the database
      * @param data the data snapshot containing the posts
      * @return a list containing the posts of the tournament
@@ -140,25 +151,38 @@ object FirebaseDatabaseUtils {
     }
 
     /**
+     * Helper function to obtain the votes of a post from the database
+     * @param data the data snapshot containing the votes
+     * @return a list containing the votes of a post
+     */
+    fun transformVotesToMap(data: DataSnapshot?): Map<String, Int> {
+        val votes = mutableMapOf<String, Int>()
+        data?.children?.mapNotNull {
+            votes.put(it.key as String, (it.value as Long).toInt())
+        }
+        return votes
+    }
+
+    /**
      * Helper function to obtain a post from a database snapshot
      * @param data the data snapshot containing the post
      * @return the post, or null if an error occurred
      */
     fun transformPost(data: DataSnapshot?): TournamentPost? {
         val postId = data?.child(FirebaseKeys.POST_ID)?.value as String?
+        val tournamentId = data?.child(FirebaseKeys.POST_TOURNAMENT_ID)?.value as String?
+        val tournamentName = data?.child(FirebaseKeys.POST_TOURNAMENT_NAME)?.value as String?
         val userId = data?.child(FirebaseKeys.POST_USER_ID)?.value as String?
         val run = transformRun(data?.child(FirebaseKeys.POST_RUN))
         val date = transformLocalDateTime(data?.child(FirebaseKeys.POST_DATE))
-        // Unchecked cast here but should work without problem
-        val usersVotes =
-            (data?.child(FirebaseKeys.POST_USERS_VOTES)?.value ?: emptyMap<String, Int>()) as Map<String, Int>
+        val usersVotes = transformVotesToMap(data?.child(FirebaseKeys.POST_USERS_VOTES))
 
-        if (postId == null || userId == null || run == null || date == null) {
+        if (postId == null || tournamentId == null || tournamentName == null || userId == null || run == null || date == null) {
             Log.e(this::class.java.name, "TournamentPost had null values")
             return null
         }
 
-        return TournamentPost(postId, userId, run, date, usersVotes.toMutableMap())
+        return TournamentPost(postId, tournamentId, tournamentName, userId, run, date, usersVotes.toMutableMap())
     }
 
     /**
@@ -250,6 +274,7 @@ object FirebaseDatabaseUtils {
     fun mapToUserData(data: DataSnapshot, userId: String): UserData {
         val profile = data.child(FirebaseKeys.PROFILE)
         val goals = data.child(FirebaseKeys.GOALS)
+        val tournaments = data.child(FirebaseKeys.USER_TOURNAMENTS)
 
         return UserData(
             userId = userId,
@@ -268,7 +293,7 @@ object FirebaseDatabaseUtils {
             runs = transformRunList(data.child(FirebaseKeys.RUN_HISTORY)),
             dailyGoals = transformDailyGoals(data.child(FirebaseKeys.DAILY_GOALS)),
             chatList = transformChatList(profile.child(FirebaseKeys.USER_CHATS)),
-
+            tournaments = transformTournamentIdList(tournaments),
             trophies = transformTrophyFromData(data.child(FirebaseKeys.TROPHIES)),
             milestones = transformMilestoneFromData(data.child(FirebaseKeys.MILESTONES)),
 

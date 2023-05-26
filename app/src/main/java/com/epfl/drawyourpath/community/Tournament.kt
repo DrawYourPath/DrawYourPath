@@ -19,8 +19,7 @@ data class Tournament(
     @get:Exclude val participants: List<String> = mutableListOf(),
     val posts: List<TournamentPost> = mutableListOf(),
     var visibility: Visibility = Visibility.PUBLIC,
-    // val result: List<User>?
-) : java.io.Serializable {
+) {
 
     /**
      * return a string representing either when it starts, when it ends or when it has ended
@@ -72,7 +71,22 @@ data class Tournament(
         return res.toString()
     }
 
+    /**
+     * data class used when the user has chosen the parameters of the tournament.
+     */
+    data class TournamentParameters(
+        val name: String,
+        val description: String,
+        val startDate: LocalDateTime,
+        val endDate: LocalDateTime,
+        val visibility: Visibility,
+    )
+
     enum class Visibility {
         FRIENDS_ONLY, PUBLIC
+    }
+
+    override fun toString(): String {
+        return "Tournament(id=$id, name=$name, description=$description, creatorId='$creatorId')"
     }
 }
