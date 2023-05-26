@@ -58,7 +58,7 @@ class TournamentModelTest {
         assertEquals(mockDatabase.tournaments["0"]?.value!!.toString(), tournamentModel.yourTournament.getOrAwaitValue()[0].toString())
         // 2 tournaments in starting soon
         assertEquals(
-            mockDatabase.tournaments.values.drop(1).dropLast(1) .map { it.value!!.toString() },
+            mockDatabase.tournaments.values.drop(1).dropLast(1).map { it.value!!.toString() },
             tournamentModel.startingSoonTournament.getOrAwaitValue().map { it.first.toString() },
         )
     }
