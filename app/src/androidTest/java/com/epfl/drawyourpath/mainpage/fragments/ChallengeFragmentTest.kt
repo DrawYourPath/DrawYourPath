@@ -48,7 +48,7 @@ class ChallengeFragmentTest {
      */
     private fun waitUntilAllThreadAreDone() {
         executorRule.drainTasks(2, TimeUnit.SECONDS)
-        Thread.sleep(100)
+        Thread.sleep(150)
     }
 
     @Test
