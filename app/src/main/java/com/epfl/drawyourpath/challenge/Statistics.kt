@@ -29,7 +29,7 @@ object Statistics {
             getTotalDistance(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-                }
+                },
             )
         }.withDefault { 0.0 }
     }
@@ -55,7 +55,7 @@ object Statistics {
             getTotalTime(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-                }
+                },
             )
         }.withDefault { 0.0 }
     }
@@ -91,7 +91,7 @@ object Statistics {
             getAverageSpeed(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
-                }
+                },
             )
         }.withDefault { 0.0 }
     }
@@ -106,7 +106,7 @@ object Statistics {
             getAverageSpeed(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-                }
+                },
             )
         }.withDefault { 0.0 }
     }
@@ -130,7 +130,7 @@ object Statistics {
             getAverageDuration(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
-                }
+                },
             )
         }.withDefault { 0.0 }
     }
@@ -145,7 +145,7 @@ object Statistics {
             getAverageDuration(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-                }
+                },
             )
         }.withDefault { 0.0 }
     }
@@ -169,7 +169,7 @@ object Statistics {
             getAverageDistance(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
-                }
+                },
             )
         }.withDefault { 0.0 }
     }
@@ -184,7 +184,7 @@ object Statistics {
             getAverageDistance(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-                }
+                },
             )
         }.withDefault { 0.0 }
     }
@@ -210,7 +210,7 @@ object Statistics {
             getShapeDrawnCount(
                 dailyGoals.filter {
                     it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-                }
+                },
             ).toDouble()
         }.withDefault { 0.0 }
     }
