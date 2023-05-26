@@ -1,13 +1,9 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -124,11 +120,10 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
                                 ranking = index + 1,
                             )
                             trophiesList.postValue(
-                                trophiesList.value?.plus(trophy) ?: listOf(trophy)
+                                trophiesList.value?.plus(trophy) ?: listOf(trophy,)
                             )
                         }
                     }
-
                 }
             }
         }
