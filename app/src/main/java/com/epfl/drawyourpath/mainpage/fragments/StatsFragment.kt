@@ -1,6 +1,7 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -307,7 +308,7 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average speed in function of the year
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringSpeed(speed = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -326,7 +327,8 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average speed in function of the month
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        // order by key (date)
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringSpeed(speed = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -345,7 +347,7 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average duration in function of the year
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -364,7 +366,7 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average duration in function of the month
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -383,7 +385,7 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average distance in function of the year
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -402,7 +404,7 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the average distance in function of the month
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -421,7 +423,7 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the distance goal in function of the year
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDistance(distance = value)
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -440,7 +442,7 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the activity time goal in function of the year
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = Utils.getStringDuration(time = value.toLong())
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
@@ -459,7 +461,7 @@ class StatsFragment(
         showGraphInPreview(data = data, lineText = lineText, columnText = columnText)
         // show a table containing the distance goal in function of the year
         val mapString = hashMapOf<String, String>()
-        data.forEach { (key, value) ->
+        data.filterNot { it.value == 0.0 }.forEach { (key, value) ->
             mapString[key.toString()] = value.toString()
         }
         showTableInDescription(data = mapString, lineText = lineText, columnText = columnText)
