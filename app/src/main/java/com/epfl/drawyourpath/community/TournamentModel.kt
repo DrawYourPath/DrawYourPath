@@ -123,14 +123,16 @@ class TournamentModel(
                 value = allPosts.filterKeys { ids.contains(it) }.values.mapNotNull { it.value }.flatten()
             }
             // add a source to all the tournaments id
-            addSource(allTournamentIds) { tournamentIds ->
-                tournamentIds.forEach { id ->
+            addSource(allTournaments) { tournaments ->
+                tournaments.filter {
+                    it.startDate <= LocalDateTime.now() && it.endDate >= LocalDateTime.now()
+                }.forEach { tournament ->
                     // put in map only if it does not exist
-                    allPosts.getOrPut(id) {
-                        database.getTournamentPosts(id).also { livedata ->
+                    allPosts.getOrPut(tournament.id) {
+                        database.getTournamentPosts(tournament.id).also { livedata ->
                             // add a source to all tournament posts to listen to the changes of each posts
                             addSource(livedata) { posts ->
-                                if (userTournaments.value!!.contains(id)) {
+                                if (userTournaments.value!!.contains(tournament.id)) {
                                     value = value?.filterNot { post -> posts.map { it.postId }.contains(post.postId) }?.plus(posts) ?: posts
                                 }
                             }
