@@ -3,10 +3,12 @@ package com.epfl.drawyourpath.community
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.epfl.drawyourpath.R
@@ -40,6 +42,7 @@ class CommunityTournamentPostViewAdapter(
         val downvote: ImageButton
         val voteCount: TextView
         val context: Context
+        val cardView: CardView
 
         init {
             // Define click listener for the ViewHolder's View
@@ -50,6 +53,7 @@ class CommunityTournamentPostViewAdapter(
             downvote = view.findViewById(R.id.tournament_downvote_button)
             voteCount = view.findViewById(R.id.tournament_vote_count_text)
             context = view.context
+            cardView = view.findViewById(R.id.tournament_post_card_view)
         }
     }
 
@@ -64,13 +68,22 @@ class CommunityTournamentPostViewAdapter(
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        // add an invisible post at the end to be able to scroll past the add post button
+        if (viewHolder.adapterPosition >= posts.count()) {
+            viewHolder.cardView.visibility = INVISIBLE
+            return
+        } else {
+            viewHolder.cardView.visibility = VISIBLE
+        }
+
         val post = posts[viewHolder.adapterPosition]
 
         // if it displays posts from only one tournament the name is not displayed
         if (showName) {
             viewHolder.tournamentName.text = post.tournamentName
+            viewHolder.tournamentName.visibility = VISIBLE
         } else {
-            viewHolder.tournamentName.visibility = View.GONE
+            viewHolder.tournamentName.visibility = GONE
         }
 
         // show the image
@@ -118,7 +131,7 @@ class CommunityTournamentPostViewAdapter(
     }
 
     // Return the size of the dataset (invoked by the layout manager)
-    override fun getItemCount() = posts.count()
+    override fun getItemCount() = posts.count() + 1
 
     /**
      * update the recycler view to show the updated list of posts
