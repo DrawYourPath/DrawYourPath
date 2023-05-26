@@ -120,7 +120,7 @@ class ChallengeFragment : Fragment(R.layout.fragment_challenge) {
                                 ranking = index + 1,
                             )
                             trophiesList.postValue(
-                                trophiesList.value?.plus(trophy) ?: listOf(trophy,)
+                                trophiesList.value?.plus(trophy) ?: listOf(trophy),
                             )
                         }
                     }
