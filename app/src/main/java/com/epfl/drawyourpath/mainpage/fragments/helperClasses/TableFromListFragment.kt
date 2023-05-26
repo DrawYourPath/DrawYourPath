@@ -64,9 +64,9 @@ class TableFromListFragment(private val map: Map<String, String>, private val co
      */
     private fun addMapInfo() {
         var i = 0
-        val comparator =  object : Comparator<String> {
+        val comparator = object : Comparator<String> {
             override fun compare(o1: String?, o2: String?): Int {
-                if (o1 != null && o2 !=null) {
+                if (o1 != null && o2 != null) {
                     return o1.toDouble().compareTo(o2.toDouble())
                 }
                 return 0

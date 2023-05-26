@@ -1,7 +1,6 @@
 package com.epfl.drawyourpath.mainpage.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE

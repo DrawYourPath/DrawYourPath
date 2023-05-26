@@ -26,9 +26,11 @@ object Statistics {
      */
     fun getDistancePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
-            getTotalDistance(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-            })
+            getTotalDistance(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                }
+            )
         }.withDefault { 0.0 }
     }
 
@@ -50,9 +52,11 @@ object Statistics {
      */
     fun getTimePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
-            getTotalTime(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-            })
+            getTotalTime(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                }
+            )
         }.withDefault { 0.0 }
     }
 
@@ -84,9 +88,11 @@ object Statistics {
      */
     fun getAverageSpeedPerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().dayOfMonth).map { it.toDouble() }.associateWith { day ->
-            getAverageSpeed(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
-            })
+            getAverageSpeed(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
+                }
+            )
         }.withDefault { 0.0 }
     }
 
@@ -97,9 +103,11 @@ object Statistics {
      */
     fun getAverageSpeedPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
-            getAverageSpeed(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-            })
+            getAverageSpeed(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                }
+            )
         }.withDefault { 0.0 }
     }
 
@@ -119,9 +127,11 @@ object Statistics {
      */
     fun getAverageDurationPerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().dayOfMonth).map { it.toDouble() }.associateWith { day ->
-            getAverageDuration(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
-            })
+            getAverageDuration(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
+                }
+            )
         }.withDefault { 0.0 }
     }
 
@@ -132,9 +142,11 @@ object Statistics {
      */
     fun getAverageDurationPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
-            getAverageDuration(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-            })
+            getAverageDuration(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                }
+            )
         }.withDefault { 0.0 }
     }
 
@@ -154,9 +166,11 @@ object Statistics {
      */
     fun getAverageDistancePerMonth(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().dayOfMonth).map { it.toDouble() }.associateWith { day ->
-            getAverageDistance(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
-            })
+            getAverageDistance(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == LocalDate.now().monthValue && it.date.dayOfMonth == day.toInt()
+                }
+            )
         }.withDefault { 0.0 }
     }
 
@@ -167,9 +181,11 @@ object Statistics {
      */
     fun getAverageDistancePerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
-            getAverageDistance(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-            })
+            getAverageDistance(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                }
+            )
         }.withDefault { 0.0 }
     }
 
@@ -179,8 +195,7 @@ object Statistics {
      * @return The total number of shapes drawn.
      */
     fun getShapeDrawnCount(dailyGoals: List<DailyGoal>): Int {
-        return dailyGoals.fold(0) {
-                acc, dailyGoal ->
+        return dailyGoals.fold(0) { acc, dailyGoal ->
             acc + dailyGoal.paths
         }
     }
@@ -192,9 +207,11 @@ object Statistics {
      */
     fun getShapeDrawnCountPerYear(dailyGoals: List<DailyGoal>): Map<Double, Double> {
         return (1..LocalDate.now().monthValue).map { it.toDouble() }.associateWith { month ->
-            getShapeDrawnCount(dailyGoals.filter {
-                it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
-            }).toDouble()
+            getShapeDrawnCount(
+                dailyGoals.filter {
+                    it.date.year == LocalDate.now().year && it.date.monthValue == month.toInt()
+                }
+            ).toDouble()
         }.withDefault { 0.0 }
     }
 }
